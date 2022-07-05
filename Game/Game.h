@@ -16,7 +16,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef __GAME_H
 #define __GAME_H 1
 
-#include <Game/PlayerSettings.h>
+// [Cecil] Relative path
+#include "PlayerSettings.h"
 
 // [Cecil] Declare the class just to avoid useless "SessionProperties.h" inclusion
 class CSessionProperties;
