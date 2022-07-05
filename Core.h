@@ -39,3 +39,6 @@ extern CGame *_pGame;
 #include "API/PatchAPI.h"
 #include "FuncPatching.h"
 #include "Query/QueryMgr.h"
+
+// Initialize Core module
+void CECIL_InitCore(void);

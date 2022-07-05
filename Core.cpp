@@ -17,3 +17,26 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 // Pointer to the Game module
 CGame *_pGame = NULL;
+
+// Display information about the patch
+static void PatchInfo(void) {
+  static CTString strInfo =
+    "\nSerious Sam Classic Patch"
+    "\ngithub.com/SamClassicPatch"
+    "\n"
+    "\n- Engine version: " _SE_VER_STRING
+    "\n- Patch version: "
+    + _pPatchAPI->strVersion
+    + "\n\n(c) Dreamy Cecil, 2022\n";
+
+  CPutString(strInfo);
+};
+
+// Initialize Core module
+void CECIL_InitCore(void) {
+  // Initialize patch API
+  _pPatchAPI = new CPatchAPI();
+
+  // Information about the patch
+  _pShell->DeclareSymbol("user void PatchInfo(void);", &PatchInfo);
+};
