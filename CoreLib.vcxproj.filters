@@ -28,6 +28,12 @@
     <Filter Include="Header Files\API headers">
       <UniqueIdentifier>{f5b497e5-e2e8-4277-8b6e-a2e25223b593}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Query">
+      <UniqueIdentifier>{22f79e87-670b-4173-ad3b-6b017841ce5b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Query headers">
+      <UniqueIdentifier>{09b746b9-5938-4d3c-a0ed-e0149901a281}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game\Game.h">
@@ -54,6 +60,9 @@
     <ClInclude Include="FuncPatching.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Query\QueryMgr.h">
+      <Filter>Header Files\Query headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="StdH.cpp">
@@ -67,6 +76,24 @@
     </ClCompile>
     <ClCompile Include="Core.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Query\GameAgentQuery.cpp">
+      <Filter>Source Files\Query</Filter>
+    </ClCompile>
+    <ClCompile Include="Query\Legacy_Functions.cpp">
+      <Filter>Source Files\Query</Filter>
+    </ClCompile>
+    <ClCompile Include="Query\LegacyClientQuery.cpp">
+      <Filter>Source Files\Query</Filter>
+    </ClCompile>
+    <ClCompile Include="Query\LegacyServerQuery.cpp">
+      <Filter>Source Files\Query</Filter>
+    </ClCompile>
+    <ClCompile Include="Query\QueryMgr.cpp">
+      <Filter>Source Files\Query</Filter>
+    </ClCompile>
+    <ClCompile Include="Query\DarkPlacesQuery.cpp">
+      <Filter>Source Files\Query</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

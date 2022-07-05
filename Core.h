@@ -26,6 +26,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Pointer to the Game module
 extern CGame *_pGame;
 
+// Choose value based on configuration
+#ifdef SE1_TFE
+  #define CHOOSE_FOR_GAME(_TFE105, _TSE105, _TSE107) _TFE105
+#elif SE1_VER == 105
+  #define CHOOSE_FOR_GAME(_TFE105, _TSE105, _TSE107) _TSE105
+#else
+  #define CHOOSE_FOR_GAME(_TFE105, _TSE105, _TSE107) _TSE107
+#endif
+
 // Common components
 #include "API/PatchAPI.h"
 #include "FuncPatching.h"
+#include "Query/QueryMgr.h"
