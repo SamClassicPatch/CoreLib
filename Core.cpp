@@ -18,6 +18,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Pointer to the Game module
 CGame *_pGame = NULL;
 
+// Common game variables
+#ifdef SE1_TFE
+  CTString sam_strFirstLevel = "Levels\\01_Hatshepsut.wld";
+  CTString sam_strIntroLevel = "Levels\\Intro.wld";
+  CTString sam_strGameName = "serioussam";
+#else
+  CTString sam_strFirstLevel = "Levels\\LevelsMP\\1_0_InTheLastEpisode.wld";
+  CTString sam_strIntroLevel = "Levels\\LevelsMP\\Intro.wld";
+  CTString sam_strGameName = "serioussamse";
+#endif
+
 // Display information about the patch
 static void PatchInfo(void) {
   static CTString strInfo =
@@ -47,6 +58,11 @@ void CECIL_InitCore(void) {
   CECIL_ApplyMasterServerPatch();
 
   CPrintF("^c00ffffDone!\n");
+
+  // Common game variables
+  _pShell->DeclareSymbol("           user CTString sam_strFirstLevel;", &sam_strFirstLevel);
+  _pShell->DeclareSymbol("persistent user CTString sam_strIntroLevel;", &sam_strIntroLevel);
+  _pShell->DeclareSymbol("persistent user CTString sam_strGameName;",   &sam_strGameName);
 };
 
 // Disable GameSpy usage

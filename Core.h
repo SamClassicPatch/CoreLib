@@ -38,6 +38,11 @@ extern CGame *_pGame;
   #define CHOOSE_FOR_GAME(_TFE105, _TSE105, _TSE107) _TSE107
 #endif
 
+// Common game variables
+extern CTString sam_strFirstLevel;
+extern CTString sam_strIntroLevel;
+extern CTString sam_strGameName;
+
 // Common components
 #include "API/PatchAPI.h"
 #include "FuncPatching.h"
