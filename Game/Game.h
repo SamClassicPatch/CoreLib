@@ -18,31 +18,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <Game/PlayerSettings.h>
 
-// [Cecil] Define classes just to avoid useless "SessionProperties.h" inclusion
-class CSessionProperties {
-  public:
-    enum GameMode {
-      GM_FLYOVER = -1,
-      GM_COOPERATIVE = 0,
-    };
-
-    enum GameDifficulty {
-      GD_TOURIST = -1,
-      GD_EASY = 0,
-      GD_NORMAL,
-      GD_HARD,
-      GD_EXTREME,
-    };
-};
-
-class CUniversalSessionProperties {
-  public:
-    UBYTE usp_aubDummy[NET_MAXSESSIONPROPERTIES];
-
-    operator CSessionProperties &(void) {
-      return (CSessionProperties &)usp_aubDummy;
-    };
-};
+// [Cecil] Declare the class just to avoid useless "SessionProperties.h" inclusion
+class CSessionProperties;
 
 #define GAME_SHELL_VER "V012"
 
@@ -172,7 +149,7 @@ public:
 class CHighScoreEntry {
 public:
   CTString hse_strPlayer;
-  enum CSessionProperties::GameDifficulty hse_gdDifficulty;
+  INDEX hse_gdDifficulty; // [Cecil] 'enum CSessionProperties::GameDifficulty' -> 'INDEX'
   TIME hse_tmTime;
   INDEX hse_ctKills;
   INDEX hse_ctScore;
