@@ -18,11 +18,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <Engine/CurrentVersion.h>
 #include "Game/Game.h"
 
-// Define library exporting declaration specifiers
-#ifdef CORE_EXPORTS
-  #define CORE_API __declspec(dllexport)
-#else
-  #define CORE_API __declspec(dllimport)
-
+// Import library for use
+#ifndef CORE_EXPORTS
   #pragma comment(lib, "Core.lib")
 #endif
+
+// Common components
+#include "Patcher/patcher.h"

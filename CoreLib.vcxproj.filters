@@ -16,6 +16,12 @@
     <Filter Include="Header Files\Game">
       <UniqueIdentifier>{70bf311d-f27f-450d-825b-7860b10e9162}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Patcher">
+      <UniqueIdentifier>{dada0e2a-5921-4e12-9666-80fe63db0206}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Patcher headers">
+      <UniqueIdentifier>{33282aa2-c9b2-450e-b526-69fc2c52008d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game\Game.h">
@@ -30,10 +36,19 @@
     <ClInclude Include="Core.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Patcher\patcher.h">
+      <Filter>Header Files\Patcher headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Patcher\patcher_defines.h">
+      <Filter>Header Files\Patcher headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="StdH.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Patcher\patcher.cpp">
+      <Filter>Source Files\Patcher</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
