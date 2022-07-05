@@ -18,6 +18,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <Engine/CurrentVersion.h>
 #include "Game/Game.h"
 
+// CSessionProperties byte container (replacement for CUniversalSessionProperties)
+typedef UBYTE CSesPropsContainer[NET_MAXSESSIONPROPERTIES];
+
 // Import library for use
 #ifndef CORE_EXPORTS
   #pragma comment(lib, "Core.lib")
