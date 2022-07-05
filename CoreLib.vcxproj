@@ -52,7 +52,7 @@
     </SccProjectName>
     <SccLocalPath>
     </SccLocalPath>
-    <ProjectGuid>{F0E01B8A-1C93-85CB-693E-B9CA24A27168}</ProjectGuid>
+    <ProjectGuid>{4E768DEE-319A-43AB-8D52-7079E270D91C}</ProjectGuid>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_TSE107|Win32'" Label="Configuration">
