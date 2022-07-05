@@ -22,6 +22,12 @@
     <Filter Include="Header Files\Patcher headers">
       <UniqueIdentifier>{33282aa2-c9b2-450e-b526-69fc2c52008d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\API">
+      <UniqueIdentifier>{ca1f2c70-a877-4207-8790-5aded94ab4bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\API headers">
+      <UniqueIdentifier>{f5b497e5-e2e8-4277-8b6e-a2e25223b593}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game\Game.h">
@@ -42,6 +48,12 @@
     <ClInclude Include="Patcher\patcher_defines.h">
       <Filter>Header Files\Patcher headers</Filter>
     </ClInclude>
+    <ClInclude Include="API\PatchAPI.h">
+      <Filter>Header Files\API headers</Filter>
+    </ClInclude>
+    <ClInclude Include="FuncPatching.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="StdH.cpp">
@@ -49,6 +61,12 @@
     </ClCompile>
     <ClCompile Include="Patcher\patcher.cpp">
       <Filter>Source Files\Patcher</Filter>
+    </ClCompile>
+    <ClCompile Include="API\PatchAPI.cpp">
+      <Filter>Source Files\API</Filter>
+    </ClCompile>
+    <ClCompile Include="Core.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

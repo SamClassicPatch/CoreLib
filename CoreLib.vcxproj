@@ -19,7 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="API\PatchAPI.h" />
     <ClInclude Include="Core.h" />
+    <ClInclude Include="FuncPatching.h" />
     <ClInclude Include="Game\Game.h" />
     <ClInclude Include="Game\PlayerSettings.h" />
     <ClInclude Include="Patcher\patcher.h" />
@@ -27,6 +29,8 @@
     <ClInclude Include="StdH.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="API\PatchAPI.cpp" />
+    <ClCompile Include="Core.cpp" />
     <ClCompile Include="Patcher\patcher.cpp" />
     <ClCompile Include="StdH.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug_TSE107|Win32'">Create</PrecompiledHeader>
