@@ -37,6 +37,12 @@
     <Filter Include="Source Files\EnginePatches">
       <UniqueIdentifier>{8eadc3a3-ee62-48eb-b290-edea08b9ac12}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Objects headers">
+      <UniqueIdentifier>{5dbc8b17-0de1-41ce-8097-fd417cff859d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Objects">
+      <UniqueIdentifier>{3e6a2cee-834b-40f2-b6c4-a13e8e864655}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game\Game.h">
@@ -65,6 +71,9 @@
     </ClInclude>
     <ClInclude Include="Query\QueryMgr.h">
       <Filter>Header Files\Query headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Node.h">
+      <Filter>Header Files\Objects headers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -100,6 +109,9 @@
     </ClCompile>
     <ClCompile Include="EnginePatches\MasterServerPatch.cpp">
       <Filter>Source Files\EnginePatches</Filter>
+    </ClCompile>
+    <ClCompile Include="Objects\Node.cpp">
+      <Filter>Source Files\Objects</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
