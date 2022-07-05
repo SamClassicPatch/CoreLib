@@ -32,6 +32,7 @@
   <ItemGroup>
     <ClCompile Include="API\PatchAPI.cpp" />
     <ClCompile Include="Core.cpp" />
+    <ClCompile Include="EnginePatches\MasterServerPatch.cpp" />
     <ClCompile Include="Patcher\patcher.cpp" />
     <ClCompile Include="Query\DarkPlacesQuery.cpp" />
     <ClCompile Include="Query\GameAgentQuery.cpp" />

@@ -39,4 +39,36 @@ void CECIL_InitCore(void) {
 
   // Information about the patch
   _pShell->DeclareSymbol("user void PatchInfo(void);", &PatchInfo);
+
+  // Function patches
+  CPrintF("^c00ffffCore:\nIntercepting Engine functions:\n");
+
+  extern void CECIL_ApplyMasterServerPatch(void);
+  CECIL_ApplyMasterServerPatch();
+
+  CPrintF("^c00ffffDone!\n");
+};
+
+// Disable GameSpy usage
+void CECIL_DisableGameSpy(void) {
+  static BOOL bDisabled = FALSE;
+
+  if (bDisabled) return;
+
+  // Get symbol for accessing GameSpy master server
+  CShellSymbol *pssGameSpy = _pShell->GetSymbol("ser_bHeartbeatGameSpy", TRUE);
+
+  if (pssGameSpy != NULL) {
+    // Store last value
+    INDEX *piValue = (INDEX *)pssGameSpy->ss_pvValue;
+    static INDEX iDummyValue = *piValue;
+
+    // Forcefully disable it
+    *piValue = FALSE;
+
+    // Make it inaccessible
+    pssGameSpy->ss_pvValue = &iDummyValue;
+
+    bDisabled = TRUE;
+  }
 };

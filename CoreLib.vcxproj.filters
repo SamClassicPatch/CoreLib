@@ -34,6 +34,9 @@
     <Filter Include="Header Files\Query headers">
       <UniqueIdentifier>{09b746b9-5938-4d3c-a0ed-e0149901a281}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\EnginePatches">
+      <UniqueIdentifier>{8eadc3a3-ee62-48eb-b290-edea08b9ac12}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game\Game.h">
@@ -94,6 +97,9 @@
     </ClCompile>
     <ClCompile Include="Query\DarkPlacesQuery.cpp">
       <Filter>Source Files\Query</Filter>
+    </ClCompile>
+    <ClCompile Include="EnginePatches\MasterServerPatch.cpp">
+      <Filter>Source Files\EnginePatches</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

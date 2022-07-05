@@ -42,3 +42,6 @@ extern CGame *_pGame;
 
 // Initialize Core module
 void CECIL_InitCore(void);
+
+// Disable GameSpy usage
+void CECIL_DisableGameSpy(void);
