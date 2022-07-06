@@ -127,4 +127,7 @@ void CECIL_LoadGameLib(void) {
 
   // Initialize Game
   _pGame->Initialize(CTString("Data\\SeriousSam.gms"));
+
+  // Hook default fields
+  GetGameAPI()->HookFields();
 };

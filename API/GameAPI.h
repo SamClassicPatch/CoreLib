@@ -51,11 +51,26 @@ class CGameAPI {
     // Session properties
     CStaticArray<INDEX> sp_aiGameModes; // Game mode indices
     CStaticArray<Difficulty> sp_aGameDifficulties; // Game difficulties
+
+    // Pointers to CGame fields
+    INDEX    *piConsoleState;  // gm_csConsoleState
+    INDEX    *piComputerState; // gm_csComputerState
+    CTString *pstrNetProvider; // gm_strNetworkProvider
+    BOOL     *pbFirstLoading;  // gm_bFirstLoading
+    BOOL     *pbMenuOn;        // gm_bMenuOn
+    BOOL     *pbGameOn;        // gm_bGameOn
+
+    CTString *pstrCustomLevel; // gam_strCustomLevel
+    CTString *pstrSessionName; // gam_strSessionName
+    CTString *pstrJoinAddress; // gam_strJoinAddress
     
   // Only virtual and defined methods can be used outside the Classics patch
   public:
     // Constructor
     CGameAPI();
+
+    // Hook default fields from CGame
+    virtual void HookFields(void);
 
     // Get game mode index
     INDEX GetGameMode(INDEX i) {
@@ -76,22 +91,22 @@ class CGameAPI {
   public:
     // Get console state
     INDEX GetConState(void) {
-      return _pGame->gm_csConsoleState;
+      return *piConsoleState;
     };
 
     // Set console state
     void SetConState(INDEX iState) {
-      (INDEX &)_pGame->gm_csConsoleState = iState;
+      *piConsoleState = iState;
     };
 
     // Get computer state
     INDEX GetCompState(void) {
-      return _pGame->gm_csComputerState;
+      return *piComputerState;
     };
 
     // Set computer state
     void SetCompState(INDEX iState) {
-      (INDEX &)_pGame->gm_csComputerState = iState;
+      *piComputerState = iState;
     };
 
     // Set network provider
@@ -100,54 +115,54 @@ class CGameAPI {
         "Local", "TCP/IP Server", "TCP/IP Client",
       };
 
-      _pGame->gm_strNetworkProvider = astrProviders[eProvider];
+      *pstrNetProvider = astrProviders[eProvider];
     };
 
     // Get first loading state
     BOOL GetFirstLoading(void) {
-      return _pGame->gm_bFirstLoading;
+      return *pbFirstLoading;
     };
 
     // Set if loading for the first time
     void SetFirstLoading(BOOL bState) {
-      _pGame->gm_bFirstLoading = bState;
+      *pbFirstLoading = bState;
     };
 
     // Get menu state
     BOOL GetMenuState(void) {
-      return _pGame->gm_bMenuOn;
+      return *pbMenuOn;
     };
 
     // Set menu state
     void SetMenuState(BOOL bState) {
-      _pGame->gm_bMenuOn = bState;
+      *pbMenuOn = bState;
     };
 
     // Get game state
     BOOL GetGameState(void) {
-      return _pGame->gm_bGameOn;
+      return *pbGameOn;
     };
 
     // Set game state
     void SetGameState(BOOL bState) {
-      _pGame->gm_bGameOn = bState;
+      *pbGameOn = bState;
     };
 
   // CGame session property wrappers
   public:
     // Get custom level filename
     CTString &GetCustomLevel(void) {
-      return _pGame->gam_strCustomLevel;
+      return *pstrCustomLevel;
     };
     
     // Get session name
     CTString &GetSessionName(void) {
-      return _pGame->gam_strSessionName;
+      return *pstrSessionName;
     };
     
     // Get address for joining
     CTString &GetJoinAddress(void) {
-      return _pGame->gam_strJoinAddress;
+      return *pstrJoinAddress;
     };
 };
 

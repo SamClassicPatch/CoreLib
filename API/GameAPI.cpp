@@ -31,3 +31,17 @@ CGameAPI::CGameAPI() {
   sp_aGameDifficulties[4] = Difficulty( 3, "Serious");
   sp_aGameDifficulties[5] = Difficulty( 4, "Mental");
 };
+
+// Hook default fields from CGame
+void CGameAPI::HookFields(void) {
+  piConsoleState  = (INDEX *)&_pGame->gm_csConsoleState;
+  piComputerState = (INDEX *)&_pGame->gm_csComputerState;
+  pstrNetProvider = &_pGame->gm_strNetworkProvider;
+  pbFirstLoading  = &_pGame->gm_bFirstLoading;
+  pbMenuOn        = &_pGame->gm_bMenuOn;
+  pbGameOn        = &_pGame->gm_bGameOn;
+
+  pstrCustomLevel = &_pGame->gam_strCustomLevel;
+  pstrSessionName = &_pGame->gam_strSessionName;
+  pstrJoinAddress = &_pGame->gam_strJoinAddress;
+};
