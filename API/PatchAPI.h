@@ -20,8 +20,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #pragma once
 #endif
 
-// Declare patch class
-class CPatch;
+// Declare certain classes | Which files to include to define classes
+class CPatch;               // #include <CoreLib/Patcher/patcher.h>
+class CPluginModule;        // #include <CoreLib/Modules/PluginModule.h>
+class CStock_CPluginModule; // #include <CoreLib/Modules/PluginStock.h>
 
 // Pointer to a function patch under a hashed name
 struct SFuncPatch {
@@ -74,6 +76,7 @@ class CPatchAPI {
   public:
     CTString strVersion; // Patch version
     CStaticStackArray<SFuncPatch> aPatches; // Function patch storage
+    CStock_CPluginModule *pPluginStock; // Stock of plugin modules
 
     // Session properties
     CStaticArray<INDEX> sp_aiGameModes; // Game mode indices
@@ -83,6 +86,9 @@ class CPatchAPI {
   public:
     // Constructor
     CPatchAPI();
+
+    // Obtain pointer to a plugin module
+    virtual CPluginModule *ObtainPlugin_t(const CTFileName &fnmModule);
 
     // Get game mode index
     INDEX GetGameMode(INDEX i) {

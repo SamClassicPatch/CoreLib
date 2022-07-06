@@ -84,6 +84,9 @@
     <ClInclude Include="Modules\PluginModule.h">
       <Filter>Header Files\Modules headers</Filter>
     </ClInclude>
+    <ClInclude Include="Modules\PluginStock.h">
+      <Filter>Header Files\Modules headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="StdH.cpp">
@@ -123,6 +126,9 @@
       <Filter>Source Files\Objects</Filter>
     </ClCompile>
     <ClCompile Include="Modules\PluginModule.cpp">
+      <Filter>Source Files\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="Modules\PluginStock.cpp">
       <Filter>Source Files\Modules</Filter>
     </ClCompile>
   </ItemGroup>
