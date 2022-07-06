@@ -74,9 +74,43 @@ class CPatchAPI {
     virtual CPluginModule *ObtainPlugin_t(const CTFileName &fnmModule);
 };
 
-// Don't use this variable outside the EXE patch project. Visit for more info:
+// This variable can be used to access API of the EXE patch.
+// It needs to be defined separately for outside projects. Visit for more info:
 // https://github.com/SamClassicPatch/GameExecutable/wiki/Mod-support#api-utilization
 extern "C" __declspec(dllexport) CPatchAPI *_pPatchAPI;
+
+// These methods should only be used outside the Classics patch project
+#ifndef CORE_EXPORTS
+  // Hook API pointer through the shell symbol
+  inline BOOL HookSymbolAPI(void) {
+    CShellSymbol *pssAPI = _pShell->GetSymbol("PatchAPI", TRUE);
+
+    if (pssAPI != NULL) {
+      _pPatchAPI = (CPatchAPI *)pssAPI->ss_pvValue;
+      return TRUE;
+    }
+
+    return FALSE;
+  };
+
+  // Hook API pointer through the executable's module handle
+  inline BOOL HookExecutableAPI(void) {
+    // Get instance of the running executable
+    const CTFileName fnmEXE = _fnmApplicationPath + _fnmApplicationExe;
+    HMODULE pEXE = GetModuleHandleA(fnmEXE);
+
+    if (pEXE != NULL) {
+      // Get API pointer from the executable module
+      void *pPointerToAPI = GetProcAddress(pEXE, "_pPatchAPI");
+
+      if (pPointerToAPI != NULL) {
+        _pPatchAPI = *(CPatchAPI **)pPointerToAPI;
+      }
+    }
+
+    return (_pPatchAPI != NULL);
+  };
+#endif
 
 // Get Game API module
 inline CGameAPI *GetGameAPI(void) {
