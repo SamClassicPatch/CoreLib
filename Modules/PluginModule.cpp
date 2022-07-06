@@ -94,45 +94,19 @@ static HINSTANCE LoadLibrary_t(const char *strFileName)
 // Read from stream
 void CPluginModule::Read_t(CTStream *istrFile)
 {
-  // Read the dll filename and class name from the stream
-  CTFileName fnmDLL;
-  CTString strOnStartupFunc;
-  CTString strOnShutdownFunc;
-
-  fnmDLL.ReadFromText_t(*istrFile, "Package: ");
-  strOnStartupFunc.ReadFromText_t(*istrFile, "StartupFunc: ");
-  strOnShutdownFunc.ReadFromText_t(*istrFile, "ShutdownFunc: ");
-
-  // create name of dll
-  #ifndef NDEBUG
-    fnmDLL = _fnmApplicationExe.FileDir() + fnmDLL.FileName() + /*_strModExt+*/"D" + fnmDLL.FileExt();
-  #else
-    fnmDLL = _fnmApplicationExe.FileDir() + fnmDLL.FileName() + /*_strModExt+*/fnmDLL.FileExt();
-  #endif
-
-  CTFileName fnmExpanded;
-  ExpandFilePath(EFP_READ | EFP_NOZIPS, fnmDLL, fnmExpanded);
-
-  ser_FileName = fnmExpanded;
+  // [Cecil] Load library from file
+  CTFileName fnmDLL = istrFile->GetDescription();
+  ExpandFilePath(EFP_READ | EFP_NOZIPS, fnmDLL, fnmDLL);
 
   // Load dll
-  _hiLibrary = LoadLibrary_t(fnmExpanded);
+  _hiLibrary = LoadLibrary_t(fnmDLL);
 
-  if (strOnShutdownFunc != "") {
-    pOnShutdownFunc = (void(*)(void))GetProcAddress(GetHandle(), (const char*)strOnShutdownFunc);
+  // [Cecil] Get startup and shutdown methods
+  pOnStartupFunc  = (void (*)(void))GetProcAddress(GetHandle(), "Module_Startup");
+  pOnShutdownFunc = (void (*)(void))GetProcAddress(GetHandle(), "Module_Shutdown");
 
-    if (pOnShutdownFunc == NULL) {
-      ThrowF_t("Cannot find symbol '%s' within '%s'", strOnStartupFunc, fnmDLL.str_String);
-    }
-  }
-
-  if (strOnStartupFunc != "") {
-    pOnStartupFunc = (void(*)(void))GetProcAddress(GetHandle(), (const char*)strOnStartupFunc);
-
-    if (pOnStartupFunc == NULL) {
-      ThrowF_t("Cannon find symbol '%s' within '%s'", strOnStartupFunc, fnmDLL.str_String);
-    }
-
+  // [Cecil] Call startup method if it exists
+  if (pOnStartupFunc != NULL) {
     pOnStartupFunc();
   }
 }
