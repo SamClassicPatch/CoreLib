@@ -36,24 +36,24 @@ static void ListFuncPatches(void) {
 static void EnableFuncPatch(INDEX iPatch) {
   iPatch = Clamp(iPatch, (INDEX)0, INDEX(_pPatchAPI->aPatches.Count() - 1));
 
-  SFuncPatch &fpPatch = _pPatchAPI->aPatches[iPatch];
-  fpPatch.pPatch->set_patch();
+  const CTString &strPatch = _pPatchAPI->aPatches[iPatch].strName;
+  BOOL bPatched = _pPatchAPI->EnablePatch(iPatch);
 
-  if (fpPatch.pPatch->ok()) {
-    CPrintF("Successfully set '%s' function patch!\n", fpPatch.strName);
+  if (bPatched) {
+    CPrintF("Successfully set '%s' function patch!\n", strPatch);
   } else {
-    CPrintF("Cannot set '%s' function patch!\n", fpPatch.strName);
+    CPrintF("Cannot set '%s' function patch!\n", strPatch);
   }
 };
 
 // Disable specific function patch
 static void DisableFuncPatch(INDEX iPatch) {
   iPatch = Clamp(iPatch, (INDEX)0, INDEX(_pPatchAPI->aPatches.Count() - 1));
-  
-  SFuncPatch &fpPatch = _pPatchAPI->aPatches[iPatch];
-  fpPatch.pPatch->remove_patch();
 
-  CPrintF("Successfully removed '%s' function patch!\n", fpPatch.strName);
+  const CTString &strPatch = _pPatchAPI->aPatches[iPatch].strName;
+  _pPatchAPI->DisablePatch(iPatch);
+
+  CPrintF("Successfully removed '%s' function patch!\n", strPatch);
 };
 
 // Constructor
@@ -96,6 +96,20 @@ CPatchAPI::CPatchAPI() {
   _pShell->DeclareSymbol("void ListPatches(void);",   &ListFuncPatches);
   _pShell->DeclareSymbol("void EnablePatch(INDEX);",  &EnableFuncPatch);
   _pShell->DeclareSymbol("void DisablePatch(INDEX);", &DisableFuncPatch);
+};
+
+// Enable specific function patch
+BOOL CPatchAPI::EnablePatch(INDEX iPatch) {
+  SFuncPatch &fpPatch = _pPatchAPI->aPatches[iPatch];
+  fpPatch.pPatch->set_patch();
+
+  return fpPatch.pPatch->ok();
+};
+
+// Disable specific function patch
+void CPatchAPI::DisablePatch(INDEX iPatch) {
+  SFuncPatch &fpPatch = _pPatchAPI->aPatches[iPatch];
+  fpPatch.pPatch->remove_patch();
 };
 
 // Obtain pointer to a plugin module

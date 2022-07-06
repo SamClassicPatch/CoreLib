@@ -87,6 +87,12 @@ class CPatchAPI {
     // Constructor
     CPatchAPI();
 
+    // Enable specific function patch
+    virtual BOOL EnablePatch(INDEX iPatch);
+
+    // Disable specific function patch
+    virtual void DisablePatch(INDEX iPatch);
+
     // Obtain pointer to a plugin module
     virtual CPluginModule *ObtainPlugin_t(const CTFileName &fnmModule);
 
