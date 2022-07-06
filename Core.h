@@ -47,6 +47,7 @@ extern CTString sam_strGameName;
 #include "API/PatchAPI.h"
 #include "FuncPatching.h"
 #include "Query/QueryMgr.h"
+#include "Modules/PluginStock.h"
 
 // Initialize Core module
 void CECIL_InitCore(void);

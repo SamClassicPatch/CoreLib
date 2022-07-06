@@ -70,6 +70,9 @@ CPatchAPI::CPatchAPI() {
 
   strVersion = "1.1.2";
 
+  // Create stock of plugin modules
+  pPluginStock = new CStock_CPluginModule;
+
   // Session properties game modes used by the patch
   sp_aiGameModes.New(2);
   sp_aiGameModes[0] = -1; // Flyover
@@ -93,4 +96,10 @@ CPatchAPI::CPatchAPI() {
   _pShell->DeclareSymbol("void ListPatches(void);",   &ListFuncPatches);
   _pShell->DeclareSymbol("void EnablePatch(INDEX);",  &EnableFuncPatch);
   _pShell->DeclareSymbol("void DisablePatch(INDEX);", &DisableFuncPatch);
+};
+
+// Obtain pointer to a plugin module
+CPluginModule *CPatchAPI::ObtainPlugin_t(const CTFileName &fnmModule)
+{
+  return pPluginStock->Obtain_t(fnmModule);
 };
