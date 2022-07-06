@@ -54,3 +54,6 @@ void CECIL_InitCore(void);
 
 // Disable GameSpy usage
 void CECIL_DisableGameSpy(void);
+
+// Load Game library as a plugin
+void CECIL_LoadGameLib(void);

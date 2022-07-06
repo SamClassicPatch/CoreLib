@@ -88,3 +88,43 @@ void CECIL_DisableGameSpy(void) {
     bDisabled = TRUE;
   }
 };
+
+// Load Game library as a plugin
+void CECIL_LoadGameLib(void) {
+  // Already loaded
+  if (_pGame != NULL) return;
+
+  try {
+    // Construct Game library name for different games
+    CTString strGameLib = _fnmApplicationExe.FileDir() + "Game";
+
+    // Append mod extension for TSE
+    #ifndef SE1_TFE
+      strGameLib += _strModExt;
+    #endif
+
+    // Debug library
+    #ifdef _DEBUG
+      strGameLib += "D";
+    #endif
+
+    // Library extension
+    strGameLib += ".dll";
+
+    // Obtain Game library
+    CPluginModule *pGameLib = _pPatchAPI->ObtainPlugin_t(strGameLib);
+    CPrintF(TRANS("Loading game library '%s'...\n"), pGameLib->GetName());
+
+    // Create Game class
+    CGame *(*pGameCreateFunc)(void) = NULL;
+    pGameLib->GetSymbol_t(&pGameCreateFunc, "GAME_Create");
+
+    _pGame = pGameCreateFunc();
+
+  } catch (char *strError) {
+    FatalError("%s", strError);
+  }
+
+  // Initialize Game
+  _pGame->Initialize(CTString("Data\\SeriousSam.gms"));
+};
