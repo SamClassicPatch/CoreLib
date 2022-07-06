@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="API\GameAPI.h" />
     <ClInclude Include="API\PatchAPI.h" />
     <ClInclude Include="Core.h" />
     <ClInclude Include="FuncPatching.h" />
@@ -33,6 +34,7 @@
     <ClInclude Include="StdH.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="API\GameAPI.cpp" />
     <ClCompile Include="API\PatchAPI.cpp" />
     <ClCompile Include="Core.cpp" />
     <ClCompile Include="EnginePatches\MasterServerPatch.cpp" />

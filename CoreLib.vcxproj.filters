@@ -87,6 +87,9 @@
     <ClInclude Include="Modules\PluginStock.h">
       <Filter>Header Files\Modules headers</Filter>
     </ClInclude>
+    <ClInclude Include="API\GameAPI.h">
+      <Filter>Header Files\API headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="StdH.cpp">
@@ -130,6 +133,9 @@
     </ClCompile>
     <ClCompile Include="Modules\PluginStock.cpp">
       <Filter>Source Files\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="API\GameAPI.cpp">
+      <Filter>Source Files\API</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

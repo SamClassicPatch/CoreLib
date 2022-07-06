@@ -64,7 +64,7 @@ void CGameAgentQuery::ServerParsePacket(INDEX iLength)
         _getCurrentGameTypeName(),
         _SE_VER_STRING,
         sam_strGameName,
-        _pPatchAPI->GetSessionName());
+        GetGameAPI()->GetSessionName());
       _sendPacketTo(strPacket, &_sinFrom);
       break;
     }
