@@ -52,6 +52,14 @@ class CGameAPI {
     CStaticArray<INDEX> sp_aiGameModes; // Game mode indices
     CStaticArray<Difficulty> sp_aGameDifficulties; // Game difficulties
 
+    // Field offsets within CLocalPlayer
+    struct LocalPlayerOffsets {
+      ULONG ctSize; // sizeof(CLocalPlayer)
+
+      SLONG slActive; // lp_bActive
+      SLONG slPlayer; // lp_iPlayer
+    } lpOffsets;
+
     // Pointers to CGame fields
     INDEX    *piConsoleState;  // gm_csConsoleState
     INDEX    *piComputerState; // gm_csComputerState
@@ -59,6 +67,14 @@ class CGameAPI {
     BOOL     *pbFirstLoading;  // gm_bFirstLoading
     BOOL     *pbMenuOn;        // gm_bMenuOn
     BOOL     *pbGameOn;        // gm_bGameOn
+
+    CTString **pastrAxisNames;         // gm_astrAxisNames
+    INDEX    *piSplitScreenMenuCfg;    // gm_MenuSplitScreenCfg
+    INDEX    *piSplitScreenStartCfg;   // gm_StartSplitScreenCfg
+    INDEX    *piSplitScreenCurrentCfg; // gm_CurrentSplitScreenCfg
+    INDEX    **paiMenuLocalPlayers;    // gm_aiMenuLocalPlayers
+    INDEX    **paiStartLocalPlayers;   // gm_aiStartLocalPlayers
+    UBYTE    **paLocalPlayers;         // gm_lpLocalPlayers
 
     CTString *pstrCustomLevel; // gam_strCustomLevel
     CTString *pstrSessionName; // gam_strSessionName

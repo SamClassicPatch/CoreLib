@@ -34,12 +34,24 @@ CGameAPI::CGameAPI() {
 
 // Hook default fields from CGame
 void CGameAPI::HookFields(void) {
+  lpOffsets.ctSize = sizeof(CLocalPlayer);
+  lpOffsets.slActive = offsetof(CLocalPlayer, lp_bActive);
+  lpOffsets.slPlayer = offsetof(CLocalPlayer, lp_iPlayer);
+
   piConsoleState  = (INDEX *)&_pGame->gm_csConsoleState;
   piComputerState = (INDEX *)&_pGame->gm_csComputerState;
   pstrNetProvider = &_pGame->gm_strNetworkProvider;
   pbFirstLoading  = &_pGame->gm_bFirstLoading;
   pbMenuOn        = &_pGame->gm_bMenuOn;
   pbGameOn        = &_pGame->gm_bGameOn;
+
+  pastrAxisNames          = (CTString **)&_pGame->gm_astrAxisNames;
+  piSplitScreenMenuCfg    = (INDEX *)&_pGame->gm_MenuSplitScreenCfg;
+  piSplitScreenStartCfg   = (INDEX *)&_pGame->gm_StartSplitScreenCfg;
+  piSplitScreenCurrentCfg = (INDEX *)&_pGame->gm_CurrentSplitScreenCfg;
+  paiMenuLocalPlayers     = (INDEX **)&_pGame->gm_aiMenuLocalPlayers;
+  paiStartLocalPlayers    = (INDEX **)&_pGame->gm_aiStartLocalPlayers;
+  paLocalPlayers          = (UBYTE **)&_pGame->gm_lpLocalPlayers;
 
   pstrCustomLevel = &_pGame->gam_strCustomLevel;
   pstrSessionName = &_pGame->gam_strSessionName;
