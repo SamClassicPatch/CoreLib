@@ -65,6 +65,22 @@ class CPluginModule : public CSerial
     {
       return FALSE;
     };
+
+    // [Cecil] Get specific symbol from the module (must be a pointer to the pointer variable)
+    template<class Type> void GetSymbol_t(Type *ppSymbol, const char *strSymbolName)
+    {
+      // No module
+      if (GetHandle() == NULL) {
+        ThrowF_t(TRANS("Plugin module has not been loaded yet!"));
+      }
+
+      *ppSymbol = (Type)GetProcAddress(GetHandle(), strSymbolName);
+
+      // No symbol
+      if (*ppSymbol == NULL) {
+        ThrowF_t(TRANS("Cannot find '%s' symbol in '%s'!"), strSymbolName, GetName());
+      }
+    };
 };
 
 #endif  /* include-once check. */
