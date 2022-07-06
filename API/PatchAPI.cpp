@@ -28,7 +28,13 @@ static void ListFuncPatches(void) {
   CPrintF("Available function patches:\n");
   
   for (INDEX iPatch = 0; iPatch < _pPatchAPI->aPatches.Count(); iPatch++) {
-    CPrintF(" %d - %s\n", iPatch, _pPatchAPI->aPatches[iPatch].strName);
+    const SFuncPatch &fpPatch = _pPatchAPI->aPatches[iPatch];
+
+    // Mark as enabled or not and indent the index
+    const char *strPatched = (fpPatch.pPatch->patched() ? " [^c00ff00ON^r]" : "[^cff0000OFF^r]");
+    const INDEX ctIdent = ClampDn(2 - INDEX(log10((FLOAT)iPatch)), (INDEX)0);
+
+    CPrintF(" %s %*s%d - %s\n", strPatched, ctIdent, "", iPatch, fpPatch.strName);
   }
 };
 
