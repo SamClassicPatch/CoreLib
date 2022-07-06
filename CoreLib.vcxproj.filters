@@ -43,6 +43,12 @@
     <Filter Include="Source Files\Objects">
       <UniqueIdentifier>{3e6a2cee-834b-40f2-b6c4-a13e8e864655}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Modules">
+      <UniqueIdentifier>{12f6770e-7303-4988-ae7b-5ffef1eb5b0b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Modules headers">
+      <UniqueIdentifier>{2434eee2-671f-4922-9585-a78765297f7b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game\Game.h">
@@ -74,6 +80,9 @@
     </ClInclude>
     <ClInclude Include="Objects\Node.h">
       <Filter>Header Files\Objects headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Modules\PluginModule.h">
+      <Filter>Header Files\Modules headers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -112,6 +121,9 @@
     </ClCompile>
     <ClCompile Include="Objects\Node.cpp">
       <Filter>Source Files\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="Modules\PluginModule.cpp">
+      <Filter>Source Files\Modules</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
