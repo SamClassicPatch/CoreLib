@@ -79,6 +79,8 @@ class CGameAPI {
     CTString *pstrCustomLevel; // gam_strCustomLevel
     CTString *pstrSessionName; // gam_strSessionName
     CTString *pstrJoinAddress; // gam_strJoinAddress
+
+    INDEX ctLocalPlayers; // Amount of available local players (for arrays)
     
   // Only virtual and defined methods can be used outside the Classics patch
   public:
@@ -213,6 +215,11 @@ class CGameAPI {
     // Set current split screen configuration
     void SetCurrentSplitCfg(INDEX iConfiguration) {
       *piSplitScreenCurrentCfg = iConfiguration;
+    };
+
+    // Get amount of available local players
+    INDEX GetLocalPlayerCount(void) {
+      return ctLocalPlayers;
     };
 
   // CGame session property wrappers

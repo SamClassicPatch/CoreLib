@@ -56,4 +56,6 @@ void CGameAPI::HookFields(void) {
   pstrCustomLevel = &_pGame->gam_strCustomLevel;
   pstrSessionName = &_pGame->gam_strSessionName;
   pstrJoinAddress = &_pGame->gam_strJoinAddress;
+
+  ctLocalPlayers = 4;
 };
