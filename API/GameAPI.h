@@ -180,6 +180,41 @@ class CGameAPI {
       *pbGameOn = bState;
     };
 
+    // Get name of some axis
+    const CTString &GetAxisName(INDEX iAxis) {
+      return astrAxisNames[iAxis];
+    };
+
+    // Get menu split screen configuration
+    INDEX GetMenuSplitCfg(void) {
+      return *piSplitScreenMenuCfg;
+    };
+
+    // Set menu split screen configuration
+    void SetMenuSplitCfg(INDEX iConfiguration) {
+      *piSplitScreenMenuCfg = iConfiguration;
+    };
+
+    // Get start split screen configuration
+    INDEX GetStartSplitCfg(void) {
+      return *piSplitScreenStartCfg;
+    };
+
+    // Set start split screen configuration
+    void SetStartSplitCfg(INDEX iConfiguration) {
+      *piSplitScreenStartCfg = iConfiguration;
+    };
+
+    // Get current split screen configuration
+    INDEX GetCurrentSplitCfg(void) {
+      return *piSplitScreenCurrentCfg;
+    };
+
+    // Set current split screen configuration
+    void SetCurrentSplitCfg(INDEX iConfiguration) {
+      *piSplitScreenCurrentCfg = iConfiguration;
+    };
+
   // CGame session property wrappers
   public:
     // Get custom level filename
