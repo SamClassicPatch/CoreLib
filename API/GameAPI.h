@@ -68,7 +68,13 @@ class CGameAPI {
     BOOL     *pbMenuOn;        // gm_bMenuOn
     BOOL     *pbGameOn;        // gm_bGameOn
 
-    CTString *astrAxisNames;           // gm_astrAxisNames[0]
+    CTString         *astrAxisNames;      // gm_astrAxisNames[0]
+    CHighScoreEntry  *ahseHighScores;     // gm_ahseHighScores[0]
+    INDEX            *piLastSetHighScore; // gm_iLastSetHighScore
+    CPlayerCharacter *apcPlayers;         // gm_apcPlayers[0]
+    CControls        *pctrlControlsExtra; // gm_ctrlControlsExtra
+    INDEX            *piSinglePlayer;     // gm_iSinglePlayer
+
     INDEX    *piSplitScreenMenuCfg;    // gm_MenuSplitScreenCfg
     INDEX    *piSplitScreenStartCfg;   // gm_StartSplitScreenCfg
     INDEX    *piSplitScreenCurrentCfg; // gm_CurrentSplitScreenCfg

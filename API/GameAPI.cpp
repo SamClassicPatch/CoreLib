@@ -45,7 +45,13 @@ void CGameAPI::HookFields(void) {
   pbMenuOn        = &_pGame->gm_bMenuOn;
   pbGameOn        = &_pGame->gm_bGameOn;
 
-  astrAxisNames           = &_pGame->gm_astrAxisNames[0];
+  astrAxisNames      = &_pGame->gm_astrAxisNames[0];
+  ahseHighScores     = &_pGame->gm_ahseHighScores[0];
+  piLastSetHighScore = &_pGame->gm_iLastSetHighScore;
+  apcPlayers         = &_pGame->gm_apcPlayers[0];
+  pctrlControlsExtra = &_pGame->gm_ctrlControlsExtra;
+  piSinglePlayer     = &_pGame->gm_iSinglePlayer;
+
   piSplitScreenMenuCfg    = (INDEX *)&_pGame->gm_MenuSplitScreenCfg;
   piSplitScreenStartCfg   = (INDEX *)&_pGame->gm_StartSplitScreenCfg;
   piSplitScreenCurrentCfg = (INDEX *)&_pGame->gm_CurrentSplitScreenCfg;
