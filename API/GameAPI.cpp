@@ -38,12 +38,16 @@ void CGameAPI::HookFields(void) {
   lpOffsets.slActive = offsetof(CLocalPlayer, lp_bActive);
   lpOffsets.slPlayer = offsetof(CLocalPlayer, lp_iPlayer);
 
+  ctLocalPlayers = 4;
+  ctPlayerProfiles = 8;
+
+  // CGame fields
   piConsoleState  = (INDEX *)&_pGame->gm_csConsoleState;
   piComputerState = (INDEX *)&_pGame->gm_csComputerState;
-  pstrNetProvider = &_pGame->gm_strNetworkProvider;
-  pbFirstLoading  = &_pGame->gm_bFirstLoading;
-  pbMenuOn        = &_pGame->gm_bMenuOn;
-  pbGameOn        = &_pGame->gm_bGameOn;
+
+  pstrCustomLevel = &_pGame->gam_strCustomLevel;
+  pstrSessionName = &_pGame->gam_strSessionName;
+  pstrJoinAddress = &_pGame->gam_strJoinAddress;
 
   astrAxisNames      = &_pGame->gm_astrAxisNames[0];
   ahseHighScores     = &_pGame->gm_ahseHighScores[0];
@@ -52,17 +56,17 @@ void CGameAPI::HookFields(void) {
   pctrlControlsExtra = &_pGame->gm_ctrlControlsExtra;
   piSinglePlayer     = &_pGame->gm_iSinglePlayer;
 
-  piSplitScreenMenuCfg    = (INDEX *)&_pGame->gm_MenuSplitScreenCfg;
-  piSplitScreenStartCfg   = (INDEX *)&_pGame->gm_StartSplitScreenCfg;
-  piSplitScreenCurrentCfg = (INDEX *)&_pGame->gm_CurrentSplitScreenCfg;
-  aiMenuLocalPlayers      = &_pGame->gm_aiMenuLocalPlayers[0];
-  aiStartLocalPlayers     = &_pGame->gm_aiStartLocalPlayers[0];
-  aLocalPlayers           = (UBYTE *)&_pGame->gm_lpLocalPlayers[0];
+  piMenuSplitCfg    = (INDEX *)&_pGame->gm_MenuSplitScreenCfg;
+  piStartSplitCfg   = (INDEX *)&_pGame->gm_StartSplitScreenCfg;
+  piCurrentSplitCfg = (INDEX *)&_pGame->gm_CurrentSplitScreenCfg;
 
-  pstrCustomLevel = &_pGame->gam_strCustomLevel;
-  pstrSessionName = &_pGame->gam_strSessionName;
-  pstrJoinAddress = &_pGame->gam_strJoinAddress;
+  pbGameOn       = &_pGame->gm_bGameOn;
+  pbMenuOn       = &_pGame->gm_bMenuOn;
+  pbFirstLoading = &_pGame->gm_bFirstLoading;
 
-  ctLocalPlayers = 4;
-  ctPlayerProfiles = 8;
+  pstrNetProvider = &_pGame->gm_strNetworkProvider;
+
+  aiMenuLocalPlayers  = &_pGame->gm_aiMenuLocalPlayers[0];
+  aiStartLocalPlayers = &_pGame->gm_aiStartLocalPlayers[0];
+  aLocalPlayers       = (UBYTE *)&_pGame->gm_lpLocalPlayers[0];
 };

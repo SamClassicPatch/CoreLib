@@ -60,13 +60,17 @@ class CGameAPI {
       SLONG slPlayer; // lp_iPlayer
     } lpOffsets;
 
+    // Amounts of available local players and player profiles for iteration
+    INDEX ctLocalPlayers;   // 4
+    INDEX ctPlayerProfiles; // 8
+
     // Pointers to CGame fields
     INDEX    *piConsoleState;  // gm_csConsoleState
     INDEX    *piComputerState; // gm_csComputerState
-    CTString *pstrNetProvider; // gm_strNetworkProvider
-    BOOL     *pbFirstLoading;  // gm_bFirstLoading
-    BOOL     *pbMenuOn;        // gm_bMenuOn
-    BOOL     *pbGameOn;        // gm_bGameOn
+
+    CTString *pstrCustomLevel; // gam_strCustomLevel
+    CTString *pstrSessionName; // gam_strSessionName
+    CTString *pstrJoinAddress; // gam_strJoinAddress
 
     CTString         *astrAxisNames;      // gm_astrAxisNames[0]
     CHighScoreEntry  *ahseHighScores;     // gm_ahseHighScores[0]
@@ -75,19 +79,19 @@ class CGameAPI {
     CControls        *pctrlControlsExtra; // gm_ctrlControlsExtra
     INDEX            *piSinglePlayer;     // gm_iSinglePlayer
 
-    INDEX    *piSplitScreenMenuCfg;    // gm_MenuSplitScreenCfg
-    INDEX    *piSplitScreenStartCfg;   // gm_StartSplitScreenCfg
-    INDEX    *piSplitScreenCurrentCfg; // gm_CurrentSplitScreenCfg
-    INDEX    *aiMenuLocalPlayers;      // gm_aiMenuLocalPlayers[0]
-    INDEX    *aiStartLocalPlayers;     // gm_aiStartLocalPlayers[0]
-    UBYTE    *aLocalPlayers;           // gm_lpLocalPlayers[0]
+    INDEX    *piMenuSplitCfg;      // gm_MenuSplitScreenCfg
+    INDEX    *piStartSplitCfg;     // gm_StartSplitScreenCfg
+    INDEX    *piCurrentSplitCfg;   // gm_CurrentSplitScreenCfg
 
-    CTString *pstrCustomLevel; // gam_strCustomLevel
-    CTString *pstrSessionName; // gam_strSessionName
-    CTString *pstrJoinAddress; // gam_strJoinAddress
+    BOOL     *pbGameOn;            // gm_bGameOn
+    BOOL     *pbMenuOn;            // gm_bMenuOn
+    BOOL     *pbFirstLoading;      // gm_bFirstLoading
 
-    INDEX ctLocalPlayers; // Amount of available local players (for arrays)
-    INDEX ctPlayerProfiles; // Amount of available player profiles (for arrays)
+    CTString *pstrNetProvider;     // gm_strNetworkProvider
+
+    INDEX    *aiMenuLocalPlayers;  // gm_aiMenuLocalPlayers[0]
+    INDEX    *aiStartLocalPlayers; // gm_aiStartLocalPlayers[0]
+    UBYTE    *aLocalPlayers;       // gm_lpLocalPlayers[0]
     
   // Only virtual and defined methods can be used outside the Classics patch
   public:
@@ -112,20 +116,14 @@ class CGameAPI {
       return sp_aGameDifficulties[i].strName;
     };
 
-    // Check if local player is active
-    BOOL IsLocalPlayerActive(INDEX iPlayer) {
-      UBYTE *pLocalPlayer = aLocalPlayers + (lpOffsets.ctSize * iPlayer);
-      BOOL *pbActive = (BOOL *)(pLocalPlayer + lpOffsets.slActive);
-
-      return *pbActive;
+    // Get amount of available local players
+    INDEX GetLocalPlayerCount(void) {
+      return ctLocalPlayers;
     };
 
-    // Get index of a local player
-    INDEX GetLocalPlayerIndex(INDEX iPlayer) {
-      UBYTE *pLocalPlayer = aLocalPlayers + (lpOffsets.ctSize * iPlayer);
-      INDEX *piPlayer = (INDEX *)(pLocalPlayer + lpOffsets.slPlayer);
-
-      return *piPlayer;
+    // Get amount of available player profiles
+    INDEX GetProfileCount(void) {
+      return ctPlayerProfiles;
     };
 
   // CGame field wrappers
@@ -149,44 +147,20 @@ class CGameAPI {
     void SetCompState(INDEX iState) {
       *piComputerState = iState;
     };
-
-    // Set network provider
-    void SetNetworkProvider(ENetworkProvider eProvider) {
-      static const char *astrProviders[3] = {
-        "Local", "TCP/IP Server", "TCP/IP Client",
-      };
-
-      *pstrNetProvider = astrProviders[eProvider];
+    
+    // Get custom level filename
+    CTString &GetCustomLevel(void) {
+      return *pstrCustomLevel;
     };
-
-    // Get first loading state
-    BOOL GetFirstLoading(void) {
-      return *pbFirstLoading;
+    
+    // Get session name
+    CTString &GetSessionName(void) {
+      return *pstrSessionName;
     };
-
-    // Set if loading for the first time
-    void SetFirstLoading(BOOL bState) {
-      *pbFirstLoading = bState;
-    };
-
-    // Get menu state
-    BOOL GetMenuState(void) {
-      return *pbMenuOn;
-    };
-
-    // Set menu state
-    void SetMenuState(BOOL bState) {
-      *pbMenuOn = bState;
-    };
-
-    // Get game state
-    BOOL GetGameState(void) {
-      return *pbGameOn;
-    };
-
-    // Set game state
-    void SetGameState(BOOL bState) {
-      *pbGameOn = bState;
+    
+    // Get address for joining
+    CTString &GetJoinAddress(void) {
+      return *pstrJoinAddress;
     };
 
     // Get name of some axis
@@ -231,32 +205,71 @@ class CGameAPI {
 
     // Get menu split screen configuration
     INDEX GetMenuSplitCfg(void) {
-      return *piSplitScreenMenuCfg;
+      return *piMenuSplitCfg;
     };
 
     // Set menu split screen configuration
     void SetMenuSplitCfg(INDEX iConfiguration) {
-      *piSplitScreenMenuCfg = iConfiguration;
+      *piMenuSplitCfg = iConfiguration;
     };
 
     // Get start split screen configuration
     INDEX GetStartSplitCfg(void) {
-      return *piSplitScreenStartCfg;
+      return *piStartSplitCfg;
     };
 
     // Set start split screen configuration
     void SetStartSplitCfg(INDEX iConfiguration) {
-      *piSplitScreenStartCfg = iConfiguration;
+      *piStartSplitCfg = iConfiguration;
     };
 
     // Get current split screen configuration
     INDEX GetCurrentSplitCfg(void) {
-      return *piSplitScreenCurrentCfg;
+      return *piCurrentSplitCfg;
     };
 
     // Set current split screen configuration
     void SetCurrentSplitCfg(INDEX iConfiguration) {
-      *piSplitScreenCurrentCfg = iConfiguration;
+      *piCurrentSplitCfg = iConfiguration;
+    };
+
+    // Get game state
+    BOOL GetGameState(void) {
+      return *pbGameOn;
+    };
+
+    // Set game state
+    void SetGameState(BOOL bState) {
+      *pbGameOn = bState;
+    };
+
+    // Get menu state
+    BOOL GetMenuState(void) {
+      return *pbMenuOn;
+    };
+
+    // Set menu state
+    void SetMenuState(BOOL bState) {
+      *pbMenuOn = bState;
+    };
+
+    // Get first loading state
+    BOOL GetFirstLoading(void) {
+      return *pbFirstLoading;
+    };
+
+    // Set if loading for the first time
+    void SetFirstLoading(BOOL bState) {
+      *pbFirstLoading = bState;
+    };
+
+    // Set network provider
+    void SetNetworkProvider(ENetworkProvider eProvider) {
+      static const char *astrProviders[3] = {
+        "Local", "TCP/IP Server", "TCP/IP Client",
+      };
+
+      *pstrNetProvider = astrProviders[eProvider];
     };
 
     // Get menu player index
@@ -279,31 +292,20 @@ class CGameAPI {
       aiStartLocalPlayers[i] = iPlayer;
     };
 
-    // Get amount of available local players
-    INDEX GetLocalPlayerCount(void) {
-      return ctLocalPlayers;
+    // Check if local player is active
+    BOOL IsLocalPlayerActive(INDEX iPlayer) {
+      UBYTE *pLocalPlayer = aLocalPlayers + (lpOffsets.ctSize * iPlayer);
+      BOOL *pbActive = (BOOL *)(pLocalPlayer + lpOffsets.slActive);
+
+      return *pbActive;
     };
 
-    // Get amount of available player profiles
-    INDEX GetProfileCount(void) {
-      return ctPlayerProfiles;
-    };
+    // Get index of a local player
+    INDEX GetLocalPlayerIndex(INDEX iPlayer) {
+      UBYTE *pLocalPlayer = aLocalPlayers + (lpOffsets.ctSize * iPlayer);
+      INDEX *piPlayer = (INDEX *)(pLocalPlayer + lpOffsets.slPlayer);
 
-  // CGame session property wrappers
-  public:
-    // Get custom level filename
-    CTString &GetCustomLevel(void) {
-      return *pstrCustomLevel;
-    };
-    
-    // Get session name
-    CTString &GetSessionName(void) {
-      return *pstrSessionName;
-    };
-    
-    // Get address for joining
-    CTString &GetJoinAddress(void) {
-      return *pstrJoinAddress;
+      return *piPlayer;
     };
 };
 
