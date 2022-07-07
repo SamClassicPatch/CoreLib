@@ -94,6 +94,9 @@ class CPluginModule : public CSerial
         ThrowF_t(TRANS("Cannot find '%s' symbol in '%s'!"), strSymbolName, GetName());
       }
     };
+
+    // [Cecil] Reset function pointers
+    virtual void ResetMethods(void);
 };
 
 #endif  /* include-once check. */

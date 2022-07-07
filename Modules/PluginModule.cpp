@@ -18,12 +18,25 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "PluginModule.h"
 
+// [Cecil] Dummy methods
+static void DummyVoidMethod(void) { NOTHING; };
+static void DummyDrawMethod(CDrawPort *) { NOTHING; };
+
+// [Cecil] Reset function pointers
+void CPluginModule::ResetMethods(void) {
+  pOnStartupFunc = &DummyVoidMethod;
+  pOnShutdownFunc = &DummyVoidMethod;
+  pOnStepFunc = &DummyVoidMethod;
+  pOnDrawFunc = &DummyDrawMethod;
+};
+
 //! Constructor.
 CPluginModule::CPluginModule()
 {
   _hiLibrary = NULL;
-  pOnStartupFunc = NULL;
-  pOnShutdownFunc = NULL;
+
+  // [Cecil] Reset methods
+  ResetMethods();
 }
 
 //! Destructor
@@ -133,4 +146,7 @@ void CPluginModule::Clear(void)
 
     FreeLibrary(_hiLibrary);
   }
+
+  // [Cecil] Reset methods
+  ResetMethods();
 }
