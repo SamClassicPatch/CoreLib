@@ -20,6 +20,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #pragma once
 #endif
 
+// Declare certain classes | Which files to include to define classes
+class CHighScoreEntry; // #include <Game/Game.h>
+class CControls;       // #include <Game/Game.h>
+
 // API class for the Game library
 class CGameAPI {
   public:
@@ -168,6 +172,11 @@ class CGameAPI {
       return astrAxisNames[iAxis];
     };
 
+    // Set name of some axis
+    virtual void SetAxisName(INDEX iAxis, const CTString &strAxis) {
+      astrAxisNames[iAxis] = strAxis;
+    };
+
     // Get one of the high score entries
     virtual CHighScoreEntry *GetHighScore(INDEX iEntry) {
       return &ahseHighScores[iEntry];
@@ -176,6 +185,11 @@ class CGameAPI {
     // Get index of the last set high score
     virtual INDEX GetLastSetHighScore(void) {
       return *piLastSetHighScore;
+    };
+
+    // Set index of the last set high score
+    virtual void SetLastSetHighScore(INDEX iHighScore) {
+      *piLastSetHighScore = iHighScore;
     };
 
     // Get player character for some profile
