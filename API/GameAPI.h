@@ -81,6 +81,7 @@ class CGameAPI {
     CTString *pstrJoinAddress; // gam_strJoinAddress
 
     INDEX ctLocalPlayers; // Amount of available local players (for arrays)
+    INDEX ctPlayerProfiles; // Amount of available player profiles (for arrays)
     
   // Only virtual and defined methods can be used outside the Classics patch
   public:
@@ -240,6 +241,11 @@ class CGameAPI {
     // Get amount of available local players
     INDEX GetLocalPlayerCount(void) {
       return ctLocalPlayers;
+    };
+
+    // Get amount of available player profiles
+    INDEX GetProfileCount(void) {
+      return ctPlayerProfiles;
     };
 
   // CGame session property wrappers

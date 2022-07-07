@@ -58,4 +58,5 @@ void CGameAPI::HookFields(void) {
   pstrJoinAddress = &_pGame->gam_strJoinAddress;
 
   ctLocalPlayers = 4;
+  ctPlayerProfiles = 8;
 };
