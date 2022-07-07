@@ -109,8 +109,8 @@ void CPluginModule::LoadPlugin_t(const CTFileName &fnmDLL)
   _hiLibrary = LoadLibrary_t(fnmExpanded);
 
   // [Cecil] Get startup and shutdown methods
-  pOnStartupFunc  = (void (*)(void))GetProcAddress(GetHandle(), "Module_Startup");
-  pOnShutdownFunc = (void (*)(void))GetProcAddress(GetHandle(), "Module_Shutdown");
+  pOnStartupFunc  = (CVoidFunc)GetProcAddress(GetHandle(), "Module_Startup");
+  pOnShutdownFunc = (CVoidFunc)GetProcAddress(GetHandle(), "Module_Shutdown");
 
   // [Cecil] Call startup method if it exists
   if (pOnStartupFunc != NULL) {

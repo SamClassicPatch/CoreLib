@@ -28,11 +28,14 @@ class CPluginModule : public CSerial
     HINSTANCE _hiLibrary;
 
   public:
+    // [Cecil] Plugin method types
+    typedef void (*CVoidFunc)(void); // Simple method
+
     //! Pointer to initialization routines, called after LoadLibrary.
-    void (*pOnStartupFunc)(void);
+    CVoidFunc pOnStartupFunc;
     
     //! Pointer to deinit routines, called before FreeLibrary.
-    void (*pOnShutdownFunc)(void);
+    CVoidFunc pOnShutdownFunc;
 
   public:
     //! Constructor.
