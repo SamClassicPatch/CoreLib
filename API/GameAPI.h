@@ -217,6 +217,26 @@ class CGameAPI {
       *piSplitScreenCurrentCfg = iConfiguration;
     };
 
+    // Get menu player index
+    INDEX GetMenuPlayer(INDEX i) {
+      return aiMenuLocalPlayers[i];
+    };
+
+    // Set menu player index
+    void SetMenuPlayer(INDEX i, INDEX iPlayer) {
+      aiMenuLocalPlayers[i] = iPlayer;
+    };
+
+    // Get start player index
+    INDEX GetStartPlayer(INDEX i) {
+      return aiStartLocalPlayers[i];
+    };
+
+    // Set start player index
+    void SetStartPlayer(INDEX i, INDEX iPlayer) {
+      aiStartLocalPlayers[i] = iPlayer;
+    };
+
     // Get amount of available local players
     INDEX GetLocalPlayerCount(void) {
       return ctLocalPlayers;
