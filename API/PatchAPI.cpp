@@ -34,7 +34,7 @@ static void ListFuncPatches(void) {
     const char *strPatched = (fpPatch.pPatch->patched() ? " [^c00ff00ON^r]" : "[^cff0000OFF^r]");
     const INDEX ctIdent = ClampDn(2 - INDEX(log10((FLOAT)iPatch)), (INDEX)0);
 
-    CPrintF(" %s %*s%d - %s\n", strPatched, ctIdent, "", iPatch, fpPatch.strName);
+    CPrintF("%s %*s%d - %s\n", strPatched, ctIdent, "", iPatch, fpPatch.strName);
   }
 };
 
@@ -60,6 +60,25 @@ static void DisableFuncPatch(INDEX iPatch) {
   _pPatchAPI->DisablePatch(iPatch);
 
   CPrintF("Successfully removed '%s' function patch!\n", strPatch);
+};
+
+// List loaded plugin modules
+static void ListPlugins(void) {
+  if (_pPatchAPI->pPluginStock->GetTotalCount() == 0) {
+    CPrintF("No plugins have been loaded!\n");
+    return;
+  }
+
+  CPrintF("Loaded plugins:\n");
+  
+  for (INDEX iPlugin = 0; iPlugin < _pPatchAPI->pPluginStock->GetTotalCount(); iPlugin++) {
+    CPluginModule *pPlugin = _pPatchAPI->pPluginStock->st_ctObjects.Pointer(iPlugin);
+
+    // Indent the index
+    const INDEX ctIdent = ClampDn(2 - INDEX(log10((FLOAT)iPlugin)), (INDEX)0);
+
+    CPrintF("%*s%d - %s\n", ctIdent, "", iPlugin, pPlugin->GetName().str_String);
+  }
 };
 
 // Constructor
@@ -88,6 +107,9 @@ CPatchAPI::CPatchAPI() {
   _pShell->DeclareSymbol("void ListPatches(void);",   &ListFuncPatches);
   _pShell->DeclareSymbol("void EnablePatch(INDEX);",  &EnableFuncPatch);
   _pShell->DeclareSymbol("void DisablePatch(INDEX);", &DisableFuncPatch);
+
+  // List loaded plugin modules
+  _pShell->DeclareSymbol("user void ListPlugins(void);", &ListPlugins);
 };
 
 // Enable specific function patch
