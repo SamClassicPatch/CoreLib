@@ -70,3 +70,13 @@ void CGameAPI::HookFields(void) {
   aiStartLocalPlayers = &_pGame->gm_aiStartLocalPlayers[0];
   aLocalPlayers       = (UBYTE *)&_pGame->gm_lpLocalPlayers[0];
 };
+
+// Get one of the high score entries
+CHighScoreEntry *CGameAPI::GetHighScore(INDEX iEntry) const {
+  return &ahseHighScores[iEntry];
+};
+
+// Get actions of extra controls
+const CListHead &CGameAPI::GetControlsActions(void) const {
+  return GetControls()->ctrl_lhButtonActions;
+};

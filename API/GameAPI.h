@@ -193,9 +193,7 @@ class CGameAPI {
     };
 
     // Get one of the high score entries
-    virtual CHighScoreEntry *GetHighScore(INDEX iEntry) const {
-      return &ahseHighScores[iEntry];
-    };
+    virtual CHighScoreEntry *GetHighScore(INDEX iEntry) const;
 
     // Get index of the last set high score
     virtual INDEX GetLastSetHighScore(void) const {
@@ -218,9 +216,7 @@ class CGameAPI {
     };
 
     // Get actions of extra controls
-    virtual const CListHead &GetControlsActions(void) const {
-      return GetControls()->ctrl_lhButtonActions;
-    };
+    virtual const CListHead &GetControlsActions(void) const;
 
     // Get player index for singleplayer
     virtual INDEX GetPlayerForSP(void) const {
