@@ -103,6 +103,22 @@ class CGameAPI {
       return sp_aGameDifficulties[i].strName;
     };
 
+    // Check if local player is active
+    BOOL IsLocalPlayerActive(INDEX iPlayer) {
+      UBYTE *pLocalPlayer = aLocalPlayers + (lpOffsets.ctSize * iPlayer);
+      BOOL *pbActive = (BOOL *)(pLocalPlayer + lpOffsets.slActive);
+
+      return *pbActive;
+    };
+
+    // Get index of a local player
+    INDEX GetLocalPlayerIndex(INDEX iPlayer) {
+      UBYTE *pLocalPlayer = aLocalPlayers + (lpOffsets.ctSize * iPlayer);
+      INDEX *piPlayer = (INDEX *)(pLocalPlayer + lpOffsets.slPlayer);
+
+      return *piPlayer;
+    };
+
   // CGame field wrappers
   public:
     // Get console state
