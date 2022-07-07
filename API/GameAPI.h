@@ -194,6 +194,41 @@ class CGameAPI {
       return astrAxisNames[iAxis];
     };
 
+    // Get one of the high score entries
+    CHighScoreEntry *GetHighScore(INDEX iEntry) {
+      return &ahseHighScores[iEntry];
+    };
+
+    // Get index of the last set high score
+    INDEX GetLastSetHighScore(void) {
+      return *piLastSetHighScore;
+    };
+
+    // Get player character for some profile
+    CPlayerCharacter *GetPlayerCharacter(INDEX iPlayer) {
+      return &apcPlayers[iPlayer];
+    };
+
+    // Get extra controls
+    CControls *GetControls(void) {
+      return pctrlControlsExtra;
+    };
+
+    // Get actions of extra controls
+    const CListHead &GetControlsActions(void) {
+      return GetControls()->ctrl_lhButtonActions;
+    };
+
+    // Get player index for singleplayer
+    INDEX GetPlayerForSP(void) {
+      return *piSinglePlayer;
+    };
+
+    // Set player index for singleplayer
+    void SetPlayerForSP(INDEX iPlayer) {
+      *piSinglePlayer = iPlayer;
+    };
+
     // Get menu split screen configuration
     INDEX GetMenuSplitCfg(void) {
       return *piSplitScreenMenuCfg;
