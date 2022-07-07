@@ -57,3 +57,6 @@ void CECIL_DisableGameSpy(void);
 
 // Load Game library as a plugin
 void CECIL_LoadGameLib(void);
+
+// Load all user plugins
+void CECIL_LoadPlugins(void);
