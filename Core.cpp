@@ -132,21 +132,6 @@ void CECIL_LoadGameLib(void) {
   GetGameAPI()->HookFields();
 };
 
-// Load one plugin
-static BOOL LoadPlugin(const CTFileName &fnmPlugin) {
-  __try {
-    // Try to load the plugin
-    _pPatchAPI->ObtainPlugin_t(fnmPlugin);
-
-  } __except (EXCEPTION_EXECUTE_HANDLER) {
-    // Load failed
-    return FALSE;
-  }
-
-  // Successfully loaded
-  return TRUE;
-};
-
 // Load all user plugins
 void CECIL_LoadPlugins(void) {
   // List all library files
@@ -156,11 +141,12 @@ void CECIL_LoadPlugins(void) {
   // Load every plugin
   for (INDEX i = 0; i < afnmDir.Count(); i++)
   {
-    if (!LoadPlugin(afnmDir[i])) {
-      // Plugin initialization failed
-      CTString strError;
-      strError.PrintF(TRANS("Cannot initialize '%s' plugin: %s"), afnmDir[i].str_String, GetWindowsError(GetLastError()));
+    try {
+      // Try to load the plugin
+      _pPatchAPI->ObtainPlugin_t(afnmDir[i]);
 
+    } catch (char *strError) {
+      // Plugin initialization failed
       MessageBoxA(NULL, strError, TRANS("Warning"), MB_OK|MB_ICONEXCLAMATION|MB_SETFOREGROUND|MB_TASKMODAL);
     }
   }
