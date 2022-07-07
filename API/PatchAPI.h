@@ -72,6 +72,12 @@ class CPatchAPI {
 
     // Obtain pointer to a plugin module
     virtual CPluginModule *ObtainPlugin_t(const CTFileName &fnmModule);
+
+    // Called every simulation tick
+    virtual void OnTick(void);
+
+    // Called every render frame
+    virtual void OnFrame(CDrawPort *pdp);
 };
 
 // This variable can be used to access API of the EXE patch.

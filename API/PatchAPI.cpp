@@ -131,3 +131,13 @@ CPluginModule *CPatchAPI::ObtainPlugin_t(const CTFileName &fnmModule)
 {
   return pPluginStock->Obtain_t(fnmModule);
 };
+
+// Called every simulation tick
+void CPatchAPI::OnTick(void)
+{
+};
+
+// Called every render frame
+void CPatchAPI::OnFrame(CDrawPort *pdp)
+{
+};
