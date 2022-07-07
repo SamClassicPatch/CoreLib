@@ -49,6 +49,9 @@ class CPluginModule : public CSerial
     
     //! Write to stream.
     virtual void Write_t(CTStream *ostrFile); // throw char *
+
+    // [Cecil] Load plugin module manually
+    virtual void LoadPlugin_t(const CTFileName &fnmDLL); // throw char *
     
     //! Returns amount of used memory in bytes.
     virtual SLONG GetUsedMemory(void);

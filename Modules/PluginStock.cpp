@@ -29,3 +29,43 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #undef CNameTable_TYPE
 #undef CStock_TYPE
 #undef TYPE
+
+// Let plugin module load itself from a file
+CPluginModule *CPluginStock::Obtain_t(const CTFileName &fnmFileName) {
+  // Find stocked plugin with the same name
+  CPluginModule *pExisting = st_ntObjects.Find(fnmFileName);
+
+  // If found
+  if (pExisting != NULL) {
+    // Use it once more
+    pExisting->MarkUsed();
+
+    return pExisting;
+  }
+
+  // Create new plugin module
+  CPluginModule *pNewPlugin = new CPluginModule;
+  pNewPlugin->ser_FileName = fnmFileName;
+
+  st_ctObjects.Add(pNewPlugin);
+  st_ntObjects.Add(pNewPlugin);
+
+  try {
+    // Try to load the plugin
+    pNewPlugin->LoadPlugin_t(fnmFileName);
+
+  } catch (char *) {
+    // Remove the plugin if couldn't load it
+    st_ctObjects.Remove(pNewPlugin);
+    st_ntObjects.Remove(pNewPlugin);
+    delete pNewPlugin;
+
+    throw;
+  }
+
+  // Mark as used for the first time
+  pNewPlugin->MarkUsed();
+
+  // Return it
+  return pNewPlugin;
+};

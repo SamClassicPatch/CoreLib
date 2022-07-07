@@ -43,6 +43,13 @@ void CPluginModule::Write_t(CTStream *ostrFile)
 {
 }
 
+// Read from stream
+void CPluginModule::Read_t(CTStream *istrFile)
+{
+  // [Cecil] Obsolete method
+  ASSERTALWAYS("Don't load plugin modules using traditional stocks! Use CPluginStock instead!");
+}
+
 // Load a Dynamic Link Library.
 static HINSTANCE LoadLibrary_t(const char *strFileName)
 {
@@ -91,15 +98,15 @@ static HINSTANCE LoadLibrary_t(const char *strFileName)
   return hiDLL;
 }
 
-// Read from stream
-void CPluginModule::Read_t(CTStream *istrFile)
+// [Cecil] Load plugin module manually
+void CPluginModule::LoadPlugin_t(const CTFileName &fnmDLL)
 {
   // [Cecil] Load library from file
-  CTFileName fnmDLL = istrFile->GetDescription();
-  ExpandFilePath(EFP_READ | EFP_NOZIPS, fnmDLL, fnmDLL);
+  CTFileName fnmExpanded;
+  ExpandFilePath(EFP_READ | EFP_NOZIPS, fnmDLL, fnmExpanded);
 
   // Load dll
-  _hiLibrary = LoadLibrary_t(fnmDLL);
+  _hiLibrary = LoadLibrary_t(fnmExpanded);
 
   // [Cecil] Get startup and shutdown methods
   pOnStartupFunc  = (void (*)(void))GetProcAddress(GetHandle(), "Module_Startup");

@@ -43,4 +43,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #undef ENGINE_API
 #define ENGINE_API __declspec(dllimport)
 
+// Enhanced stock class
+class CPluginStock : public CStock_CPluginModule
+{
+  public:
+    // Let plugin module load itself from a file
+    virtual CPluginModule *Obtain_t(const CTFileName &fnmFileName);
+};
+
 #endif

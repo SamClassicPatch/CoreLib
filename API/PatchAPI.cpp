@@ -96,7 +96,7 @@ CPatchAPI::CPatchAPI() {
   strVersion = "1.1.2";
 
   // Create stock of plugin modules
-  pPluginStock = new CStock_CPluginModule;
+  pPluginStock = new CPluginStock;
 
   // Output patcher actions
   if (FileExists(_fnmApplicationExe.FileDir() + "PatcherOutput")) {

@@ -26,7 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Declare certain classes | Which files to include to define classes
 class CPatch;               // #include <CoreLib/Patcher/patcher.h>
 class CPluginModule;        // #include <CoreLib/Modules/PluginModule.h>
-class CStock_CPluginModule; // #include <CoreLib/Modules/PluginStock.h>
+class CPluginStock;         // #include <CoreLib/Modules/PluginStock.h>
 
 // Pointer to a function patch under a hashed name
 struct SFuncPatch {
@@ -54,7 +54,7 @@ class CPatchAPI {
   public:
     CTString strVersion; // Patch version
     CStaticStackArray<SFuncPatch> aPatches; // Function patch storage
-    CStock_CPluginModule *pPluginStock; // Stock of plugin modules
+    CPluginStock *pPluginStock; // Stock of plugin modules
 
     // API submodules
     CGameAPI apiGame;
