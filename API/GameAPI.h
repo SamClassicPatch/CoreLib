@@ -102,169 +102,169 @@ class CGameAPI {
     virtual void HookFields(void);
 
     // Get game mode index
-    INDEX GetGameMode(INDEX i) {
+    virtual INDEX GetGameMode(INDEX i) {
       return sp_aiGameModes[i];
     };
 
     // Get game difficulty index
-    INDEX GetDifficultyIndex(INDEX i) {
+    virtual INDEX GetDifficultyIndex(INDEX i) {
       return sp_aGameDifficulties[i].iIndex;
     };
 
     // Get game difficulty name
-    const CTString &GetDifficultyName(INDEX i) {
+    virtual const CTString &GetDifficultyName(INDEX i) {
       return sp_aGameDifficulties[i].strName;
     };
 
     // Get amount of available local players
-    INDEX GetLocalPlayerCount(void) {
+    virtual INDEX GetLocalPlayerCount(void) {
       return ctLocalPlayers;
     };
 
     // Get amount of available player profiles
-    INDEX GetProfileCount(void) {
+    virtual INDEX GetProfileCount(void) {
       return ctPlayerProfiles;
     };
 
   // CGame field wrappers
   public:
     // Get console state
-    INDEX GetConState(void) {
+    virtual INDEX GetConState(void) {
       return *piConsoleState;
     };
 
     // Set console state
-    void SetConState(INDEX iState) {
+    virtual void SetConState(INDEX iState) {
       *piConsoleState = iState;
     };
 
     // Get computer state
-    INDEX GetCompState(void) {
+    virtual INDEX GetCompState(void) {
       return *piComputerState;
     };
 
     // Set computer state
-    void SetCompState(INDEX iState) {
+    virtual void SetCompState(INDEX iState) {
       *piComputerState = iState;
     };
     
     // Get custom level filename
-    CTString &GetCustomLevel(void) {
+    virtual CTString &GetCustomLevel(void) {
       return *pstrCustomLevel;
     };
     
     // Get session name
-    CTString &GetSessionName(void) {
+    virtual CTString &GetSessionName(void) {
       return *pstrSessionName;
     };
     
     // Get address for joining
-    CTString &GetJoinAddress(void) {
+    virtual CTString &GetJoinAddress(void) {
       return *pstrJoinAddress;
     };
 
     // Get name of some axis
-    const CTString &GetAxisName(INDEX iAxis) {
+    virtual const CTString &GetAxisName(INDEX iAxis) {
       return astrAxisNames[iAxis];
     };
 
     // Get one of the high score entries
-    CHighScoreEntry *GetHighScore(INDEX iEntry) {
+    virtual CHighScoreEntry *GetHighScore(INDEX iEntry) {
       return &ahseHighScores[iEntry];
     };
 
     // Get index of the last set high score
-    INDEX GetLastSetHighScore(void) {
+    virtual INDEX GetLastSetHighScore(void) {
       return *piLastSetHighScore;
     };
 
     // Get player character for some profile
-    CPlayerCharacter *GetPlayerCharacter(INDEX iPlayer) {
+    virtual CPlayerCharacter *GetPlayerCharacter(INDEX iPlayer) {
       return &apcPlayers[iPlayer];
     };
 
     // Get extra controls
-    CControls *GetControls(void) {
+    virtual CControls *GetControls(void) {
       return pctrlControlsExtra;
     };
 
     // Get actions of extra controls
-    const CListHead &GetControlsActions(void) {
+    virtual const CListHead &GetControlsActions(void) {
       return GetControls()->ctrl_lhButtonActions;
     };
 
     // Get player index for singleplayer
-    INDEX GetPlayerForSP(void) {
+    virtual INDEX GetPlayerForSP(void) {
       return *piSinglePlayer;
     };
 
     // Set player index for singleplayer
-    void SetPlayerForSP(INDEX iPlayer) {
+    virtual void SetPlayerForSP(INDEX iPlayer) {
       *piSinglePlayer = iPlayer;
     };
 
     // Get menu split screen configuration
-    INDEX GetMenuSplitCfg(void) {
+    virtual INDEX GetMenuSplitCfg(void) {
       return *piMenuSplitCfg;
     };
 
     // Set menu split screen configuration
-    void SetMenuSplitCfg(INDEX iConfiguration) {
+    virtual void SetMenuSplitCfg(INDEX iConfiguration) {
       *piMenuSplitCfg = iConfiguration;
     };
 
     // Get start split screen configuration
-    INDEX GetStartSplitCfg(void) {
+    virtual INDEX GetStartSplitCfg(void) {
       return *piStartSplitCfg;
     };
 
     // Set start split screen configuration
-    void SetStartSplitCfg(INDEX iConfiguration) {
+    virtual void SetStartSplitCfg(INDEX iConfiguration) {
       *piStartSplitCfg = iConfiguration;
     };
 
     // Get current split screen configuration
-    INDEX GetCurrentSplitCfg(void) {
+    virtual INDEX GetCurrentSplitCfg(void) {
       return *piCurrentSplitCfg;
     };
 
     // Set current split screen configuration
-    void SetCurrentSplitCfg(INDEX iConfiguration) {
+    virtual void SetCurrentSplitCfg(INDEX iConfiguration) {
       *piCurrentSplitCfg = iConfiguration;
     };
 
     // Get game state
-    BOOL GetGameState(void) {
+    virtual BOOL GetGameState(void) {
       return *pbGameOn;
     };
 
     // Set game state
-    void SetGameState(BOOL bState) {
+    virtual void SetGameState(BOOL bState) {
       *pbGameOn = bState;
     };
 
     // Get menu state
-    BOOL GetMenuState(void) {
+    virtual BOOL GetMenuState(void) {
       return *pbMenuOn;
     };
 
     // Set menu state
-    void SetMenuState(BOOL bState) {
+    virtual void SetMenuState(BOOL bState) {
       *pbMenuOn = bState;
     };
 
     // Get first loading state
-    BOOL GetFirstLoading(void) {
+    virtual BOOL GetFirstLoading(void) {
       return *pbFirstLoading;
     };
 
     // Set if loading for the first time
-    void SetFirstLoading(BOOL bState) {
+    virtual void SetFirstLoading(BOOL bState) {
       *pbFirstLoading = bState;
     };
 
     // Set network provider
-    void SetNetworkProvider(ENetworkProvider eProvider) {
+    virtual void SetNetworkProvider(ENetworkProvider eProvider) {
       static const char *astrProviders[3] = {
         "Local", "TCP/IP Server", "TCP/IP Client",
       };
@@ -273,27 +273,27 @@ class CGameAPI {
     };
 
     // Get menu player index
-    INDEX GetMenuPlayer(INDEX i) {
+    virtual INDEX GetMenuPlayer(INDEX i) {
       return aiMenuLocalPlayers[i];
     };
 
     // Set menu player index
-    void SetMenuPlayer(INDEX i, INDEX iPlayer) {
+    virtual void SetMenuPlayer(INDEX i, INDEX iPlayer) {
       aiMenuLocalPlayers[i] = iPlayer;
     };
 
     // Get start player index
-    INDEX GetStartPlayer(INDEX i) {
+    virtual INDEX GetStartPlayer(INDEX i) {
       return aiStartLocalPlayers[i];
     };
 
     // Set start player index
-    void SetStartPlayer(INDEX i, INDEX iPlayer) {
+    virtual void SetStartPlayer(INDEX i, INDEX iPlayer) {
       aiStartLocalPlayers[i] = iPlayer;
     };
 
     // Check if local player is active
-    BOOL IsLocalPlayerActive(INDEX iPlayer) {
+    virtual BOOL IsLocalPlayerActive(INDEX iPlayer) {
       UBYTE *pLocalPlayer = aLocalPlayers + (lpOffsets.ctSize * iPlayer);
       BOOL *pbActive = (BOOL *)(pLocalPlayer + lpOffsets.slActive);
 
@@ -301,7 +301,7 @@ class CGameAPI {
     };
 
     // Get index of a local player
-    INDEX GetLocalPlayerIndex(INDEX iPlayer) {
+    virtual INDEX GetLocalPlayerIndex(INDEX iPlayer) {
       UBYTE *pLocalPlayer = aLocalPlayers + (lpOffsets.ctSize * iPlayer);
       INDEX *piPlayer = (INDEX *)(pLocalPlayer + lpOffsets.slPlayer);
 
