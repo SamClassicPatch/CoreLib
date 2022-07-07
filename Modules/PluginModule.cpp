@@ -112,6 +112,10 @@ void CPluginModule::LoadPlugin_t(const CTFileName &fnmDLL)
   pOnStartupFunc  = (CVoidFunc)GetProcAddress(GetHandle(), "Module_Startup");
   pOnShutdownFunc = (CVoidFunc)GetProcAddress(GetHandle(), "Module_Shutdown");
 
+  // [Cecil] Get other methods
+  pOnStepFunc = (CVoidFunc)GetProcAddress(GetHandle(), "Module_Step");
+  pOnDrawFunc = (CDrawFunc)GetProcAddress(GetHandle(), "Module_Draw");
+
   // [Cecil] Call startup method if it exists
   if (pOnStartupFunc != NULL) {
     pOnStartupFunc();

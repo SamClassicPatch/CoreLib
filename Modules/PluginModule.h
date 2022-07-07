@@ -30,12 +30,19 @@ class CPluginModule : public CSerial
   public:
     // [Cecil] Plugin method types
     typedef void (*CVoidFunc)(void); // Simple method
+    typedef void (*CDrawFunc)(CDrawPort *pdp); // Draw method
 
     //! Pointer to initialization routines, called after LoadLibrary.
     CVoidFunc pOnStartupFunc;
     
     //! Pointer to deinit routines, called before FreeLibrary.
     CVoidFunc pOnShutdownFunc;
+
+    // [Cecil] Step method to be called every simulation tick
+    CVoidFunc pOnStepFunc;
+
+    // [Cecil] Draw method to be called every render frame
+    CDrawFunc pOnDrawFunc;
 
   public:
     //! Constructor.
