@@ -45,13 +45,13 @@ void CGameAPI::HookFields(void) {
   pbMenuOn        = &_pGame->gm_bMenuOn;
   pbGameOn        = &_pGame->gm_bGameOn;
 
-  pastrAxisNames          = (CTString **)&_pGame->gm_astrAxisNames;
+  astrAxisNames           = &_pGame->gm_astrAxisNames[0];
   piSplitScreenMenuCfg    = (INDEX *)&_pGame->gm_MenuSplitScreenCfg;
   piSplitScreenStartCfg   = (INDEX *)&_pGame->gm_StartSplitScreenCfg;
   piSplitScreenCurrentCfg = (INDEX *)&_pGame->gm_CurrentSplitScreenCfg;
-  paiMenuLocalPlayers     = (INDEX **)&_pGame->gm_aiMenuLocalPlayers;
-  paiStartLocalPlayers    = (INDEX **)&_pGame->gm_aiStartLocalPlayers;
-  paLocalPlayers          = (UBYTE **)&_pGame->gm_lpLocalPlayers;
+  aiMenuLocalPlayers      = &_pGame->gm_aiMenuLocalPlayers[0];
+  aiStartLocalPlayers     = &_pGame->gm_aiStartLocalPlayers[0];
+  aLocalPlayers           = (UBYTE *)&_pGame->gm_lpLocalPlayers[0];
 
   pstrCustomLevel = &_pGame->gam_strCustomLevel;
   pstrSessionName = &_pGame->gam_strSessionName;

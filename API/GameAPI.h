@@ -68,13 +68,13 @@ class CGameAPI {
     BOOL     *pbMenuOn;        // gm_bMenuOn
     BOOL     *pbGameOn;        // gm_bGameOn
 
-    CTString **pastrAxisNames;         // gm_astrAxisNames
+    CTString *astrAxisNames;           // gm_astrAxisNames[0]
     INDEX    *piSplitScreenMenuCfg;    // gm_MenuSplitScreenCfg
     INDEX    *piSplitScreenStartCfg;   // gm_StartSplitScreenCfg
     INDEX    *piSplitScreenCurrentCfg; // gm_CurrentSplitScreenCfg
-    INDEX    **paiMenuLocalPlayers;    // gm_aiMenuLocalPlayers
-    INDEX    **paiStartLocalPlayers;   // gm_aiStartLocalPlayers
-    UBYTE    **paLocalPlayers;         // gm_lpLocalPlayers
+    INDEX    *aiMenuLocalPlayers;      // gm_aiMenuLocalPlayers[0]
+    INDEX    *aiStartLocalPlayers;     // gm_aiStartLocalPlayers[0]
+    UBYTE    *aLocalPlayers;           // gm_lpLocalPlayers[0]
 
     CTString *pstrCustomLevel; // gam_strCustomLevel
     CTString *pstrSessionName; // gam_strSessionName
