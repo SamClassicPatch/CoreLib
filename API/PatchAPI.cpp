@@ -135,9 +135,21 @@ CPluginModule *CPatchAPI::ObtainPlugin_t(const CTFileName &fnmModule)
 // Called every simulation tick
 void CPatchAPI::OnTick(void)
 {
+  // Call step function for each plugin that has it
+  FOREACHINDYNAMICCONTAINER(CPluginModule::aStepMethods, CPluginModule::CVoidFunc, itfunc)
+  {
+    CPluginModule::CVoidFunc *pStepFunc = itfunc;
+    (*pStepFunc)();
+  }
 };
 
 // Called every render frame
 void CPatchAPI::OnFrame(CDrawPort *pdp)
 {
+  // Call draw function for each plugin that has it
+  FOREACHINDYNAMICCONTAINER(CPluginModule::aDrawMethods, CPluginModule::CDrawFunc, itfunc)
+  {
+    CPluginModule::CDrawFunc *pDrawFunc = itfunc;
+    (*pDrawFunc)(pdp);
+  }
 };

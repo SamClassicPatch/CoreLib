@@ -18,6 +18,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "PluginModule.h"
 
+// [Cecil] Define method stacks
+CDynamicContainer<CPluginModule::CVoidFunc> CPluginModule::aStepMethods;
+CDynamicContainer<CPluginModule::CDrawFunc> CPluginModule::aDrawMethods;
+
 // [Cecil] Dummy methods
 static void DummyVoidMethod(void) { NOTHING; };
 static void DummyDrawMethod(CDrawPort *) { NOTHING; };
@@ -132,6 +136,15 @@ void CPluginModule::LoadPlugin_t(const CTFileName &fnmDLL)
   // [Cecil] Call startup method if it exists
   if (pOnStartupFunc != NULL) {
     pOnStartupFunc();
+  }
+
+  // [Cecil] Add methods to appropriate stacks
+  if (pOnStepFunc != NULL) {
+    aStepMethods.Add(&pOnStepFunc);
+  }
+
+  if (pOnDrawFunc != NULL) {
+    aDrawMethods.Add(&pOnDrawFunc);
   }
 }
 
