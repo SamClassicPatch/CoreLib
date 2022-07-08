@@ -105,41 +105,41 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_TSE107|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(ProjectDir);$(ProjectDir)Includes/;$(ProjectDir)Includes/Engine107/;$(IncludePath)</IncludePath>
-    <LibraryPath>$(ProjectDir)Includes/Engine107/;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir);$(SolutionDir);$(SolutionDir)Includes/;$(SolutionDir)Includes/Engine107/;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)Includes/Engine107/;$(LibraryPath)</LibraryPath>
     <GenerateManifest>true</GenerateManifest>
     <EmbedManifest>true</EmbedManifest>
-    <OutDir>$(ProjectDir)Bin\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)Bin\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)$(Configuration)\</IntDir>
     <TargetName>Core</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_TSE107|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(ProjectDir);$(ProjectDir)Includes/;$(ProjectDir)Includes/Engine107/;$(IncludePath)</IncludePath>
-    <LibraryPath>$(ProjectDir)Includes/Engine107/;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir);$(SolutionDir);$(SolutionDir)Includes/;$(SolutionDir)Includes/Engine107/;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)Includes/Engine107/;$(LibraryPath)</LibraryPath>
     <GenerateManifest>true</GenerateManifest>
     <EmbedManifest>true</EmbedManifest>
-    <OutDir>$(ProjectDir)Bin\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)Bin\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)$(Configuration)\</IntDir>
     <TargetName>Core</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_TSE105|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(ProjectDir);$(ProjectDir)Includes/;$(ProjectDir)Includes/Engine105/;$(IncludePath)</IncludePath>
-    <LibraryPath>$(ProjectDir)Includes/Engine105/;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir);$(SolutionDir);$(SolutionDir)Includes/;$(SolutionDir)Includes/Engine105/;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)Includes/Engine105/;$(LibraryPath)</LibraryPath>
     <GenerateManifest>true</GenerateManifest>
     <EmbedManifest>true</EmbedManifest>
-    <OutDir>$(ProjectDir)Bin\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)Bin\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)$(Configuration)\</IntDir>
     <TargetName>Core</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_TFE105|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(ProjectDir);$(ProjectDir)Includes/;$(ProjectDir)Includes/Engine105FE/;$(IncludePath)</IncludePath>
-    <LibraryPath>$(ProjectDir)Includes/Engine105FE/;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir);$(SolutionDir);$(SolutionDir)Includes/;$(SolutionDir)Includes/Engine105FE/;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)Includes/Engine105FE/;$(LibraryPath)</LibraryPath>
     <GenerateManifest>true</GenerateManifest>
     <EmbedManifest>true</EmbedManifest>
-    <OutDir>$(ProjectDir)Bin\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)Bin\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)$(Configuration)\</IntDir>
     <TargetName>Core</TargetName>
   </PropertyGroup>
