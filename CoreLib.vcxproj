@@ -32,6 +32,7 @@
     <ClInclude Include="Patcher\patcher_defines.h" />
     <ClInclude Include="Query\QueryMgr.h" />
     <ClInclude Include="StdH.h" />
+    <ClInclude Include="World\WorldFunctions.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="API\GameAPI.cpp" />

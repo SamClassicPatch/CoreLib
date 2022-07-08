@@ -49,6 +49,9 @@
     <Filter Include="Header Files\Modules headers">
       <UniqueIdentifier>{2434eee2-671f-4922-9585-a78765297f7b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\World headers">
+      <UniqueIdentifier>{12ddc757-8789-4cfb-8902-437ee1ad7d62}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game\Game.h">
@@ -89,6 +92,9 @@
     </ClInclude>
     <ClInclude Include="API\GameAPI.h">
       <Filter>Header Files\API headers</Filter>
+    </ClInclude>
+    <ClInclude Include="World\WorldFunctions.h">
+      <Filter>Header Files\World headers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
