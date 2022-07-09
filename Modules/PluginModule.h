@@ -105,6 +105,11 @@ class CPluginModule : public CSerial
       }
     };
 
+    // [Cecil] Get plugin information
+    virtual const CPluginAPI::PluginInfo &GetInfo(void) {
+      return _info;
+    };
+
   // [Cecil] Plugin methods
   public:
     // Reset function pointers

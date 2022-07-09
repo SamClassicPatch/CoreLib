@@ -26,6 +26,20 @@ CPluginModule *CPluginAPI::ObtainPlugin_t(const CTFileName &fnmModule)
 {
   CPluginModule *pPlugin = pPluginStock->Obtain_t(fnmModule);
 
+  // Check used API version
+  ULONG ulPluginVer = pPlugin->GetInfo().apiVer;
+
+  if (ulPluginVer != CORE_API_VERSION) {
+    CPrintF("'%s' load cancelled: Wrong API version (%u)\n", fnmModule.str_String, ulPluginVer);
+
+    // Release it
+    pPlugin->MarkUnused(); // This should result in 0 uses
+    pPluginStock->ReleasePlugin(pPlugin);
+
+    // No plugin has been loaded
+    return NULL;
+  }
+
   // Initialize the plugin and return it
   pPlugin->Initialize();
 
