@@ -128,21 +128,21 @@ void CPatchAPI::DisablePatch(INDEX iPatch) {
 // Called every simulation tick
 void CPatchAPI::OnTick(void)
 {
-  // Call step function for each plugin that has it
-  FOREACHINDYNAMICCONTAINER(CPluginModule::aStepMethods, CPluginModule::CVoidFunc, itfunc)
-  {
-    CPluginModule::CVoidFunc *pStepFunc = itfunc;
-    (*pStepFunc)();
+  CDynamicContainer<CPluginModule> &cPlugins = GetPluginAPI()->pPluginStock->st_ctObjects;
+
+  // Call step function for each plugin
+  FOREACHINDYNAMICCONTAINER(cPlugins, CPluginModule, itPlugin) {
+    itPlugin->OnStep();
   }
 };
 
 // Called every render frame
 void CPatchAPI::OnFrame(CDrawPort *pdp)
 {
-  // Call draw function for each plugin that has it
-  FOREACHINDYNAMICCONTAINER(CPluginModule::aDrawMethods, CPluginModule::CDrawFunc, itfunc)
-  {
-    CPluginModule::CDrawFunc *pDrawFunc = itfunc;
-    (*pDrawFunc)(pdp);
+  CDynamicContainer<CPluginModule> &cPlugins = GetPluginAPI()->pPluginStock->st_ctObjects;
+
+  // Call draw function for each plugin
+  FOREACHINDYNAMICCONTAINER(cPlugins, CPluginModule, itPlugin) {
+    itPlugin->OnDraw(pdp);
   }
 };

@@ -51,10 +51,6 @@ class CPluginModule : public CSerial
     // [Cecil] Draw method to be called every render frame
     CDrawFunc pOnDrawFunc;
 
-    // [Cecil] Stacks of pointers to function pointers
-    static CDynamicContainer<CVoidFunc> aStepMethods;
-    static CDynamicContainer<CDrawFunc> aDrawMethods;
-
   public:
     //! Constructor.
     CPluginModule();

@@ -18,10 +18,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "PluginModule.h"
 
-// [Cecil] Define method stacks
-CDynamicContainer<CPluginModule::CVoidFunc> CPluginModule::aStepMethods;
-CDynamicContainer<CPluginModule::CDrawFunc> CPluginModule::aDrawMethods;
-
 //! Constructor.
 CPluginModule::CPluginModule()
 {
@@ -129,15 +125,6 @@ void CPluginModule::LoadPlugin_t(const CTFileName &fnmDLL)
 
   // [Cecil] Call startup method
   OnStartup();
-
-  // [Cecil] Add methods to appropriate stacks
-  if (pOnStepFunc != NULL) {
-    aStepMethods.Add(&pOnStepFunc);
-  }
-
-  if (pOnDrawFunc != NULL) {
-    aDrawMethods.Add(&pOnDrawFunc);
-  }
 }
 
 // Clear modyle 
