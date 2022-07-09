@@ -27,6 +27,7 @@
     <ClInclude Include="Game\PlayerSettings.h" />
     <ClInclude Include="Modules\PluginModule.h" />
     <ClInclude Include="Modules\PluginStock.h" />
+    <ClInclude Include="Networking\CommInterface.h" />
     <ClInclude Include="Objects\Node.h" />
     <ClInclude Include="Patcher\patcher.h" />
     <ClInclude Include="Patcher\patcher_defines.h" />

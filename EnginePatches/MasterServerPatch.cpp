@@ -15,14 +15,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "StdH.h"
 
-// Compatibility with SE1.05
-#if SE1_VER == 105
-  #include <Engine/Network/Comm.h>
-  typedef Communication CCommunicationInterface;
-  #define _cmiComm comm
-#else
-  #include <Engine/Network/CommunicationInterface.h>
-#endif
+#include "Networking/CommInterface.h"
 
 // Original function pointers
 static void (CCommunicationInterface::*pServerInit)(void) = NULL;
@@ -59,7 +52,7 @@ class CComIntPatch : public CCommunicationInterface {
       }
 
       // Start new master server
-      if (_cmiComm.IsNetworkEnabled())
+      if (GetComm().IsNetworkEnabled())
       {
         if (ms_bDebugOutput) {
           CPrintF("  MS_OnServerStart()\n");
@@ -124,7 +117,7 @@ class CSessionStatePatch : public CSessionState {
       (this->*pFlushPredictions)();
 
       // Update server for the master server
-      if (_cmiComm.IsNetworkEnabled() && _pShell->GetINDEX("ser_bEnumeration")) {
+      if (GetComm().IsNetworkEnabled() && _pShell->GetINDEX("ser_bEnumeration")) {
         if (ms_bDebugOutput) {
           //CPrintF("CSessionState::FlushProcessedPredictions() -> MS_OnServerUpdate()\n");
         }

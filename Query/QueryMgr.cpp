@@ -16,14 +16,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "StdH.h"
 
-// [Cecil] Compatibility with SE1.05
-#if SE1_VER == 105
-  #include <Engine/Network/Comm.h>
-  typedef Communication CCommunicationInterface;
-  #define _cmiComm comm
-#else
-  #include <Engine/Network/CommunicationInterface.h>
-#endif
+// [Cecil] Use communication interface
+#include "Networking/CommInterface.h"
 
 #pragma comment(lib, "wsock32.lib")
 
@@ -476,9 +470,9 @@ void MS_EnumSessions(BOOL bInternet)
     delete &*itns;
   }
 
-  if (!_cmiComm.IsNetworkEnabled()) {
+  if (!GetComm().IsNetworkEnabled()) {
     // Have to enumerate as server
-    _cmiComm.PrepareForUse(TRUE, FALSE);
+    GetComm().PrepareForUse(TRUE, FALSE);
   }
 
   // Enumerate sessions using new query manager
