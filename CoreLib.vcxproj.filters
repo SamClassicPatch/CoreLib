@@ -143,7 +143,7 @@
     <ClCompile Include="Query\DarkPlacesQuery.cpp">
       <Filter>Source Files\Query</Filter>
     </ClCompile>
-    <ClCompile Include="EnginePatches\MasterServerPatch.cpp">
+    <ClCompile Include="EnginePatches\NetworkPatch.cpp">
       <Filter>Source Files\EnginePatches</Filter>
     </ClCompile>
     <ClCompile Include="Objects\Node.cpp">

@@ -41,7 +41,7 @@
     <ClCompile Include="API\GameAPI.cpp" />
     <ClCompile Include="API\PatchAPI.cpp" />
     <ClCompile Include="Core.cpp" />
-    <ClCompile Include="EnginePatches\MasterServerPatch.cpp" />
+    <ClCompile Include="EnginePatches\NetworkPatch.cpp" />
     <ClCompile Include="Modules\PluginModule.cpp" />
     <ClCompile Include="Modules\PluginStock.cpp" />
     <ClCompile Include="Networking\NetworkFunctions.cpp" />
