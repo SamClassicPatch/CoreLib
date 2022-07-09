@@ -37,6 +37,7 @@ class CPluginAPI {
         PF_TOOLS  = (1 << 3), // Addons for tools
       };
 
+      ULONG apiVer; // Version of the API used (always CORE_API_VERSION)
       ULONG ulFlags; // Plugin flags
 
       // Metadata
@@ -46,7 +47,7 @@ class CPluginAPI {
       CTString strDescription; // Brief plugin description
 
       // Constructor
-      PluginInfo() : ulFlags(0), ulVersion(0),
+      PluginInfo() : apiVer(0), ulFlags(0), ulVersion(0),
         strAuthor("Unknown"), strName("No name"), strDescription("None")
       {
       };

@@ -20,6 +20,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #pragma once
 #endif
 
+// Current API version
+#define CORE_API_VERSION 1
+
 // API submodules
 #include "GameAPI.h"
 #include "PluginAPI.h"
@@ -51,7 +54,7 @@ struct SFuncPatch {
 // Patch API class
 class CPatchAPI {
   public:
-    ULONG ulVersion; // Patch version
+    ULONG ulVersion; // Release version
     CStaticStackArray<SFuncPatch> aPatches; // Function patch storage
 
     // API submodules
