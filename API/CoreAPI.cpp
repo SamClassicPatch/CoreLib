@@ -84,7 +84,9 @@ static void ListPlugins(void) {
 };
 
 // Constructor
-CCoreAPI::CCoreAPI() {
+CCoreAPI::CCoreAPI() :
+  apiPatches(*new CPatchAPI), apiGame(*new CGameAPI), apiPlugins(*new CPluginAPI)
+{
   // Add core API to symbols
   CShellSymbol &ssNew = *_pShell->sh_assSymbols.New(1);
 

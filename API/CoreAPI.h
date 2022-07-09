@@ -34,9 +34,9 @@ class CCoreAPI {
     ULONG ulVersion; // Release version
 
     // API submodules
-    CPatchAPI apiPatches;
-    CGameAPI apiGame;
-    CPluginAPI apiPlugins;
+    CPatchAPI &apiPatches;
+    CGameAPI &apiGame;
+    CPluginAPI &apiPlugins;
 
   // Only virtual and defined methods can be used outside the Classics patch
   public:
