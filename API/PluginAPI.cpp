@@ -26,3 +26,8 @@ CPluginModule *CPluginAPI::ObtainPlugin_t(const CTFileName &fnmModule)
 {
   return pPluginStock->Obtain_t(fnmModule);
 };
+
+// Get loaded plugins
+CDynamicContainer<CPluginModule> &CPluginAPI::GetPlugins(void) {
+  return pPluginStock->st_ctObjects;
+};

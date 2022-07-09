@@ -128,7 +128,7 @@ void CPatchAPI::DisablePatch(INDEX iPatch) {
 // Called every simulation tick
 void CPatchAPI::OnTick(void)
 {
-  CDynamicContainer<CPluginModule> &cPlugins = GetPluginAPI()->pPluginStock->st_ctObjects;
+  CDynamicContainer<CPluginModule> &cPlugins = GetPluginAPI()->GetPlugins();
 
   // Call step function for each plugin
   FOREACHINDYNAMICCONTAINER(cPlugins, CPluginModule, itPlugin) {
@@ -139,7 +139,7 @@ void CPatchAPI::OnTick(void)
 // Called every render frame
 void CPatchAPI::OnFrame(CDrawPort *pdp)
 {
-  CDynamicContainer<CPluginModule> &cPlugins = GetPluginAPI()->pPluginStock->st_ctObjects;
+  CDynamicContainer<CPluginModule> &cPlugins = GetPluginAPI()->GetPlugins();
 
   // Call draw function for each plugin
   FOREACHINDYNAMICCONTAINER(cPlugins, CPluginModule, itPlugin) {

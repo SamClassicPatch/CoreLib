@@ -61,6 +61,9 @@ class CPluginAPI {
     
     // Obtain pointer to a plugin module
     virtual CPluginModule *ObtainPlugin_t(const CTFileName &fnmModule);
+
+    // Retrieve loaded plugins
+    virtual CDynamicContainer<CPluginModule> &GetPlugins(void);
 };
 
 #endif
