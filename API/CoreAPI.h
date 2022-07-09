@@ -51,8 +51,8 @@ struct SFuncPatch {
   };
 };
 
-// Patch API class
-class CPatchAPI {
+// Core API class
+class CCoreAPI {
   public:
     ULONG ulVersion; // Release version
     CStaticStackArray<SFuncPatch> aPatches; // Function patch storage
@@ -64,7 +64,7 @@ class CPatchAPI {
   // Only virtual and defined methods can be used outside the Classics patch
   public:
     // Constructor
-    CPatchAPI();
+    CCoreAPI();
 
     // Construct version number
     static inline ULONG MakeVersion(UBYTE ubRelease, UBYTE ubUpdate, UBYTE ubPatch) {
@@ -104,16 +104,16 @@ class CPatchAPI {
 // This variable can be used to access API of the EXE patch.
 // It needs to be defined separately for outside projects. Visit for more info:
 // https://github.com/SamClassicPatch/GameExecutable/wiki/Mod-support#api-utilization
-extern "C" __declspec(dllexport) CPatchAPI *_pPatchAPI;
+extern "C" __declspec(dllexport) CCoreAPI *_pPatchAPI;
 
 // These methods should only be used outside the Classics patch project
 #ifndef CORE_EXPORTS
   // Hook API pointer through the shell symbol
   inline BOOL HookSymbolAPI(void) {
-    CShellSymbol *pssAPI = _pShell->GetSymbol("PatchAPI", TRUE);
+    CShellSymbol *pssAPI = _pShell->GetSymbol("CoreAPI", TRUE);
 
     if (pssAPI != NULL) {
-      _pPatchAPI = (CPatchAPI *)pssAPI->ss_pvValue;
+      _pPatchAPI = (CCoreAPI *)pssAPI->ss_pvValue;
       return TRUE;
     }
 
@@ -131,7 +131,7 @@ extern "C" __declspec(dllexport) CPatchAPI *_pPatchAPI;
       void *pPointerToAPI = GetProcAddress(pEXE, "_pPatchAPI");
 
       if (pPointerToAPI != NULL) {
-        _pPatchAPI = *(CPatchAPI **)pPointerToAPI;
+        _pPatchAPI = *(CCoreAPI **)pPointerToAPI;
       }
     }
 

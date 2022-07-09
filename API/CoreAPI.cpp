@@ -15,8 +15,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "StdH.h"
 
-// Define external patch API
-CPatchAPI *_pPatchAPI = NULL;
+// Define external core API
+CCoreAPI *_pPatchAPI = NULL;
 
 // List available function patches
 static void ListFuncPatches(void) {
@@ -84,11 +84,11 @@ static void ListPlugins(void) {
 };
 
 // Constructor
-CPatchAPI::CPatchAPI() {
-  // Add patch API to symbols
+CCoreAPI::CCoreAPI() {
+  // Add core API to symbols
   CShellSymbol &ssNew = *_pShell->sh_assSymbols.New(1);
 
-  ssNew.ss_strName = "PatchAPI"; // Access by this symbol name
+  ssNew.ss_strName = "CoreAPI"; // Access by this symbol name
   ssNew.ss_istType = 0; // Should be '_shell_istUndeclared'
   ssNew.ss_pvValue = this; // Pointer to self
   ssNew.ss_ulFlags = SSF_CONSTANT; // Unchangable
@@ -112,7 +112,7 @@ CPatchAPI::CPatchAPI() {
 };
 
 // Enable specific function patch
-BOOL CPatchAPI::EnablePatch(INDEX iPatch) {
+BOOL CCoreAPI::EnablePatch(INDEX iPatch) {
   SFuncPatch &fpPatch = _pPatchAPI->aPatches[iPatch];
   fpPatch.pPatch->set_patch();
 
@@ -120,13 +120,13 @@ BOOL CPatchAPI::EnablePatch(INDEX iPatch) {
 };
 
 // Disable specific function patch
-void CPatchAPI::DisablePatch(INDEX iPatch) {
+void CCoreAPI::DisablePatch(INDEX iPatch) {
   SFuncPatch &fpPatch = _pPatchAPI->aPatches[iPatch];
   fpPatch.pPatch->remove_patch();
 };
 
 // Called every simulation tick
-void CPatchAPI::OnTick(void)
+void CCoreAPI::OnTick(void)
 {
   CDynamicContainer<CPluginModule> &cPlugins = GetPluginAPI()->GetPlugins();
 
@@ -137,7 +137,7 @@ void CPatchAPI::OnTick(void)
 };
 
 // Called every render frame
-void CPatchAPI::OnFrame(CDrawPort *pdp)
+void CCoreAPI::OnFrame(CDrawPort *pdp)
 {
   CDynamicContainer<CPluginModule> &cPlugins = GetPluginAPI()->GetPlugins();
 

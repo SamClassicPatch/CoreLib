@@ -78,7 +78,7 @@
     <ClInclude Include="Patcher\patcher_defines.h">
       <Filter>Header Files\Patcher headers</Filter>
     </ClInclude>
-    <ClInclude Include="API\PatchAPI.h">
+    <ClInclude Include="API\CoreAPI.h">
       <Filter>Header Files\API headers</Filter>
     </ClInclude>
     <ClInclude Include="FuncPatching.h">
@@ -122,7 +122,7 @@
     <ClCompile Include="Patcher\patcher.cpp">
       <Filter>Source Files\Patcher</Filter>
     </ClCompile>
-    <ClCompile Include="API\PatchAPI.cpp">
+    <ClCompile Include="API\CoreAPI.cpp">
       <Filter>Source Files\API</Filter>
     </ClCompile>
     <ClCompile Include="Core.cpp">

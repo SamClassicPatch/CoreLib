@@ -44,7 +44,7 @@ extern CTString sam_strIntroLevel;
 extern CTString sam_strGameName;
 
 // Common components
-#include "API/PatchAPI.h"
+#include "API/CoreAPI.h"
 #include "FuncPatching.h"
 #include "Query/QueryMgr.h"
 #include "Modules/PluginStock.h"

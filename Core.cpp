@@ -29,10 +29,10 @@ CGame *_pGame = NULL;
   CTString sam_strGameName = "serioussamse";
 #endif
 
-// Display information about the patch
+// Display information about the Classics patch
 static void PatchInfo(void) {
   static CTString strInfo =
-    "\nSerious Sam Classic Patch"
+    "\nSerious Sam Classics Patch"
     "\ngithub.com/SamClassicPatch"
     "\n"
     "\n- Engine version: " _SE_VER_STRING
@@ -45,8 +45,8 @@ static void PatchInfo(void) {
 
 // Initialize Core module
 void CECIL_InitCore(void) {
-  // Initialize patch API
-  _pPatchAPI = new CPatchAPI();
+  // Initialize core API
+  _pPatchAPI = new CCoreAPI();
 
   // Information about the patch
   _pShell->DeclareSymbol("user void PatchInfo(void);", &PatchInfo);
