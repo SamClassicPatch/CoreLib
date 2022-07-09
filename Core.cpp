@@ -52,12 +52,12 @@ void CECIL_InitCore(void) {
   _pShell->DeclareSymbol("user void PatchInfo(void);", &PatchInfo);
 
   // Function patches
-  CPrintF("^c00ffffCore:\nIntercepting Engine functions:\n");
+  CPrintF("--- Core: Intercepting Engine functions ---\n");
 
   extern void CECIL_ApplyMasterServerPatch(void);
   CECIL_ApplyMasterServerPatch();
 
-  CPrintF("^c00ffffDone!\n");
+  CPrintF("--- Done! ---\n");
 
   // Common game variables
   _pShell->DeclareSymbol("           user CTString sam_strFirstLevel;", &sam_strFirstLevel);
@@ -138,9 +138,13 @@ void CECIL_LoadPlugins(void) {
   CDynamicStackArray<CTFileName> afnmDir;
   MakeDirList(afnmDir, CTString("Bin\\Plugins\\"), "*.dll", DLI_RECURSIVE);
 
+  CPrintF("--- Loading user plugins ---\n");
+
   // Load every plugin
   for (INDEX i = 0; i < afnmDir.Count(); i++)
   {
+    CPrintF("  %d - %s\n", i + 1, afnmDir[i].str_String);
+
     try {
       // Try to load the plugin
       _pPatchAPI->ObtainPlugin_t(afnmDir[i]);
@@ -150,4 +154,6 @@ void CECIL_LoadPlugins(void) {
       MessageBoxA(NULL, strError, TRANS("Warning"), MB_OK|MB_ICONEXCLAMATION|MB_SETFOREGROUND|MB_TASKMODAL);
     }
   }
+
+  CPrintF("--- Done! ---\n");
 };
