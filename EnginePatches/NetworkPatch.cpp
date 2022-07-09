@@ -170,6 +170,9 @@ class CSessionStatePatch : public CSessionState {
       // Copy the tick to process into tick used for all tasks
       _pTimer->SetCurrentTick(ses_tmLastProcessedTick);
 
+      // Call API every simulation tick
+      _pPatchAPI->OnTick();
+
       // If cannot handle custom packet
       if (INetwork::ClientHandle(this, nmMessage)) {
         // Call the original function for standard packets
