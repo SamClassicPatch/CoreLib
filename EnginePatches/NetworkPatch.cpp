@@ -16,6 +16,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "StdH.h"
 
 #include "Networking/CommInterface.h"
+#include "Networking/NetworkFunctions.h"
 
 // Original function pointers
 static void (CCommunicationInterface::*pServerInit)(void) = NULL;
@@ -105,10 +106,49 @@ class CMessageDisPatch : public CMessageDispatcher {
         MS_OnServerStateChanged();
       }
     };
+
+    // Packet receiving method type
+    typedef BOOL (CCommunicationInterface::*CReceiveFunc)(INDEX, void *, SLONG &);
+
+    // Server receives a speciifc packet
+    BOOL ReceiveFromClientSpecific(INDEX iClient, CNetworkMessage &nmMessage, CReceiveFunc pFunc) {
+      // Receive message in static buffer
+      nmMessage.nm_slSize = nmMessage.nm_slMaxSize;
+
+      // Receive using a specific method
+      BOOL bReceived = (GetComm().*pFunc)(iClient, (void *)nmMessage.nm_pubMessage, nmMessage.nm_slSize);
+
+      // If there is message
+      if (bReceived) {
+        // Init the message structure
+        nmMessage.nm_pubPointer = nmMessage.nm_pubMessage;
+        nmMessage.nm_iBit = 0;
+
+        UBYTE ubType;
+        nmMessage.Read(&ubType, sizeof(ubType));
+        nmMessage.nm_mtType = (MESSAGETYPE)ubType;
+
+        // Replace default CServer packet processor or return TRUE to process through the original function
+        return INetwork::ServerHandle(this, iClient, nmMessage);
+      }
+
+      return bReceived;
+    };
+
+    // Server receives a packet
+    BOOL P_ReceiveFromClient(INDEX iClient, CNetworkMessage &nmMessage) {
+      return ReceiveFromClientSpecific(iClient, nmMessage, &CCommunicationInterface::Server_Receive_Unreliable);
+    };
+
+    // Server receives a reliable packet
+    BOOL P_ReceiveFromClientReliable(INDEX iClient, CNetworkMessage &nmMessage) {
+      return ReceiveFromClientSpecific(iClient, nmMessage, &CCommunicationInterface::Server_Receive_Reliable);
+    };
 };
 
-// Original function pointer
+// Original function pointers
 static void (CSessionState::*pFlushPredictions)(void) = NULL;
+static void (CSessionState::*pProcGameStreamBlock)(CNetworkMessage &) = NULL;
 
 class CSessionStatePatch : public CSessionState {
   public:
@@ -122,6 +162,18 @@ class CSessionStatePatch : public CSessionState {
           //CPrintF("CSessionState::FlushProcessedPredictions() -> MS_OnServerUpdate()\n");
         }
         MS_OnServerUpdate();
+      }
+    };
+
+    // Client processes received packet from the server
+    void P_ProcessGameStreamBlock(CNetworkMessage &nmMessage) {
+      // Copy the tick to process into tick used for all tasks
+      _pTimer->SetCurrentTick(ses_tmLastProcessedTick);
+
+      // If cannot handle custom packet
+      if (INetwork::ClientHandle(this, nmMessage)) {
+        // Call the original function for standard packets
+        (this->*pProcGameStreamBlock)(nmMessage);
       }
     };
 };
@@ -141,9 +193,18 @@ extern void CECIL_ApplyMasterServerPatch(void) {
   pSendToClient = &CMessageDispatcher::SendToClientReliable;
   NewPatch(pSendToClient, &CMessageDisPatch::P_SendToClientReliable, "CMessageDispatcher::SendToClientReliable(...)");
 
+  BOOL (CMessageDispatcher::*pRecFromClient)(INDEX, CNetworkMessage &) = &CMessageDispatcher::ReceiveFromClient;
+  NewPatch(pRecFromClient, &CMessageDisPatch::P_ReceiveFromClient, "CMessageDispatcher::ReceiveFromClient(...)");
+
+  BOOL (CMessageDispatcher::*pRecFromClientReliable)(INDEX, CNetworkMessage &) = &CMessageDispatcher::ReceiveFromClientReliable;
+  NewPatch(pRecFromClientReliable, &CMessageDisPatch::P_ReceiveFromClientReliable, "CMessageDispatcher::ReceiveFromClientReliable(...)");
+
   // CSessionState
   pFlushPredictions = &CSessionState::FlushProcessedPredictions;
   NewPatch(pFlushPredictions, &CSessionStatePatch::P_FlushProcessedPredictions, "CSessionState::FlushProcessedPredictions()");
+
+  pProcGameStreamBlock = &CSessionState::ProcessGameStreamBlock;
+  NewPatch(pProcGameStreamBlock, &CSessionStatePatch::P_ProcessGameStreamBlock, "CSessionState::ProcessGameStreamBlock(...)");
 
   // Custom symbols
   _pShell->DeclareSymbol("persistent user CTString ms_strGameAgentMS;",  &ms_strGameAgentMS);
