@@ -106,8 +106,22 @@ class CPluginModule : public CSerial
       }
     };
 
-    // [Cecil] Reset function pointers
+  // [Cecil] Plugin methods
+  public:
+    // Reset function pointers
     virtual void ResetMethods(void);
+
+    // Call startup method
+    virtual void OnStartup(void);
+
+    // Call shutdown method
+    virtual void OnShutdown(void);
+
+    // Call step method
+    virtual void OnStep(void);
+
+    // Call draw method
+    virtual void OnDraw(CDrawPort *pdp);
 };
 
 #endif  /* include-once check. */

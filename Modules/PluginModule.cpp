@@ -22,20 +22,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 CDynamicContainer<CPluginModule::CVoidFunc> CPluginModule::aStepMethods;
 CDynamicContainer<CPluginModule::CDrawFunc> CPluginModule::aDrawMethods;
 
-// [Cecil] Dummy methods
-static void DummyVoidMethod(void) { NOTHING; };
-static void DummyDrawMethod(CDrawPort *) { NOTHING; };
-static void DummyInfoMethod(CPluginAPI::PluginInfo *) { NOTHING; }
-
-// [Cecil] Reset function pointers
-void CPluginModule::ResetMethods(void) {
-  pOnStartupFunc = &DummyVoidMethod;
-  pOnShutdownFunc = &DummyVoidMethod;
-  pGetInfoFunc = &DummyInfoMethod;
-  pOnStepFunc = &DummyVoidMethod;
-  pOnDrawFunc = &DummyDrawMethod;
-};
-
 //! Constructor.
 CPluginModule::CPluginModule()
 {
@@ -141,10 +127,8 @@ void CPluginModule::LoadPlugin_t(const CTFileName &fnmDLL)
     pGetInfoFunc(&_info);
   }
 
-  // [Cecil] Call startup method if it exists
-  if (pOnStartupFunc != NULL) {
-    pOnStartupFunc();
-  }
+  // [Cecil] Call startup method
+  OnStartup();
 
   // [Cecil] Add methods to appropriate stacks
   if (pOnStepFunc != NULL) {
@@ -161,13 +145,47 @@ void CPluginModule::Clear(void)
 {
   // Release dll
   if (_hiLibrary != NULL) {
-    if (pOnShutdownFunc) {
-      pOnShutdownFunc();
-    }
-
+    OnShutdown();
     FreeLibrary(_hiLibrary);
   }
 
   // [Cecil] Reset methods
   ResetMethods();
 }
+
+// [Cecil] Reset function pointers
+void CPluginModule::ResetMethods(void) {
+  pOnStartupFunc = NULL;
+  pOnShutdownFunc = NULL;
+  pGetInfoFunc = NULL;
+  pOnStepFunc = NULL;
+  pOnDrawFunc = NULL;
+};
+
+// Call startup method
+void CPluginModule::OnStartup(void) {
+  if (pOnStartupFunc != NULL) {
+    pOnStartupFunc();
+  }
+};
+
+// Call shutdown method
+void CPluginModule::OnShutdown(void) {
+  if (pOnShutdownFunc != NULL) {
+    pOnShutdownFunc();
+  }
+};
+
+// Call step method
+void CPluginModule::OnStep(void) {
+  if (pOnStepFunc != NULL) {
+    pOnStepFunc();
+  }
+};
+
+// Call draw method
+void CPluginModule::OnDraw(CDrawPort *pdp) {
+  if (pOnDrawFunc != NULL) {
+    pOnDrawFunc(pdp);
+  }
+};
