@@ -28,6 +28,8 @@
     <ClInclude Include="Modules\PluginModule.h" />
     <ClInclude Include="Modules\PluginStock.h" />
     <ClInclude Include="Networking\CommInterface.h" />
+    <ClInclude Include="Networking\NetworkFunctions.h" />
+    <ClInclude Include="Networking\StreamBlock.h" />
     <ClInclude Include="Objects\Node.h" />
     <ClInclude Include="Patcher\patcher.h" />
     <ClInclude Include="Patcher\patcher_defines.h" />
@@ -42,6 +44,8 @@
     <ClCompile Include="EnginePatches\MasterServerPatch.cpp" />
     <ClCompile Include="Modules\PluginModule.cpp" />
     <ClCompile Include="Modules\PluginStock.cpp" />
+    <ClCompile Include="Networking\NetworkFunctions.cpp" />
+    <ClCompile Include="Networking\StreamBlock.cpp" />
     <ClCompile Include="Objects\Node.cpp" />
     <ClCompile Include="Patcher\patcher.cpp" />
     <ClCompile Include="Query\DarkPlacesQuery.cpp" />

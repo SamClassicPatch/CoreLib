@@ -55,6 +55,9 @@
     <Filter Include="Header Files\Networking headers">
       <UniqueIdentifier>{abd04f40-58f5-4608-8e31-4671f92ce063}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Networking">
+      <UniqueIdentifier>{b52d21a6-5ecf-4731-a79d-b5d6988148df}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game\Game.h">
@@ -100,6 +103,12 @@
       <Filter>Header Files\World headers</Filter>
     </ClInclude>
     <ClInclude Include="Networking\CommInterface.h">
+      <Filter>Header Files\Networking headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Networking\NetworkFunctions.h">
+      <Filter>Header Files\Networking headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Networking\StreamBlock.h">
       <Filter>Header Files\Networking headers</Filter>
     </ClInclude>
   </ItemGroup>
@@ -148,6 +157,12 @@
     </ClCompile>
     <ClCompile Include="API\GameAPI.cpp">
       <Filter>Source Files\API</Filter>
+    </ClCompile>
+    <ClCompile Include="Networking\NetworkFunctions.cpp">
+      <Filter>Source Files\Networking</Filter>
+    </ClCompile>
+    <ClCompile Include="Networking\StreamBlock.cpp">
+      <Filter>Source Files\Networking</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
