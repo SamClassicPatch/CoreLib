@@ -33,6 +33,16 @@ CPluginModule::~CPluginModule()
   Clear();
 }
 
+// [Cecil] Plugin initialization
+void CPluginModule::Initialize(void) {
+  // Get other methods
+  pOnStepFunc = (CVoidFunc)GetProcAddress(GetHandle(), "Module_Step");
+  pOnDrawFunc = (CDrawFunc)GetProcAddress(GetHandle(), "Module_Draw");
+
+  // Start the plugin
+  OnStartup();
+};
+
 // Count used memory
 SLONG CPluginModule::GetUsedMemory(void)
 {
@@ -102,7 +112,7 @@ static HINSTANCE LoadLibrary_t(const char *strFileName)
 // [Cecil] Load plugin module manually
 void CPluginModule::LoadPlugin_t(const CTFileName &fnmDLL)
 {
-  // [Cecil] Load library from file
+  // Load library from file
   CTFileName fnmExpanded;
   ExpandFilePath(EFP_READ | EFP_NOZIPS, fnmDLL, fnmExpanded);
 
@@ -114,17 +124,10 @@ void CPluginModule::LoadPlugin_t(const CTFileName &fnmDLL)
   pOnShutdownFunc = (CVoidFunc)GetProcAddress(GetHandle(), "Module_Shutdown");
   pGetInfoFunc    = (CInfoFunc)GetProcAddress(GetHandle(), "Module_GetInfo");
 
-  // [Cecil] Get other methods
-  pOnStepFunc = (CVoidFunc)GetProcAddress(GetHandle(), "Module_Step");
-  pOnDrawFunc = (CDrawFunc)GetProcAddress(GetHandle(), "Module_Draw");
-
   // Get information about the plugin, if possible
   if (pGetInfoFunc != NULL) {
     pGetInfoFunc(&_info);
   }
-
-  // [Cecil] Call startup method
-  OnStartup();
 }
 
 // Clear modyle 

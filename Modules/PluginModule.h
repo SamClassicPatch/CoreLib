@@ -58,6 +58,9 @@ class CPluginModule : public CSerial
     //! Destructor
     virtual ~CPluginModule();
 
+    // [Cecil] Plugin initialization
+    virtual void Initialize(void);
+
     //! Clear module. 
     virtual void Clear(void);
 

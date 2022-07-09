@@ -24,7 +24,12 @@ CPluginAPI::CPluginAPI() {
 // Obtain pointer to a plugin module
 CPluginModule *CPluginAPI::ObtainPlugin_t(const CTFileName &fnmModule)
 {
-  return pPluginStock->Obtain_t(fnmModule);
+  CPluginModule *pPlugin = pPluginStock->Obtain_t(fnmModule);
+
+  // Initialize the plugin and return it
+  pPlugin->Initialize();
+
+  return pPlugin;
 };
 
 // Get loaded plugins
