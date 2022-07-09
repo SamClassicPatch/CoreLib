@@ -27,16 +27,23 @@ class CPluginModule : public CSerial
   public:
     HINSTANCE _hiLibrary;
 
+    // [Cecil] Plugin information
+    CPluginAPI::PluginInfo _info;
+
   public:
     // [Cecil] Plugin method types
     typedef void (*CVoidFunc)(void); // Simple method
     typedef void (*CDrawFunc)(CDrawPort *pdp); // Draw method
+    typedef void (*CInfoFunc)(CPluginAPI::PluginInfo *pInfo); // Plugin info method
 
     //! Pointer to initialization routines, called after LoadLibrary.
     CVoidFunc pOnStartupFunc;
     
     //! Pointer to deinit routines, called before FreeLibrary.
     CVoidFunc pOnShutdownFunc;
+
+    // [Cecil] Retrieve information about the plugin
+    CInfoFunc pGetInfoFunc;
 
     // [Cecil] Step method to be called every simulation tick
     CVoidFunc pOnStepFunc;

@@ -25,11 +25,13 @@ CDynamicContainer<CPluginModule::CDrawFunc> CPluginModule::aDrawMethods;
 // [Cecil] Dummy methods
 static void DummyVoidMethod(void) { NOTHING; };
 static void DummyDrawMethod(CDrawPort *) { NOTHING; };
+static void DummyInfoMethod(CPluginAPI::PluginInfo *) { NOTHING; }
 
 // [Cecil] Reset function pointers
 void CPluginModule::ResetMethods(void) {
   pOnStartupFunc = &DummyVoidMethod;
   pOnShutdownFunc = &DummyVoidMethod;
+  pGetInfoFunc = &DummyInfoMethod;
   pOnStepFunc = &DummyVoidMethod;
   pOnDrawFunc = &DummyDrawMethod;
 };
@@ -125,13 +127,19 @@ void CPluginModule::LoadPlugin_t(const CTFileName &fnmDLL)
   // Load dll
   _hiLibrary = LoadLibrary_t(fnmExpanded);
 
-  // [Cecil] Get startup and shutdown methods
+  // Main plugin methods
   pOnStartupFunc  = (CVoidFunc)GetProcAddress(GetHandle(), "Module_Startup");
   pOnShutdownFunc = (CVoidFunc)GetProcAddress(GetHandle(), "Module_Shutdown");
+  pGetInfoFunc    = (CInfoFunc)GetProcAddress(GetHandle(), "Module_GetInfo");
 
   // [Cecil] Get other methods
   pOnStepFunc = (CVoidFunc)GetProcAddress(GetHandle(), "Module_Step");
   pOnDrawFunc = (CDrawFunc)GetProcAddress(GetHandle(), "Module_Draw");
+
+  // Get information about the plugin, if possible
+  if (pGetInfoFunc != NULL) {
+    pGetInfoFunc(&_info);
+  }
 
   // [Cecil] Call startup method if it exists
   if (pOnStartupFunc != NULL) {
