@@ -112,7 +112,7 @@ void CECIL_LoadGameLib(void) {
     strGameLib += ".dll";
 
     // Obtain Game library
-    CPluginModule *pGameLib = GetPluginAPI()->ObtainPlugin_t(strGameLib);
+    CPluginModule *pGameLib = GetPluginAPI()->LoadPlugin_t(strGameLib);
     CPrintF(TRANS("Loading game library '%s'...\n"), pGameLib->GetName());
 
     // Create Game class

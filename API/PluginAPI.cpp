@@ -46,6 +46,15 @@ CPluginModule *CPluginAPI::ObtainPlugin_t(const CTFileName &fnmModule)
   return pPlugin;
 };
 
+// Load plugin module without safety checks
+CPluginModule *CPluginAPI::LoadPlugin_t(const CTFileName &fnmModule)
+{
+  CPluginModule *pPlugin = pPluginStock->Obtain_t(fnmModule);
+  pPlugin->Initialize();
+
+  return pPlugin;
+};
+
 // Get loaded plugins
 CDynamicContainer<CPluginModule> &CPluginAPI::GetPlugins(void) {
   return pPluginStock->st_ctObjects;
