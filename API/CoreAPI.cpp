@@ -16,7 +16,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "StdH.h"
 
 // Define external core API
-CCoreAPI *_pPatchAPI = NULL;
+CCoreAPI *_pCoreAPI = NULL;
 
 // List available function patches
 static void ListFuncPatches(void) {

@@ -37,7 +37,7 @@ static void PatchInfo(void) {
     "\n"
     "\n- Engine version: " _SE_VER_STRING
     "\n- Patch version: "
-    + _pPatchAPI->GetVersion()
+    + _pCoreAPI->GetVersion()
     + "\n\n(c) Dreamy Cecil, 2022\n";
 
   CPutString(strInfo);
@@ -46,7 +46,7 @@ static void PatchInfo(void) {
 // Initialize Core module
 void CECIL_InitCore(void) {
   // Initialize core API
-  _pPatchAPI = new CCoreAPI();
+  _pCoreAPI = new CCoreAPI();
 
   // Information about the patch
   _pShell->DeclareSymbol("user void PatchInfo(void);", &PatchInfo);

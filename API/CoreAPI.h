@@ -75,7 +75,7 @@ class CCoreAPI {
 // This variable can be used to access API of the EXE patch.
 // It needs to be defined separately for outside projects. Visit for more info:
 // https://github.com/SamClassicPatch/GameExecutable/wiki/Mod-support#api-utilization
-extern "C" __declspec(dllexport) CCoreAPI *_pPatchAPI;
+extern "C" __declspec(dllexport) CCoreAPI *_pCoreAPI;
 
 // These methods should only be used outside the Classics patch project
 #ifndef CORE_EXPORTS
@@ -84,7 +84,7 @@ extern "C" __declspec(dllexport) CCoreAPI *_pPatchAPI;
     CShellSymbol *pssAPI = _pShell->GetSymbol("CoreAPI", TRUE);
 
     if (pssAPI != NULL) {
-      _pPatchAPI = (CCoreAPI *)pssAPI->ss_pvValue;
+      _pCoreAPI = (CCoreAPI *)pssAPI->ss_pvValue;
       return TRUE;
     }
 
@@ -99,30 +99,30 @@ extern "C" __declspec(dllexport) CCoreAPI *_pPatchAPI;
 
     if (pEXE != NULL) {
       // Get API pointer from the executable module
-      void *pPointerToAPI = GetProcAddress(pEXE, "_pPatchAPI");
+      void *pPointerToAPI = GetProcAddress(pEXE, "_pCoreAPI");
 
       if (pPointerToAPI != NULL) {
-        _pPatchAPI = *(CCoreAPI **)pPointerToAPI;
+        _pCoreAPI = *(CCoreAPI **)pPointerToAPI;
       }
     }
 
-    return (_pPatchAPI != NULL);
+    return (_pCoreAPI != NULL);
   };
 #endif
 
 // Get patch API module
 inline CPatchAPI *GetPatchAPI(void) {
-  return &_pPatchAPI->apiPatches;
+  return &_pCoreAPI->apiPatches;
 };
 
 // Get Game API module
 inline CGameAPI *GetGameAPI(void) {
-  return &_pPatchAPI->apiGame;
+  return &_pCoreAPI->apiGame;
 };
 
 // Get plugin API module
 inline CPluginAPI *GetPluginAPI(void) {
-  return &_pPatchAPI->apiPlugins;
+  return &_pCoreAPI->apiPlugins;
 };
 
 #endif
