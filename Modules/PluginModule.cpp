@@ -43,6 +43,18 @@ void CPluginModule::Initialize(void) {
   OnStartup();
 };
 
+// Clear module
+void CPluginModule::Clear(void) {
+  // Release DLL
+  if (_hiLibrary != NULL) {
+    OnShutdown();
+    FreeLibrary(_hiLibrary);
+  }
+
+  // [Cecil] Reset methods
+  ResetMethods();
+};
+
 // Count used memory
 SLONG CPluginModule::GetUsedMemory(void)
 {
@@ -128,20 +140,7 @@ void CPluginModule::LoadPlugin_t(const CTFileName &fnmDLL)
   if (pGetInfoFunc != NULL) {
     pGetInfoFunc(&_info);
   }
-}
-
-// Clear modyle 
-void CPluginModule::Clear(void)
-{
-  // Release dll
-  if (_hiLibrary != NULL) {
-    OnShutdown();
-    FreeLibrary(_hiLibrary);
-  }
-
-  // [Cecil] Reset methods
-  ResetMethods();
-}
+};
 
 // [Cecil] Reset function pointers
 void CPluginModule::ResetMethods(void) {
