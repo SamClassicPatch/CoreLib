@@ -114,6 +114,9 @@
     <ClInclude Include="API\PluginAPI.h">
       <Filter>Header Files\API headers</Filter>
     </ClInclude>
+    <ClInclude Include="API\PatchAPI.h">
+      <Filter>Header Files\API headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="StdH.cpp">
@@ -168,6 +171,9 @@
       <Filter>Source Files\Networking</Filter>
     </ClCompile>
     <ClCompile Include="API\PluginAPI.cpp">
+      <Filter>Source Files\API</Filter>
+    </ClCompile>
+    <ClCompile Include="API\PatchAPI.cpp">
       <Filter>Source Files\API</Filter>
     </ClCompile>
   </ItemGroup>

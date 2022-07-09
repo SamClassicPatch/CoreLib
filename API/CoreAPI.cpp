@@ -20,15 +20,15 @@ CCoreAPI *_pPatchAPI = NULL;
 
 // List available function patches
 static void ListFuncPatches(void) {
-  if (_pPatchAPI->aPatches.Count() == 0) {
+  if (GetPatchAPI()->aPatches.Count() == 0) {
     CPrintF("No function patches available!\n");
     return;
   }
 
   CPrintF("Available function patches:\n");
   
-  for (INDEX iPatch = 0; iPatch < _pPatchAPI->aPatches.Count(); iPatch++) {
-    const SFuncPatch &fpPatch = _pPatchAPI->aPatches[iPatch];
+  for (INDEX iPatch = 0; iPatch < GetPatchAPI()->aPatches.Count(); iPatch++) {
+    const SFuncPatch &fpPatch = GetPatchAPI()->aPatches[iPatch];
 
     // Mark as enabled or not and indent the index
     const char *strPatched = (fpPatch.pPatch->patched() ? " [^c00ff00ON^r]" : "[^cff0000OFF^r]");
@@ -40,10 +40,10 @@ static void ListFuncPatches(void) {
 
 // Enable specific function patch
 static void EnableFuncPatch(INDEX iPatch) {
-  iPatch = Clamp(iPatch, (INDEX)0, INDEX(_pPatchAPI->aPatches.Count() - 1));
+  iPatch = Clamp(iPatch, (INDEX)0, INDEX(GetPatchAPI()->aPatches.Count() - 1));
 
-  const CTString &strPatch = _pPatchAPI->aPatches[iPatch].strName;
-  BOOL bPatched = _pPatchAPI->EnablePatch(iPatch);
+  const CTString &strPatch = GetPatchAPI()->aPatches[iPatch].strName;
+  BOOL bPatched = GetPatchAPI()->EnablePatch(iPatch);
 
   if (bPatched) {
     CPrintF("Successfully set '%s' function patch!\n", strPatch);
@@ -54,10 +54,10 @@ static void EnableFuncPatch(INDEX iPatch) {
 
 // Disable specific function patch
 static void DisableFuncPatch(INDEX iPatch) {
-  iPatch = Clamp(iPatch, (INDEX)0, INDEX(_pPatchAPI->aPatches.Count() - 1));
+  iPatch = Clamp(iPatch, (INDEX)0, INDEX(GetPatchAPI()->aPatches.Count() - 1));
 
-  const CTString &strPatch = _pPatchAPI->aPatches[iPatch].strName;
-  _pPatchAPI->DisablePatch(iPatch);
+  const CTString &strPatch = GetPatchAPI()->aPatches[iPatch].strName;
+  GetPatchAPI()->DisablePatch(iPatch);
 
   CPrintF("Successfully removed '%s' function patch!\n", strPatch);
 };
@@ -109,20 +109,6 @@ CCoreAPI::CCoreAPI() {
 
   // List loaded plugin modules
   _pShell->DeclareSymbol("user void ListPlugins(void);", &ListPlugins);
-};
-
-// Enable specific function patch
-BOOL CCoreAPI::EnablePatch(INDEX iPatch) {
-  SFuncPatch &fpPatch = _pPatchAPI->aPatches[iPatch];
-  fpPatch.pPatch->set_patch();
-
-  return fpPatch.pPatch->ok();
-};
-
-// Disable specific function patch
-void CCoreAPI::DisablePatch(INDEX iPatch) {
-  SFuncPatch &fpPatch = _pPatchAPI->aPatches[iPatch];
-  fpPatch.pPatch->remove_patch();
 };
 
 // Called every simulation tick

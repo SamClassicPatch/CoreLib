@@ -13,8 +13,8 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#ifndef CECIL_INCL_API_H
-#define CECIL_INCL_API_H
+#ifndef CECIL_INCL_COREAPI_H
+#define CECIL_INCL_COREAPI_H
 
 #ifdef PRAGMA_ONCE
   #pragma once
@@ -24,40 +24,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define CORE_API_VERSION 1
 
 // API submodules
+#include "PatchAPI.h"
 #include "GameAPI.h"
 #include "PluginAPI.h"
-
-// Declare certain classes | Which files to include to define classes
-class CPatch; // #include <CoreLib/Patcher/patcher.h>
-
-// Pointer to a function patch under a hashed name
-struct SFuncPatch {
-  CTString strName; // Patch name
-  ULONG ulHash; // Name hash
-
-  CPatch *pPatch; // Pointer to the patch
-  
-  // Default constructor
-  SFuncPatch() : strName(""), ulHash(0), pPatch(NULL)
-  {
-  };
-
-  // Constructor from name and patch
-  SFuncPatch(const CTString &strSetName, CPatch *pSetPatch) :
-    strName(strSetName), pPatch(pSetPatch)
-  {
-    // Calculate name hash
-    ulHash = strName.GetHash();
-  };
-};
 
 // Core API class
 class CCoreAPI {
   public:
     ULONG ulVersion; // Release version
-    CStaticStackArray<SFuncPatch> aPatches; // Function patch storage
 
     // API submodules
+    CPatchAPI apiPatches;
     CGameAPI apiGame;
     CPluginAPI apiPlugins;
 
@@ -87,12 +64,6 @@ class CCoreAPI {
     virtual CTString GetVersion(void) {
       return MakeVersionString(ulVersion);
     };
-
-    // Enable specific function patch
-    virtual BOOL EnablePatch(INDEX iPatch);
-
-    // Disable specific function patch
-    virtual void DisablePatch(INDEX iPatch);
 
     // Called every simulation tick
     virtual void OnTick(void);
@@ -138,6 +109,11 @@ extern "C" __declspec(dllexport) CCoreAPI *_pPatchAPI;
     return (_pPatchAPI != NULL);
   };
 #endif
+
+// Get patch API module
+inline CPatchAPI *GetPatchAPI(void) {
+  return &_pPatchAPI->apiPatches;
+};
 
 // Get Game API module
 inline CGameAPI *GetGameAPI(void) {

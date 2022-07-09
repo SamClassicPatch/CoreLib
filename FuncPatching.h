@@ -62,7 +62,7 @@ CPatch *NewPatch(FuncType1 &funcOld, FuncType2 funcNew, const char *strName) {
 
   // Add to the patch registry
   if (pPatch->ok()) {
-    _pPatchAPI->aPatches.Push() = SFuncPatch(strName, pPatch);
+    GetPatchAPI()->aPatches.Push() = SFuncPatch(strName, pPatch);
 
   // Couldn't patch
   } else {
