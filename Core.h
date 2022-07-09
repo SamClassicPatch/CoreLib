@@ -52,12 +52,3 @@ extern CTString sam_strGameName;
 
 // Initialize Core module
 void CECIL_InitCore(void);
-
-// Disable GameSpy usage
-void CECIL_DisableGameSpy(void);
-
-// Load Game library as a plugin
-void CECIL_LoadGameLib(void);
-
-// Load all user plugins
-void CECIL_LoadPlugins(void);

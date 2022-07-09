@@ -113,6 +113,99 @@ CCoreAPI::CCoreAPI() :
   _pShell->DeclareSymbol("user void ListPlugins(void);", &ListPlugins);
 };
 
+// Disable GameSpy usage
+void CCoreAPI::DisableGameSpy(void) {
+  static BOOL bDisabled = FALSE;
+
+  if (bDisabled) return;
+
+  // Get symbol for accessing GameSpy master server
+  CShellSymbol *pssGameSpy = _pShell->GetSymbol("ser_bHeartbeatGameSpy", TRUE);
+
+  if (pssGameSpy != NULL) {
+    // Store last value
+    INDEX *piValue = (INDEX *)pssGameSpy->ss_pvValue;
+    static INDEX iDummyValue = *piValue;
+
+    // Forcefully disable it
+    *piValue = FALSE;
+
+    // Make it inaccessible
+    pssGameSpy->ss_pvValue = &iDummyValue;
+
+    bDisabled = TRUE;
+  }
+};
+
+// Load Game library as a plugin
+void CCoreAPI::LoadGameLib(void) {
+  // Already loaded
+  if (_pGame != NULL) return;
+
+  try {
+    // Construct Game library name for different games
+    CTString strGameLib = _fnmApplicationExe.FileDir() + "Game";
+
+    // Append mod extension for TSE
+    #ifndef SE1_TFE
+      strGameLib += _strModExt;
+    #endif
+
+    // Debug library
+    #ifdef _DEBUG
+      strGameLib += "D";
+    #endif
+
+    // Library extension
+    strGameLib += ".dll";
+
+    // Obtain Game library
+    CPluginModule *pGameLib = GetPluginAPI()->LoadPlugin_t(strGameLib);
+    CPrintF(TRANS("Loading game library '%s'...\n"), pGameLib->GetName());
+
+    // Create Game class
+    CGame *(*pGameCreateFunc)(void) = NULL;
+    pGameLib->GetSymbol_t(&pGameCreateFunc, "GAME_Create");
+
+    _pGame = pGameCreateFunc();
+
+  } catch (char *strError) {
+    FatalError("%s", strError);
+  }
+
+  // Initialize Game
+  _pGame->Initialize(CTString("Data\\SeriousSam.gms"));
+
+  // Hook default fields
+  GetGameAPI()->HookFields();
+};
+
+// Load all user plugins
+void CCoreAPI::LoadPlugins(void) {
+  // List all library files
+  CDynamicStackArray<CTFileName> afnmDir;
+  MakeDirList(afnmDir, CTString("Bin\\Plugins\\"), "*.dll", DLI_RECURSIVE);
+
+  CPrintF("--- Loading user plugins ---\n");
+
+  // Load every plugin
+  for (INDEX i = 0; i < afnmDir.Count(); i++)
+  {
+    CPrintF("  %d - %s\n", i + 1, afnmDir[i].str_String);
+
+    try {
+      // Try to load the plugin
+      GetPluginAPI()->ObtainPlugin_t(afnmDir[i]);
+
+    } catch (char *strError) {
+      // Plugin initialization failed
+      MessageBoxA(NULL, strError, TRANS("Warning"), MB_OK|MB_ICONEXCLAMATION|MB_SETFOREGROUND|MB_TASKMODAL);
+    }
+  }
+
+  CPrintF("--- Done! ---\n");
+};
+
 // Called every simulation tick
 void CCoreAPI::OnTick(void)
 {

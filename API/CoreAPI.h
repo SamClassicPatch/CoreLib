@@ -38,7 +38,6 @@ class CCoreAPI {
     CGameAPI &apiGame;
     CPluginAPI &apiPlugins;
 
-  // Only virtual and defined methods can be used outside the Classics patch
   public:
     // Constructor
     CCoreAPI();
@@ -64,6 +63,15 @@ class CCoreAPI {
     virtual CTString GetVersion(void) {
       return MakeVersionString(ulVersion);
     };
+
+    // Disable GameSpy usage
+    void DisableGameSpy(void);
+
+    // Load Game library as a plugin
+    void LoadGameLib(void);
+
+    // Load all user plugins
+    void LoadPlugins(void);
 
     // Called every simulation tick
     virtual void OnTick(void);

@@ -97,7 +97,6 @@ class CGameAPI {
     INDEX    *aiStartLocalPlayers; // gm_aiStartLocalPlayers[0]
     UBYTE    *aLocalPlayers;       // gm_lpLocalPlayers[0]
     
-  // Only virtual and defined methods can be used outside the Classics patch
   public:
     // Constructor
     CGameAPI();
