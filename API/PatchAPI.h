@@ -52,7 +52,7 @@ struct SFuncPatch {
 // Patch API class
 class CPatchAPI {
   public:
-    CTString strVersion; // Patch version
+    ULONG ulVersion; // Patch version
     CStaticStackArray<SFuncPatch> aPatches; // Function patch storage
     CPluginStock *pPluginStock; // Stock of plugin modules
 
@@ -63,6 +63,28 @@ class CPatchAPI {
   public:
     // Constructor
     CPatchAPI();
+
+    // Construct version number
+    static inline ULONG MakeVersion(UBYTE ubRelease, UBYTE ubUpdate, UBYTE ubPatch) {
+      return (ubRelease << 16) | (ubUpdate << 8) | (ubPatch << 0);
+    };
+
+    // Retrieve version number as a string
+    static inline CTString MakeVersionString(ULONG ulVersionNumber) {
+      const UBYTE ubRelease = (ulVersionNumber >> 16) & 0xFF;
+      const UBYTE ubUpdate  = (ulVersionNumber >>  8) & 0xFF;
+      const UBYTE ubPatch   = (ulVersionNumber >>  0) & 0xFF;
+
+      CTString strVersion;
+      strVersion.PrintF("%u.%u.%u", ubRelease, ubUpdate, ubPatch);
+
+      return strVersion;
+    };
+
+    // Retrieve version of the patch
+    virtual CTString GetVersion(void) {
+      return MakeVersionString(ulVersion);
+    };
 
     // Enable specific function patch
     virtual BOOL EnablePatch(INDEX iPatch);

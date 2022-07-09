@@ -37,7 +37,7 @@ static void PatchInfo(void) {
     "\n"
     "\n- Engine version: " _SE_VER_STRING
     "\n- Patch version: "
-    + _pPatchAPI->strVersion
+    + _pPatchAPI->GetVersion()
     + "\n\n(c) Dreamy Cecil, 2022\n";
 
   CPutString(strInfo);

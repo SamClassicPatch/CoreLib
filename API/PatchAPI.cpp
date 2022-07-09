@@ -93,7 +93,7 @@ CPatchAPI::CPatchAPI() {
   ssNew.ss_pPreFunc = NULL; // Unused
   ssNew.ss_pPostFunc = NULL; // Unused
 
-  strVersion = "1.1.2";
+  ulVersion = MakeVersion(1, 2, 0);
 
   // Create stock of plugin modules
   pPluginStock = new CPluginStock;
