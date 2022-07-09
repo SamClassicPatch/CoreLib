@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClInclude Include="API\GameAPI.h" />
     <ClInclude Include="API\PatchAPI.h" />
+    <ClInclude Include="API\PluginAPI.h" />
     <ClInclude Include="Core.h" />
     <ClInclude Include="FuncPatching.h" />
     <ClInclude Include="Game\Game.h" />
@@ -40,6 +41,7 @@
   <ItemGroup>
     <ClCompile Include="API\GameAPI.cpp" />
     <ClCompile Include="API\PatchAPI.cpp" />
+    <ClCompile Include="API\PluginAPI.cpp" />
     <ClCompile Include="Core.cpp" />
     <ClCompile Include="EnginePatches\NetworkPatch.cpp" />
     <ClCompile Include="Modules\PluginModule.cpp" />

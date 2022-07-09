@@ -64,15 +64,17 @@ static void DisableFuncPatch(INDEX iPatch) {
 
 // List loaded plugin modules
 static void ListPlugins(void) {
-  if (_pPatchAPI->pPluginStock->GetTotalCount() == 0) {
+  CPluginStock *pStock = GetPluginAPI()->pPluginStock;
+
+  if (pStock->GetTotalCount() == 0) {
     CPrintF("No plugins have been loaded!\n");
     return;
   }
 
   CPrintF("Loaded plugins:\n");
   
-  for (INDEX iPlugin = 0; iPlugin < _pPatchAPI->pPluginStock->GetTotalCount(); iPlugin++) {
-    CPluginModule *pPlugin = _pPatchAPI->pPluginStock->st_ctObjects.Pointer(iPlugin);
+  for (INDEX iPlugin = 0; iPlugin < pStock->GetTotalCount(); iPlugin++) {
+    CPluginModule *pPlugin = pStock->st_ctObjects.Pointer(iPlugin);
 
     // Indent the index
     const INDEX ctIdent = ClampDn(2 - INDEX(log10((FLOAT)iPlugin)), (INDEX)0);
@@ -94,9 +96,6 @@ CPatchAPI::CPatchAPI() {
   ssNew.ss_pPostFunc = NULL; // Unused
 
   ulVersion = MakeVersion(1, 2, 0);
-
-  // Create stock of plugin modules
-  pPluginStock = new CPluginStock;
 
   // Output patcher actions
   if (FileExists(_fnmApplicationExe.FileDir() + "PatcherOutput")) {
@@ -124,12 +123,6 @@ BOOL CPatchAPI::EnablePatch(INDEX iPatch) {
 void CPatchAPI::DisablePatch(INDEX iPatch) {
   SFuncPatch &fpPatch = _pPatchAPI->aPatches[iPatch];
   fpPatch.pPatch->remove_patch();
-};
-
-// Obtain pointer to a plugin module
-CPluginModule *CPatchAPI::ObtainPlugin_t(const CTFileName &fnmModule)
-{
-  return pPluginStock->Obtain_t(fnmModule);
 };
 
 // Called every simulation tick

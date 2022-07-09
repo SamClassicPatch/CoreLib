@@ -111,6 +111,9 @@
     <ClInclude Include="Networking\StreamBlock.h">
       <Filter>Header Files\Networking headers</Filter>
     </ClInclude>
+    <ClInclude Include="API\PluginAPI.h">
+      <Filter>Header Files\API headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="StdH.cpp">
@@ -163,6 +166,9 @@
     </ClCompile>
     <ClCompile Include="Networking\StreamBlock.cpp">
       <Filter>Source Files\Networking</Filter>
+    </ClCompile>
+    <ClCompile Include="API\PluginAPI.cpp">
+      <Filter>Source Files\API</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

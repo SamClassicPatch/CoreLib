@@ -22,11 +22,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 // API submodules
 #include "GameAPI.h"
+#include "PluginAPI.h"
 
 // Declare certain classes | Which files to include to define classes
-class CPatch;               // #include <CoreLib/Patcher/patcher.h>
-class CPluginModule;        // #include <CoreLib/Modules/PluginModule.h>
-class CPluginStock;         // #include <CoreLib/Modules/PluginStock.h>
+class CPatch; // #include <CoreLib/Patcher/patcher.h>
 
 // Pointer to a function patch under a hashed name
 struct SFuncPatch {
@@ -54,10 +53,10 @@ class CPatchAPI {
   public:
     ULONG ulVersion; // Patch version
     CStaticStackArray<SFuncPatch> aPatches; // Function patch storage
-    CPluginStock *pPluginStock; // Stock of plugin modules
 
     // API submodules
     CGameAPI apiGame;
+    CPluginAPI apiPlugins;
 
   // Only virtual and defined methods can be used outside the Classics patch
   public:
@@ -91,9 +90,6 @@ class CPatchAPI {
 
     // Disable specific function patch
     virtual void DisablePatch(INDEX iPatch);
-
-    // Obtain pointer to a plugin module
-    virtual CPluginModule *ObtainPlugin_t(const CTFileName &fnmModule);
 
     // Called every simulation tick
     virtual void OnTick(void);
@@ -143,6 +139,11 @@ extern "C" __declspec(dllexport) CPatchAPI *_pPatchAPI;
 // Get Game API module
 inline CGameAPI *GetGameAPI(void) {
   return &_pPatchAPI->apiGame;
+};
+
+// Get plugin API module
+inline CPluginAPI *GetPluginAPI(void) {
+  return &_pPatchAPI->apiPlugins;
 };
 
 #endif

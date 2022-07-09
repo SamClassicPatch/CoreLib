@@ -112,7 +112,7 @@ void CECIL_LoadGameLib(void) {
     strGameLib += ".dll";
 
     // Obtain Game library
-    CPluginModule *pGameLib = _pPatchAPI->ObtainPlugin_t(strGameLib);
+    CPluginModule *pGameLib = GetPluginAPI()->ObtainPlugin_t(strGameLib);
     CPrintF(TRANS("Loading game library '%s'...\n"), pGameLib->GetName());
 
     // Create Game class
@@ -147,7 +147,7 @@ void CECIL_LoadPlugins(void) {
 
     try {
       // Try to load the plugin
-      _pPatchAPI->ObtainPlugin_t(afnmDir[i]);
+      GetPluginAPI()->ObtainPlugin_t(afnmDir[i]);
 
     } catch (char *strError) {
       // Plugin initialization failed
