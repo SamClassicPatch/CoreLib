@@ -258,7 +258,7 @@ class CGameAPI {
     };
 
     // Get game state
-    virtual BOOL GetGameState(void) const {
+    virtual BOOL IsGameOn(void) const {
       return *pbGameOn;
     };
 
@@ -268,7 +268,7 @@ class CGameAPI {
     };
 
     // Get menu state
-    virtual BOOL GetMenuState(void) const {
+    virtual BOOL IsMenuOn(void) const {
       return *pbMenuOn;
     };
 
