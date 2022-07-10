@@ -73,6 +73,9 @@ class CCoreAPI {
     // Load all user plugins of specific utility types
     void LoadPlugins(ULONG ulUtilityFlags);
 
+    // Release all user plugins of specific utility types
+    void ReleasePlugins(ULONG ulUtilityFlags);
+
     // Called every simulation tick
     virtual void OnTick(void);
 

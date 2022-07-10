@@ -137,6 +137,32 @@ void CCoreAPI::LoadPlugins(ULONG ulUtilityFlags) {
   CPrintF("--- Done! ---\n");
 };
 
+// Release all user plugins of specific utility types
+void CCoreAPI::ReleasePlugins(ULONG ulUtilityFlags) {
+  CPrintF("--- Releasing user plugins (flags: 0x%X) ---\n", ulUtilityFlags);
+
+  CDynamicContainer<CPluginModule> &cPlugins = GetPluginAPI()->GetPlugins();
+  CDynamicContainer<CPluginModule> cToRelease;
+
+  // Gather plugins that need to be released
+  FOREACHINDYNAMICCONTAINER(cPlugins, CPluginModule, itPlugin) {
+    // Matching utility flags
+    if (itPlugin->GetInfo().ulFlags & ulUtilityFlags) {
+      cToRelease.Add(itPlugin);
+    }
+  }
+
+  // Delete plugin modules one by one
+  while (cToRelease.Count() > 0) {
+    CPluginModule *pModule = cToRelease.Pointer(0);
+
+    cToRelease.Remove(pModule);
+    delete pModule;
+  }
+
+  CPrintF("--- Done! ---\n");
+};
+
 // Called every simulation tick
 void CCoreAPI::OnTick(void)
 {
