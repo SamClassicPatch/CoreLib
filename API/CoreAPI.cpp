@@ -87,6 +87,10 @@ static void ListPlugins(void) {
 CCoreAPI::CCoreAPI() :
   apiPatches(*new CPatchAPI), apiGame(*new CGameAPI), apiPlugins(*new CPluginAPI)
 {
+  // Make sure that this is the only API class
+  ASSERT(_pCoreAPI == NULL);
+  _pCoreAPI = this;
+
   // Add core API to symbols
   CShellSymbol &ssNew = *_pShell->sh_assSymbols.New(1);
 

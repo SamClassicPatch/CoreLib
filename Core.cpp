@@ -45,8 +45,8 @@ static void PatchInfo(void) {
 
 // Initialize Core module
 void CECIL_InitCore(void) {
-  // Initialize core API
-  _pCoreAPI = new CCoreAPI();
+  // Create core API
+  new CCoreAPI();
 
   // Information about the patch
   _pShell->DeclareSymbol("user void PatchInfo(void);", &PatchInfo);
