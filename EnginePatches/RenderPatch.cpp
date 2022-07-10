@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "Rendering/RenderFunctions.h"
 
 // Patch commands
+static INDEX sam_bAdjustForAspectRatio = TRUE;
 static INDEX sam_bUseVerticalFOV = TRUE;
 static FLOAT sam_fCustomFOV = -1.0f;
 static FLOAT sam_fThirdPersonFOV = -1.0f;
@@ -102,6 +103,11 @@ static void RenderViewCopy(CWorld &woWorld, CEntity &enViewer, CAnyProjection3D 
 // Patched function
 static void P_RenderView(CWorld &woWorld, CEntity &enViewer, CAnyProjection3D &apr, CDrawPort &dp)
 {
+  // Set wide adjustment based on current aspect ratio
+  if (sam_bAdjustForAspectRatio) {
+    dp.dp_fWideAdjustment = ((FLOAT)dp.GetHeight() / (FLOAT)dp.GetWidth()) * (4.0f / 3.0f);
+  }
+
   // Not a perspective projection
   if (!apr.IsPerspective()) {
     // Proceed to the original function
@@ -374,6 +380,7 @@ extern void CECIL_ApplyRenderPatch(void) {
   NewPatch(pFactor.pFunction, &CProjectionPatch::P_MipFactor, "CPerspectiveProjection3D::MipFactor()");
 
   // Custom symbols
+  _pShell->DeclareSymbol("persistent user INDEX sam_bAdjustForAspectRatio;", &sam_bAdjustForAspectRatio);
   _pShell->DeclareSymbol("persistent user INDEX sam_bUseVerticalFOV;",  &sam_bUseVerticalFOV);
   _pShell->DeclareSymbol("persistent user FLOAT sam_fCustomFOV;",       &sam_fCustomFOV);
   _pShell->DeclareSymbol("persistent user FLOAT sam_fThirdPersonFOV;",  &sam_fThirdPersonFOV);
