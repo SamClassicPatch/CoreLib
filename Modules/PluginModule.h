@@ -1,4 +1,5 @@
 /* Copyright (c) 2021-2022 by ZCaliptium.
+   Copyright (c) 2022 Dreamy Cecil
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of version 2 of the GNU General Public License as published by
@@ -21,80 +22,65 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #pragma once
 #endif
 
-//! Abstract class that represents loaded plugin library.
-class CPluginModule : public CSerial 
+// Abstract class that represents loaded plugin library
+class CPluginModule : public CSerial
 {
   public:
-    HINSTANCE _hiLibrary;
-
-    // [Cecil] Plugin has been initialized
-    BOOL _bInitialized;
-
-    // [Cecil] Plugin information
-    CPluginAPI::PluginInfo _info;
-
-  public:
-    // [Cecil] Plugin method types
+    // Plugin method types
     typedef void (*CVoidFunc)(void); // Simple method
     typedef void (*CDrawFunc)(CDrawPort *pdp); // Draw method
     typedef void (*CInfoFunc)(CPluginAPI::PluginInfo *pInfo); // Plugin info method
 
-    //! Pointer to initialization routines, called after LoadLibrary.
-    CVoidFunc pOnStartupFunc;
-    
-    //! Pointer to deinit routines, called before FreeLibrary.
-    CVoidFunc pOnShutdownFunc;
-
-    // [Cecil] Retrieve information about the plugin
-    CInfoFunc pGetInfoFunc;
-
-    // [Cecil] Step method to be called every simulation tick
-    CVoidFunc pOnStepFunc;
-
-    // [Cecil] Draw method to be called every render frame
-    CDrawFunc pOnDrawFunc;
+  public:
+    HINSTANCE _hiLibrary; // Library handle
+    BOOL _bInitialized; // Plugin has been initialized
+    CPluginAPI::PluginInfo _info; // Plugin information
 
   public:
-    //! Constructor.
+    // Constructor
     CPluginModule();
 
-    //! Destructor
+    // Destructor
     virtual ~CPluginModule();
 
-    // [Cecil] Plugin initialization
+    // Return library handle
+    inline HINSTANCE GetHandle(void) {
+      return _hiLibrary;
+    };
+
+    // Get plugin information
+    virtual const CPluginAPI::PluginInfo &GetInfo(void) {
+      return _info;
+    };
+
+    // Module initialization
     virtual void Initialize(void);
 
-    //! Clear module. 
+    // Module cleanup
     virtual void Clear(void);
 
-    //! Read from stream.
-    virtual void Read_t(CTStream *istrFile); // throw char *
-    
-    //! Write to stream.
-    virtual void Write_t(CTStream *ostrFile); // throw char *
+    // Reset class fields
+    virtual void ResetFields(void);
 
-    // [Cecil] Load plugin module manually
-    virtual void LoadPlugin_t(const CTFileName &fnmDLL); // throw char *
+    // Write to stream (obsolete method)
+    virtual void Write_t(CTStream *ostrFile);
+
+    // Read from stream (obsolete method)
+    virtual void Read_t(CTStream *istrFile);
+
+    // Load plugin module manually
+    virtual void LoadPlugin_t(const CTFileName &fnmDLL);
     
-    //! Returns amount of used memory in bytes.
+    // Return amount of used memory in bytes
     virtual SLONG GetUsedMemory(void);
 
-    // [Cecil] 'GetModuleHandle' -> 'GetHandle' to avoid the macro
-    //! Returns loaded library handle.
-    inline HINSTANCE GetHandle()
-    {
-      return _hiLibrary;
-    }
-
-    //! Check if this kind of objects is auto-freed.
-    virtual BOOL IsAutoFreed(void)
-    {
+    // Check if this kind of objects is can be freed automatically
+    virtual BOOL IsAutoFreed(void) {
       return FALSE;
     };
 
-    // [Cecil] Get specific symbol from the module (must be a pointer to the pointer variable)
-    template<class Type> void GetSymbol_t(Type *ppSymbol, const char *strSymbolName)
-    {
+    // Get specific symbol from the module (must be a pointer to the pointer variable)
+    template<class Type> void GetSymbol_t(Type *ppSymbol, const char *strSymbolName) {
       // No module
       if (GetHandle() == NULL) {
         ThrowF_t(TRANS("Plugin module has not been loaded yet!"));
@@ -108,15 +94,14 @@ class CPluginModule : public CSerial
       }
     };
 
-    // [Cecil] Get plugin information
-    virtual const CPluginAPI::PluginInfo &GetInfo(void) {
-      return _info;
-    };
-
-  // [Cecil] Plugin methods
+  // Plugin methods
   public:
-    // Reset function pointers
-    virtual void ResetMethods(void);
+    CVoidFunc pOnStartupFunc; // Entry point for the plugin
+    CVoidFunc pOnShutdownFunc; // Plugin cleanup before releasing it
+    CInfoFunc pGetInfoFunc; // Retrieve information about the plugin
+
+    CVoidFunc pOnStepFunc; // Ñalled every simulation tick for executing synchronized logic
+    CDrawFunc pOnDrawFunc; // Ñalled every render frame for drawing something on screen
 
     // Call startup method
     virtual void OnStartup(void);
@@ -131,4 +116,4 @@ class CPluginModule : public CSerial
     virtual void OnDraw(CDrawPort *pdp);
 };
 
-#endif  /* include-once check. */
+#endif

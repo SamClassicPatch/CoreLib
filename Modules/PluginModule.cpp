@@ -1,4 +1,5 @@
 /* Copyright (c) 2021-2022 by ZCaliptium.
+   Copyright (c) 2022 Dreamy Cecil
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of version 2 of the GNU General Public License as published by
@@ -18,22 +19,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "PluginModule.h"
 
-//! Constructor.
-CPluginModule::CPluginModule()
-{
-  _hiLibrary = NULL;
+// Constructor
+CPluginModule::CPluginModule() {
+  ResetFields();
+};
 
-  // [Cecil] Reset methods
-  ResetMethods();
-}
-
-//! Destructor
-CPluginModule::~CPluginModule()
-{
+// Destructor
+CPluginModule::~CPluginModule() {
   Clear();
-}
+};
 
-// [Cecil] Plugin initialization
+// Module initialization
 void CPluginModule::Initialize(void) {
   if (_bInitialized) return;
 
@@ -47,7 +43,7 @@ void CPluginModule::Initialize(void) {
   _bInitialized = TRUE;
 };
 
-// Clear module
+// Module cleanup
 void CPluginModule::Clear(void) {
   // Release DLL
   if (_hiLibrary != NULL) {
@@ -55,66 +51,71 @@ void CPluginModule::Clear(void) {
     FreeLibrary(_hiLibrary);
   }
 
-  // [Cecil] Reset methods
-  ResetMethods();
+  // Reset class
+  ResetFields();
+  CSerial::Clear();
 };
 
-// Count used memory
-SLONG CPluginModule::GetUsedMemory(void)
-{
-  return sizeof(CPluginModule);
-}
+// Reset class fields
+void CPluginModule::ResetFields(void) {
+  _hiLibrary = NULL;
+  _bInitialized = FALSE;
+
+  pOnStartupFunc = NULL;
+  pOnShutdownFunc = NULL;
+  pGetInfoFunc = NULL;
+  pOnStepFunc = NULL;
+  pOnDrawFunc = NULL;
+};
 
 // Write to stream
-void CPluginModule::Write_t(CTStream *ostrFile)
-{
-}
+void CPluginModule::Write_t(CTStream *ostrFile) {
+  ASSERTALWAYS("Plugin modules cannot be written!");
+};
 
 // Read from stream
-void CPluginModule::Read_t(CTStream *istrFile)
-{
-  // [Cecil] Obsolete method
-  ASSERTALWAYS("Don't load plugin modules using traditional stocks! Use CPluginStock instead!");
-}
+void CPluginModule::Read_t(CTStream *istrFile) {
+  ASSERTALWAYS("Plugin modules cannot be read! Use CPluginStock for loading plugins!");
+};
 
-// Load a Dynamic Link Library.
+// Load dynamic link library
 static HINSTANCE LoadLibrary_t(const char *strFileName)
 {
   HINSTANCE hiDLL = ::LoadLibraryA(strFileName);
 
-  // If the DLL can not be loaded
+  // If the library cannot be loaded
   if (hiDLL == NULL) {
     // Get the error code
     DWORD dwMessageId = GetLastError();
     
-    // Format the windows error message
+    // Format the Windows error message
     LPVOID lpMsgBuf;
-    DWORD dwSuccess = FormatMessage(
+    DWORD dwSuccess = FormatMessageA(
         FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-        NULL,
-        dwMessageId,
-        MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // default language
-        (LPTSTR) &lpMsgBuf,
-        0,
-        NULL
+        NULL, dwMessageId, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
+        (LPTSTR)&lpMsgBuf, 0, NULL
     );
     
     CTString strWinError;
+
     // If formatting succeeds
     if (dwSuccess != 0) {
       // Copy the result
       strWinError = ((char *)lpMsgBuf);
       
-      // Free the windows message buffer
-      LocalFree(lpMsgBuf );
+      // Free the Windows message buffer
+      LocalFree(lpMsgBuf);
+
     } else {
-      // Set our message about the failure
+      // Report failure
       CTString strError;
+
       strError.PrintF(
         TRANS("Cannot format error message!\n"
         "Original error code: %d,\n"
         "Formatting error code: %d.\n"),
         dwMessageId, GetLastError());
+
       strWinError = strError;
     }
 
@@ -123,9 +124,9 @@ static HINSTANCE LoadLibrary_t(const char *strFileName)
   }
 
   return hiDLL;
-}
+};
 
-// [Cecil] Load plugin module manually
+// Load plugin module manually
 void CPluginModule::LoadPlugin_t(const CTFileName &fnmDLL)
 {
   // Load library from file
@@ -146,15 +147,9 @@ void CPluginModule::LoadPlugin_t(const CTFileName &fnmDLL)
   }
 };
 
-// [Cecil] Reset function pointers
-void CPluginModule::ResetMethods(void) {
-  _bInitialized = FALSE;
-
-  pOnStartupFunc = NULL;
-  pOnShutdownFunc = NULL;
-  pGetInfoFunc = NULL;
-  pOnStepFunc = NULL;
-  pOnDrawFunc = NULL;
+// Return amount of used memory in bytes
+SLONG CPluginModule::GetUsedMemory(void) {
+  return sizeof(CPluginModule);
 };
 
 // Call startup method
