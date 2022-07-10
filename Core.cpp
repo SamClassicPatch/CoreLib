@@ -57,6 +57,12 @@ void CECIL_InitCore(void) {
   extern void CECIL_ApplyMasterServerPatch(void);
   CECIL_ApplyMasterServerPatch();
 
+  // Non-server patches
+  if (!_bDedicatedServer) {
+    extern void CECIL_ApplyRenderPatch(void);
+    CECIL_ApplyRenderPatch();
+  }
+
   CPrintF("--- Done! ---\n");
 
   // Common game variables

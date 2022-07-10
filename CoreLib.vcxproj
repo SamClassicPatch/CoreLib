@@ -47,6 +47,7 @@
     <ClCompile Include="API\PluginAPI.cpp" />
     <ClCompile Include="Core.cpp" />
     <ClCompile Include="EnginePatches\NetworkPatch.cpp" />
+    <ClCompile Include="EnginePatches\RenderPatch.cpp" />
     <ClCompile Include="Modules\PluginModule.cpp" />
     <ClCompile Include="Modules\PluginStock.cpp" />
     <ClCompile Include="Networking\NetworkFunctions.cpp" />
