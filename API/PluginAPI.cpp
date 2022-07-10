@@ -21,19 +21,30 @@ CPluginAPI::CPluginAPI() {
   pPluginStock = new CPluginStock;
 };
 
-// Obtain pointer to a plugin module
-CPluginModule *CPluginAPI::ObtainPlugin_t(const CTFileName &fnmModule)
+// Obtain pointer to a plugin module of specific utility types
+CPluginModule *CPluginAPI::ObtainPlugin_t(const CTFileName &fnmModule, ULONG ulUtilityFlags)
 {
+  // Obtain info from the plugin
   CPluginModule *pPlugin = pPluginStock->Obtain_t(fnmModule);
+  const CPluginAPI::PluginInfo &info = pPlugin->GetInfo();
 
-  // Check used API version
-  ULONG ulPluginVer = pPlugin->GetInfo().apiVer;
+  const CTString strFileName = fnmModule.FileName() + fnmModule.FileExt();
 
-  if (ulPluginVer != CORE_API_VERSION) {
-    CPrintF("'%s' load cancelled: Wrong API version (%u)\n", fnmModule.str_String, ulPluginVer);
+  // Check used API version and utility types
+  BOOL bVersion = (info.apiVer == CORE_API_VERSION);
+  BOOL bUtility = (info.ulFlags & ulUtilityFlags) != 0;
 
+  // Warn about load cancelling
+  if (!bVersion) {
+    CPrintF("'%s' load cancelled: Wrong API version (%u)\n", strFileName, info.apiVer);
+  } else if (!bUtility) {
+    CPrintF("'%s' load cancelled: Mismatching utility flags (0x%X)\n", strFileName, info.ulFlags);
+  }
+  
+  // Cannot load some plugin
+  if (!bVersion || !bUtility) {
     // Release it
-    pPluginStock->ForcePlugin(pPlugin);
+    pPluginStock->ForceRelease(pPlugin);
 
     // No plugin has been loaded
     return NULL;

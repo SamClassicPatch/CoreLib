@@ -70,8 +70,8 @@ class CCoreAPI {
     // Load Game library as a plugin
     void LoadGameLib(void);
 
-    // Load all user plugins
-    void LoadPlugins(void);
+    // Load all user plugins of specific utility types
+    void LoadPlugins(ULONG ulUtilityFlags);
 
     // Called every simulation tick
     virtual void OnTick(void);

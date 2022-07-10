@@ -180,13 +180,13 @@ void CCoreAPI::LoadGameLib(void) {
   GetGameAPI()->HookFields();
 };
 
-// Load all user plugins
-void CCoreAPI::LoadPlugins(void) {
+// Load all user plugins of specific utility types
+void CCoreAPI::LoadPlugins(ULONG ulUtilityFlags) {
   // List all library files
   CDynamicStackArray<CTFileName> afnmDir;
   MakeDirList(afnmDir, CTString("Bin\\Plugins\\"), "*.dll", DLI_RECURSIVE);
 
-  CPrintF("--- Loading user plugins ---\n");
+  CPrintF("--- Loading user plugins (flags: 0x%X) ---\n", ulUtilityFlags);
 
   // Load every plugin
   for (INDEX i = 0; i < afnmDir.Count(); i++)
@@ -195,7 +195,7 @@ void CCoreAPI::LoadPlugins(void) {
 
     try {
       // Try to load the plugin
-      GetPluginAPI()->ObtainPlugin_t(afnmDir[i]);
+      GetPluginAPI()->ObtainPlugin_t(afnmDir[i], ulUtilityFlags);
 
     } catch (char *strError) {
       // Plugin initialization failed
