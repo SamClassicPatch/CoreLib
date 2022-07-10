@@ -15,10 +15,34 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "StdH.h"
 
+// List loaded plugin modules
+static void ListPlugins(void) {
+  CPluginStock *pStock = GetPluginAPI()->pPluginStock;
+
+  if (pStock->GetTotalCount() == 0) {
+    CPrintF("No plugins have been loaded!\n");
+    return;
+  }
+
+  CPrintF("Loaded plugins:\n");
+  
+  for (INDEX iPlugin = 0; iPlugin < pStock->GetTotalCount(); iPlugin++) {
+    CPluginModule *pPlugin = pStock->st_ctObjects.Pointer(iPlugin);
+
+    // Indent the index
+    const INDEX ctIdent = ClampDn(2 - INDEX(log10((FLOAT)iPlugin)), (INDEX)0);
+
+    CPrintF("%*s%d - %s\n", ctIdent, "", iPlugin, pPlugin->GetName().str_String);
+  }
+};
+
 // Constructor
 CPluginAPI::CPluginAPI() {
   // Create stock of plugin modules
   pPluginStock = new CPluginStock;
+
+  // List loaded plugin modules
+  _pShell->DeclareSymbol("user void ListPlugins(void);", &ListPlugins);
 };
 
 // Obtain pointer to a plugin module of specific utility types

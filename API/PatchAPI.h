@@ -50,6 +50,9 @@ class CPatchAPI {
     CStaticStackArray<SFuncPatch> aPatches; // Function patch storage
     
   public:
+    // Constructor
+    CPatchAPI();
+
     // Enable specific function patch
     virtual BOOL EnablePatch(INDEX iPatch);
 
