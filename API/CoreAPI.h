@@ -118,19 +118,24 @@ extern "C" __declspec(dllexport) CCoreAPI *_pCoreAPI;
   };
 #endif
 
+// Get core API
+inline CCoreAPI *GetAPI(void) {
+  return _pCoreAPI;
+};
+
 // Get patch API module
 inline CPatchAPI *GetPatchAPI(void) {
-  return &_pCoreAPI->apiPatches;
+  return &GetAPI()->apiPatches;
 };
 
 // Get Game API module
 inline CGameAPI *GetGameAPI(void) {
-  return &_pCoreAPI->apiGame;
+  return &GetAPI()->apiGame;
 };
 
 // Get plugin API module
 inline CPluginAPI *GetPluginAPI(void) {
-  return &_pCoreAPI->apiPlugins;
+  return &GetAPI()->apiPlugins;
 };
 
 #endif

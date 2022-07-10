@@ -37,7 +37,7 @@ static void PatchInfo(void) {
     "\n"
     "\n- Engine version: " _SE_VER_STRING
     "\n- Patch version: "
-    + _pCoreAPI->GetVersion()
+    + GetAPI()->GetVersion()
     + "\n\n(c) Dreamy Cecil, 2022\n";
 
   CPutString(strInfo);
@@ -65,5 +65,5 @@ void CECIL_InitCore(void) {
   _pShell->DeclareSymbol("persistent user CTString sam_strGameName;",   &sam_strGameName);
 
   // Load Core plugins
-  _pCoreAPI->LoadPlugins(CPluginAPI::PF_ENGINE);
+  GetAPI()->LoadPlugins(CPluginAPI::PF_ENGINE);
 };

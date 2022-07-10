@@ -171,7 +171,7 @@ class CSessionStatePatch : public CSessionState {
       _pTimer->SetCurrentTick(ses_tmLastProcessedTick);
 
       // Call API every simulation tick
-      _pCoreAPI->OnTick();
+      GetAPI()->OnTick();
 
       // If cannot handle custom packet
       if (INetwork::ClientHandle(this, nmMessage)) {
