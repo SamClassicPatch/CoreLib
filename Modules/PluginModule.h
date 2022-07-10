@@ -106,7 +106,9 @@ class CPluginModule : public CSerial
     CInfoFunc pGetInfoFunc; // Retrieve information about the plugin
 
     CVoidFunc pOnStepFunc; // Ñalled every simulation tick for executing synchronized logic
-    CDrawFunc pOnDrawFunc; // Ñalled every render frame for drawing something on screen
+    CDrawFunc pOnPreDrawFunc; // Called before every game redraw
+    CDrawFunc pOnPostDrawFunc; // Called after every game redraw
+    CDrawFunc pOnFrameFunc; // Ñalled every render frame
 
     // Call startup method
     virtual void OnStartup(void);
@@ -117,8 +119,14 @@ class CPluginModule : public CSerial
     // Call step method
     virtual void OnStep(void);
 
-    // Call draw method
-    virtual void OnDraw(CDrawPort *pdp);
+    // Call pre-draw method
+    virtual void OnPreDraw(CDrawPort *pdp);
+
+    // Call post-draw method
+    virtual void OnPostDraw(CDrawPort *pdp);
+
+    // Call frame method
+    virtual void OnFrame(CDrawPort *pdp);
 };
 
 #endif

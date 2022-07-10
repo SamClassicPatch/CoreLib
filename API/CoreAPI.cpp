@@ -177,11 +177,23 @@ void CCoreAPI::OnTick(void)
 // Called before redrawing game view
 void CCoreAPI::OnPreDraw(CDrawPort *pdp)
 {
+  CDynamicContainer<CPluginModule> &cPlugins = GetPluginAPI()->GetPlugins();
+
+  // Call pre-draw function for each plugin
+  FOREACHINDYNAMICCONTAINER(cPlugins, CPluginModule, itPlugin) {
+    itPlugin->OnPreDraw(pdp);
+  }
 };
 
 // Called after redrawing game view
 void CCoreAPI::OnPostDraw(CDrawPort *pdp)
 {
+  CDynamicContainer<CPluginModule> &cPlugins = GetPluginAPI()->GetPlugins();
+
+  // Call post-draw function for each plugin
+  FOREACHINDYNAMICCONTAINER(cPlugins, CPluginModule, itPlugin) {
+    itPlugin->OnPostDraw(pdp);
+  }
 };
 
 // Called every render frame
@@ -189,8 +201,8 @@ void CCoreAPI::OnFrame(CDrawPort *pdp)
 {
   CDynamicContainer<CPluginModule> &cPlugins = GetPluginAPI()->GetPlugins();
 
-  // Call draw function for each plugin
+  // Call frame function for each plugin
   FOREACHINDYNAMICCONTAINER(cPlugins, CPluginModule, itPlugin) {
-    itPlugin->OnDraw(pdp);
+    itPlugin->OnFrame(pdp);
   }
 };

@@ -35,7 +35,9 @@ void CPluginModule::Initialize(void) {
 
   // Get other methods
   pOnStepFunc = (CVoidFunc)GetProcAddress(GetHandle(), "Module_Step");
-  pOnDrawFunc = (CDrawFunc)GetProcAddress(GetHandle(), "Module_Draw");
+  pOnPreDrawFunc = (CDrawFunc)GetProcAddress(GetHandle(), "Module_PreDraw");
+  pOnPostDrawFunc = (CDrawFunc)GetProcAddress(GetHandle(), "Module_PostDraw");
+  pOnFrameFunc = (CDrawFunc)GetProcAddress(GetHandle(), "Module_Frame");
 
   // Start the plugin
   OnStartup();
@@ -65,7 +67,9 @@ void CPluginModule::ResetFields(void) {
   pOnShutdownFunc = NULL;
   pGetInfoFunc = NULL;
   pOnStepFunc = NULL;
-  pOnDrawFunc = NULL;
+  pOnPreDrawFunc = NULL;
+  pOnPostDrawFunc = NULL;
+  pOnFrameFunc = NULL;
 };
 
 // Write to stream
@@ -181,9 +185,23 @@ void CPluginModule::OnStep(void) {
   }
 };
 
-// Call draw method
-void CPluginModule::OnDraw(CDrawPort *pdp) {
-  if (pOnDrawFunc != NULL) {
-    pOnDrawFunc(pdp);
+// Call pre-draw method
+void CPluginModule::OnPreDraw(CDrawPort *pdp) {
+  if (pOnPreDrawFunc != NULL) {
+    pOnPreDrawFunc(pdp);
+  }
+};
+
+// Call post-draw method
+void CPluginModule::OnPostDraw(CDrawPort *pdp) {
+  if (pOnPostDrawFunc != NULL) {
+    pOnPostDrawFunc(pdp);
+  }
+};
+
+// Call frame method
+void CPluginModule::OnFrame(CDrawPort *pdp) {
+  if (pOnFrameFunc != NULL) {
+    pOnFrameFunc(pdp);
   }
 };
