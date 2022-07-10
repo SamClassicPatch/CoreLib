@@ -174,6 +174,16 @@ void CCoreAPI::OnTick(void)
   }
 };
 
+// Called before redrawing game view
+void CCoreAPI::OnPreDraw(CDrawPort *pdp)
+{
+};
+
+// Called after redrawing game view
+void CCoreAPI::OnPostDraw(CDrawPort *pdp)
+{
+};
+
 // Called every render frame
 void CCoreAPI::OnFrame(CDrawPort *pdp)
 {

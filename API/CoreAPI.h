@@ -79,6 +79,12 @@ class CCoreAPI {
     // Called every simulation tick
     virtual void OnTick(void);
 
+    // Called before redrawing game view
+    virtual void OnPreDraw(CDrawPort *pdp);
+
+    // Called after redrawing game view
+    virtual void OnPostDraw(CDrawPort *pdp);
+
     // Called every render frame
     virtual void OnFrame(CDrawPort *pdp);
 };
