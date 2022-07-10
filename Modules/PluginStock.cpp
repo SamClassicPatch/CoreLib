@@ -56,7 +56,10 @@ CPluginModule *CPluginStock::Obtain_t(const CTFileName &fnmFileName) {
 
   } catch (char *) {
     // Release the plugin if couldn't load it
-    ReleasePlugin(pNewPlugin);
+    st_ctObjects.Remove(pNewPlugin);
+    st_ntObjects.Remove(pNewPlugin);
+    delete pNewPlugin;
+
     throw;
   }
 
@@ -67,9 +70,16 @@ CPluginModule *CPluginStock::Obtain_t(const CTFileName &fnmFileName) {
   return pNewPlugin;
 };
 
-// Release plugin manually
-void CPluginStock::ReleasePlugin(CPluginModule *pPlugin) {
-  st_ctObjects.Remove(pPlugin);
-  st_ntObjects.Remove(pPlugin);
-  delete pPlugin;
+// Forcefully release a plugin
+void CPluginStock::ForceRelease(CPluginModule *pPlugin) {
+  // Use once less
+  pPlugin->MarkUnused();
+
+  // Forcefully release it if not used anymore
+  if (!pPlugin->IsUsed()) {
+    st_ctObjects.Remove(pPlugin);
+    st_ntObjects.Remove(pPlugin);
+
+    delete pPlugin;
+  }
 };

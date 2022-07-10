@@ -50,8 +50,8 @@ class CPluginStock : public CStock_CPluginModule
     // Let plugin module load itself from a file
     virtual CPluginModule *Obtain_t(const CTFileName &fnmFileName);
 
-    // Release plugin manually
-    virtual void ReleasePlugin(CPluginModule *pPlugin);
+    // Forcefully release a plugin
+    virtual void ForceRelease(CPluginModule *pPlugin);
 };
 
 #endif

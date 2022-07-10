@@ -33,8 +33,7 @@ CPluginModule *CPluginAPI::ObtainPlugin_t(const CTFileName &fnmModule)
     CPrintF("'%s' load cancelled: Wrong API version (%u)\n", fnmModule.str_String, ulPluginVer);
 
     // Release it
-    pPlugin->MarkUnused(); // This should result in 0 uses
-    pPluginStock->ReleasePlugin(pPlugin);
+    pPluginStock->ForcePlugin(pPlugin);
 
     // No plugin has been loaded
     return NULL;
