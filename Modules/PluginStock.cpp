@@ -43,16 +43,14 @@ CPluginModule *CPluginStock::Obtain_t(const CTFileName &fnmFileName) {
     return pExisting;
   }
 
-  // Create new plugin module
+  // Add new plugin module
   CPluginModule *pNewPlugin = new CPluginModule;
-  pNewPlugin->ser_FileName = fnmFileName;
-
   st_ctObjects.Add(pNewPlugin);
   st_ntObjects.Add(pNewPlugin);
 
   try {
     // Try to load the plugin
-    pNewPlugin->LoadPlugin_t(fnmFileName);
+    pNewPlugin->Load_t(fnmFileName);
 
   } catch (char *) {
     // Release the plugin if couldn't load it

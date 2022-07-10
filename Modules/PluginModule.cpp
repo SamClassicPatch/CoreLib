@@ -126,9 +126,17 @@ static HINSTANCE LoadLibrary_t(const char *strFileName)
   return hiDLL;
 };
 
-// Load plugin module manually
-void CPluginModule::LoadPlugin_t(const CTFileName &fnmDLL)
+// Load plugin module (override non-virtual CSerial::Load_t)
+void CPluginModule::Load_t(const CTFileName &fnmDLL)
 {
+  ASSERT(!IsUsed());
+
+  // Mark that just changed
+  MarkChanged();
+
+  // Remember filename
+  ser_FileName = fnmDLL;
+
   // Load library from file
   CTFileName fnmExpanded;
   ExpandFilePath(EFP_READ | EFP_NOZIPS, fnmDLL, fnmExpanded);

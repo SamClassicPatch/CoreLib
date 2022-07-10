@@ -73,8 +73,8 @@ class CPluginModule : public CSerial
     // Read from stream (obsolete method)
     virtual void Read_t(CTStream *istrFile);
 
-    // Load plugin module manually
-    virtual void LoadPlugin_t(const CTFileName &fnmDLL);
+    // Load plugin module (override non-virtual CSerial::Load_t)
+    virtual void Load_t(const CTFileName &fnmDLL);
     
     // Return amount of used memory in bytes
     virtual SLONG GetUsedMemory(void);
