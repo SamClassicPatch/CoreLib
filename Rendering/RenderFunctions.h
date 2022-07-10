@@ -20,6 +20,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #pragma once
 #endif
 
+// Get scaling multiplier based on screen height
+#define HEIGHT_SCALING(DrawPort) ((FLOAT)DrawPort->GetHeight() / 480.0f)
+
 // Interface of methods for rendering
 class IRender {
   public:
