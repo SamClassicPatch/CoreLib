@@ -103,6 +103,9 @@ static void RenderViewCopy(CWorld &woWorld, CEntity &enViewer, CAnyProjection3D 
 // Patched function
 static void P_RenderView(CWorld &woWorld, CEntity &enViewer, CAnyProjection3D &apr, CDrawPort &dp)
 {
+  // Set core render space
+  IRender::SetDrawPort(&dp);
+
   // Set wide adjustment based on current aspect ratio
   if (sam_bAdjustForAspectRatio) {
     dp.dp_fWideAdjustment = ((FLOAT)dp.GetHeight() / (FLOAT)dp.GetWidth()) * (4.0f / 3.0f);
