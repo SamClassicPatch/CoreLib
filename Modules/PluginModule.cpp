@@ -35,12 +35,16 @@ CPluginModule::~CPluginModule()
 
 // [Cecil] Plugin initialization
 void CPluginModule::Initialize(void) {
+  if (_bInitialized) return;
+
   // Get other methods
   pOnStepFunc = (CVoidFunc)GetProcAddress(GetHandle(), "Module_Step");
   pOnDrawFunc = (CDrawFunc)GetProcAddress(GetHandle(), "Module_Draw");
 
   // Start the plugin
   OnStartup();
+
+  _bInitialized = TRUE;
 };
 
 // Clear module
@@ -144,6 +148,8 @@ void CPluginModule::LoadPlugin_t(const CTFileName &fnmDLL)
 
 // [Cecil] Reset function pointers
 void CPluginModule::ResetMethods(void) {
+  _bInitialized = FALSE;
+
   pOnStartupFunc = NULL;
   pOnShutdownFunc = NULL;
   pGetInfoFunc = NULL;

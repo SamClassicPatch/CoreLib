@@ -27,6 +27,9 @@ class CPluginModule : public CSerial
   public:
     HINSTANCE _hiLibrary;
 
+    // [Cecil] Plugin has been initialized
+    BOOL _bInitialized;
+
     // [Cecil] Plugin information
     CPluginAPI::PluginInfo _info;
 
