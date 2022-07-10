@@ -52,3 +52,6 @@ extern CTString sam_strGameName;
 
 // Initialize Core module
 void CECIL_InitCore(void);
+
+// Clean up Core module
+void CECIL_EndCore(void);

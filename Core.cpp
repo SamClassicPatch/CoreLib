@@ -67,3 +67,9 @@ void CECIL_InitCore(void) {
   // Load Core plugins
   GetAPI()->LoadPlugins(CPluginAPI::PF_ENGINE);
 };
+
+// Clean up Core module
+void CECIL_EndCore(void) {
+  // Release all loaded plugins
+  GetAPI()->ReleasePlugins(CPluginAPI::PF_UTILITY_ALL);
+};
