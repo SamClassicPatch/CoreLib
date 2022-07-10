@@ -31,7 +31,7 @@ CPluginModule::~CPluginModule() {
 
 // Module initialization
 void CPluginModule::Initialize(void) {
-  if (_bInitialized) return;
+  if (IsInitialized()) return;
 
   // Get other methods
   pOnStepFunc = (CVoidFunc)GetProcAddress(GetHandle(), "Module_Step");

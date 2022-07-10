@@ -48,8 +48,13 @@ class CPluginModule : public CSerial
       return _hiLibrary;
     };
 
+    // Check if plugin has been initialized
+    inline BOOL IsInitialized(void) {
+      return _bInitialized;
+    };
+
     // Get plugin information
-    virtual const CPluginAPI::PluginInfo &GetInfo(void) {
+    inline const CPluginAPI::PluginInfo &GetInfo(void) {
       return _info;
     };
 
