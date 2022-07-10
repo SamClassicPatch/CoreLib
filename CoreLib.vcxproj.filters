@@ -58,6 +58,12 @@
     <Filter Include="Source Files\Networking">
       <UniqueIdentifier>{b52d21a6-5ecf-4731-a79d-b5d6988148df}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Rendering headers">
+      <UniqueIdentifier>{99841ecf-8ef6-4ae8-9bac-b2359a7b7837}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Rendering">
+      <UniqueIdentifier>{47b97015-a975-4be1-a2ba-41d589d5696b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game\Game.h">
@@ -117,6 +123,9 @@
     <ClInclude Include="API\PatchAPI.h">
       <Filter>Header Files\API headers</Filter>
     </ClInclude>
+    <ClInclude Include="Rendering\RenderFunctions.h">
+      <Filter>Header Files\Rendering headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="StdH.cpp">
@@ -175,6 +184,9 @@
     </ClCompile>
     <ClCompile Include="API\PatchAPI.cpp">
       <Filter>Source Files\API</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\RenderFunctions.cpp">
+      <Filter>Source Files\Rendering</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
