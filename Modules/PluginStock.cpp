@@ -45,6 +45,8 @@ CPluginModule *CPluginStock::Obtain_t(const CTFileName &fnmFileName) {
 
   // Add new plugin module
   CPluginModule *pNewPlugin = new CPluginModule;
+  pNewPlugin->ser_FileName = fnmFileName;
+
   st_ctObjects.Add(pNewPlugin);
   st_ntObjects.Add(pNewPlugin);
 
