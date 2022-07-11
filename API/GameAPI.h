@@ -56,6 +56,8 @@ class CGameAPI {
     CStaticArray<INDEX> sp_aiGameModes; // Game mode indices
     CStaticArray<Difficulty> sp_aGameDifficulties; // Game difficulties
 
+    BOOL bGameHooked; // CGame fields have been hooked
+
     // Field offsets within CLocalPlayer
     struct LocalPlayerOffsets {
       ULONG ctSize; // sizeof(CLocalPlayer)
@@ -103,6 +105,16 @@ class CGameAPI {
 
     // Hook default fields from CGame
     virtual void HookFields(void);
+
+    // Check if CGame fields have been hooked
+    virtual BOOL IsHooked(void) {
+      return bGameHooked;
+    };
+
+    // Set hooked state (for custom field hooking)
+    virtual void SetHooked(BOOL bState) {
+      bGameHooked = bState;
+    };
 
     // Get game mode index
     virtual INDEX GetGameMode(INDEX i) const {

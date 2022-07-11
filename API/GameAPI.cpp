@@ -30,6 +30,9 @@ CGameAPI::CGameAPI() {
   sp_aGameDifficulties[3] = Difficulty( 2, "Hard");
   sp_aGameDifficulties[4] = Difficulty( 3, "Serious");
   sp_aGameDifficulties[5] = Difficulty( 4, "Mental");
+
+  // Fields are not hooked yet
+  bGameHooked = FALSE;
 };
 
 // Hook default fields from CGame
@@ -69,6 +72,9 @@ void CGameAPI::HookFields(void) {
   aiMenuLocalPlayers  = &_pGame->gm_aiMenuLocalPlayers[0];
   aiStartLocalPlayers = &_pGame->gm_aiStartLocalPlayers[0];
   aLocalPlayers       = (UBYTE *)&_pGame->gm_lpLocalPlayers[0];
+
+  // Mark as hooked
+  SetHooked(TRUE);
 };
 
 // Get one of the high score entries
