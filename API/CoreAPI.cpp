@@ -81,6 +81,14 @@ void CCoreAPI::LoadGameLib(void) {
     CPluginModule *pGameLib = GetPluginAPI()->LoadPlugin_t(GetGameLibPath());
     CPrintF(TRANS("Loading game library '%s'...\n"), pGameLib->GetName());
 
+    // Set metadata
+    CPluginAPI::PluginInfo &info = pGameLib->_info;
+
+    info.strName = "Game library";
+    info.strAuthor = "Croteam";
+    info.ulVersion = MakeVersion(1, 0, _SE_BUILD_MINOR);
+    info.strDescription = "Main component that provides game logic.";
+
     // Create Game class
     CGame *(*pGameCreateFunc)(void) = NULL;
     pGameLib->GetSymbol_t(&pGameCreateFunc, "GAME_Create");
