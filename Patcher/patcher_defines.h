@@ -115,15 +115,15 @@
 #define DEFINE_TEMPLATE(N) template<class TClassSource, class TClassTarget, class TReturnVal DEFINE_T_CLASSES_LIST_##N>
 
 
-#define DEFINE_CPATCH_CTOR_FUNCTION_WITH_N_ARGS(N, _Const) DEFINE_TEMPLATE(N)       \
-  explicit CPatch(DEFINE_2_N_ARGS_FUNCTIONS(N, _Const),                           \
+#define DEFINE_CPATCH_CTOR_FUNCTION_WITH_N_ARGS(N, _Const) DEFINE_TEMPLATE(N) \
+  explicit CPatch(DEFINE_2_N_ARGS_FUNCTIONS(N, _Const),                 \
     bool patch_now = true, bool set_forever = false)                    \
-                : m_valid(false)                            \
-                , m_patched(false)                          \
-                , m_set_forever(set_forever)                \
-                , m_PatchInstructionSet(0)                  \
-                , m_RestorePatchSet(0)                      \
-  {                                                                       \
+                : m_valid(false)                                        \
+                , m_patched(false)                                      \
+                , m_set_forever(set_forever)                            \
+                , m_PatchInstructionSet(0)                              \
+                , m_RestorePatchSet(0)                                  \
+  {                                                                     \
     HookClassFunctions(pfn_source, pfn_target, patch_now, set_forever); \
   }
 
