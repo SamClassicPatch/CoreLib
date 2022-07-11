@@ -59,13 +59,13 @@ class CPluginAPI {
     };
 
     // Plugin symbol structure with enough bytes for storage
-    struct CSymbol {
+    struct Symbol {
       UBYTE aBytes[8];
     };
 
   public:
     CPluginStock *pPluginStock; // Stock of plugin modules
-    CStaticStackArray<CSymbol> aSymbols; // Storage of symbol values
+    CStaticStackArray<Symbol> aSymbols; // Storage of symbol values
 
   public:
     // Constructor
@@ -80,8 +80,25 @@ class CPluginAPI {
     // Retrieve loaded plugins
     virtual CDynamicContainer<CPluginModule> &GetPlugins(void);
 
-    // Register new symbol from the plugin and return a pointer to its value
-    virtual void *RegisterSymbol(const char *strSymbolName, CTString strDeclaration);
+    // Register a symbol from the plugin and write a pointer to its value to the pointer variable
+    template<class Type> void RegisterSymbol(CTString strDeclaration, const char *strName, Type *ppVariable)
+    {
+      // Get symbol if it already exists
+      CShellSymbol *pss = _pShell->GetSymbol(strName, TRUE);
+  
+      // Return value of the existing symbol
+      if (pss != NULL) {
+        *ppVariable = (Type)pss->ss_pvValue;
+        return;
+      }
+
+      // Insert symbol name into the declaration
+      strDeclaration.PrintF(strDeclaration, strName);
+
+      // Allocate new symbol and declare it
+      *ppVariable = (Type)&aSymbols.Push();
+      _pShell->DeclareSymbol(strDeclaration, *ppVariable);
+    };
 };
 
 #endif
