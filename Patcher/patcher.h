@@ -50,8 +50,8 @@ class CPatch
     }
 
   protected:
-    bool okToRewriteTragetInstructionSet(long addr, int& rw_len);
-    BOOL HookFunction(long FuncToHook, long  MyHook, long* NewCallAddress, bool patch_now = true);
+    virtual bool okToRewriteTragetInstructionSet(long addr, int& rw_len);
+    virtual BOOL HookFunction(long FuncToHook, long  MyHook, long* NewCallAddress, bool patch_now = true);
 
   public:
     template<class TFunction>explicit CPatch(TFunction FuncToHook, TFunction MyHook, TFunction& NewCallAddress, bool patch_now = true, bool set_forever = false)
@@ -99,22 +99,22 @@ class CPatch
     #include "patcher_defines.h"
 
     // Destructor
-    ~CPatch();
+    virtual ~CPatch();
 
     // Check if patch has been set
-    bool patched(void);
+    virtual bool patched(void);
 
     // Check if the patch is valid
-    bool ok();
+    virtual bool ok();
 
     // Set patch validity
-    bool ok(bool _valid);
+    virtual bool ok(bool _valid);
 
     // Restore old function
-    void remove_patch(bool forever = false);
+    virtual void remove_patch(bool forever = false);
 
     // Set new function
-    void set_patch(void);
+    virtual void set_patch(void);
 
   // [Cecil] Extensions
   public:
