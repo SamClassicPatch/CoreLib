@@ -43,7 +43,7 @@ CCoreAPI::CCoreAPI() :
 
   // Output patcher actions
   if (FileExists(_fnmApplicationExe.FileDir() + "PatcherOutput")) {
-    Patch_DebugOutput() = true;
+    CPatch::DebugOutput() = true;
   }
 };
 

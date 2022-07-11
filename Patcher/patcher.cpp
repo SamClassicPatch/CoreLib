@@ -8,24 +8,12 @@
 #pragma comment(linker, "/IGNORE:4786")
 #endif
 
-// [Cecil] Patcher debug output
-static bool _bDebugOutput = false;
-static CTString _strPatcherLog = "";
-
-// [Cecil] Patcher debug output
-bool &Patch_DebugOutput(void) {
-  return _bDebugOutput;
-};
-
 #define PATCHER_OUT(Output) if (_bDebugOutput) { _strPatcherLog += Output; }
 
-// [Cecil] Allowed to rewrite anything of this length
-static int _iRewriteLen = -1;
-
-// [Cecil] Force instruction rewrite
-void Patch_ForceRewrite(const int iLength) {
-  _iRewriteLen = iLength;
-};
+// [Cecil] Define extensions
+bool CPatch::_bDebugOutput = false;
+CTString CPatch::_strPatcherLog = "";
+int CPatch::_iRewriteLen = -1;
 
 HANDLE CPatch::s_hHeap = 0;
 bool CPatch::okToRewriteTragetInstructionSet(long addr, int& rw_len)

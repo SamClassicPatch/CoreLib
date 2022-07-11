@@ -90,8 +90,23 @@ public:
   void remove_patch(bool forever = false);
   void set_patch();
 
+  // [Cecil] Extensions
+  public:
+    static bool _bDebugOutput; // Display debug output
+    static CTString _strPatcherLog; // Information to display
 
+    // Allowed to rewrite anything of this length
+    static int _iRewriteLen;
 
+    // Patcher debug output
+    static inline bool &DebugOutput(void) {
+      return _bDebugOutput;
+    };
+
+    // Force instruction rewrite
+    static inline void ForceRewrite(const int iLength) {
+      _iRewriteLen = iLength;
+    };
 };
 
 #pragma warning(pop)
