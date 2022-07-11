@@ -51,7 +51,7 @@ struct FuncPtr {
 
 // Create a new function patch
 template<class FuncType1, class FuncType2> inline
-CPatch *NewPatch(FuncType1 &funcOld, FuncType2 funcNew, const char *strName) {
+CPatch *NewPatch(FuncType1 &funcOld, FuncType2 funcNew, const char *strName, BOOL bAddToRegistry = TRUE) {
   CPrintF("  %s\n", strName);
 
   if (Patch_DebugOutput()) {
@@ -60,9 +60,12 @@ CPatch *NewPatch(FuncType1 &funcOld, FuncType2 funcNew, const char *strName) {
 
   CPatch *pPatch = new CPatch(funcOld, funcNew, true, false);
 
-  // Add to the patch registry
+  // Successfully patched
   if (pPatch->ok()) {
-    GetPatchAPI()->aPatches.Push() = SFuncPatch(strName, pPatch);
+    // Add to the patch registry
+    if (bAddToRegistry) {
+      GetPatchAPI()->aPatches.Push() = SFuncPatch(strName, pPatch);
+    }
 
   // Couldn't patch
   } else {
