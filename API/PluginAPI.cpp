@@ -24,7 +24,7 @@ static void ListPlugins(void) {
     return;
   }
 
-  CPrintF("Loaded plugins:\n");
+  CPrintF("^cffffffLoaded plugins:\n");
   
   for (INDEX iPlugin = 0; iPlugin < pStock->GetTotalCount(); iPlugin++) {
     CPluginModule *pPlugin = pStock->st_ctObjects.Pointer(iPlugin);
@@ -32,7 +32,16 @@ static void ListPlugins(void) {
     // Indent the index
     const INDEX ctIdent = ClampDn(2 - INDEX(log10((FLOAT)iPlugin)), (INDEX)0);
 
-    CPrintF("%*s%d - %s\n", ctIdent, "", iPlugin, pPlugin->GetName().str_String);
+    CPrintF("^c00ffff%*s%d - %s\n", ctIdent, "", iPlugin, pPlugin->GetName().str_String);
+
+    // Print metadata
+    const CPluginAPI::PluginInfo &info = pPlugin->GetInfo();
+
+    CPrintF("  Name: %s\n", info.strName);
+    CPrintF("  Author: %s\n", info.strAuthor);
+    CPrintF("  Version: %s\n", CCoreAPI::MakeVersionString(info.ulVersion));
+    CPrintF("  Description: %s\n", info.strDescription);
+    CPutString("---\n");
   }
 };
 
