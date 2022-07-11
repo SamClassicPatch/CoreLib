@@ -59,6 +59,27 @@ class CCoreAPI {
       return strVersion;
     };
 
+    // Get path to the Game library
+    static inline CTString GetGameLibPath(void) {
+      // Construct Game library name for different games
+      CTString strGameLib = _fnmApplicationExe.FileDir() + "Game";
+
+      // Append mod extension for TSE
+      #ifndef SE1_TFE
+        strGameLib += _strModExt;
+      #endif
+
+      // Debug library
+      #ifdef _DEBUG
+        strGameLib += "D";
+      #endif
+
+      // Library extension
+      strGameLib += ".dll";
+
+      return strGameLib;
+    };
+
     // Retrieve version of the patch
     virtual CTString GetVersion(void) {
       return MakeVersionString(ulVersion);

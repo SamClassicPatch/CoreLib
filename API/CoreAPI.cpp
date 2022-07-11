@@ -74,24 +74,8 @@ void CCoreAPI::LoadGameLib(void) {
   if (_pGame != NULL) return;
 
   try {
-    // Construct Game library name for different games
-    CTString strGameLib = _fnmApplicationExe.FileDir() + "Game";
-
-    // Append mod extension for TSE
-    #ifndef SE1_TFE
-      strGameLib += _strModExt;
-    #endif
-
-    // Debug library
-    #ifdef _DEBUG
-      strGameLib += "D";
-    #endif
-
-    // Library extension
-    strGameLib += ".dll";
-
     // Obtain Game library
-    CPluginModule *pGameLib = GetPluginAPI()->LoadPlugin_t(strGameLib);
+    CPluginModule *pGameLib = GetPluginAPI()->LoadPlugin_t(GetGameLibPath());
     CPrintF(TRANS("Loading game library '%s'...\n"), pGameLib->GetName());
 
     // Create Game class
