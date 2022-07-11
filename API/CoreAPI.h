@@ -53,6 +53,11 @@ class CCoreAPI {
     // Constructor
     CCoreAPI();
 
+    // Get running application type
+    static inline EAppType GetApplication(void) {
+      return eAppType;
+    };
+
     // Set running application type
     static inline void SetApplication(EAppType eSetType) {
       eAppType = eSetType;
