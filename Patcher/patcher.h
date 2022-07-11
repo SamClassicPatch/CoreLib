@@ -27,6 +27,8 @@ private:
   CPatch(){}
   CPatch(CPatch&){}
 
+// [Cecil] Made public
+public:
   template<class T1, class T2> inline void HookClassFunctions(T1& fn_funcToHook, T2 fn_Hook, bool patch_now, bool set_forever)
   {
     //long& NewCallAddress( *reinterpret_cast<long*>(&fn_funcToHook)  );
@@ -97,6 +99,14 @@ public:
 
     // Allowed to rewrite anything of this length
     static int _iRewriteLen;
+
+  public:
+    // Constructor without immediate function hooking
+    CPatch(bool bSetForever) :
+      m_valid(false), m_patched(false), m_set_forever(bSetForever),
+      m_PatchInstructionSet(0), m_RestorePatchSet(0)
+    {
+    };
 
     // Patcher debug output
     static inline bool &DebugOutput(void) {

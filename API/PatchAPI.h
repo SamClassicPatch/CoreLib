@@ -53,6 +53,9 @@ class CPatchAPI {
     // Constructor
     CPatchAPI();
 
+    // Externally create a new patch class
+    virtual CPatch *CreatePatch(BOOL bSetForever);
+
     // Enable specific function patch
     virtual BOOL EnablePatch(INDEX iPatch);
 

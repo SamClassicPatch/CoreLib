@@ -67,6 +67,11 @@ CPatchAPI::CPatchAPI() {
   _pShell->DeclareSymbol("void DisablePatch(INDEX);", &DisableFuncPatch);
 };
 
+// Externally create a new patch class
+CPatch *CPatchAPI::CreatePatch(BOOL bSetForever) {
+  return new CPatch(bSetForever != FALSE);
+};
+
 // Enable specific function patch
 BOOL CPatchAPI::EnablePatch(INDEX iPatch) {
   SFuncPatch &fpPatch = aPatches[iPatch];

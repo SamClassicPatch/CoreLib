@@ -52,7 +52,9 @@ CPatch *NewPatch(FuncType1 &funcOld, FuncType2 funcNew, const char *strName, BOO
     InfoMessage(strName);
   }
 
-  CPatch *pPatch = new CPatch(funcOld, funcNew, true, false);
+  // Create new patch and hook the functions
+  CPatch *pPatch = GetPatchAPI()->CreatePatch(FALSE);
+  pPatch->HookClassFunctions(funcOld, funcNew, true, false);
 
   // Successfully patched
   if (pPatch->ok()) {
