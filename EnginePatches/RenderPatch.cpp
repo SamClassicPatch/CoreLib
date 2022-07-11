@@ -116,6 +116,8 @@ static void P_RenderView(CWorld &woWorld, CEntity &enViewer, CAnyProjection3D &a
   // Set wide adjustment based on current aspect ratio
   if (sam_bAdjustForAspectRatio) {
     dp.dp_fWideAdjustment = ((FLOAT)dp.GetHeight() / (FLOAT)dp.GetWidth()) * (4.0f / 3.0f);
+  } else {
+    dp.dp_fWideAdjustment = 1.0f;
   }
 
   // Not a perspective projection
