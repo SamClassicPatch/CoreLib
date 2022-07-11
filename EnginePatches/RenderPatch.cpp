@@ -193,19 +193,24 @@ static void P_RenderView(CWorld &woWorld, CEntity &enViewer, CAnyProjection3D &a
 class CProjectionPatch : public CPerspectiveProjection3D {
   public:
     void P_Prepare(void) {
-      // Fix FOV for weapon viewmodels
-      if (sam_bFixViewmodelFOV && (GetGameAPI()->GetCompState() == CS_OFF || GetGameAPI()->GetCompState() == CS_ONINBACKGROUND))
-      {
-        // Calling from CRenderer::RenderModels()
-        const ULONG ulRenderModels = CHOOSE_FOR_GAME(0x601A462D, 0x6017470D, 0x601AF17E);
+      // Fix FOV for weapon viewmodels if hooked game fields
+      if (sam_bFixViewmodelFOV && GetGameAPI()->IsHooked()) {
+        INDEX iCompState = GetGameAPI()->GetCompState();
 
-        // Calling from BeginModelRenderingView()
-        const ULONG ulModelView = CHOOSE_FOR_GAME(0x6014FA89, 0x6011FB69, 0x60157F59);
+        // Computer is closed during the game
+        if (GetGameAPI()->IsGameOn() && (iCompState == CS_OFF || iCompState == CS_ONINBACKGROUND))
+        {
+          // Calling from CRenderer::RenderModels()
+          const ULONG ulRenderModels = CHOOSE_FOR_GAME(0x601A462D, 0x6017470D, 0x601AF17E);
+
+          // Calling from BeginModelRenderingView()
+          const ULONG ulModelView = CHOOSE_FOR_GAME(0x6014FA89, 0x6011FB69, 0x60157F59);
         
-        // Not calling from CRenderer::RenderModels() but still calling from BeginModelRenderingView()
-        if (!CallingFrom(ulRenderModels, 5) && CallingFrom(ulModelView, 5)) {
-          // Adjust FOV according to the aspect ratio
-          IRender::AdjustHFOV(IRender::GetScreenSize(), FOVL());
+          // Not calling from CRenderer::RenderModels() but still calling from BeginModelRenderingView()
+          if (!CallingFrom(ulRenderModels, 5) && CallingFrom(ulModelView, 5)) {
+            // Adjust FOV according to the aspect ratio
+            IRender::AdjustHFOV(IRender::GetScreenSize(), FOVL());
+          }
         }
       }
 
