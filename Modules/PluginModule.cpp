@@ -38,6 +38,7 @@ void CPluginModule::Initialize(void) {
   pOnPreDrawFunc = (CDrawFunc)GetProcAddress(GetHandle(), "Module_PreDraw");
   pOnPostDrawFunc = (CDrawFunc)GetProcAddress(GetHandle(), "Module_PostDraw");
   pOnFrameFunc = (CDrawFunc)GetProcAddress(GetHandle(), "Module_Frame");
+  pOnRenderViewFunc = (CRenderViewFunc)GetProcAddress(GetHandle(), "Module_RenderView");
 
   // Start the plugin
   OnStartup();
@@ -70,6 +71,7 @@ void CPluginModule::ResetFields(void) {
   pOnPreDrawFunc = NULL;
   pOnPostDrawFunc = NULL;
   pOnFrameFunc = NULL;
+  pOnRenderViewFunc = NULL;
 };
 
 // Write to stream
@@ -203,5 +205,12 @@ void CPluginModule::OnPostDraw(CDrawPort *pdp) {
 void CPluginModule::OnFrame(CDrawPort *pdp) {
   if (pOnFrameFunc != NULL) {
     pOnFrameFunc(pdp);
+  }
+};
+
+// Call render view method
+void CPluginModule::OnRenderView(CWorld &woWorld, CEntity *penViewer, CAnyProjection3D &apr, CDrawPort *pdp) {
+  if (pOnRenderViewFunc != NULL) {
+    pOnRenderViewFunc(woWorld, penViewer, apr, pdp);
   }
 };

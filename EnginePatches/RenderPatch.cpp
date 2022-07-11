@@ -98,6 +98,13 @@ static void RenderViewCopy(CWorld &woWorld, CEntity &enViewer, CAnyProjection3D 
 
   // Call CRenderer::Render() from the pointer
   (re.*_pRender.pFunction)();
+
+  // Call render view function for each plugin
+  CDynamicContainer<CPluginModule> &cPlugins = GetPluginAPI()->GetPlugins();
+
+  FOREACHINDYNAMICCONTAINER(cPlugins, CPluginModule, itPlugin) {
+    itPlugin->OnRenderView(woWorld, &enViewer, apr, &dp);
+  }
 };
 
 // Patched function
@@ -236,7 +243,7 @@ class CProjectionPatch : public CPerspectiveProjection3D {
           FLOAT3D vY(t3dObjectRotation(1, 2), t3dObjectRotation(2, 2), t3dObjectRotation(3, 2));
 
           FLOAT3D vViewerZ(pr_ViewerRotationMatrix(3, 1), pr_ViewerRotationMatrix(3, 2), pr_ViewerRotationMatrix(3, 3));
-          FLOAT3D vX = (-vViewerZ)*vY;
+          FLOAT3D vX = (-vViewerZ) * vY;
           vX.Normalize();
 
           FLOAT3D vZ = vY*vX;
@@ -251,7 +258,7 @@ class CProjectionPatch : public CPerspectiveProjection3D {
           FLOATmatrix3D mBanking;
           MakeRotationMatrixFast(mBanking, ANGLE3D(0.0f, 0.0f, pr_ObjectPlacement.pl_OrientationAngle(3)));
           pr_mDirectionRotation = mBanking;
-          pr_RotationMatrix = mBanking*t3dObjectStretch;
+          pr_RotationMatrix = mBanking * t3dObjectStretch;
         }
 
       } else {
