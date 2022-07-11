@@ -85,7 +85,7 @@ class CPluginAPI {
     {
       // Get symbol if it already exists
       CShellSymbol *pss = _pShell->GetSymbol(strName, TRUE);
-  
+
       // Return value of the existing symbol
       if (pss != NULL) {
         *ppVariable = (Type)pss->ss_pvValue;
@@ -98,6 +98,25 @@ class CPluginAPI {
       // Allocate new symbol and declare it
       *ppVariable = (Type)&aSymbols.Push();
       _pShell->DeclareSymbol(strDeclaration, *ppVariable);
+    };
+
+    // Register a shell method from the plugin or replace an existing one
+    template<class Type> void RegisterMethod(CTString strDeclaration, const char *strName, Type pFunction)
+    {
+      // Get symbol if it already exists
+      CShellSymbol *pss = _pShell->GetSymbol(strName, TRUE);
+
+      // Replace method of the existing symbol
+      if (pss != NULL) {
+        pss->ss_pvValue = pFunction;
+        return;
+      }
+
+      // Insert symbol name into the declaration
+      strDeclaration.PrintF(strDeclaration, strName);
+
+      // Declare new symbol
+      _pShell->DeclareSymbol(strDeclaration, pFunction);
     };
 };
 
