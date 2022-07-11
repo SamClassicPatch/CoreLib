@@ -18,6 +18,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Define external core API
 CCoreAPI *_pCoreAPI = NULL;
 
+// Define running application type
+CCoreAPI::EAppType CCoreAPI::eAppType = CCoreAPI::APP_UNKNOWN;
+
 // Constructor
 CCoreAPI::CCoreAPI() :
   apiPatches(*new CPatchAPI), apiGame(*new CGameAPI), apiPlugins(*new CPluginAPI)

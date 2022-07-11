@@ -31,6 +31,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Core API class
 class CCoreAPI {
   public:
+    // Types of available applications on Serious Engine
+    enum EAppType {
+      APP_UNKNOWN = 0, // Unspecified application
+      APP_GAME,        // Game Executable
+      APP_SERVER,      // Dedicated Server
+      APP_EDITOR,      // Serious Editor
+      APP_MODELER,     // Serious Modeler or Serious SKA Studio
+    };
+
+  public:
+    static EAppType eAppType; // Running application type
     ULONG ulVersion; // Release version
 
     // API submodules
@@ -41,6 +52,11 @@ class CCoreAPI {
   public:
     // Constructor
     CCoreAPI();
+
+    // Set running application type
+    static inline void SetApplication(EAppType eSetType) {
+      eAppType = eSetType;
+    };
 
     // Construct version number
     static inline ULONG MakeVersion(UBYTE ubRelease, UBYTE ubUpdate, UBYTE ubPatch) {
