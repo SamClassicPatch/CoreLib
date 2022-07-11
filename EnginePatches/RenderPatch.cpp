@@ -193,8 +193,10 @@ static void P_RenderView(CWorld &woWorld, CEntity &enViewer, CAnyProjection3D &a
 class CProjectionPatch : public CPerspectiveProjection3D {
   public:
     void P_Prepare(void) {
-      // Fix FOV for weapon viewmodels if hooked game fields
-      if (sam_bFixViewmodelFOV && GetGameAPI()->IsHooked()) {
+      // Fix FOV for weapon viewmodels
+      if (sam_bFixViewmodelFOV) {
+        ASSERT(GetGameAPI()->IsHooked());
+
         INDEX iCompState = GetGameAPI()->GetCompState();
 
         // Computer is closed during the game
@@ -383,6 +385,12 @@ class CProjectionPatch : public CPerspectiveProjection3D {
 };
 
 extern void CECIL_ApplyRenderPatch(void) {
+  // Patch for the game or the editor tests
+  if (CCoreAPI::GetApplication() != CCoreAPI::APP_GAME
+   && CCoreAPI::GetApplication() != CCoreAPI::APP_EDITOR) {
+    return;
+  }
+
   void (*pRenderView)(CWorld &, CEntity &, CAnyProjection3D &, CDrawPort &) = &RenderView;
   NewPatch(pRenderView, &P_RenderView, "::RenderView(...)");
 

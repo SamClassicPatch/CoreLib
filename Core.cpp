@@ -55,13 +55,9 @@ void CECIL_InitCore(void) {
   CPrintF("--- Core: Intercepting Engine functions ---\n");
 
   extern void CECIL_ApplyMasterServerPatch(void);
+  extern void CECIL_ApplyRenderPatch(void);
   CECIL_ApplyMasterServerPatch();
-
-  // Non-server patches
-  if (!_bDedicatedServer) {
-    extern void CECIL_ApplyRenderPatch(void);
-    CECIL_ApplyRenderPatch();
-  }
+  CECIL_ApplyRenderPatch();
 
   CPrintF("--- Done! ---\n");
 
