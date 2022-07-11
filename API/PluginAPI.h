@@ -33,10 +33,11 @@ class CPluginAPI {
       PF_ENGINE = (1 << 0), // Internal functionality
       PF_GAME   = (1 << 1), // In-game functionality
       PF_SERVER = (1 << 2), // Server functionality
-      PF_TOOLS  = (1 << 3), // Addons for tools
+      PF_EDITOR = (1 << 3), // Addons for Serious Editor
+      PF_TOOLS  = (1 << 4), // Addons for other tools
 
       // All utility types
-      PF_UTILITY_ALL = (PF_ENGINE | PF_GAME | PF_SERVER | PF_TOOLS),
+      PF_UTILITY_ALL = (PF_ENGINE | PF_GAME | PF_SERVER | PF_EDITOR | PF_TOOLS),
     };
 
     // Structure for information exchange between plugins and the core
