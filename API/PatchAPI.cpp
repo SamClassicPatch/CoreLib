@@ -80,3 +80,22 @@ void CPatchAPI::DisablePatch(INDEX iPatch) {
   SFuncPatch &fpPatch = aPatches[iPatch];
   fpPatch.pPatch->remove_patch();
 };
+
+// Find function patch index by its name
+INDEX CPatchAPI::FindPatch(const CTString &strName) {
+  const ULONG ulNameHash = strName.GetHash();
+  const INDEX ctPatches = aPatches.Count();
+
+  for (INDEX iPatch = 0; iPatch < ctPatches; iPatch++) {
+    const SFuncPatch &fpPatch = aPatches[iPatch];
+
+    // Matching name hash
+    if (fpPatch.ulHash == ulNameHash) {
+      // Found function patch
+      return iPatch;
+    }
+  }
+
+  // Not found
+  return -1;
+};
