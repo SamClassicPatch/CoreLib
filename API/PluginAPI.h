@@ -58,8 +58,14 @@ class CPluginAPI {
       };
     };
 
+    // Plugin symbol structure with enough bytes for storage
+    struct CSymbol {
+      UBYTE aBytes[8];
+    };
+
   public:
     CPluginStock *pPluginStock; // Stock of plugin modules
+    CStaticStackArray<CSymbol> aSymbols; // Storage of symbol values
 
   public:
     // Constructor
@@ -73,6 +79,9 @@ class CPluginAPI {
 
     // Retrieve loaded plugins
     virtual CDynamicContainer<CPluginModule> &GetPlugins(void);
+
+    // Register new symbol from the plugin and return a pointer to its value
+    virtual void *RegisterSymbol(const char *strSymbolName, CTString strDeclaration);
 };
 
 #endif

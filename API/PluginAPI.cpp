@@ -93,3 +93,24 @@ CPluginModule *CPluginAPI::LoadPlugin_t(const CTFileName &fnmModule)
 CDynamicContainer<CPluginModule> &CPluginAPI::GetPlugins(void) {
   return pPluginStock->st_ctObjects;
 };
+
+// Register new symbol from the plugin and return a pointer to its value
+void *CPluginAPI::RegisterSymbol(const char *strSymbolName, CTString strDeclaration)
+{
+  // Get symbol if it already exists
+  CShellSymbol *pss = _pShell->GetSymbol(strSymbolName, TRUE);
+  
+  // Return value of the existing symbol
+  if (pss != NULL) {
+    return pss->ss_pvValue;
+  }
+
+  // Insert symbol name to the declaration
+  strDeclaration.PrintF(strDeclaration, strSymbolName);
+
+  // Allocate new symbol and declare it
+  void *pvNewValue = &aSymbols.Push();
+  _pShell->DeclareSymbol(strDeclaration, pvNewValue);
+
+  return pvNewValue;
+};
