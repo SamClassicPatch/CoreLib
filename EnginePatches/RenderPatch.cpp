@@ -387,9 +387,8 @@ class CProjectionPatch : public CPerspectiveProjection3D {
 };
 
 extern void CECIL_ApplyRenderPatch(void) {
-  // Patch for the game or the editor tests
-  if (CCoreAPI::GetApplication() != CCoreAPI::APP_GAME
-   && CCoreAPI::GetApplication() != CCoreAPI::APP_EDITOR) {
+  // Only patch for the game and the editor tests
+  if (!CCoreAPI::IsGameApp() && !CCoreAPI::IsEditorApp()) {
     return;
   }
 

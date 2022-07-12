@@ -54,7 +54,7 @@ class CStringPatch : public CTString {
 
 extern void CECIL_ApplyUndecoratedPatch(void) {
   // Don't patch for the server
-  if (CCoreAPI::GetApplication() == CCoreAPI::APP_SERVER) {
+  if (CCoreAPI::IsServerApp()) {
     return;
   }
 

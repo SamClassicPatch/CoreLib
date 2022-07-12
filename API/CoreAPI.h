@@ -63,6 +63,26 @@ class CCoreAPI {
       eAppType = eSetType;
     };
 
+    // Check if running a game
+    static inline BOOL IsGameApp(void) {
+      return (eAppType == APP_GAME);
+    };
+
+    // Check if running a server
+    static inline BOOL IsServerApp(void) {
+      return (eAppType == APP_SERVER);
+    };
+
+    // Check if running an editor
+    static inline BOOL IsEditorApp(void) {
+      return (eAppType == APP_EDITOR);
+    };
+
+    // Check if running a modeler
+    static inline BOOL IsModelerApp(void) {
+      return (eAppType == APP_MODELER);
+    };
+
     // Construct version number
     static inline ULONG MakeVersion(UBYTE ubRelease, UBYTE ubUpdate, UBYTE ubPatch) {
       return (ubRelease << 16) | (ubUpdate << 8) | (ubPatch << 0);
@@ -100,6 +120,8 @@ class CCoreAPI {
 
       return strGameLib;
     };
+
+  public:
 
     // Retrieve version of the patch
     virtual CTString GetVersion(void) {
