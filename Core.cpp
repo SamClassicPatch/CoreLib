@@ -56,8 +56,10 @@ void CECIL_InitCore(void) {
 
   extern void CECIL_ApplyMasterServerPatch(void);
   extern void CECIL_ApplyRenderPatch(void);
+  extern void CECIL_ApplyUndecoratedPatch(void);
   CECIL_ApplyMasterServerPatch();
   CECIL_ApplyRenderPatch();
+  CECIL_ApplyUndecoratedPatch();
 
   CPrintF("--- Done! ---\n");
 

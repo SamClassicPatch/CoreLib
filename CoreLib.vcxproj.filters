@@ -191,5 +191,8 @@
     <ClCompile Include="EnginePatches\RenderPatch.cpp">
       <Filter>Source Files\EnginePatches</Filter>
     </ClCompile>
+    <ClCompile Include="EnginePatches\UndecoratedPatch.cpp">
+      <Filter>Source Files\EnginePatches</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
