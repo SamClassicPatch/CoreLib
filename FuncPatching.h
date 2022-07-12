@@ -57,7 +57,7 @@ CPatch *NewPatch(FuncType1 &funcOld, FuncType2 funcNew, const char *strName, BOO
   pPatch->HookClassFunctions(funcOld, funcNew, true);
 
   // Successfully patched
-  if (pPatch->ok()) {
+  if (pPatch->IsValid()) {
     // Add to the patch registry
     if (bAddToRegistry) {
       GetPatchAPI()->aPatches.Push() = SFuncPatch(strName, pPatch);

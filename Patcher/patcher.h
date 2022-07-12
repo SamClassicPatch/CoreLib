@@ -104,19 +104,19 @@ class CPatch
     virtual ~CPatch();
 
     // Check if patch has been set
-    virtual bool patched(void);
+    virtual bool IsPatched(void);
 
     // Check if the patch is valid
-    virtual bool ok(void);
+    virtual bool IsValid(void);
 
     // Set patch validity
-    virtual bool ok(bool bSetValid);
+    virtual bool Valid(bool bSetValid);
 
     // Restore old function
-    virtual void remove_patch(bool bForever = false);
+    virtual void RemovePatch(bool bForever = false);
 
     // Set new function
-    virtual void set_patch(void);
+    virtual void SetPatch(void);
 
   // [Cecil] Extensions
   public:

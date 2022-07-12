@@ -249,7 +249,7 @@ BOOL CPatch::HookFunction(long iFuncToHook, long iMyHook, long *piNewCallAddress
 
       ::VirtualProtect(m_pPatchInstructionSet, iNewInstructionLen, PAGE_EXECUTE_READWRITE, &m_dwProtect);
 
-      if (bPatchNow) set_patch();
+      if (bPatchNow) SetPatch();
 
       bHooked = TRUE;
     }
@@ -263,24 +263,28 @@ BOOL CPatch::HookFunction(long iFuncToHook, long iMyHook, long *piNewCallAddress
 // Destructor
 CPatch::~CPatch() {
   if (!m_bSetForever) {
-    remove_patch(true);
+    RemovePatch(true);
   }
 };
 
-bool CPatch::patched(void) {
+// Check if patch has been set
+bool CPatch::IsPatched(void) {
   return m_bPatched;
 };
 
-bool CPatch::ok(void) {
+// Check if the patch is valid
+bool CPatch::IsValid(void) {
   return m_bValid;
 };
 
-bool CPatch::ok(bool bSetValid) {
+// Set patch validity
+bool CPatch::Valid(bool bSetValid) {
   m_bValid = bSetValid;
   return m_bValid;
 };
 
-void CPatch::remove_patch(bool bForever)
+// Restore old function
+void CPatch::RemovePatch(bool bForever)
 {
   if (m_bSetForever) return;
 
@@ -325,7 +329,8 @@ void CPatch::remove_patch(bool bForever)
   }
 };
 
-void CPatch::set_patch(void)
+// Set new function
+void CPatch::SetPatch(void)
 {
   if (!m_bValid) return;
   if (m_bPatched) return;

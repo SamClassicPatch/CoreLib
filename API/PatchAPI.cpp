@@ -28,7 +28,7 @@ static void ListFuncPatches(void) {
     const SFuncPatch &fpPatch = GetPatchAPI()->aPatches[iPatch];
 
     // Mark as enabled or not and indent the index
-    const char *strPatched = (fpPatch.pPatch->patched() ? " [^c00ff00ON^r]" : "[^cff0000OFF^r]");
+    const char *strPatched = (fpPatch.pPatch->IsPatched() ? " [^c00ff00ON^r]" : "[^cff0000OFF^r]");
     const INDEX ctIdent = ClampDn(2 - INDEX(log10((FLOAT)iPatch)), (INDEX)0);
 
     CPrintF("%s %*s%d - %s\n", strPatched, ctIdent, "", iPatch, fpPatch.strName);
@@ -75,15 +75,15 @@ CPatch *CPatchAPI::CreatePatch(BOOL bSetForever) {
 // Enable specific function patch
 BOOL CPatchAPI::EnablePatch(INDEX iPatch) {
   SFuncPatch &fpPatch = aPatches[iPatch];
-  fpPatch.pPatch->set_patch();
+  fpPatch.pPatch->SetPatch();
 
-  return fpPatch.pPatch->ok();
+  return fpPatch.pPatch->IsValid();
 };
 
 // Disable specific function patch
 void CPatchAPI::DisablePatch(INDEX iPatch) {
   SFuncPatch &fpPatch = aPatches[iPatch];
-  fpPatch.pPatch->remove_patch();
+  fpPatch.pPatch->RemovePatch();
 };
 
 // Find function patch index by its name
