@@ -202,12 +202,17 @@ BOOL CPatch::HookFunction(long iFuncToHook, long iMyHook, long *piNewCallAddress
   BOOL bHooked = FALSE;
 
   if (iFuncToHook == iMyHook || iFuncToHook == NULL || iMyHook == NULL) {
+    // [Cecil] Something went wrong
+    if (GetDebug()) {
+      InfoMessage("(iFuncToHook == iMyHook) = %d\n(iFuncToHook == NULL) = %d\n(iMyHook == NULL) = %d",
+                   (iFuncToHook == iMyHook),      (iFuncToHook == NULL),      (iMyHook == NULL));
+    }
     return FALSE;
   }
 
   DWORD dwOldProtect;
 
-  if (VirtualProtect( reinterpret_cast<void*>(iFuncToHook), 10, PAGE_READWRITE, &dwOldProtect))
+  if (::VirtualProtect(reinterpret_cast<void *>(iFuncToHook), 10, PAGE_READWRITE, &dwOldProtect))
   {
     m_iOldJump = 0;
 
@@ -218,9 +223,13 @@ BOOL CPatch::HookFunction(long iFuncToHook, long iMyHook, long *piNewCallAddress
     if (CanRewriteInstructionSet(iFuncToHook, iRewriteLen))
     {
       iNewInstructionLen = iRewriteLen;
-      if(m_iOldJump == 0) iNewInstructionLen += iLongJumpLen;
+
+      if (m_iOldJump == 0) {
+        iNewInstructionLen += iLongJumpLen;
+      }
+
       //m_PatchInstructionSet = new char[iNewInstructionLen]; // executable instructions
-      m_pPatchInstructionSet = reinterpret_cast<char*> (HeapAlloc(_hHeap, HEAP_ZERO_MEMORY, iNewInstructionLen)); // executable instructions
+      m_pPatchInstructionSet = reinterpret_cast<char *>(HeapAlloc(_hHeap, HEAP_ZERO_MEMORY, iNewInstructionLen)); // executable instructions
 
       *piNewCallAddress = reinterpret_cast<long>(m_pPatchInstructionSet);
       m_pRestorePatchSet = new char[iRewriteLen]; // not executable memory backup
@@ -239,7 +248,7 @@ BOOL CPatch::HookFunction(long iFuncToHook, long iMyHook, long *piNewCallAddress
       long iJumpNew = m_iOldJump ? m_iOldJump : iFuncToHook + iRewriteLen;
 
       // calculate and set address to jmp to old function
-      *reinterpret_cast<int*>(m_pPatchInstructionSet + (iNewInstructionLen - iLongJumpLen) + 1) =
+      *reinterpret_cast<int *>(m_pPatchInstructionSet + (iNewInstructionLen - iLongJumpLen) + 1) =
         (iJumpNew) - ((reinterpret_cast<long>(m_pPatchInstructionSet)) + iNewInstructionLen);
 
       // rewrite function
@@ -261,7 +270,11 @@ BOOL CPatch::HookFunction(long iFuncToHook, long iMyHook, long *piNewCallAddress
       bHooked = TRUE;
     }
 
-    ::VirtualProtect( reinterpret_cast<void *>(iFuncToHook), 5, dwOldProtect, &dwOldProtect);
+    ::VirtualProtect(reinterpret_cast<void *>(iFuncToHook), 5, dwOldProtect, &dwOldProtect);
+
+  // [Cecil] Something went wrong
+  } else if (GetDebug()) {
+    InfoMessage("Cannot attempt to rewrite instructions: %s", GetWindowsError(GetLastError()));
   }
 
   return bHooked;
