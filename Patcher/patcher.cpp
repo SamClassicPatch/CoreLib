@@ -14,13 +14,20 @@ bool CPatch::_bDebugOutput = false;
 CTString CPatch::_strPatcherLog = "";
 int CPatch::_iForceRewriteLen = -1;
 
+// [Cecil] Append some text to the patcher log
+static inline void PushLog(const CTString &strOutput) {
+  if (CPatch::GetDebug()) {
+    CPatch::_strPatcherLog += strOutput;
+  }
+};
+
 HANDLE CPatch::_hHeap = NULL;
 
 bool CPatch::CanRewriteInstructionSet(long iAddress, int &iRewriteLen)
 {
   // [Cecil] Force rewrite
   if (_iForceRewriteLen != -1) {
-    if (_bDebugOutput) {
+    if (GetDebug()) {
       InfoMessage("Forced rewrite (%d bytes)", _iForceRewriteLen);
     }
 
@@ -163,7 +170,7 @@ bool CPatch::CanRewriteInstructionSet(long iAddress, int &iRewriteLen)
       iRewriteLen = iReadLen;
 
       // [Cecil] Output patcher log
-      if (_bDebugOutput) {
+      if (GetDebug()) {
         InfoMessage(_strPatcherLog + "\nInstruction found! (iReadLen >= 5)");
       }
 
@@ -173,7 +180,7 @@ bool CPatch::CanRewriteInstructionSet(long iAddress, int &iRewriteLen)
   } while (bInstructionFound);
   
   // [Cecil] Output patcher log
-  if (_bDebugOutput) {
+  if (GetDebug()) {
     CTString strError;
     strError.PrintF("\nInvalid instruction! (0x%X)", *reinterpret_cast<char *>(iAddress));
 

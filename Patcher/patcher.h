@@ -141,16 +141,14 @@ class CPatch
       m_pRestorePatchSet = NULL;
     };
 
-    // Patcher debug output
-    static inline bool &DebugOutput(void) {
+    // Get debug logging state
+    static inline bool GetDebug(void) {
       return _bDebugOutput;
     };
 
-    // Append some text to the patcher log
-    static inline void PushLog(const CTString &strOutput) {
-      if (_bDebugOutput) {
-        _strPatcherLog += strOutput;
-      }
+    // Set debug logging state
+    static inline void SetDebug(bool bState) {
+      _bDebugOutput = bState;
     };
 
     // Force instruction rewrite
