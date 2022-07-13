@@ -328,6 +328,20 @@ class CGameAPI {
       aiStartLocalPlayers[i] = iPlayer;
     };
 
+    // Reset all start players
+    virtual void ResetStartPlayers(void) {
+      for (INDEX iPlayer = 0; iPlayer < GetLocalPlayerCount(); iPlayer++) {
+        SetStartPlayer(iPlayer, -1);
+      }
+    };
+
+    // Copy menu player indices into start player indices
+    virtual void SetStartPlayersFromMenuPlayers(void) {
+      for (INDEX iPlayer = 0; iPlayer < GetLocalPlayerCount(); iPlayer++) {
+        SetStartPlayer(iPlayer, GetMenuPlayer(iPlayer));
+      }
+    };
+
     // Check if local player is active
     virtual BOOL IsLocalPlayerActive(INDEX iPlayer) const {
       UBYTE *pLocalPlayer = aLocalPlayers + (lpOffsets.ctSize * iPlayer);
