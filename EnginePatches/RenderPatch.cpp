@@ -110,8 +110,10 @@ static void RenderViewCopy(CWorld &woWorld, CEntity &enViewer, CAnyProjection3D 
 // Patched function
 static void P_RenderView(CWorld &woWorld, CEntity &enViewer, CAnyProjection3D &apr, CDrawPort &dp)
 {
-  // Set core render space
-  IRender::SetDrawPort(&dp);
+  // Set core render space for non-game applications
+  if (!CCoreAPI::IsGameApp()) {
+    IRender::SetDrawPort(&dp);
+  }
 
   // Set wide adjustment based on current aspect ratio
   if (sam_bAdjustForAspectRatio) {
@@ -199,10 +201,11 @@ class CProjectionPatch : public CPerspectiveProjection3D {
       if (sam_bFixViewmodelFOV) {
         ASSERT(GetGameAPI()->IsHooked());
 
-        INDEX iCompState = GetGameAPI()->GetCompState();
+        const INDEX iCompState = GetGameAPI()->GetCompState();
+        const BOOL bInGame = (CCoreAPI::IsGameApp() || GetGameAPI()->IsGameOn());
 
         // Computer is closed during the game
-        if (GetGameAPI()->IsGameOn() && (iCompState == CS_OFF || iCompState == CS_ONINBACKGROUND))
+        if (bInGame && (iCompState == CS_OFF || iCompState == CS_ONINBACKGROUND))
         {
           // Calling from CRenderer::RenderModels()
           const ULONG ulRenderModels = CHOOSE_FOR_GAME(0x601A462D, 0x6017470D, 0x601AF17E);
