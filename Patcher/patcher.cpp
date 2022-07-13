@@ -37,8 +37,8 @@ bool CPatch::CanRewriteInstructionSet(long iAddress, int &iRewriteLen)
     return true;
   }
 
-  // [Cecil] Reset output log
-  _strPatcherLog = "";
+  // [Cecil] Reset output log (avoid ASSERT failure)
+  _strPatcherLog.str_String = StringDuplicate("");
 
   bool bInstructionFound;
   int iReadLen = 0;
