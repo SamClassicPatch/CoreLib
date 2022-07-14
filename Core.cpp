@@ -70,6 +70,7 @@ void CECIL_InitCore(void) {
     _pShell->DeclareSymbol("           user CTString sam_strFirstLevel;", &sam_strFirstLevel);
     _pShell->DeclareSymbol("persistent user CTString sam_strIntroLevel;", &sam_strIntroLevel);
     _pShell->DeclareSymbol("persistent user CTString sam_strGameName;",   &sam_strGameName);
+    _pShell->DeclareSymbol("           user CTString sam_strVersion;",    &sam_strVersion);
   }
 
   // Load Core plugins
