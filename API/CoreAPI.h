@@ -44,6 +44,8 @@ class CCoreAPI {
     static EAppType eAppType; // Running application type
     ULONG ulVersion; // Release version
 
+    CDrawPort *pdpRenderSpace; // Main render space, if available
+
     // API submodules
     CPatchAPI &apiPatches;
     CGameAPI &apiGame;
@@ -126,6 +128,22 @@ class CCoreAPI {
     // Retrieve version of the patch
     virtual CTString GetVersion(void) {
       return MakeVersionString(ulVersion);
+    };
+
+    // Get main render space
+    virtual CDrawPort *GetDrawPort(void) {
+      ASSERT(pdpRenderSpace != NULL);
+      return pdpRenderSpace;
+    };
+
+    // Set main render space
+    virtual void SetDrawPort(CDrawPort *pdp) {
+      pdpRenderSpace = pdp;
+    };
+
+    // Get render space sizes
+    virtual FLOAT2D GetScreenSize(void) {
+      return FLOAT2D(GetDrawPort()->GetWidth(), GetDrawPort()->GetHeight());
     };
 
     // Disable GameSpy usage

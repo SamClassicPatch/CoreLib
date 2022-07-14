@@ -26,27 +26,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Interface of methods for rendering
 class IRender {
   public:
-    // Main render space, if available
-    static CDrawPort *pdpRenderSpace;
-    
-  public:
-    // Get main render space
-    static inline CDrawPort *GetDrawPort(void) {
-      ASSERT(pdpRenderSpace != NULL);
-      return pdpRenderSpace;
-    };
-
-    // Set main render space
-    static inline void SetDrawPort(CDrawPort *pdp) {
-      pdpRenderSpace = pdp;
-    };
-
-    // Get render space sizes
-    static inline FLOAT2D GetScreenSize(void) {
-      return FLOAT2D(GetDrawPort()->GetWidth(), GetDrawPort()->GetHeight());
-    };
-
     // Calculate horizontal FOV according to the aspect ratio
+    // Can be cancelled using one of the following:
+    //   AdjustVFOV( FLOAT2D( 4, 3 ), fHFOV )
+    //   AdjustHFOV( FLOAT2D( 1, 1 ), fHFOV )
     static inline void AdjustHFOV(const FLOAT2D &vScreen, FLOAT &fHFOV) {
       // Get aspect ratio of the current resolution
       FLOAT fAspectRatio = vScreen(1) / vScreen(2);
@@ -62,6 +45,9 @@ class IRender {
     };
 
     // Calculate vertical FOV from horizontal FOV according to the aspect ratio
+    // Can be cancelled using one of the following:
+    //   AdjustVFOV( FLOAT2D( vScreen(2), vScreen(1) ), fHFOV )
+    //   AdjustHFOV( FLOAT2D( vScreen(1), vScreen(2) * 0.75f ), fHFOV )
     static inline void AdjustVFOV(const FLOAT2D &vScreen, FLOAT &fHFOV) {
       // Get inverted aspect ratio of the current resolution
       FLOAT fInverseAspectRatio = vScreen(2) / vScreen(1);

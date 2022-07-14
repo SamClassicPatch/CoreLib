@@ -112,7 +112,7 @@ static void P_RenderView(CWorld &woWorld, CEntity &enViewer, CAnyProjection3D &a
 {
   // Set core render space for non-game applications
   if (!GetAPI()->IsGameApp()) {
-    IRender::SetDrawPort(&dp);
+    GetAPI()->SetDrawPort(&dp);
   }
 
   // Set wide adjustment based on current aspect ratio
@@ -216,7 +216,7 @@ class CProjectionPatch : public CPerspectiveProjection3D {
           // Not calling from CRenderer::RenderModels() but still calling from BeginModelRenderingView()
           if (!CallingFrom(ulRenderModels, 5) && CallingFrom(ulModelView, 5)) {
             // Adjust FOV according to the aspect ratio
-            IRender::AdjustHFOV(IRender::GetScreenSize(), FOVL());
+            IRender::AdjustHFOV(GetAPI()->GetScreenSize(), FOVL());
           }
         }
       }
