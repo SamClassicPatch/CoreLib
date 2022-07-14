@@ -64,7 +64,7 @@ void CECIL_InitCore(void) {
   CPrintF("--- Done! ---\n");
 
   // Common game variables
-  if (CCoreAPI::IsGameApp() || CCoreAPI::IsServerApp()) {
+  if (GetAPI()->IsGameApp() || GetAPI()->IsServerApp()) {
     _pShell->DeclareSymbol("           user CTString sam_strFirstLevel;", &sam_strFirstLevel);
     _pShell->DeclareSymbol("persistent user CTString sam_strIntroLevel;", &sam_strIntroLevel);
     _pShell->DeclareSymbol("persistent user CTString sam_strGameName;",   &sam_strGameName);

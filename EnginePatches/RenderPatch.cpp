@@ -111,7 +111,7 @@ static void RenderViewCopy(CWorld &woWorld, CEntity &enViewer, CAnyProjection3D 
 static void P_RenderView(CWorld &woWorld, CEntity &enViewer, CAnyProjection3D &apr, CDrawPort &dp)
 {
   // Set core render space for non-game applications
-  if (!CCoreAPI::IsGameApp()) {
+  if (!GetAPI()->IsGameApp()) {
     IRender::SetDrawPort(&dp);
   }
 
@@ -202,7 +202,7 @@ class CProjectionPatch : public CPerspectiveProjection3D {
         ASSERT(GetGameAPI()->IsHooked());
 
         const INDEX iCompState = GetGameAPI()->GetCompState();
-        const BOOL bInGame = (CCoreAPI::IsGameApp() || GetGameAPI()->IsGameOn());
+        const BOOL bInGame = (GetAPI()->IsGameApp() || GetGameAPI()->IsGameOn());
 
         // Computer is closed during the game
         if (bInGame && (iCompState == CS_OFF || iCompState == CS_ONINBACKGROUND))
@@ -391,7 +391,7 @@ class CProjectionPatch : public CPerspectiveProjection3D {
 
 extern void CECIL_ApplyRenderPatch(void) {
   // Only patch for the game and the editor tests
-  if (!CCoreAPI::IsGameApp() && !CCoreAPI::IsEditorApp()) {
+  if (!GetAPI()->IsGameApp() && !GetAPI()->IsEditorApp()) {
     return;
   }
 

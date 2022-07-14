@@ -53,34 +53,34 @@ class CCoreAPI {
     // Constructor
     CCoreAPI();
 
-    // Get running application type
-    static inline EAppType GetApplication(void) {
+    // Get running application type after initializing the core
+    virtual EAppType GetApplication(void) {
       return eAppType;
     };
 
-    // Set running application type
+    // Set running application type before initializing the core
     static inline void SetApplication(EAppType eSetType) {
       eAppType = eSetType;
     };
 
     // Check if running a game
-    static inline BOOL IsGameApp(void) {
-      return (eAppType == APP_GAME);
+    virtual BOOL IsGameApp(void) {
+      return (GetApplication() == APP_GAME);
     };
 
     // Check if running a server
-    static inline BOOL IsServerApp(void) {
-      return (eAppType == APP_SERVER);
+    virtual BOOL IsServerApp(void) {
+      return (GetApplication() == APP_SERVER);
     };
 
     // Check if running an editor
-    static inline BOOL IsEditorApp(void) {
-      return (eAppType == APP_EDITOR);
+    virtual BOOL IsEditorApp(void) {
+      return (GetApplication() == APP_EDITOR);
     };
 
     // Check if running a modeler
-    static inline BOOL IsModelerApp(void) {
-      return (eAppType == APP_MODELER);
+    virtual BOOL IsModelerApp(void) {
+      return (GetApplication() == APP_MODELER);
     };
 
     // Construct version number
