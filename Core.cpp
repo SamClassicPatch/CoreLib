@@ -29,6 +29,8 @@ CGame *_pGame = NULL;
   CTString sam_strGameName = "serioussamse";
 #endif
 
+CTString sam_strVersion = _SE_VER_STRING; // Use version string
+
 // Display information about the Classics patch
 static void PatchInfo(void) {
   static CTString strInfo =

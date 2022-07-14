@@ -42,6 +42,7 @@ extern CGame *_pGame;
 extern CTString sam_strFirstLevel;
 extern CTString sam_strIntroLevel;
 extern CTString sam_strGameName;
+extern CTString sam_strVersion;
 
 // Common components
 #include "API/CoreAPI.h"
