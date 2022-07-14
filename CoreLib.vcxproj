@@ -27,6 +27,8 @@
     <ClInclude Include="FuncPatching.h" />
     <ClInclude Include="Game\Game.h" />
     <ClInclude Include="Game\PlayerSettings.h" />
+    <ClInclude Include="Interfaces\RenderFunctions.h" />
+    <ClInclude Include="Interfaces\WorldFunctions.h" />
     <ClInclude Include="Modules\PluginModule.h" />
     <ClInclude Include="Modules\PluginStock.h" />
     <ClInclude Include="Networking\CommInterface.h" />
@@ -36,9 +38,7 @@
     <ClInclude Include="Patcher\patcher.h" />
     <ClInclude Include="Patcher\patcher_defines.h" />
     <ClInclude Include="Query\QueryMgr.h" />
-    <ClInclude Include="Rendering\RenderFunctions.h" />
     <ClInclude Include="StdH.h" />
-    <ClInclude Include="World\WorldFunctions.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="API\GameAPI.cpp" />
@@ -61,7 +61,6 @@
     <ClCompile Include="Query\LegacyServerQuery.cpp" />
     <ClCompile Include="Query\Legacy_Functions.cpp" />
     <ClCompile Include="Query\QueryMgr.cpp" />
-    <ClCompile Include="Rendering\RenderFunctions.cpp" />
     <ClCompile Include="StdH.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug_TSE107|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_TSE105|Win32'">Create</PrecompiledHeader>

@@ -49,20 +49,14 @@
     <Filter Include="Header Files\Modules headers">
       <UniqueIdentifier>{2434eee2-671f-4922-9585-a78765297f7b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\World headers">
-      <UniqueIdentifier>{12ddc757-8789-4cfb-8902-437ee1ad7d62}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Networking headers">
       <UniqueIdentifier>{abd04f40-58f5-4608-8e31-4671f92ce063}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\Networking">
       <UniqueIdentifier>{b52d21a6-5ecf-4731-a79d-b5d6988148df}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Rendering headers">
-      <UniqueIdentifier>{99841ecf-8ef6-4ae8-9bac-b2359a7b7837}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Rendering">
-      <UniqueIdentifier>{47b97015-a975-4be1-a2ba-41d589d5696b}</UniqueIdentifier>
+    <Filter Include="Header Files\Interfaces headers">
+      <UniqueIdentifier>{5945bde2-51e1-4f08-aa8c-6764975d76ac}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -105,9 +99,6 @@
     <ClInclude Include="API\GameAPI.h">
       <Filter>Header Files\API headers</Filter>
     </ClInclude>
-    <ClInclude Include="World\WorldFunctions.h">
-      <Filter>Header Files\World headers</Filter>
-    </ClInclude>
     <ClInclude Include="Networking\CommInterface.h">
       <Filter>Header Files\Networking headers</Filter>
     </ClInclude>
@@ -123,8 +114,11 @@
     <ClInclude Include="API\PatchAPI.h">
       <Filter>Header Files\API headers</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\RenderFunctions.h">
-      <Filter>Header Files\Rendering headers</Filter>
+    <ClInclude Include="Interfaces\RenderFunctions.h">
+      <Filter>Header Files\Interfaces headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Interfaces\WorldFunctions.h">
+      <Filter>Header Files\Interfaces headers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -184,9 +178,6 @@
     </ClCompile>
     <ClCompile Include="API\PatchAPI.cpp">
       <Filter>Source Files\API</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\RenderFunctions.cpp">
-      <Filter>Source Files\Rendering</Filter>
     </ClCompile>
     <ClCompile Include="EnginePatches\RenderPatch.cpp">
       <Filter>Source Files\EnginePatches</Filter>

@@ -48,8 +48,9 @@ extern CTString sam_strGameName;
 #include "FuncPatching.h"
 #include "Query/QueryMgr.h"
 #include "Modules/PluginStock.h"
-#include "Rendering/RenderFunctions.h"
-#include "World/WorldFunctions.h"
+
+#include "Interfaces/RenderFunctions.h"
+#include "Interfaces/WorldFunctions.h"
 
 // Initialize Core module
 void CECIL_InitCore(void);
