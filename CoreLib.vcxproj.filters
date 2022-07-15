@@ -120,6 +120,9 @@
     <ClInclude Include="Interfaces\WorldFunctions.h">
       <Filter>Header Files\Interfaces headers</Filter>
     </ClInclude>
+    <ClInclude Include="API\PluginSymbols.h">
+      <Filter>Header Files\API headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="StdH.cpp">

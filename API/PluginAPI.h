@@ -20,6 +20,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #pragma once
 #endif
 
+// Define plugin symbols
+#include "PluginSymbols.h"
+
 // Declare certain classes | Which files to include to define classes
 class CPluginModule; // #include <CoreLib/Modules/PluginModule.h>
 class CPluginStock;  // #include <CoreLib/Modules/PluginStock.h>
@@ -133,6 +136,41 @@ class CPluginAPI {
       }
     };
 
+    // Register a symbol from the plugin and set a pointer to the symbol to it
+    static inline void RegisterSymbol(CPluginSymbol *pps, const char *strName, const char *strPreFunc, const char *strPostFunc)
+    {
+      // Get symbol if it already exists
+      CShellSymbol *pss = _pShell->GetSymbol(strName, TRUE);
+
+      // Set existing symbol
+      if (pss != NULL) {
+        pps->SetSymbol(pss);
+        return;
+      }
+
+      // External declaration
+      CTString strDeclaration;
+      CTString strDeclFlags = "";
+
+      // Symbol flags
+      const ULONG ulFlags = pps->GetFlags();
+
+      if (ulFlags & SSF_CONSTANT)   strDeclFlags += "const ";
+      if (ulFlags & SSF_PERSISTENT) strDeclFlags += "persistent ";
+      if (ulFlags & SSF_USER)       strDeclFlags += "user ";
+
+      // Symbol type
+      static const char *astrTypes[3] = { "INDEX", "FLOAT", "CTString" };
+      const char *strType = astrTypes[pps->GetType()];
+
+      // E.g. "extern persistent user INDEX iSymbol = (INDEX)0;"
+      strDeclaration.PrintF("extern %s%s %s = (%s)%s;", strDeclFlags, strType, strName, strType, pps->GetDefaultValue());
+      _pShell->Execute(strDeclaration);
+
+      // Assign newly declared symbol
+      pps->SetSymbol(_pShell->GetSymbol(strName, TRUE));
+    };
+
     // Register a shell method from the plugin or replace an existing one
     template<class Type>
     void RegisterMethod(BOOL bUser, const char *strType, const char *strName, const char *strArguments, Type pFunction)
@@ -154,6 +192,26 @@ class CPluginAPI {
       strDeclaration.PrintF("%s%s %s(%s);", strDeclFlags, strType, strName, strArguments);
       _pShell->DeclareSymbol(strDeclaration, pFunction);
     };
+};
+
+// Define symbol registering method
+void CPluginSymbol::Register(const char *strSymbolName, const char *strPreFunc, const char *strPostFunc)
+{
+  CPluginAPI::RegisterSymbol(this, strSymbolName, strPreFunc, strPostFunc);
+
+  ASSERT(_pss != NULL);
+
+  // Assign pre-function
+  if (strPreFunc != "") {
+    CShellSymbol *pssPreFunc = _pShell->GetSymbol(strPreFunc, TRUE);
+    _pss->ss_pPreFunc = (BOOL (*)(void *))pssPreFunc->ss_pvValue;
+  }
+
+  // Assign post-function
+  if (strPostFunc != "") {
+    CShellSymbol *pssPostFunc = _pShell->GetSymbol(strPostFunc, TRUE);
+    _pss->ss_pPostFunc = (void (*)(void *))pssPostFunc->ss_pvValue;
+  }
 };
 
 #endif
