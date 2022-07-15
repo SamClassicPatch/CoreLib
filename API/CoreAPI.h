@@ -23,10 +23,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Current API version
 #define CORE_API_VERSION 1
 
-// API submodules
-#include "PatchAPI.h"
-#include "GameAPI.h"
-#include "PluginAPI.h"
+// Declare API submodules
+class CPatchAPI;
+class CGameAPI;
+class CPluginAPI;
 
 // Core API class
 class CCoreAPI {
@@ -228,5 +228,10 @@ inline CGameAPI *GetGameAPI(void) {
 inline CPluginAPI *GetPluginAPI(void) {
   return &GetAPI()->apiPlugins;
 };
+
+// Define API submodules
+#include "PatchAPI.h"
+#include "GameAPI.h"
+#include "PluginAPI.h"
 
 #endif
