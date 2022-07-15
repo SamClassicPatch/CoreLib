@@ -77,65 +77,6 @@ class CPluginAPI {
     // Retrieve loaded plugins
     virtual CDynamicContainer<CPluginModule> &GetPlugins(void);
 
-    // Register a symbol from the plugin and write a pointer to its value to the pointer variable
-    template<class Type>
-    void RegisterSymbol(ULONG ulFlags, const char *strType, const char *strName, const char *strValue,
-                        const char *strPreFunc, const char *strPostFunc, Type &pVariable)
-    {
-      // Get symbol if it already exists
-      CShellSymbol *pss = _pShell->GetSymbol(strName, TRUE);
-
-      // Return value of the existing symbol
-      if (pss != NULL) {
-        pVariable = (Type)pss->ss_pvValue;
-
-        // Assign pre-function
-        if (strPreFunc != "") {
-          CShellSymbol *pssPreFunc = _pShell->GetSymbol(strPreFunc, TRUE);
-          pss->ss_pPreFunc = (BOOL (*)(void *))pssPreFunc->ss_pvValue;
-        }
-
-        // Assign post-function
-        if (strPostFunc != "") {
-          CShellSymbol *pssPostFunc = _pShell->GetSymbol(strPostFunc, TRUE);
-          pss->ss_pPostFunc = (void (*)(void *))pssPostFunc->ss_pvValue;
-        }
-        return;
-      }
-
-      // External declaration
-      CTString strDeclaration;
-      CTString strDeclFlags = "";
-
-      // Symbol flags
-      if (ulFlags & SSF_CONSTANT)   strDeclFlags += "const ";
-      if (ulFlags & SSF_PERSISTENT) strDeclFlags += "persistent ";
-      if (ulFlags & SSF_USER)       strDeclFlags += "user ";
-
-      // E.g. "extern persistent user INDEX iSymbol = (INDEX)0;"
-      strDeclaration.PrintF("extern %s%s %s = (%s)%s;", strDeclFlags, strType, strName, strType, strValue);
-      _pShell->Execute(strDeclaration);
-
-      // Get newly declared symbol
-      pss = _pShell->GetSymbol(strName, TRUE);
-      ASSERT(pss != NULL);
-
-      // Assign its value to the variable
-      pVariable = (Type)pss->ss_pvValue;
-
-      // Assign pre-function
-      if (strPreFunc != "") {
-        CShellSymbol *pssPreFunc = _pShell->GetSymbol(strPreFunc, TRUE);
-        pss->ss_pPreFunc = (BOOL (*)(void *))pssPreFunc->ss_pvValue;
-      }
-
-      // Assign post-function
-      if (strPostFunc != "") {
-        CShellSymbol *pssPostFunc = _pShell->GetSymbol(strPostFunc, TRUE);
-        pss->ss_pPostFunc = (void (*)(void *))pssPostFunc->ss_pvValue;
-      }
-    };
-
     // Register a symbol from the plugin and set a pointer to the symbol to it
     static inline void RegisterSymbol(CPluginSymbol *pps, const char *strName, const char *strPreFunc, const char *strPostFunc)
     {
@@ -172,8 +113,7 @@ class CPluginAPI {
     };
 
     // Register a shell method from the plugin or replace an existing one
-    template<class Type>
-    void RegisterMethod(BOOL bUser, const char *strType, const char *strName, const char *strArguments, Type pFunction)
+    static inline void RegisterMethod(BOOL bUser, const char *strType, const char *strName, const char *strArguments, void *pFunction)
     {
       // Get symbol if it already exists
       CShellSymbol *pss = _pShell->GetSymbol(strName, TRUE);
