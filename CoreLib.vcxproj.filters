@@ -58,6 +58,9 @@
     <Filter Include="Header Files\Interfaces headers">
       <UniqueIdentifier>{5945bde2-51e1-4f08-aa8c-6764975d76ac}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\API headers\Plugins">
+      <UniqueIdentifier>{a4c8b8f0-4ed4-44c8-ab01-e8c0f08f43dc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game\Game.h">
@@ -120,8 +123,11 @@
     <ClInclude Include="Interfaces\WorldFunctions.h">
       <Filter>Header Files\Interfaces headers</Filter>
     </ClInclude>
-    <ClInclude Include="API\PluginSymbols.h">
-      <Filter>Header Files\API headers</Filter>
+    <ClInclude Include="API\Plugins\PluginEvents.h">
+      <Filter>Header Files\API headers\Plugins</Filter>
+    </ClInclude>
+    <ClInclude Include="API\Plugins\PluginSymbols.h">
+      <Filter>Header Files\API headers\Plugins</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

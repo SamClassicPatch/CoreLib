@@ -23,7 +23,8 @@
     <ClInclude Include="API\CoreAPI.h" />
     <ClInclude Include="API\PatchAPI.h" />
     <ClInclude Include="API\PluginAPI.h" />
-    <ClInclude Include="API\PluginSymbols.h" />
+    <ClInclude Include="API\Plugins\PluginEvents.h" />
+    <ClInclude Include="API\Plugins\PluginSymbols.h" />
     <ClInclude Include="Core.h" />
     <ClInclude Include="FuncPatching.h" />
     <ClInclude Include="Game\Game.h" />

@@ -21,7 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 
 // Define plugin symbols
-#include "PluginSymbols.h"
+#include "Plugins/PluginSymbols.h"
 
 // Declare certain classes | Which files to include to define classes
 class CPluginModule; // #include <CoreLib/Modules/PluginModule.h>
@@ -63,6 +63,10 @@ class CPluginAPI {
 
   public:
     CPluginStock *pPluginStock; // Stock of plugin modules
+
+    // Pointers to plugin interfaces
+    CDynamicContainer<class IAbstractEvents> cProcessors;
+    CDynamicContainer<class IAbstractEvents> cRenderers;
 
   public:
     // Constructor
@@ -153,5 +157,8 @@ void CPluginSymbol::Register(const char *strSymbolName, const char *strPreFunc, 
     _pss->ss_pPostFunc = (void (*)(void *))pssPostFunc->ss_pvValue;
   }
 };
+
+// Define plugin event interfaces
+#include "Plugins/PluginEvents.h"
 
 #endif
