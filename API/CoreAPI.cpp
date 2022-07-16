@@ -163,43 +163,35 @@ void CCoreAPI::ReleasePlugins(ULONG ulUtilityFlags) {
 // Called every simulation tick
 void CCoreAPI::OnTick(void)
 {
-  CDynamicContainer<CPluginModule> &cPlugins = GetPluginAPI()->GetPlugins();
-
   // Call step function for each plugin
-  FOREACHINDYNAMICCONTAINER(cPlugins, CPluginModule, itPlugin) {
-    itPlugin->OnStep();
+  FOREACHPLUGINEVENT(GetPluginAPI()->cProcessors, IProcessingEvents, pEvents) {
+    pEvents->OnStep();
   }
 };
 
 // Called before redrawing game view
 void CCoreAPI::OnPreDraw(CDrawPort *pdp)
 {
-  CDynamicContainer<CPluginModule> &cPlugins = GetPluginAPI()->GetPlugins();
-
   // Call pre-draw function for each plugin
-  FOREACHINDYNAMICCONTAINER(cPlugins, CPluginModule, itPlugin) {
-    itPlugin->OnPreDraw(pdp);
+  FOREACHPLUGINEVENT(GetPluginAPI()->cRenderers, IRenderingEvents, pEvents) {
+    pEvents->OnPreDraw(pdp);
   }
 };
 
 // Called after redrawing game view
 void CCoreAPI::OnPostDraw(CDrawPort *pdp)
 {
-  CDynamicContainer<CPluginModule> &cPlugins = GetPluginAPI()->GetPlugins();
-
   // Call post-draw function for each plugin
-  FOREACHINDYNAMICCONTAINER(cPlugins, CPluginModule, itPlugin) {
-    itPlugin->OnPostDraw(pdp);
+  FOREACHPLUGINEVENT(GetPluginAPI()->cRenderers, IRenderingEvents, pEvents) {
+    pEvents->OnPostDraw(pdp);
   }
 };
 
 // Called every render frame
 void CCoreAPI::OnFrame(CDrawPort *pdp)
 {
-  CDynamicContainer<CPluginModule> &cPlugins = GetPluginAPI()->GetPlugins();
-
   // Call frame function for each plugin
-  FOREACHINDYNAMICCONTAINER(cPlugins, CPluginModule, itPlugin) {
-    itPlugin->OnFrame(pdp);
+  FOREACHPLUGINEVENT(GetPluginAPI()->cProcessors, IProcessingEvents, pEvents) {
+    pEvents->OnFrame(pdp);
   }
 };

@@ -98,10 +98,8 @@ static void RenderViewCopy(CWorld &woWorld, CEntity &enViewer, CAnyProjection3D 
   (re.*_pRender.pFunction)();
 
   // Call render view function for each plugin
-  CDynamicContainer<CPluginModule> &cPlugins = GetPluginAPI()->GetPlugins();
-
-  FOREACHINDYNAMICCONTAINER(cPlugins, CPluginModule, itPlugin) {
-    itPlugin->OnRenderView(woWorld, &enViewer, apr, &dp);
+  FOREACHPLUGINEVENT(GetPluginAPI()->cRenderers, IRenderingEvents, pEvents) {
+    pEvents->OnRenderView(woWorld, &enViewer, apr, &dp);
   }
 };
 
