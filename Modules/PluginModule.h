@@ -28,9 +28,7 @@ class CPluginModule : public CSerial
   public:
     // Plugin method types
     typedef void (*CVoidFunc)(void); // Simple method
-    typedef void (*CDrawFunc)(CDrawPort *pdp); // Draw method
     typedef void (*CInfoFunc)(CPluginAPI::PluginInfo *pInfo); // Plugin info method
-    typedef void (*CRenderViewFunc)(CWorld &, CEntity *, CAnyProjection3D &, CDrawPort *); // View rendering method
 
   public:
     HINSTANCE _hiLibrary; // Library handle
@@ -106,32 +104,11 @@ class CPluginModule : public CSerial
     CVoidFunc pOnShutdownFunc; // Plugin cleanup before releasing it
     CInfoFunc pGetInfoFunc; // Retrieve information about the plugin
 
-    CVoidFunc pOnStepFunc; // Ñalled every simulation tick for executing synchronized logic
-    CDrawFunc pOnPreDrawFunc; // Called before every game redraw
-    CDrawFunc pOnPostDrawFunc; // Called after every game redraw
-    CDrawFunc pOnFrameFunc; // Ñalled every render frame
-    CRenderViewFunc pOnRenderViewFunc; // Called after rendering the world
-
     // Call startup method
     virtual void OnStartup(void);
 
     // Call shutdown method
     virtual void OnShutdown(void);
-
-    // Call step method
-    virtual void OnStep(void);
-
-    // Call pre-draw method
-    virtual void OnPreDraw(CDrawPort *pdp);
-
-    // Call post-draw method
-    virtual void OnPostDraw(CDrawPort *pdp);
-
-    // Call frame method
-    virtual void OnFrame(CDrawPort *pdp);
-
-    // Call render view method
-    virtual void OnRenderView(CWorld &woWorld, CEntity *penViewer, CAnyProjection3D &apr, CDrawPort *pdp);
 };
 
 #endif

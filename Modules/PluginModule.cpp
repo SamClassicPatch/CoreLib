@@ -33,13 +33,6 @@ CPluginModule::~CPluginModule() {
 void CPluginModule::Initialize(void) {
   if (IsInitialized()) return;
 
-  // Get other methods
-  pOnStepFunc = (CVoidFunc)GetProcAddress(GetHandle(), "Module_Step");
-  pOnPreDrawFunc = (CDrawFunc)GetProcAddress(GetHandle(), "Module_PreDraw");
-  pOnPostDrawFunc = (CDrawFunc)GetProcAddress(GetHandle(), "Module_PostDraw");
-  pOnFrameFunc = (CDrawFunc)GetProcAddress(GetHandle(), "Module_Frame");
-  pOnRenderViewFunc = (CRenderViewFunc)GetProcAddress(GetHandle(), "Module_RenderView");
-
   // Start the plugin
   OnStartup();
 
@@ -67,11 +60,6 @@ void CPluginModule::ResetFields(void) {
   pOnStartupFunc = NULL;
   pOnShutdownFunc = NULL;
   pGetInfoFunc = NULL;
-  pOnStepFunc = NULL;
-  pOnPreDrawFunc = NULL;
-  pOnPostDrawFunc = NULL;
-  pOnFrameFunc = NULL;
-  pOnRenderViewFunc = NULL;
 };
 
 // Write to stream
@@ -177,40 +165,5 @@ void CPluginModule::OnStartup(void) {
 void CPluginModule::OnShutdown(void) {
   if (pOnShutdownFunc != NULL) {
     pOnShutdownFunc();
-  }
-};
-
-// Call step method
-void CPluginModule::OnStep(void) {
-  if (pOnStepFunc != NULL) {
-    pOnStepFunc();
-  }
-};
-
-// Call pre-draw method
-void CPluginModule::OnPreDraw(CDrawPort *pdp) {
-  if (pOnPreDrawFunc != NULL) {
-    pOnPreDrawFunc(pdp);
-  }
-};
-
-// Call post-draw method
-void CPluginModule::OnPostDraw(CDrawPort *pdp) {
-  if (pOnPostDrawFunc != NULL) {
-    pOnPostDrawFunc(pdp);
-  }
-};
-
-// Call frame method
-void CPluginModule::OnFrame(CDrawPort *pdp) {
-  if (pOnFrameFunc != NULL) {
-    pOnFrameFunc(pdp);
-  }
-};
-
-// Call render view method
-void CPluginModule::OnRenderView(CWorld &woWorld, CEntity *penViewer, CAnyProjection3D &apr, CDrawPort *pdp) {
-  if (pOnRenderViewFunc != NULL) {
-    pOnRenderViewFunc(woWorld, penViewer, apr, pdp);
   }
 };
