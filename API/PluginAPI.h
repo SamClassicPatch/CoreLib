@@ -24,8 +24,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "Plugins/PluginSymbols.h"
 
 // Declare certain classes | Which files to include to define classes
-class CPluginModule; // #include <CoreLib/Modules/PluginModule.h>
-class CPluginStock;  // #include <CoreLib/Modules/PluginStock.h>
+class CPluginModule;   // #include <CoreLib/Modules/PluginModule.h>
+class CPluginStock;    // #include <CoreLib/Modules/PluginStock.h>
+class IAbstractEvents; // Included at the end
 
 // API for handling plugin modules
 class CPluginAPI {
@@ -65,8 +66,9 @@ class CPluginAPI {
     CPluginStock *pPluginStock; // Stock of plugin modules
 
     // Pointers to plugin interfaces
-    CDynamicContainer<class IAbstractEvents> cProcessors;
-    CDynamicContainer<class IAbstractEvents> cRenderers;
+    CDynamicContainer<IAbstractEvents> cProcessors;
+    CDynamicContainer<IAbstractEvents> cRenderers;
+    CDynamicContainer<IAbstractEvents> cNetworkEvents;
 
   public:
     // Constructor

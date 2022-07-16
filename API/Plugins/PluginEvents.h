@@ -85,6 +85,16 @@ class IRenderingEvents : public IAbstractEvents {
     };
 };
 
+// Networking events
+class INetworkEvents : public IAbstractEvents {
+  public:
+    // Upon receiving a packet as a server (returns TRUE if the packet was handled)
+    virtual BOOL OnServerPacket(CNetworkMessage &nmMessage, const ULONG ulType);
+
+    // Upon receiving a packet as a client (returns TRUE if the packet was handled)
+    virtual BOOL OnClientPacket(CNetworkMessage &nmMessage, const ULONG ulType);
+};
+
 // Iteration through specific plugin event handlers
 #define FOREACHPLUGINHANDLER(_Container, _HandlerType, _Iter) \
   CDynamicContainer<_HandlerType> &cont_##_HandlerType = (CDynamicContainer<_HandlerType> &)_Container; \

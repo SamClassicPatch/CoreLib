@@ -28,6 +28,16 @@ BOOL INetwork::ServerHandle(CMessageDispatcher *pmd, INDEX iClient, CNetworkMess
   ULONG ulType;
   nmMessage >> ulType;
 
+  // Let plugins handle packets
+  FOREACHPLUGINHANDLER(GetPluginAPI()->cNetworkEvents, INetworkEvents, pEvents)
+  {
+    // Handle packet through this plugin handler
+    if (pEvents->OnServerPacket(nmMessage, ulType)) {
+      // Quit if packet has been handled
+      return FALSE;
+    }
+  }
+
   switch (ulType)
   {
     case 0: // [Cecil] TEMP
@@ -51,6 +61,16 @@ BOOL INetwork::ClientHandle(CSessionState *pses, CNetworkMessage &nmMessage) {
   // Handle specific packet types
   ULONG ulType;
   nmMessage >> ulType;
+
+  // Let plugins handle packets
+  FOREACHPLUGINHANDLER(GetPluginAPI()->cNetworkEvents, INetworkEvents, pEvents)
+  {
+    // Handle packet through this plugin handler
+    if (pEvents->OnClientPacket(nmMessage, ulType)) {
+      // Quit if packet has been handled
+      return FALSE;
+    }
+  }
 
   switch (ulType)
   {
