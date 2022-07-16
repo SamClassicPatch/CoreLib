@@ -23,13 +23,37 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Abstract class for plugin events
 class IAbstractEvents {
   public:
+    // Container to utilize for registering and unregistering
+    CDynamicContainer<IAbstractEvents> *_pHandlers;
+
     // Destructor with automatic unregistering
     virtual ~IAbstractEvents() {
       Unregister();
     };
     
-    virtual void Register(void) {};
-    virtual void Unregister(void) {};
+    // Register events
+    virtual void Register(void) {
+      if (_pHandlers == NULL) {
+        return;
+      }
+      
+      // Add to handlers if it's not there
+      if (!_pHandlers->IsMember(this)) {
+        _pHandlers->Add(this);
+      }
+    };
+    
+    // Unregister events
+    virtual void Unregister(void) {
+      if (_pHandlers == NULL) {
+        return;
+      }
+
+      // Remove from handlers if it's there
+      if (_pHandlers->IsMember(this)) {
+        _pHandlers->Remove(this);
+      }
+    };
 };
 
 // Main plugin events
@@ -38,14 +62,9 @@ class IProcessingEvents : public IAbstractEvents {
     virtual void OnStep(void); // Every simulation tick for synchronized logic
     virtual void OnFrame(CDrawPort *pdp); // After rendering everything
     
-    // Register events
-    void Register(void) {
-      GetPluginAPI()->cProcessors.Add(this);
-    };
-    
-    // Unregister events
-    void Unregister(void) {
-      GetPluginAPI()->cProcessors.Remove(this);
+    // Assign handlers container
+    IProcessingEvents() {
+      _pHandlers = &GetPluginAPI()->cProcessors;
     };
 };
 
@@ -58,14 +77,9 @@ class IRenderingEvents : public IAbstractEvents {
     // After rendering the world
     virtual void OnRenderView(CWorld &wo, CEntity *penViewer, CAnyProjection3D &apr, CDrawPort *pdp);
     
-    // Register events
-    void Register(void) {
-      GetPluginAPI()->cRenderers.Add(this);
-    };
-
-    // Unregister events
-    void Unregister(void) {
-      GetPluginAPI()->cRenderers.Remove(this);
+    // Assign handlers container
+    IRenderingEvents() {
+      _pHandlers = &GetPluginAPI()->cRenderers;
     };
 };
 
