@@ -164,7 +164,7 @@ void CCoreAPI::ReleasePlugins(ULONG ulUtilityFlags) {
 void CCoreAPI::OnTick(void)
 {
   // Call step function for each plugin
-  FOREACHPLUGINEVENT(GetPluginAPI()->cProcessors, IProcessingEvents, pEvents) {
+  FOREACHPLUGINHANDLER(GetPluginAPI()->cProcessors, IProcessingEvents, pEvents) {
     pEvents->OnStep();
   }
 };
@@ -173,7 +173,7 @@ void CCoreAPI::OnTick(void)
 void CCoreAPI::OnPreDraw(CDrawPort *pdp)
 {
   // Call pre-draw function for each plugin
-  FOREACHPLUGINEVENT(GetPluginAPI()->cRenderers, IRenderingEvents, pEvents) {
+  FOREACHPLUGINHANDLER(GetPluginAPI()->cRenderers, IRenderingEvents, pEvents) {
     pEvents->OnPreDraw(pdp);
   }
 };
@@ -182,7 +182,7 @@ void CCoreAPI::OnPreDraw(CDrawPort *pdp)
 void CCoreAPI::OnPostDraw(CDrawPort *pdp)
 {
   // Call post-draw function for each plugin
-  FOREACHPLUGINEVENT(GetPluginAPI()->cRenderers, IRenderingEvents, pEvents) {
+  FOREACHPLUGINHANDLER(GetPluginAPI()->cRenderers, IRenderingEvents, pEvents) {
     pEvents->OnPostDraw(pdp);
   }
 };
@@ -191,7 +191,7 @@ void CCoreAPI::OnPostDraw(CDrawPort *pdp)
 void CCoreAPI::OnFrame(CDrawPort *pdp)
 {
   // Call frame function for each plugin
-  FOREACHPLUGINEVENT(GetPluginAPI()->cProcessors, IProcessingEvents, pEvents) {
+  FOREACHPLUGINHANDLER(GetPluginAPI()->cProcessors, IProcessingEvents, pEvents) {
     pEvents->OnFrame(pdp);
   }
 };

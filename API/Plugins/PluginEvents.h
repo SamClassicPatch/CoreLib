@@ -84,10 +84,8 @@ class IRenderingEvents : public IAbstractEvents {
 };
 
 // Iteration through specific plugin event handlers
-#define FOREACHPLUGINEVENT(_Container, _HandlerType, _Iter) \
-  CDynamicContainerIterator<IAbstractEvents> iter_##_HandlerType(_Container); \
-  for (_HandlerType *_Iter = (_HandlerType *)&*iter_##_HandlerType; \
-      !iter_##_HandlerType.IsPastEnd(); \
-       iter_##_HandlerType.MoveToNext(), _Iter = (_HandlerType *)&*iter_##_HandlerType)
+#define FOREACHPLUGINHANDLER(_Container, _HandlerType, _Iter) \
+  CDynamicContainer<_HandlerType> &cont_##_HandlerType = (CDynamicContainer<_HandlerType> &)_Container; \
+  FOREACHINDYNAMICCONTAINER(cont_##_HandlerType, _HandlerType, _Iter)
 
 #endif

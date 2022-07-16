@@ -98,7 +98,7 @@ static void RenderViewCopy(CWorld &woWorld, CEntity &enViewer, CAnyProjection3D 
   (re.*_pRender.pFunction)();
 
   // Call render view function for each plugin
-  FOREACHPLUGINEVENT(GetPluginAPI()->cRenderers, IRenderingEvents, pEvents) {
+  FOREACHPLUGINHANDLER(GetPluginAPI()->cRenderers, IRenderingEvents, pEvents) {
     pEvents->OnRenderView(woWorld, &enViewer, apr, &dp);
   }
 };
