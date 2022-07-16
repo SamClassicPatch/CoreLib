@@ -63,8 +63,9 @@ class IProcessingEvents : public IAbstractEvents {
     virtual void OnFrame(CDrawPort *pdp); // After rendering everything
     
     // Assign handlers container
-    IProcessingEvents() {
+    void Register(void) {
       _pHandlers = &GetPluginAPI()->cProcessors;
+      IAbstractEvents::Register();
     };
 };
 
@@ -78,8 +79,9 @@ class IRenderingEvents : public IAbstractEvents {
     virtual void OnRenderView(CWorld &wo, CEntity *penViewer, CAnyProjection3D &apr, CDrawPort *pdp);
     
     // Assign handlers container
-    IRenderingEvents() {
+    void Register(void) {
       _pHandlers = &GetPluginAPI()->cRenderers;
+      IAbstractEvents::Register();
     };
 };
 
