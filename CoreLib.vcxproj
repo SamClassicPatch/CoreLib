@@ -26,7 +26,6 @@
     <ClInclude Include="API\Plugins\PluginEvents.h" />
     <ClInclude Include="API\Plugins\PluginSymbols.h" />
     <ClInclude Include="Core.h" />
-    <ClInclude Include="FuncPatching.h" />
     <ClInclude Include="Game\Game.h" />
     <ClInclude Include="Game\PlayerSettings.h" />
     <ClInclude Include="Interfaces\RenderFunctions.h" />
@@ -37,6 +36,7 @@
     <ClInclude Include="Networking\NetworkFunctions.h" />
     <ClInclude Include="Networking\StreamBlock.h" />
     <ClInclude Include="Objects\Node.h" />
+    <ClInclude Include="Patcher\FuncPatching.h" />
     <ClInclude Include="Patcher\patcher.h" />
     <ClInclude Include="Patcher\patcher_defines.h" />
     <ClInclude Include="Query\QueryMgr.h" />

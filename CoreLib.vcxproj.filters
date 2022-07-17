@@ -84,9 +84,6 @@
     <ClInclude Include="API\CoreAPI.h">
       <Filter>Header Files\API headers</Filter>
     </ClInclude>
-    <ClInclude Include="FuncPatching.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Query\QueryMgr.h">
       <Filter>Header Files\Query headers</Filter>
     </ClInclude>
@@ -128,6 +125,9 @@
     </ClInclude>
     <ClInclude Include="API\Plugins\PluginSymbols.h">
       <Filter>Header Files\API headers\Plugins</Filter>
+    </ClInclude>
+    <ClInclude Include="Patcher\FuncPatching.h">
+      <Filter>Header Files\Patcher headers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

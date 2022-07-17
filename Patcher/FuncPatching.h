@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #pragma once
 #endif
 
-#include "Patcher/patcher.h"
+#include "patcher.h"
 
 // Caster from raw addresses to function pointers
 template<class FuncType>
