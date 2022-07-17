@@ -26,6 +26,7 @@
     <ClInclude Include="API\Plugins\PluginEvents.h" />
     <ClInclude Include="API\Plugins\PluginSymbols.h" />
     <ClInclude Include="Core.h" />
+    <ClInclude Include="GameSpecific.h" />
     <ClInclude Include="Game\Game.h" />
     <ClInclude Include="Game\PlayerSettings.h" />
     <ClInclude Include="Interfaces\RenderFunctions.h" />
