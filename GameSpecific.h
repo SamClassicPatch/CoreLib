@@ -29,4 +29,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #define CHOOSE_FOR_GAME(_TFE105, _TSE105, _TSE107) _TSE107
 #endif
 
+// Addresses of specific engine elements
+
+// CRenderer::Render()
+#define ADDR_RENDERER_RENDER (CHOOSE_FOR_GAME(0x601A8CD0, 0x60178DB0, 0x601B4A00))
+
+// &_areRenderers[0]
+#define ADDR_RENDERER_ARRAY ((CRenderer *)(ULONG *)CHOOSE_FOR_GAME(0x6029C4F8, 0x6026C538, 0x602CDAF0))
+
 #endif
