@@ -193,8 +193,8 @@ static void P_RenderView(CWorld &woWorld, CEntity &enViewer, CAnyProjection3D &a
 class CProjectionPatch : public CPerspectiveProjection3D {
   public:
     void P_Prepare(void) {
-      // Fix FOV for weapon viewmodels
-      if (sam_bFixViewmodelFOV) {
+      // Adjust FOV for specific model rendering
+      if (GetAPI()->GetAdjustFOV() == 1 || (GetAPI()->GetAdjustFOV() != 0 && sam_bFixViewmodelFOV)) {
         ASSERT(GetGameAPI()->IsHooked());
 
         const INDEX iCompState = GetGameAPI()->GetCompState();

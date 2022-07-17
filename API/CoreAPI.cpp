@@ -42,6 +42,7 @@ CCoreAPI::CCoreAPI() :
   ulVersion = MakeVersion(1, 2, 0);
 
   pdpRenderSpace = NULL;
+  sbAdjustingModelFOV = -1;
 
   // Output patcher actions
   if (FileExists(_fnmApplicationExe.FileDir() + "PatcherOutput")) {

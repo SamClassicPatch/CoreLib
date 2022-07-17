@@ -45,6 +45,7 @@ class CCoreAPI {
     ULONG ulVersion; // Release version
 
     CDrawPort *pdpRenderSpace; // Main render space, if available
+    SBYTE sbAdjustingModelFOV; // Force FOV adjustment for model rendering (-1 - ignore)
 
     // API submodules
     CPatchAPI &apiPatches;
@@ -144,6 +145,16 @@ class CCoreAPI {
     // Get render space sizes
     virtual FLOAT2D GetScreenSize(void) {
       return FLOAT2D(GetDrawPort()->GetWidth(), GetDrawPort()->GetHeight());
+    };
+
+    // Get current FOV adjustment for model rendering
+    virtual SBYTE GetAdjustFOV(void) {
+      return sbAdjustingModelFOV;
+    };
+
+    // Set FOV adjustment for model rendering
+    virtual void SetAdjustFOV(SBYTE sbState) {
+      sbAdjustingModelFOV = Sgn(sbState);
     };
 
     // Disable GameSpy usage
