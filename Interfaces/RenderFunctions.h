@@ -58,6 +58,26 @@ class IRender {
       // 90 FOV on 4:3 or 106.26 FOV on 16:9 will become 73.74...
       fHFOV = 2.0f * ATan(fVerticalAngle);
     };
+
+    // Begin special model rendering
+    static inline void BeginModelRendering(CAnyProjection3D &apr, CDrawPort *pdp, BOOL bAdjustFOV)
+    {
+      // Set to adjust model FOV, if needed
+      GetAPI()->SetAdjustFOV(bAdjustFOV ? 1 : 0);
+
+      // Begin model rendering
+      BeginModelRenderingView(apr, pdp);
+    };
+
+    // End special model rendering
+    static inline void EndModelRendering(BOOL bRestoreOrtho = TRUE)
+    {
+      // Reset to FOV adjustment
+      GetAPI()->SetAdjustFOV(-1);
+
+      // End model rendering
+      EndModelRenderingView(bRestoreOrtho);
+    };
 };
 
 #endif
