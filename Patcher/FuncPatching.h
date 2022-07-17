@@ -34,6 +34,11 @@ struct FuncPtr {
   FuncPtr(ULONG ulSetAddress = NULL) : ulAddress(ulSetAddress)
   {
   };
+
+  // Constructor from a function pointer
+  FuncPtr(FuncType pSetFunction) : pFunction(pSetFunction)
+  {
+  };
 };
 
 // Don't terminate the game in debug
