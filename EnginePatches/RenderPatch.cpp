@@ -394,13 +394,20 @@ extern void CECIL_ApplyRenderPatch(void) {
   void (*pRenderView)(CWorld &, CEntity &, CAnyProjection3D &, CDrawPort &) = &RenderView;
   NewPatch(pRenderView, &P_RenderView, "::RenderView(...)");
 
+  // Pointer to the virtual table of CPerspectiveProjection3D
+  void *pVFTable = *(void **)&CPerspectiveProjection3D();
+
   // Pointer to CPerspectiveProjection3D::Prepare()
-  FuncPtr<void (CPerspectiveProjection3D::*)(void)> pPrepare = CHOOSE_FOR_GAME(0x600F5380, 0x600C5410, 0x600FE780);
-  NewPatch(pPrepare.pFunction, &CProjectionPatch::P_Prepare, "CPerspectiveProjection3D::Prepare()");
+  typedef void (CPerspectiveProjection3D::*CPrepareFunc)(void);
+  CPrepareFunc pPrepare = ((CPrepareFunc *)pVFTable)[0];
+
+  NewPatch(pPrepare, &CProjectionPatch::P_Prepare, "CPerspectiveProjection3D::Prepare()");
 
   // Pointer to CPerspectiveProjection3D::MipFactor()
-  FuncPtr<FLOAT (CPerspectiveProjection3D::*)(void) const> pFactor = CHOOSE_FOR_GAME(0x600F7100, 0x600C7190, 0x60100500);
-  NewPatch(pFactor.pFunction, &CProjectionPatch::P_MipFactor, "CPerspectiveProjection3D::MipFactor()");
+  typedef FLOAT (CPerspectiveProjection3D::*CMipFactorFunc)(FLOAT) const;
+  CMipFactorFunc pFactor = ((CMipFactorFunc *)pVFTable)[16];
+
+  NewPatch(pFactor, &CProjectionPatch::P_MipFactor, "CPerspectiveProjection3D::MipFactor()");
 
   // Custom symbols
   _pShell->DeclareSymbol("persistent user INDEX sam_bAdjustForAspectRatio;", &sam_bAdjustForAspectRatio);
