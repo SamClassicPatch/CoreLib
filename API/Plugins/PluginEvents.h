@@ -93,6 +93,12 @@ class INetworkEvents : public IAbstractEvents {
 
     // Upon receiving a packet as a client (returns TRUE if the packet was handled)
     virtual BOOL OnClientPacket(CNetworkMessage &nmMessage, const ULONG ulType);
+
+    // After starting the server and loading in the world
+    virtual void OnGameStart(void);
+
+    // Before stopping the server
+    virtual void OnGameStop(void);
 };
 
 // Iteration through specific plugin event handlers
