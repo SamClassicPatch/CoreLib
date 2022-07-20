@@ -99,6 +99,12 @@ class INetworkEvents : public IAbstractEvents {
 
     // Before stopping the server
     virtual void OnGameStop(void);
+
+    // Assign handlers container
+    void Register(void) {
+      _pHandlers = &GetPluginAPI()->cNetworkEvents;
+      IAbstractEvents::Register();
+    };
 };
 
 // Iteration through specific plugin event handlers
