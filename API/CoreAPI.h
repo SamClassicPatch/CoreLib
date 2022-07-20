@@ -169,6 +169,12 @@ class CCoreAPI {
     // Release all user plugins of specific utility types
     void ReleasePlugins(ULONG ulUtilityFlags);
 
+    // Called after starting world simulation
+    virtual void OnGameStart(void);
+
+    // Called before stopping world simulation
+    virtual void OnGameStop(void);
+
     // Called every simulation tick
     virtual void OnTick(void);
 

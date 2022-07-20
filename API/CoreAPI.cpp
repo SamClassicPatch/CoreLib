@@ -163,6 +163,24 @@ void CCoreAPI::ReleasePlugins(ULONG ulUtilityFlags) {
   CPrintF("--- Done! ---\n");
 };
 
+// Called after starting world simulation
+void CCoreAPI::OnGameStart(void)
+{
+  // Call game start function for each plugin
+  FOREACHPLUGINHANDLER(GetPluginAPI()->cNetworkEvents, INetworkEvents, pEvents) {
+    pEvents->OnGameStart();
+  }
+};
+
+// Called before stopping world simulation
+void CCoreAPI::OnGameStop(void)
+{
+  // Call game stop function for each plugin
+  FOREACHPLUGINHANDLER(GetPluginAPI()->cNetworkEvents, INetworkEvents, pEvents) {
+    pEvents->OnGameStop();
+  }
+};
+
 // Called every simulation tick
 void CCoreAPI::OnTick(void)
 {
