@@ -20,8 +20,6 @@ static INDEX sam_bAdjustForAspectRatio = TRUE;
 static INDEX sam_bUseVerticalFOV = TRUE;
 static FLOAT sam_fCustomFOV = -1.0f;
 static FLOAT sam_fThirdPersonFOV = -1.0f;
-static INDEX sam_bFixMipDistance = TRUE;
-static INDEX sam_bFixViewmodelFOV = TRUE;
 static INDEX sam_bCheckFOV = FALSE;
 
 // Coordinate conversion function
@@ -139,18 +137,6 @@ static void P_RenderView(CWorld &woWorld, CEntity &enViewer, CAnyProjection3D &a
 
     FLOAT &fNewFOV = ppr.ppr_FOVWidth;
 
-    // Display view FOVs
-    if (sam_bCheckFOV) {
-      // Horizontal FOV
-      CPrintF("View HFOV: %.2f\n", fNewFOV);
-
-      // Vertical FOV
-      FLOAT fVFOV = fNewFOV;
-      IRender::AdjustVFOV(vScreen, fVFOV);
-
-      CPrintF("View VFOV: %.2f\n", fVFOV);
-    }
-
     // Set custom FOV if not zooming in
     if (fNewFOV > 80.0f) {
       // Set different FOV for the third person view
@@ -163,21 +149,29 @@ static void P_RenderView(CWorld &woWorld, CEntity &enViewer, CAnyProjection3D &a
       }
     }
 
-    // Adjust FOV for wider resolutions (preserve vertical FOV instead of horizontal)
-    if (sam_bUseVerticalFOV) {
-      IRender::AdjustHFOV(vScreen, fNewFOV);
-
-      // Don't let FOV be invalid
-      fNewFOV = Clamp(fNewFOV, 1.0f, 170.0f);
-    }
-
-    // Display proper FOVs
+    // Display current FOV values
     if (sam_bCheckFOV) {
-      // Horizontal FOV
-      CPrintF("New HFOV:  %.2f\n", fNewFOV);
+      FLOAT fCheckFOV = fNewFOV;
+      
+      // Starting horizontal FOV
+      CPrintF("View HFOV: %.2f\n", fCheckFOV);
 
-      // Vertical FOV
-      FLOAT fVFOV = fNewFOV;
+      // Starting vertical FOV
+      FLOAT fVFOV = fCheckFOV;
+      IRender::AdjustVFOV(vScreen, fVFOV);
+
+      CPrintF("View VFOV: %.2f\n", fVFOV);
+
+      // FOV patch
+      if (sam_bUseVerticalFOV) {
+        IRender::AdjustHFOV(vScreen, fCheckFOV);
+      }
+      
+      // Proper horizontal FOV after the patch
+      CPrintF("New HFOV:  %.2f\n", fCheckFOV);
+      
+      // Proper vertical FOV after the patch
+      fVFOV = fCheckFOV;
       IRender::AdjustVFOV(vScreen, fVFOV);
 
       CPrintF("New VFOV:  %.2f\n", fVFOV);
@@ -193,30 +187,6 @@ static void P_RenderView(CWorld &woWorld, CEntity &enViewer, CAnyProjection3D &a
 class CProjectionPatch : public CPerspectiveProjection3D {
   public:
     void P_Prepare(void) {
-      // Adjust FOV for specific model rendering
-      if (GetAPI()->GetAdjustFOV() == 1 || (GetAPI()->GetAdjustFOV() != 0 && sam_bFixViewmodelFOV)) {
-        ASSERT(GetGameAPI()->IsHooked());
-
-        const INDEX iCompState = GetGameAPI()->GetCompState();
-        const BOOL bInGame = (GetAPI()->IsGameApp() || GetGameAPI()->IsGameOn());
-
-        // Computer is closed during the game
-        if (bInGame && (iCompState == CS_OFF || iCompState == CS_ONINBACKGROUND))
-        {
-          // Calling from CRenderer::RenderModels()
-          const ULONG ulRenderModels = CHOOSE_FOR_GAME(0x601A462D, 0x6017470D, 0x601AF17E);
-
-          // Calling from BeginModelRenderingView()
-          const ULONG ulModelView = CHOOSE_FOR_GAME(0x6014FA89, 0x6011FB69, 0x60157F59);
-        
-          // Not calling from CRenderer::RenderModels() but still calling from BeginModelRenderingView()
-          if (!CallingFrom(ulRenderModels, 5) && CallingFrom(ulModelView, 5)) {
-            // Adjust FOV according to the aspect ratio
-            IRender::AdjustHFOV(GetAPI()->GetScreenSize(), FOVL());
-          }
-        }
-      }
-
       // Original function code
       FLOATmatrix3D t3dObjectStretch;
       FLOATmatrix3D t3dObjectRotation;
@@ -289,33 +259,43 @@ class CProjectionPatch : public CPerspectiveProjection3D {
         vMin = pr_ScreenBBox.Min();
         vMax = pr_ScreenBBox.Max();
 
-      } else if (ppr_boxSubScreen.IsEmpty()) {
-        FLOAT2D v2dScreenSize = pr_ScreenBBox.Size();
-        pr_ScreenCenter = pr_ScreenBBox.Center();
-
-        ANGLE aHalfI = ppr_FOVWidth / 2.0f;
-        ANGLE aHalfJ = ATan(TanFast(aHalfI) * v2dScreenSize(2) * pr_AspectRatio / v2dScreenSize(1));
-
-        ppr_PerspectiveRatios(1) = -v2dScreenSize(1) / (2.0f * TanFast(aHalfI)) * pr_fViewStretch;
-        ppr_PerspectiveRatios(2) = -v2dScreenSize(2) / (2.0f * TanFast(aHalfJ)) * pr_fViewStretch;
-
-        vMin = pr_ScreenBBox.Min() - pr_ScreenCenter;
-        vMax = pr_ScreenBBox.Max() - pr_ScreenCenter;
-
+      // Unified two 'else' blocks for normal or sub-drawport projection
       } else {
         FLOAT2D v2dScreenSize = pr_ScreenBBox.Size();
         pr_ScreenCenter = pr_ScreenBBox.Center();
 
-        ANGLE aHalfI = ppr_FOVWidth / 2.0f;
-        ANGLE aHalfJ = ATan(TanFast(aHalfI)*v2dScreenSize(2)*pr_AspectRatio/v2dScreenSize(1));
+        ANGLE aHalfHor;
+        ANGLE aHalfVer;
 
-        ppr_PerspectiveRatios(1) = -v2dScreenSize(1)/(2.0f*TanFast(aHalfI))*pr_fViewStretch;
-        ppr_PerspectiveRatios(2) = -v2dScreenSize(2)/(2.0f*TanFast(aHalfJ))*pr_fViewStretch;
+        // Adjust FOV for wider resolutions (preserve vertical FOV instead of horizontal)
+        if (sam_bUseVerticalFOV) {
+          // Calculate VFOV from HFOV on 4:3 resolution (e.g. 90 -> ~73.74)
+          aHalfVer = ATan(Tan(ppr_FOVWidth * 0.5f) * 3.0f * pr_AspectRatio / 4.0f);
 
-        vMin = ppr_boxSubScreen.Min()-pr_ScreenCenter;
-        vMax = ppr_boxSubScreen.Max()-pr_ScreenCenter;
+          // Recalculate HFOV from VFOV (e.g. ~73.74 -> 90 on 4:3 / ~106.26 on 16:9)
+          aHalfHor = ATan(Tan(aHalfVer) * v2dScreenSize(1) * pr_AspectRatio / v2dScreenSize(2));
 
-        pr_ScreenCenter -= ppr_boxSubScreen.Min();
+        } else {
+          // Original function code
+          aHalfHor = ppr_FOVWidth * 0.5f;
+          aHalfVer = ATan(Tan(aHalfHor) * v2dScreenSize(2) * pr_AspectRatio / v2dScreenSize(1));
+        }
+
+        ppr_PerspectiveRatios(1) = -v2dScreenSize(1) / (2.0f * Tan(aHalfHor)) * pr_fViewStretch;
+        ppr_PerspectiveRatios(2) = -v2dScreenSize(2) / (2.0f * Tan(aHalfVer)) * pr_fViewStretch;
+
+        // For normal projection
+        if (ppr_boxSubScreen.IsEmpty()) {
+          vMin = pr_ScreenBBox.Min() - pr_ScreenCenter;
+          vMax = pr_ScreenBBox.Max() - pr_ScreenCenter;
+
+        // For sub-drawport projection
+        } else {
+          vMin = ppr_boxSubScreen.Min() - pr_ScreenCenter;
+          vMax = ppr_boxSubScreen.Max() - pr_ScreenCenter;
+
+          pr_ScreenCenter -= ppr_boxSubScreen.Min();
+        }
       }
 
       const FLOAT fMinI = vMin(1); FLOAT fMinJ = vMin(2);
@@ -361,27 +341,14 @@ class CProjectionPatch : public CPerspectiveProjection3D {
       pr_fDepthBufferAdd = pr_fDepthBufferNear;
 
       // Fix mip distances
-      if (sam_bFixMipDistance) {
-        // Rely on vertical size rather than horizontal
+      if (sam_bUseVerticalFOV) {
+        // Rely on height ratio instead of width ratio
         ppr_fMipRatio = pr_ScreenBBox.Size()(2) / (ppr_PerspectiveRatios(2) * 480.0f);
 
       } else {
         // Original function code
         ppr_fMipRatio = pr_ScreenBBox.Size()(1) / (ppr_PerspectiveRatios(1) * 640.0f);
       }
-    };
-
-    FLOAT P_MipFactor(void) const {
-      ASSERT(pr_Prepared);
-
-      FLOAT fFOV = ppr_FOVWidth;
-
-      // Cancel 4:3 aspect ratio from the FOV
-      if (sam_bFixMipDistance) {
-        IRender::AdjustHFOV(FLOAT2D(3, 4), fFOV);
-      }
-
-      return -pr_TranslationVector(3) * TanFast(fFOV * 0.5f);
     };
 };
 
@@ -403,18 +370,10 @@ extern void CECIL_ApplyRenderPatch(void) {
 
   NewPatch(pPrepare, &CProjectionPatch::P_Prepare, "CPerspectiveProjection3D::Prepare()");
 
-  // Pointer to CPerspectiveProjection3D::MipFactor()
-  typedef FLOAT (CPerspectiveProjection3D::*CMipFactorFunc)(FLOAT) const;
-  CMipFactorFunc pFactor = ((CMipFactorFunc *)pVFTable)[16];
-
-  NewPatch(pFactor, &CProjectionPatch::P_MipFactor, "CPerspectiveProjection3D::MipFactor()");
-
   // Custom symbols
   _pShell->DeclareSymbol("persistent user INDEX sam_bAdjustForAspectRatio;", &sam_bAdjustForAspectRatio);
   _pShell->DeclareSymbol("persistent user INDEX sam_bUseVerticalFOV;",  &sam_bUseVerticalFOV);
   _pShell->DeclareSymbol("persistent user FLOAT sam_fCustomFOV;",       &sam_fCustomFOV);
   _pShell->DeclareSymbol("persistent user FLOAT sam_fThirdPersonFOV;",  &sam_fThirdPersonFOV);
-  _pShell->DeclareSymbol("persistent user INDEX sam_bFixMipDistance;",  &sam_bFixMipDistance);
-  _pShell->DeclareSymbol("persistent user INDEX sam_bFixViewmodelFOV;", &sam_bFixViewmodelFOV);
   _pShell->DeclareSymbol("user INDEX sam_bCheckFOV;", &sam_bCheckFOV);
 };
