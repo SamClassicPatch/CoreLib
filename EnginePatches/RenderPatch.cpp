@@ -17,7 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 // Patch commands
 static INDEX sam_bAdjustForAspectRatio = TRUE;
-static INDEX sam_bUseVerticalFOV = TRUE;
+extern INDEX sam_bUseVerticalFOV = TRUE;
 static FLOAT sam_fCustomFOV = -1.0f;
 static FLOAT sam_fThirdPersonFOV = -1.0f;
 static INDEX sam_bCheckFOV = FALSE;
