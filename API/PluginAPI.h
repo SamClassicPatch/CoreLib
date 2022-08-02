@@ -148,15 +148,23 @@ void CPluginSymbol::Register(const char *strSymbolName, const char *strPreFunc, 
   ASSERT(_pss != NULL);
 
   // Assign pre-function
-  if (strPreFunc != "") {
+  if (strcmp(strPreFunc, "") != 0) {
     CShellSymbol *pssPreFunc = _pShell->GetSymbol(strPreFunc, TRUE);
-    _pss->ss_pPreFunc = (BOOL (*)(void *))pssPreFunc->ss_pvValue;
+    ASSERT(pssPreFunc != NULL);
+
+    if (pssPreFunc != NULL) {
+      _pss->ss_pPreFunc = (BOOL (*)(void *))pssPreFunc->ss_pvValue;
+    }
   }
 
   // Assign post-function
-  if (strPostFunc != "") {
+  if (strcmp(strPostFunc, "") != 0) {
     CShellSymbol *pssPostFunc = _pShell->GetSymbol(strPostFunc, TRUE);
-    _pss->ss_pPostFunc = (void (*)(void *))pssPostFunc->ss_pvValue;
+    ASSERT(pssPostFunc != NULL);
+
+    if (pssPostFunc != NULL) {
+      _pss->ss_pPostFunc = (void (*)(void *))pssPostFunc->ss_pvValue;
+    }
   }
 };
 
