@@ -84,7 +84,7 @@ class CPluginAPI {
     virtual CDynamicContainer<CPluginModule> &GetPlugins(void);
 
     // Register a symbol from the plugin and set a pointer to the symbol to it
-    static inline void RegisterSymbol(CPluginSymbol *pps, const char *strName, const char *strPreFunc, const char *strPostFunc)
+    static inline void RegisterSymbol(CPluginSymbol *pps, const char *strName)
     {
       // Get symbol if it already exists
       CShellSymbol *pss = _pShell->GetSymbol(strName, TRUE);
@@ -141,9 +141,9 @@ class CPluginAPI {
 };
 
 // Define symbol registering method
-void CPluginSymbol::Register(const char *strSymbolName, const char *strPreFunc, const char *strPostFunc)
+void CPluginSymbol::Register(const char *strSymbolName, const char *strPreFunc = "", const char *strPostFunc = "")
 {
-  CPluginAPI::RegisterSymbol(this, strSymbolName, strPreFunc, strPostFunc);
+  CPluginAPI::RegisterSymbol(this, strSymbolName);
 
   ASSERT(_pss != NULL);
 

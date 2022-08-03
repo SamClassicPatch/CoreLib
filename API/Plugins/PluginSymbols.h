@@ -71,6 +71,9 @@ class CPluginSymbol
           _strValue.InsertChar(i, '\\');
         }
       }
+
+      // Surround with quotes
+      _strValue = "\"" + _strValue + "\"";
     };
 
     // Get symbol type
