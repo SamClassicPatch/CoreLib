@@ -48,7 +48,7 @@ struct FuncPtr {
   #define PATCH_ERROR_OUTPUT FatalError
 #endif
 
-// Create a new function patch
+// Create a new function patch (using initialized API)
 template<class FuncType1, class FuncType2> inline
 CPatch *NewPatch(FuncType1 &funcOld, FuncType2 funcNew, const char *strName, BOOL bAddToRegistry = TRUE) {
   CPrintF("  %s\n", strName);
@@ -70,6 +70,27 @@ CPatch *NewPatch(FuncType1 &funcOld, FuncType2 funcNew, const char *strName, BOO
 
   // Couldn't patch
   } else {
+    PATCH_ERROR_OUTPUT("Cannot set function patch for %s!\nAddress: 0x%p", strName, funcOld);
+  }
+
+  return pPatch;
+};
+
+// Create a new function patch (before initializing API)
+template<class FuncType1, class FuncType2> inline
+CPatch *NewRawPatch(FuncType1 &funcOld, FuncType2 funcNew, const char *strName) {
+  CPrintF("  %s\n", strName);
+
+  if (CPatch::GetDebug()) {
+    InfoMessage(strName);
+  }
+
+  // Create new patch and hook the functions
+  CPatch *pPatch = new CPatch(FALSE);
+  pPatch->HookClassFunctions(funcOld, funcNew, true);
+
+  // Couldn't patch
+  if (!pPatch->IsValid()) {
     PATCH_ERROR_OUTPUT("Cannot set function patch for %s!\nAddress: 0x%p", strName, funcOld);
   }
 
