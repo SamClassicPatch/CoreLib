@@ -155,7 +155,7 @@ void DarkPlaces_ParseServerList(unsigned char *data, INDEX iLength, BOOL bExtend
   }
   
   while (iLength >= 7)
-	{
+  {
     // IPV4 Address.
     if (data[0] == '\\') {
       
@@ -185,15 +185,15 @@ void DarkPlaces_ParseServerList(unsigned char *data, INDEX iLength, BOOL bExtend
         _sendPacketTo("\xFF\xFF\xFF\xFFgetstatus", &sinServer);
       }
       
-			data += 7;
-			iLength -= 7;
+      data += 7;
+      iLength -= 7;
 
     // IPV6 Address.
     } else if (iLength >= 19 && data[0] == '/' && bExtended) {
       
       // Just skip it. Because our game don't have IPV6 support.
-			data += 19;
-			iLength -= 19;
+      data += 19;
+      iLength -= 19;
       
     // Unknown Data.
     } else {

@@ -151,7 +151,7 @@ void CLegacyQuery::EnumTrigger(BOOL bInternet)
   if (!bInternet) {
     _LocalSearch();
     return;
-	
+
   // Internet Search
   } else {
 
@@ -350,7 +350,7 @@ void CLegacyQuery::EnumUpdate(void)
     if (_hThread != NULL) {
       CloseHandle(_hThread);
     }
-    _bActivated = FALSE;		
+    _bActivated = FALSE;
   }
 
   if (_bActivatedLocal)
@@ -363,8 +363,8 @@ void CLegacyQuery::EnumUpdate(void)
       CloseHandle(_hThread);
     }
 
-    _bActivatedLocal = FALSE;		
-  }	
+    _bActivatedLocal = FALSE;
+  }
 }
 
 static void ParseStatusResponse(sockaddr_in &_sinClient, BOOL bIgnorePing)
@@ -613,7 +613,7 @@ DWORD WINAPI _LocalNet_Thread(LPVOID lpParam)
       delete[] _szIPPortBufferLocal;
     }
 
-    _szIPPortBufferLocal = NULL;		
+    _szIPPortBufferLocal = NULL;
     return -1;
   }
 
@@ -632,8 +632,8 @@ DWORD WINAPI _LocalNet_Thread(LPVOID lpParam)
   unsigned short startport = 25601;
   unsigned short endport =  startport + 20;
   
-	for (int i = startport ; i <= endport ; i += 1)
-	{
+  for (int i = startport ; i <= endport ; i += 1)
+  {
     saddr.sin_port = htons(i);
     sendto(_sockudp, "\\status\\", 8, 0, (sockaddr *) &saddr, sizeof(saddr));
   }
