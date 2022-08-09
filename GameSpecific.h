@@ -37,4 +37,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // &_areRenderers[0]
 #define ADDR_RENDERER_ARRAY ((CRenderer *)(ULONG *)CHOOSE_FOR_GAME(0x6029C4F8, 0x6026C538, 0x602CDAF0))
 
+// UNZIP* methods
+#define ADDR_UNZIP_OPEN      (CHOOSE_FOR_GAME(0x600E19E0, 0x600B1A70, 0x600EDD50)) // UNZIPOpen_t()
+#define ADDR_UNZIP_GETSIZE   (CHOOSE_FOR_GAME(0x600E1D90, 0x600B1E20, 0x600EE100)) // UNZIPGetSize()
+#define ADDR_UNZIP_READBLOCK (CHOOSE_FOR_GAME(0x600E1DF0, 0x600B1E80, 0x600EE160)) // UNZIPReadBlock_t()
+#define ADDR_UNZIP_CLOSE     (CHOOSE_FOR_GAME(0x600E20F0, 0x600B2180, 0x600EE460)) // UNZIPClose()
+
 #endif
