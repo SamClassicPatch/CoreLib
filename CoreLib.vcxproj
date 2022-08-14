@@ -26,6 +26,20 @@
     <ClInclude Include="API\Plugins\PluginEvents.h" />
     <ClInclude Include="API\Plugins\PluginSymbols.h" />
     <ClInclude Include="Core.h" />
+    <ClInclude Include="Definitions\BaseDefs.h" />
+    <ClInclude Include="Definitions\EntitiesDefs.h" />
+    <ClInclude Include="Definitions\ActionBufferDefs.inl">
+      <FileType>Document</FileType>
+    </ClInclude>
+    <ClInclude Include="Definitions\PlayerActionDefs.inl">
+      <FileType>Document</FileType>
+    </ClInclude>
+    <ClInclude Include="Definitions\PlayerCharacterDefs.inl">
+      <FileType>Document</FileType>
+    </ClInclude>
+    <ClInclude Include="Definitions\PlayerTargetDefs.inl">
+      <FileType>Document</FileType>
+    </ClInclude>
     <ClInclude Include="GameSpecific.h" />
     <ClInclude Include="Game\Game.h" />
     <ClInclude Include="Game\PlayerSettings.h" />
@@ -49,6 +63,7 @@
     <ClCompile Include="API\PatchAPI.cpp" />
     <ClCompile Include="API\PluginAPI.cpp" />
     <ClCompile Include="Core.cpp" />
+    <ClCompile Include="Definitions\InlineDefinitions.cpp" />
     <ClCompile Include="EnginePatches\NetworkPatch.cpp" />
     <ClCompile Include="EnginePatches\RenderPatch.cpp" />
     <ClCompile Include="EnginePatches\UndecoratedPatch.cpp" />

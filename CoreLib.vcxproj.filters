@@ -61,6 +61,12 @@
     <Filter Include="Header Files\API headers\Plugins">
       <UniqueIdentifier>{a4c8b8f0-4ed4-44c8-ab01-e8c0f08f43dc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Definitions headers">
+      <UniqueIdentifier>{2db3b272-e752-4781-b80d-add576249bea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Definitions">
+      <UniqueIdentifier>{72c3b40a-c044-400f-ac18-816894dbd3e6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game\Game.h">
@@ -132,6 +138,24 @@
     <ClInclude Include="GameSpecific.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Definitions\BaseDefs.h">
+      <Filter>Header Files\Definitions headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Definitions\EntitiesDefs.h">
+      <Filter>Header Files\Definitions headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Definitions\ActionBufferDefs.inl">
+      <Filter>Header Files\Definitions headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Definitions\PlayerActionDefs.inl">
+      <Filter>Header Files\Definitions headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Definitions\PlayerCharacterDefs.inl">
+      <Filter>Header Files\Definitions headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Definitions\PlayerTargetDefs.inl">
+      <Filter>Header Files\Definitions headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="StdH.cpp">
@@ -196,6 +220,9 @@
     </ClCompile>
     <ClCompile Include="EnginePatches\UndecoratedPatch.cpp">
       <Filter>Source Files\EnginePatches</Filter>
+    </ClCompile>
+    <ClCompile Include="Definitions\InlineDefinitions.cpp">
+      <Filter>Source Files\Definitions</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
