@@ -15,6 +15,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "StdH.h"
 
+#include <Engine/Network/LevelChange.h>
+
 #include "Networking/CommInterface.h"
 #include "Networking/NetworkFunctions.h"
 
@@ -150,6 +152,37 @@ class CMessageDisPatch : public CMessageDispatcher {
 static void (CSessionState::*pFlushPredictions)(void) = NULL;
 static void (CSessionState::*pProcGameStreamBlock)(CNetworkMessage &) = NULL;
 
+// CRememberedLevel clone that saves session state into itself
+class CRemLevel : public CTStream {
+  public:
+    CListNode rl_lnInSessionState; // Node in the remembered levels list
+    CTString rl_strFileName; // World filename
+
+  // CTMemoryStream method replacements
+  public:
+    // Constructor
+    CRemLevel(void) {
+      strm_strStreamDescription = "dynamic memory stream";
+
+      // Allocate enough memory for writing (128 MB)
+      AllocateVirtualMemory((1 << 20) * 128);
+    };
+
+    // Destructor
+    ~CRemLevel(void) {
+      // Clear allocated memory
+      FreeBuffer();
+    };
+
+    // Always interactable
+    BOOL IsReadable(void)  { return TRUE; };
+    BOOL IsWriteable(void) { return TRUE; };
+    BOOL IsSeekable(void)  { return TRUE; };
+
+    // Dummy
+    void HandleAccess(INDEX, BOOL) {};
+};
+
 class CSessionStatePatch : public CSessionState {
   public:
     void P_FlushProcessedPredictions(void) {
@@ -177,6 +210,98 @@ class CSessionStatePatch : public CSessionState {
       if (INetwork::ClientHandle(this, nmMessage)) {
         // Call the original function for standard packets
         (this->*pProcGameStreamBlock)(nmMessage);
+      }
+    };
+
+    void P_Stop(void) {
+      // Original function code
+      ses_bKeepingUpWithTime = TRUE;
+      ses_tmLastUpdated = -100;
+      ses_bAllowRandom = TRUE;
+      ses_bPredicting = FALSE;
+      ses_tmPredictionHeadTick = -2.0f;
+      ses_tmLastSyncCheck = 0;
+      ses_bPause = FALSE;
+      ses_bWantPause = FALSE;
+      ses_bGameFinished = FALSE;
+      ses_bWaitingForServer = FALSE;
+      ses_strDisconnected = "";
+      ses_ctMaxPlayers = 1;
+      ses_fRealTimeFactor = 1.0f;
+      ses_bWaitAllPlayers = FALSE;
+      ses_apeEvents.PopAll();
+
+      _pTimer->DisableLerp();
+
+      #if SE1_VER >= 107
+        CNetworkMessage nmConfirmDisconnect(MSG_REP_DISCONNECTED);
+
+        if (GetComm().cci_bClientInitialized) {
+          _pNetwork->SendToServerReliable(nmConfirmDisconnect);
+        }
+      #endif
+
+      GetComm().Client_Close();
+      ForgetOldLevels();
+
+      ses_apltPlayers.Clear();
+      ses_apltPlayers.New(NET_MAXGAMEPLAYERS);
+    };
+
+  // Remembered levels without CTMemoryStream
+  public:
+
+    void P_RememberCurrentLevel(const CTString &strFileName) {
+      for (;;) {
+        CRemLevel *prlOld = P_FindRememberedLevel(strFileName);
+
+        if (prlOld == NULL) break;
+
+        prlOld->rl_lnInSessionState.Remove();
+        delete prlOld;
+      }
+
+      CRemLevel *prlNew = new CRemLevel;
+      ses_lhRememberedLevels.AddTail(prlNew->rl_lnInSessionState);
+
+      prlNew->rl_strFileName = strFileName;
+      WriteWorldAndState_t(prlNew);
+    };
+
+    CRemLevel *P_FindRememberedLevel(const CTString &strFileName) {
+      FOREACHINLIST(CRemLevel, rl_lnInSessionState, ses_lhRememberedLevels, itrl) {
+        CRemLevel &rl = *itrl;
+
+        if (rl.rl_strFileName == strFileName) {
+          return &rl;
+        }
+      }
+
+      return NULL;
+    };
+
+    void P_RestoreOldLevel(const CTString &strFileName) {
+      CRemLevel *prlOld = P_FindRememberedLevel(strFileName);
+
+      ASSERT(prlOld != NULL);
+
+      try {
+        prlOld->SetPos_t(0);
+        _pTimer->SetCurrentTick(0.0f);
+
+        ReadWorldAndState_t(prlOld);
+        _pTimer->SetCurrentTick(ses_tmLastProcessedTick);
+
+      } catch (char *strError) {
+        FatalError(TRANS("Cannot restore old level '%s':\n%s"), prlOld->rl_strFileName, strError);
+      }
+
+      delete prlOld;
+    };
+
+    void P_ForgetOldLevels(void) {
+      FORDELETELIST(CRemLevel, rl_lnInSessionState, ses_lhRememberedLevels, itrl) {
+        delete &*itrl;
       }
     };
 };
@@ -208,6 +333,23 @@ extern void CECIL_ApplyMasterServerPatch(void) {
 
   pProcGameStreamBlock = &CSessionState::ProcessGameStreamBlock;
   NewPatch(pProcGameStreamBlock, &CSessionStatePatch::P_ProcessGameStreamBlock, "CSessionState::ProcessGameStreamBlock(...)");
+
+  void (CSessionState::*pStopSession)(void) = &CSessionState::Stop;
+  NewPatch(pStopSession, &CSessionStatePatch::P_Stop, "CSessionState::Stop()");
+
+  if (GetAPI()->IsEditorApp()) {
+    void (CSessionState::*pRemCurLevel)(const CTString &) = &CSessionState::RememberCurrentLevel;
+    NewPatch(pRemCurLevel, &CSessionStatePatch::P_RememberCurrentLevel, "CSessionState::RememberCurrentLevel(...)");
+
+    CRememberedLevel *(CSessionState::*pFindRemLevel)(const CTString &) = &CSessionState::FindRememberedLevel;
+    NewPatch(pFindRemLevel, &CSessionStatePatch::P_FindRememberedLevel, "CSessionState::FindRememberedLevel(...)");
+
+    void (CSessionState::*pRestoreOldLevel)(const CTString &) = &CSessionState::RestoreOldLevel;
+    NewPatch(pRestoreOldLevel, &CSessionStatePatch::P_RestoreOldLevel, "CSessionState::RestoreOldLevel(...)");
+
+    void (CSessionState::*pForgetOldLevels)(void) = &CSessionState::ForgetOldLevels;
+    NewPatch(pForgetOldLevels, &CSessionStatePatch::P_ForgetOldLevels, "CSessionState::ForgetOldLevels()");
+  }
 
   // Custom symbols
   _pShell->DeclareSymbol("persistent user CTString ms_strGameAgentMS;",  &ms_strGameAgentMS);
