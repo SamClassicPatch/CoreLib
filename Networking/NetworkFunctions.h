@@ -38,6 +38,7 @@ class INetwork {
       MESSAGETYPE Variable##_##PacketType = MESSAGETYPE(PacketType); \
       CNetworkMessage Variable(Variable##_##PacketType)
 
+  public:
     // Create packet to send to a server
     static inline CNetworkMessage CreateClientPacket(const ULONG ulType) {
       NETWORK_PACKET(nmClient, PCK_EXTENSION);
@@ -78,6 +79,12 @@ class INetwork {
 
     // Handle packets coming from a server
     static BOOL ClientHandle(CSessionState *pses, CNetworkMessage &nmMessage);
+
+    // Send disconnect message to a client (CServer::SendDisconnectMessage reimplementation)
+    static void SendDisconnectMessage(INDEX iClient, const char *strExplanation, BOOL bStream);
+
+    // Send chat message to a client with custom name of a sender
+    static void SendChatToClient(INDEX iClient, const CTString &strFromName, const CTString &strMessage);
 };
 
 #endif

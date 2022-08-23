@@ -86,3 +86,61 @@ BOOL INetwork::ClientHandle(CSessionState *pses, CNetworkMessage &nmMessage) {
   // No extra processing needed
   return FALSE;
 };
+
+// Send disconnect message to a client (CServer::SendDisconnectMessage reimplementation)
+void INetwork::SendDisconnectMessage(INDEX iClient, const char *strExplanation, BOOL bStream) {
+  // Not a server
+  if (!_pNetwork->IsServer()) {
+    return;
+  }
+
+  CSessionSocket &sso = _pNetwork->ga_srvServer.srv_assoSessions[iClient];
+
+  if (!bStream) {
+    // Compose message
+    CNetworkMessage nmDisconnect(MSG_INF_DISCONNECTED);
+    nmDisconnect << CTString(strExplanation);
+
+    // Send it
+    _pNetwork->SendToClientReliable(iClient, nmDisconnect);
+
+  } else {
+    CTMemoryStream strmDisconnect;
+    strmDisconnect << INDEX(MSG_INF_DISCONNECTED);
+    strmDisconnect << CTString(strExplanation);
+
+    // Send the stream to the remote session state
+    _pNetwork->SendToClientReliable(iClient, strmDisconnect);
+  }
+
+  // Report that it has gone away
+  CPrintF(TRANS("Client '%s' ordered to disconnect: %s\n"), GetComm().Server_GetClientName(iClient), strExplanation);
+
+  // If not disconnected before
+  if (sso.sso_iDisconnectedState == 0) {
+    // Mark the disconnection
+    sso.sso_iDisconnectedState = 1;
+
+  // If the client was already kicked before, but is still hanging here
+  } else {
+    // Force the disconnection
+    CPrintF(TRANS("Forcing client '%s' to disconnect\n"), GetComm().Server_GetClientName(iClient));
+
+    sso.sso_iDisconnectedState = 2;
+  }
+};
+
+// Send chat message to a client with custom name of a sender
+void INetwork::SendChatToClient(INDEX iClient, const CTString &strFromName, const CTString &strMessage) {
+  // Not a server
+  if (!_pNetwork->IsServer()) {
+    return;
+  }
+
+  CNetworkMessage nm(MSG_CHAT_OUT);
+  nm << (INDEX)0;
+  nm << strFromName;
+  nm << strMessage;
+
+  _pNetwork->SendToClient(iClient, nm);
+};
