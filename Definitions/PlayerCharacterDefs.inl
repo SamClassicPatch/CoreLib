@@ -15,8 +15,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 // [Cecil] Definitions of unexported CPlayerCharacter methods from the engine
 
-#ifndef CECIL_INCL_PLAYERACTION_DEFS_H
-#define CECIL_INCL_PLAYERACTION_DEFS_H
+#ifndef CECIL_INCL_PLAYERCHARACTER_DEFS_H
+#define CECIL_INCL_PLAYERCHARACTER_DEFS_H
 
 #ifdef PRAGMA_ONCE
   #pragma once
