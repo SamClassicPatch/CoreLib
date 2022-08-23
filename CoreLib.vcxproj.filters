@@ -159,6 +159,12 @@
     <ClInclude Include="Networking\MessageProcessing.h">
       <Filter>Header Files\Networking headers</Filter>
     </ClInclude>
+    <ClInclude Include="Networking\AntiFlood.h">
+      <Filter>Header Files\Networking headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Networking\SplitScreenClients.h">
+      <Filter>Header Files\Networking headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="StdH.cpp">
@@ -228,6 +234,12 @@
       <Filter>Source Files\Definitions</Filter>
     </ClCompile>
     <ClCompile Include="Networking\MessageProcessing.cpp">
+      <Filter>Source Files\Networking</Filter>
+    </ClCompile>
+    <ClCompile Include="Networking\SplitScreenClients.cpp">
+      <Filter>Source Files\Networking</Filter>
+    </ClCompile>
+    <ClCompile Include="Networking\AntiFlood.cpp">
       <Filter>Source Files\Networking</Filter>
     </ClCompile>
   </ItemGroup>
