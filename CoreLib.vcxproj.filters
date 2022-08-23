@@ -156,6 +156,9 @@
     <ClInclude Include="Definitions\PlayerTargetDefs.inl">
       <Filter>Header Files\Definitions headers</Filter>
     </ClInclude>
+    <ClInclude Include="Networking\MessageProcessing.h">
+      <Filter>Header Files\Networking headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="StdH.cpp">
@@ -223,6 +226,9 @@
     </ClCompile>
     <ClCompile Include="Definitions\InlineDefinitions.cpp">
       <Filter>Source Files\Definitions</Filter>
+    </ClCompile>
+    <ClCompile Include="Networking\MessageProcessing.cpp">
+      <Filter>Source Files\Networking</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

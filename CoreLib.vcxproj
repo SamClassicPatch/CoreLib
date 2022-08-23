@@ -48,6 +48,7 @@
     <ClInclude Include="Modules\PluginModule.h" />
     <ClInclude Include="Modules\PluginStock.h" />
     <ClInclude Include="Networking\CommInterface.h" />
+    <ClInclude Include="Networking\MessageProcessing.h" />
     <ClInclude Include="Networking\NetworkFunctions.h" />
     <ClInclude Include="Networking\StreamBlock.h" />
     <ClInclude Include="Objects\Node.h" />
@@ -69,6 +70,7 @@
     <ClCompile Include="EnginePatches\UndecoratedPatch.cpp" />
     <ClCompile Include="Modules\PluginModule.cpp" />
     <ClCompile Include="Modules\PluginStock.cpp" />
+    <ClCompile Include="Networking\MessageProcessing.cpp" />
     <ClCompile Include="Networking\NetworkFunctions.cpp" />
     <ClCompile Include="Networking\StreamBlock.cpp" />
     <ClCompile Include="Objects\Node.cpp" />

@@ -16,9 +16,29 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "StdH.h"
 
 #include "NetworkFunctions.h"
+#include "MessageProcessing.h"
 
 // Handle packets coming from a client (CServer::Handle alternative)
 BOOL INetwork::ServerHandle(CMessageDispatcher *pmd, INDEX iClient, CNetworkMessage &nmMessage) {
+  // Process some default packets
+  switch (nmMessage.GetType()) {
+    // Client requesting the session state
+    case MSG_REQ_CONNECTREMOTESESSIONSTATE:
+      return OnConnectRemoteSessionStateRequest(iClient, nmMessage);
+
+    // Client requesting the connection to the server
+    case MSG_REQ_CONNECTPLAYER:
+      return OnPlayerConnectRequest(iClient, nmMessage);
+
+    // Client changing the character
+    case MSG_REQ_CHARACTERCHANGE:
+      return OnCharacterChangeRequest(iClient, nmMessage);
+
+    // Client sending a chat message
+    case MSG_CHAT_IN:
+      return OnChatInRequest(iClient, nmMessage);
+  }
+
   // Let CServer::Handle process packets of other types
   if (nmMessage.GetType() != PCK_EXTENSION) return TRUE;
 
