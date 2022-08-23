@@ -31,6 +31,46 @@ CGame *_pGame = NULL;
 
 CTString sam_strVersion = _SE_VER_STRING; // Use version string
 
+// Timer handler for constant functionatily
+class CCoreTimerHandler : public CTimerHandler {
+  public:
+    // This is called every CTimer::TickQuantum seconds
+    virtual void HandleTimer(void) {
+      // Called every game tick, even if no session was started and while in pause
+      static CTimerValue _tvLastSecCheck(-1.0f);
+
+      CTimerValue tvNow = _pTimer->GetHighPrecisionTimer();
+
+      if ((tvNow - _tvLastSecCheck).GetSeconds() >= 1.0f) {
+        _tvLastSecCheck = tvNow;
+
+        // Call per-second functions
+        OnSecond();
+      }
+
+      // Call per-tick functions
+      OnTick();
+    };
+
+    // Called every game tick
+    void OnTick(void);
+
+    // Called every game second
+    void OnSecond(void);
+};
+
+// Called every game tick
+void CCoreTimerHandler::OnTick(void)
+{
+};
+
+// Called every game second
+void CCoreTimerHandler::OnSecond(void)
+{
+};
+
+static CCoreTimerHandler *_pTimerHandler = NULL;
+
 // Display information about the Classics patch
 static void PatchInfo(void) {
   static CTString strInfo =
@@ -73,6 +113,10 @@ void CECIL_InitCore(void) {
     _pShell->DeclareSymbol("           user CTString sam_strVersion;",    &sam_strVersion);
   }
 
+  // Create timer handler for constant functionatily
+  _pTimerHandler = new CCoreTimerHandler;
+  _pTimer->AddHandler(_pTimerHandler);
+
   // Load Core plugins
   GetAPI()->LoadPlugins(CPluginAPI::PF_ENGINE);
 };
@@ -81,4 +125,7 @@ void CECIL_InitCore(void) {
 void CECIL_EndCore(void) {
   // Release all loaded plugins
   GetAPI()->ReleasePlugins(CPluginAPI::PF_UTILITY_ALL);
+
+  _pTimer->RemHandler(_pTimerHandler);
+  delete _pTimerHandler;
 };
