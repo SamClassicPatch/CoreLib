@@ -15,6 +15,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "StdH.h"
 
+#include "Networking/AntiFlood.h"
+#include "Networking/SplitScreenClients.h"
+
 // Pointer to the Game module
 CGame *_pGame = NULL;
 
@@ -67,6 +70,8 @@ void CCoreTimerHandler::OnTick(void)
 // Called every game second
 void CCoreTimerHandler::OnSecond(void)
 {
+  // Reset anti-flood counters
+  IAntiFlood::ResetCounters();
 };
 
 static CCoreTimerHandler *_pTimerHandler = NULL;
@@ -105,12 +110,20 @@ void CECIL_InitCore(void) {
 
   CPrintF("--- Done! ---\n");
 
-  // Common game variables
-  if (GetAPI()->IsGameApp() || GetAPI()->IsServerApp()) {
+  // Common symbols
+  if (GetAPI()->IsGameApp() || GetAPI()->IsServerApp())
+  {
+    // Game variables
     _pShell->DeclareSymbol("           user CTString sam_strFirstLevel;", &sam_strFirstLevel);
     _pShell->DeclareSymbol("persistent user CTString sam_strIntroLevel;", &sam_strIntroLevel);
     _pShell->DeclareSymbol("persistent user CTString sam_strGameName;",   &sam_strGameName);
     _pShell->DeclareSymbol("           user CTString sam_strVersion;",    &sam_strVersion);
+
+    // Server commands
+    _pShell->DeclareSymbol("persistent user INDEX ser_bEnableAntiFlood;",      &ser_bEnableAntiFlood);
+    _pShell->DeclareSymbol("persistent user INDEX ser_iPacketFloodThreshold;", &ser_iPacketFloodThreshold);
+    _pShell->DeclareSymbol("persistent user INDEX ser_iMaxMessagesPerSecond;", &ser_iMaxMessagesPerSecond);
+    _pShell->DeclareSymbol("persistent user INDEX ser_iMaxPlayersPerClient;",  &ser_iMaxPlayersPerClient);
   }
 
   // Create timer handler for constant functionatily

@@ -18,9 +18,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "MessageProcessing.h"
 #include "NetworkFunctions.h"
 
+#include "AntiFlood.h"
+#include "SplitScreenClients.h"
+
 // Client requesting the session state
 BOOL OnConnectRemoteSessionStateRequest(INDEX iClient, CNetworkMessage &nmMessage)
 {
+  // Check for connecting clients with split-screen
+  if (!CheckSplitScreenClients(iClient, nmMessage)) {
+    return FALSE;
+  }
+
   return TRUE;
 };
 
@@ -33,11 +41,21 @@ BOOL OnPlayerConnectRequest(INDEX iClient, CNetworkMessage &nmMessage)
 // Client changing the character
 BOOL OnCharacterChangeRequest(INDEX iClient, CNetworkMessage &nmMessage)
 {
+  // Skip character changes blocked by the anti-flood system
+  if (IAntiFlood::HandleCharacterChange(iClient)) {
+    return FALSE;
+  }
+
   return TRUE;
 };
 
 // Client sending a chat message
 BOOL OnChatInRequest(INDEX iClient, CNetworkMessage &nmMessage)
 {
+  // Skip messages blocked by the anti-flood system
+  if (IAntiFlood::HandleChatMessage(iClient)) {
+    return FALSE;
+  }
+
   return TRUE;
 };
