@@ -165,6 +165,9 @@
     <ClInclude Include="Networking\SplitScreenClients.h">
       <Filter>Header Files\Networking headers</Filter>
     </ClInclude>
+    <ClInclude Include="Interfaces\PropertyFunctions.h">
+      <Filter>Header Files\Interfaces headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="StdH.cpp">

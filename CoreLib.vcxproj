@@ -43,6 +43,7 @@
     <ClInclude Include="GameSpecific.h" />
     <ClInclude Include="Game\Game.h" />
     <ClInclude Include="Game\PlayerSettings.h" />
+    <ClInclude Include="Interfaces\PropertyFunctions.h" />
     <ClInclude Include="Interfaces\RenderFunctions.h" />
     <ClInclude Include="Interfaces\WorldFunctions.h" />
     <ClInclude Include="Modules\PluginModule.h" />

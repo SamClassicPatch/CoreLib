@@ -58,11 +58,6 @@ class IWorld {
       return NULL;
     };
 
-    // Wrapper method for PropertyForIdOrOffset()
-    static inline CEntityProperty *FindProperty(CEntity *pen, ULONG ulID, SLONG slOffset, ULONG ulType) {
-      return PropertyForIdOrOffset(pen, ulType, ulID, slOffset);
-    };
-
     // Find entity property by its ID or offset of a specific type
     static inline CEntityProperty *PropertyForIdOrOffset(CEntity *pen, ULONG ulType, ULONG ulID, SLONG slOffset) {
       CDLLEntityClass *pdec = pen->en_pecClass->ec_pdecDLLClass;
