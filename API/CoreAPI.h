@@ -21,7 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 
 // Current API version
-#define CORE_API_VERSION 1
+#define CORE_API_VERSION 2
 
 // Declare API submodules
 class CPatchAPI;
@@ -239,5 +239,8 @@ inline CPluginAPI *GetPluginAPI(void) {
 #include "PatchAPI.h"
 #include "GameAPI.h"
 #include "PluginAPI.h"
+
+// Next argument in the symbol function call
+#define NEXT_ARG(Type) (*((Type *&)pArgs)++)
 
 #endif
