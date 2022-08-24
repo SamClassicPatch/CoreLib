@@ -58,8 +58,13 @@ class IWorld {
       return NULL;
     };
 
-    // Find entity property by its ID or offset
-    static inline CEntityProperty *FindProperty(CEntity *pen, const ULONG ulID, const SLONG slOffset, const INDEX iType) {
+    // Wrapper method for PropertyForIdOrOffset()
+    static inline CEntityProperty *FindProperty(CEntity *pen, ULONG ulID, SLONG slOffset, ULONG ulType) {
+      return PropertyForIdOrOffset(pen, ulType, ulID, slOffset);
+    };
+
+    // Find entity property by its ID or offset of a specific type
+    static inline CEntityProperty *PropertyForIdOrOffset(CEntity *pen, ULONG ulType, ULONG ulID, SLONG slOffset) {
       CDLLEntityClass *pdec = pen->en_pecClass->ec_pdecDLLClass;
 
       while (pdec != NULL) {
@@ -68,7 +73,7 @@ class IWorld {
           CEntityProperty &ep = pdec->dec_aepProperties[iProp];
 
           // Only check the matching type
-          if (ep.ep_eptType != iType) {
+          if (ep.ep_eptType != ulType) {
             continue;
           }
 
@@ -83,6 +88,46 @@ class IWorld {
       }
 
       return NULL;
+    };
+
+    // Find entity property by its name of a specific type
+    static inline CEntityProperty *PropertyForName(CEntity *pen, ULONG ulType, const CTString &strName) {
+      CDLLEntityClass *pdec = pen->en_pecClass->ec_pdecDLLClass;
+
+      while (pdec != NULL) {
+        // For each property
+        for (INDEX iProp = 0; iProp < pdec->dec_ctProperties; iProp++) {
+          CEntityProperty &ep = pdec->dec_aepProperties[iProp];
+
+          // Only check the matching type
+          if (ep.ep_eptType != ulType) {
+            continue;
+          }
+
+          // Matching name
+          if (strName == ep.ep_strName) {
+            return &ep;
+          }
+        }
+
+        // Next class in the hierarchy
+        pdec = pdec->dec_pdecBase;
+      }
+
+      return NULL;
+    };
+
+    // Find entity property by its name or ID of a specific type
+    static inline CEntityProperty *PropertyForNameOrId(CEntity *pen, ULONG ulType, const CTString &strName, ULONG ulID) {
+      // Find property by type and name first
+      CEntityProperty *pep = IWorld::PropertyForName(pen, ulType, strName);
+
+      // Try searching by type and ID
+      if (pep == NULL) {
+        pep = pen->PropertyForTypeAndID(ulType, ulID);
+      }
+
+      return pep;
     };
 
     // Find WorldSettingsController in a world
