@@ -24,7 +24,7 @@ INDEX ser_iMaxPlayersPerClient = 4;
 BOOL CheckSplitScreenClients(INDEX iClient, CNetworkMessage &nmMessage)
 {
   // Any amount of local players is allowed
-  if (ser_iMaxPlayersPerClient < 1 || ser_iMaxPlayersPerClient >= 4) {
+  if (ser_iMaxPlayersPerClient < 1) {
     return TRUE;
   }
 
