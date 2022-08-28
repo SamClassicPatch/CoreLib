@@ -39,7 +39,7 @@ CCoreAPI::CCoreAPI() :
   ssNew.ss_pPreFunc = NULL; // Unused
   ssNew.ss_pPostFunc = NULL; // Unused
 
-  ulVersion = MakeVersion(1, 3, 0);
+  ulVersion = MakeVersion(1, 3, 1);
 
   pdpRenderSpace = NULL;
 
