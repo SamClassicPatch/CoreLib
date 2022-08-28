@@ -29,10 +29,11 @@ INDEX ser_iMaxMessagesPerSecond = 2;
 
 // Individual client data
 struct ClientData {
-  INDEX ctLastSecPackets; // Messages sent in the past second
+  INDEX ctLastSecPackets; // Packets sent in the past second
+  INDEX ctLastSecMessages; // Chat messages sent in the past second
 
   // Constructor
-  ClientData() : ctLastSecPackets(0)
+  ClientData() : ctLastSecPackets(0), ctLastSecMessages(0)
   {
   };
 };
@@ -98,8 +99,9 @@ BOOL IAntiFlood::HandleChatMessage(INDEX iClient)
     return FALSE;
   }
 
-  // Count one packet from the client
+  // Count one chat message from the client
   _aClients[iClient].ctLastSecPackets++;
+  _aClients[iClient].ctLastSecMessages++;
 
   // If detected packet flood
   if (DetectPacketFlood(iClient)) {
@@ -113,7 +115,7 @@ BOOL IAntiFlood::HandleChatMessage(INDEX iClient)
   }
 
   // If client sent too many messages in the past second
-  if (_aClients[iClient].ctLastSecPackets > ser_iMaxMessagesPerSecond) {
+  if (_aClients[iClient].ctLastSecMessages > ser_iMaxMessagesPerSecond) {
     // Notify the client about spam
     CTString strWarning;
 
