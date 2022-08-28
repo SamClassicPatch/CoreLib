@@ -81,7 +81,7 @@ static BOOL DetectPacketFlood(INDEX iClient)
 BOOL IAntiFlood::HandleCharacterChange(INDEX iClient)
 {
   if (!CheckForPacketFlood(iClient)) {
-    return TRUE;
+    return FALSE;
   }
 
   // Count one packet from the client
@@ -95,7 +95,7 @@ BOOL IAntiFlood::HandleCharacterChange(INDEX iClient)
 BOOL IAntiFlood::HandleChatMessage(INDEX iClient)
 {
   if (!CheckForPacketFlood(iClient)) {
-    return TRUE;
+    return FALSE;
   }
 
   // Count one packet from the client
