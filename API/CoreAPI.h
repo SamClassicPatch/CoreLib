@@ -179,7 +179,7 @@ class CCoreAPI {
 
 // This variable can be used to access API of the EXE patch.
 // It needs to be defined separately for outside projects. Visit for more info:
-// https://github.com/SamClassicPatch/GameExecutable/wiki/Mod-support#api-utilization
+// https://github.com/SamClassicPatch/SuperProject/wiki/User-plugins-&-modding#api-utilization
 extern "C" __declspec(dllexport) CCoreAPI *_pCoreAPI;
 
 // These methods should only be used outside the Classics patch project
