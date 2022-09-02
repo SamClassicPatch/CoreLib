@@ -50,15 +50,15 @@ using namespace QueryData;
 // [Cecil] Made static
 static TIME _tmLastHeartbeat = -1.0f;
 
-extern CTString ms_strGameAgentMS = "master.333networks.com";
-extern CTString ms_strMSLegacy = "master.333networks.com";
-extern CTString ms_strDarkPlacesMS = "192.168.1.4";
+CTString ms_strGameAgentMS = "master.333networks.com";
+CTString ms_strMSLegacy = "master.333networks.com";
+CTString ms_strDarkPlacesMS = "192.168.1.4";
 
 // [Cecil] Current master server protocol
-extern INDEX ms_iProtocol = E_MS_LEGACY;
+INDEX ms_iProtocol = E_MS_LEGACY;
 
 // [Cecil] Debug output for query
-extern INDEX ms_bDebugOutput = FALSE;
+INDEX ms_bDebugOutput = FALSE;
 
 // [Cecil] Get amount of server clients
 INDEX GetClientCount(void) {
@@ -247,7 +247,7 @@ extern CTString _getCurrentGameTypeName()
   return pFunc();
 }
 
-extern void MS_SendHeartbeat(INDEX iChallenge)
+void MS_SendHeartbeat(INDEX iChallenge)
 {
   CTString strPacket;
   
@@ -295,7 +295,7 @@ void CServerRequest::Clear(void)
 }
 
 // Called on every network server startup.
-extern void MS_OnServerStart(void)
+void MS_OnServerStart(void)
 {
   // join
   _bServer = TRUE;
@@ -329,7 +329,7 @@ extern void MS_OnServerStart(void)
 }
 
 // Called if server has been stopped.
-extern void MS_OnServerEnd(void)
+void MS_OnServerEnd(void)
 {
   if (!_bInitialized) {
     return;
@@ -358,7 +358,7 @@ extern void MS_OnServerEnd(void)
 
 // Regular network server update.
 // Responds to enumeration pings and sends pings to masterserver.
-extern void MS_OnServerUpdate(void)
+void MS_OnServerUpdate(void)
 {
   if ((_socket == NULL) || (!_bInitialized)) {
     return;
@@ -391,7 +391,7 @@ extern void MS_OnServerUpdate(void)
 };
 
 // Notify master server that the server state has changed.
-extern void MS_OnServerStateChanged(void)
+void MS_OnServerStateChanged(void)
 {
   if (!_bInitialized) {
     return;
@@ -419,7 +419,7 @@ extern void MS_OnServerStateChanged(void)
 }
 
 // Request serverlist enumeration. Sends request packet.
-extern void MS_EnumTrigger(BOOL bInternet)
+void MS_EnumTrigger(BOOL bInternet)
 {
   if (_pNetwork->ga_bEnumerationChange) {
     return;
@@ -436,7 +436,7 @@ extern void MS_EnumTrigger(BOOL bInternet)
 }
 
 // Client update for enumerations.
-extern void MS_EnumUpdate(void)
+void MS_EnumUpdate(void)
 {
   if ((_socket == NULL) || (!_bInitialized)) {
     return;
@@ -454,7 +454,7 @@ extern void MS_EnumUpdate(void)
 }
 
 // Cancel the master server serverlist enumeration.
-extern void MS_EnumCancel(void)
+void MS_EnumCancel(void)
 {
   if (_bInitialized) {
     ga_asrRequests.Clear();

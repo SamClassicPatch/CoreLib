@@ -55,22 +55,20 @@ INDEX GetClientCount(void);
 // [Cecil] Get number of active server players
 INDEX GetPlayerCount(void);
 
-extern void MS_OnServerStart(void);
-extern void MS_OnServerEnd(void);
-extern void MS_OnServerUpdate(void);
-extern void MS_OnServerStateChanged(void);
+void MS_OnServerStart(void);
+void MS_OnServerEnd(void);
+void MS_OnServerUpdate(void);
+void MS_OnServerStateChanged(void);
 
 // Common Serverlist Enumeration
-extern void MS_SendHeartbeat(INDEX iChallenge);
+void MS_SendHeartbeat(INDEX iChallenge);
 
-extern void MS_EnumTrigger(BOOL bInternet);
-extern void MS_EnumUpdate(void);
-extern void MS_EnumCancel(void);
+void MS_EnumTrigger(BOOL bInternet);
+void MS_EnumUpdate(void);
+void MS_EnumCancel(void);
 
 // [Cecil] Replacement for CNetworkLibrary::EnumSessions
-extern void MS_EnumSessions(BOOL bInternet);
-
-//
+void MS_EnumSessions(BOOL bInternet);
 
 // GameAgent Master Server
 class CGameAgentQuery
