@@ -168,6 +168,9 @@
     <ClInclude Include="Interfaces\PropertyFunctions.h">
       <Filter>Header Files\Interfaces headers</Filter>
     </ClInclude>
+    <ClInclude Include="SymbolPtr.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="StdH.cpp">

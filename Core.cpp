@@ -90,7 +90,7 @@ static void PatchInfo(void) {
   CPutString(strInfo);
 };
 
-// Initialize Core module
+// Initialize Core module (always after Serious Engine!)
 void CECIL_InitCore(void) {
   // Create core API
   new CCoreAPI();
@@ -134,7 +134,7 @@ void CECIL_InitCore(void) {
   GetAPI()->LoadPlugins(CPluginAPI::PF_ENGINE);
 };
 
-// Clean up Core module
+// Clean up Core module (always before Serious Engine!)
 void CECIL_EndCore(void) {
   // Release all loaded plugins
   GetAPI()->ReleasePlugins(CPluginAPI::PF_UTILITY_ALL);

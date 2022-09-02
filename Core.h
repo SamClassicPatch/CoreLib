@@ -39,6 +39,8 @@ extern CTString sam_strVersion;
 #include "GameSpecific.h"
 
 // Common components
+#include "SymbolPtr.h"
+
 #include "API/CoreAPI.h"
 #include "Patcher/FuncPatching.h"
 #include "Query/QueryMgr.h"
@@ -47,8 +49,8 @@ extern CTString sam_strVersion;
 #include "Interfaces/RenderFunctions.h"
 #include "Interfaces/WorldFunctions.h"
 
-// Initialize Core module
+// Initialize Core module (always after Serious Engine!)
 void CECIL_InitCore(void);
 
-// Clean up Core module
+// Clean up Core module (always before Serious Engine!)
 void CECIL_EndCore(void);
