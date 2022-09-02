@@ -164,7 +164,8 @@ void CPlayerTarget::ApplyActionPacket(const CPlayerAction &paDelta) {
     plt_penPlayerEntity->ApplyAction(plt_paLastAction, fLatency);
   }
 
-  INDEX iPredictionFlushing = _pShell->GetINDEX("cli_iPredictionFlushing");
+  static CSymbolPtr symptr("cli_iPredictionFlushing");
+  INDEX iPredictionFlushing = symptr.GetIndex();
 
   if (iPredictionFlushing == 2 || iPredictionFlushing == 3) {
     plt_abPrediction.RemoveOldest();
@@ -186,7 +187,8 @@ void CPlayerTarget::PrebufferActionPacket(const CPlayerAction &paPrediction) {
 void CPlayerTarget::FlushProcessedPredictions(void) {
   CTSingleLock slActions(&plt_csAction, TRUE);
 
-  INDEX iPredictionFlushing = _pShell->GetINDEX("cli_iPredictionFlushing");
+  static CSymbolPtr symptr("cli_iPredictionFlushing");
+  INDEX iPredictionFlushing = symptr.GetIndex();
 
   // Flush all actions that were already processed
   if (iPredictionFlushing == 1) {
@@ -221,7 +223,9 @@ void CPlayerTarget::ApplyPredictedAction(INDEX iAction, FLOAT fFactor) {
   // If the player is not local
   } else {
     // Reuse last action
-    if (_pShell->GetINDEX("cli_bLerpActions")) {
+    static CSymbolPtr symptr("cli_bLerpActions");
+
+    if (symptr.GetIndex()) {
       pa.Lerp(plt_paPreLastAction, plt_paLastAction, fFactor);
     } else {
       pa = plt_paLastAction;

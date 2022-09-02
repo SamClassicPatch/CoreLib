@@ -60,6 +60,10 @@ INDEX ms_iProtocol = E_MS_LEGACY;
 // [Cecil] Debug output for query
 INDEX ms_bDebugOutput = FALSE;
 
+// [Cecil] Commonly used symbols
+CSymbolPtr _piNetPort;
+CSymbolPtr _pstrLocalHost;
+
 // [Cecil] Get amount of server clients
 INDEX GetClientCount(void) {
   CServer &srv = _pNetwork->ga_srvServer;
@@ -90,6 +94,13 @@ INDEX GetPlayerCount(void) {
   }
 
   return ctPlayers;
+};
+
+// [Cecil] Initialize query manager
+void InitQuery(void) {
+  // Retrieve commonly used symbols
+  _piNetPort.Find("net_iPort");
+  _pstrLocalHost.Find("net_strLocalHost");
 };
 
 void _uninitWinsock();
@@ -161,7 +172,7 @@ void _initializeWinsock(void)
     _sinLocal = new sockaddr_in;
     _sinLocal->sin_family = AF_INET;
     _sinLocal->sin_addr.s_addr = inet_addr("0.0.0.0");
-    _sinLocal->sin_port = htons(_pShell->GetINDEX("net_iPort") + 1);
+    _sinLocal->sin_port = htons(_piNetPort.GetIndex() + 1);
     
     int optval = 1;
     if (setsockopt(_socket, SOL_SOCKET, SO_BROADCAST, (char *)&optval, sizeof(optval)) != 0)
@@ -306,7 +317,7 @@ void MS_OnServerStart(void)
     // [Cecil] Unused in SSE
     /*case E_MS_LEGACY: {
       CTString strPacket;
-      strPacket.PrintF("\\heartbeat\\%hu\\gamename\\%s", (_pShell->GetINDEX("net_iPort") + 1), SERIOUSSAMSTR);
+      strPacket.PrintF("\\heartbeat\\%hu\\gamename\\%s", (_piNetPort.GetIndex() + 1), SERIOUSSAMSTR);
 
       _sendPacket(strPacket);
 
@@ -344,7 +355,7 @@ void MS_OnServerEnd(void)
   // [Cecil] Anything but GameAgent
   } else if (iProtocol != E_MS_GAMEAGENT) {
     CTString strPacket;
-    strPacket.PrintF("\\heartbeat\\%hu\\gamename\\%s\\statechanged", (_pShell->GetINDEX("net_iPort") + 1), SERIOUSSAMSTR);
+    strPacket.PrintF("\\heartbeat\\%hu\\gamename\\%s\\statechanged", (_piNetPort.GetIndex() + 1), SERIOUSSAMSTR);
     _sendPacket(strPacket);
 
     if (ms_bDebugOutput) {
@@ -401,7 +412,7 @@ void MS_OnServerStateChanged(void)
   switch (GetProtocol()) {
     case E_MS_LEGACY: {
       CTString strPacket;
-      strPacket.PrintF("\\heartbeat\\%hu\\gamename\\%s\\statechanged", (_pShell->GetINDEX("net_iPort") + 1), SERIOUSSAMSTR);
+      strPacket.PrintF("\\heartbeat\\%hu\\gamename\\%s\\statechanged", (_piNetPort.GetIndex() + 1), SERIOUSSAMSTR);
 
       _sendPacket(strPacket);
 

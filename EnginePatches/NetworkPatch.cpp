@@ -73,7 +73,9 @@ class CComIntPatch : public CCommunicationInterface {
       }
 
       // Stop new master server
-      if (_pShell->GetINDEX("ser_bEnumeration"))
+      static CSymbolPtr symptr("ser_bEnumeration");
+
+      if (symptr.GetIndex())
       {
         if (ms_bDebugOutput) {
           CPrintF("  MS_OnServerEnd()\n");
@@ -100,7 +102,9 @@ class CMessageDisPatch : public CMessageDispatcher {
       }
 
       // Notify master server that a player is connecting
-      if (eMessage == MSG_REP_CONNECTPLAYER && _pShell->GetINDEX("ser_bEnumeration"))
+      static CSymbolPtr symptr("ser_bEnumeration");
+
+      if (eMessage == MSG_REP_CONNECTPLAYER && symptr.GetIndex())
       {
         if (ms_bDebugOutput) {
           CPrintF("  MS_OnServerStateChanged()\n");
@@ -190,7 +194,9 @@ class CSessionStatePatch : public CSessionState {
       (this->*pFlushPredictions)();
 
       // Update server for the master server
-      if (GetComm().IsNetworkEnabled() && _pShell->GetINDEX("ser_bEnumeration")) {
+      static CSymbolPtr symptr("ser_bEnumeration");
+
+      if (GetComm().IsNetworkEnabled() && symptr.GetIndex()) {
         if (ms_bDebugOutput) {
           //CPrintF("CSessionState::FlushProcessedPredictions() -> MS_OnServerUpdate()\n");
         }
@@ -365,4 +371,7 @@ extern void CECIL_ApplyMasterServerPatch(void) {
   _pShell->DeclareSymbol("const INDEX MS_LEGACY;",     (void *)&iMSLegacy);
   _pShell->DeclareSymbol("const INDEX MS_DARKPLACES;", (void *)&iDarkPlaces);
   _pShell->DeclareSymbol("const INDEX MS_GAMEAGENT;",  (void *)&iGameAgent);
+
+  // Query initialization
+  InitQuery();
 };

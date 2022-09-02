@@ -76,7 +76,7 @@ extern void _setStatus(const CTString &strStatus);
 // Builds hearthbeat packet.
 void CLegacyQuery::BuildHearthbeatPacket(CTString &strPacket)
 {
-  strPacket.PrintF("\\heartbeat\\%hu\\gamename\\%s", (_pShell->GetINDEX("net_iPort") + 1), SERIOUSSAMSTR);
+  strPacket.PrintF("\\heartbeat\\%hu\\gamename\\%s", (_piNetPort.GetIndex() + 1), SERIOUSSAMSTR);
 }
 
 void CLegacyQuery::ServerParsePacket(INDEX iLength)
@@ -103,31 +103,41 @@ void CLegacyQuery::ServerParsePacket(INDEX iLength)
   if (sPch1) {
     CTString strPacket;
     CTString strLocation;
-    strLocation = _pShell->GetString("net_strLocalHost");
+    strLocation = _pstrLocalHost.GetString();
 
     if (strLocation == ""){
       strLocation = "Heartland";
     }
 
+    // [Cecil] Retrieve symbols once
+    static CSymbolPtr symptrFF("gam_bFriendlyFire");
+    static CSymbolPtr symptrWeap("gam_bWeaponsStay");
+    static CSymbolPtr symptrAmmo("gam_bAmmoStays");
+    static CSymbolPtr symptrVital("gam_bHealthArmorStays");
+    static CSymbolPtr symptrHP("gam_bAllowHealth");
+    static CSymbolPtr symptrAR("gam_bAllowArmor");
+    static CSymbolPtr symptrIA("gam_bInfiniteAmmo");
+    static CSymbolPtr symptrResp("gam_bRespawnInPlace");
+
     strPacket.PrintF( PCKQUERY,
       sam_strGameName,
       _SE_VER_STRING,
-      //_pShell->GetString("net_strLocalHost"),
+      //_pstrLocalHost.GetString(),
       strLocation,
       GetGameAPI()->GetSessionName(),
-      _pShell->GetINDEX("net_iPort"),
+      _piNetPort.GetIndex(),
       _pNetwork->ga_World.wo_strName,
       _getCurrentGameTypeName(),
       GetPlayerCount(),
       _pNetwork->ga_sesSessionState.ses_ctMaxPlayers,
-      _pShell->GetINDEX("gam_bFriendlyFire"),
-      _pShell->GetINDEX("gam_bWeaponsStay"),
-      _pShell->GetINDEX("gam_bAmmoStays"),
-      _pShell->GetINDEX("gam_bHealthArmorStays"),
-      _pShell->GetINDEX("gam_bAllowHealth"),
-      _pShell->GetINDEX("gam_bAllowArmor"),
-      _pShell->GetINDEX("gam_bInfiniteAmmo"),
-      _pShell->GetINDEX("gam_bRespawnInPlace"));
+      symptrFF.GetIndex(),
+      symptrWeap.GetIndex(),
+      symptrAmmo.GetIndex(),
+      symptrVital.GetIndex(),
+      symptrHP.GetIndex(),
+      symptrAR.GetIndex(),
+      symptrIA.GetIndex(),
+      symptrResp.GetIndex());
 
       for (INDEX i=0; i<GetPlayerCount(); i++)
       {
@@ -162,7 +172,7 @@ void CLegacyQuery::ServerParsePacket(INDEX iLength)
     CTString strPacket;
     strPacket.PrintF( PCKINFO,
       GetGameAPI()->GetSessionName(),
-      _pShell->GetINDEX("net_iPort"),
+      _piNetPort.GetIndex(),
       _pNetwork->ga_World.wo_strName,
       _getCurrentGameTypeName(),
       GetPlayerCount(),
@@ -178,14 +188,14 @@ void CLegacyQuery::ServerParsePacket(INDEX iLength)
 
     CTString strPacket;
     CTString strLocation;
-    strLocation = _pShell->GetString("net_strLocalHost");
+    strLocation = _pstrLocalHost.GetString();
     if (strLocation == ""){
       strLocation = "Heartland";
     }
     strPacket.PrintF( PCKBASIC,
       sam_strGameName,
       _SE_VER_STRING,
-      //_pShell->GetString("net_strLocalHost"));
+      //_pstrLocalHost.GetString());
       strLocation);
     _sendPacketTo(strPacket, &_sinFrom);
 
