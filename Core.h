@@ -16,7 +16,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Main engine components
 #include <Engine/Engine.h>
 #include <Engine/CurrentVersion.h>
-#include "Game/Game.h"
+
+// Components for compatibility
+#include "Compatibility/Game.h"
+#include "Compatibility/SymbolPtr.h"
 
 // CSessionProperties byte container (replacement for CUniversalSessionProperties)
 typedef UBYTE CSesPropsContainer[NET_MAXSESSIONPROPERTIES];
@@ -39,8 +42,6 @@ extern CTString sam_strVersion;
 #include "GameSpecific.h"
 
 // Common components
-#include "SymbolPtr.h"
-
 #include "API/CoreAPI.h"
 #include "Patcher/FuncPatching.h"
 #include "Query/QueryMgr.h"
