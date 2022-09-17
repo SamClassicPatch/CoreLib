@@ -18,11 +18,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // List available function patches
 static void ListFuncPatches(void) {
   if (GetPatchAPI()->aPatches.Count() == 0) {
-    CPrintF("No function patches available!\n");
+    CPutString("No function patches available!\n");
     return;
   }
 
-  CPrintF("Available function patches:\n");
+  CPutString("Available function patches:\n");
   
   for (INDEX iPatch = 0; iPatch < GetPatchAPI()->aPatches.Count(); iPatch++) {
     const SFuncPatch &fpPatch = GetPatchAPI()->aPatches[iPatch];

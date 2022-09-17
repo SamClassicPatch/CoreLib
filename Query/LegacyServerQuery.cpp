@@ -239,7 +239,7 @@ void CLegacyQuery::ServerParsePacket(INDEX iLength)
   
   // [SSE] [ZCaliptium] '/validate/' - Validation request.
   } else if (sPch5) {
-    //CPrintF("Received 'validate' request from MS.\n");
+    //CPutString("Received 'validate' request from MS.\n");
     data += 8;
     
     //CPrintF("SecureKey: %s\n", data);
@@ -259,7 +259,7 @@ void CLegacyQuery::ServerParsePacket(INDEX iLength)
     }
 
   } else {
-    CPrintF("Unknown query server command!\n");
+    CPutString("Unknown query server command!\n");
     CPrintF("%s\n", _szBuffer);
     return;
   }

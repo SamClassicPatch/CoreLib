@@ -29,7 +29,7 @@ class CComIntPatch : public CCommunicationInterface {
     void P_EndWinsock(void) {
       // Stop master server enumeration
       if (ms_bDebugOutput) {
-        CPrintF("CCommunicationInterface::EndWinsock() -> MS_EnumCancel()\n");
+        CPutString("CCommunicationInterface::EndWinsock() -> MS_EnumCancel()\n");
       }
       MS_EnumCancel();
       
@@ -51,14 +51,14 @@ class CComIntPatch : public CCommunicationInterface {
       (this->*pServerInit)();
       
       if (ms_bDebugOutput) {
-        CPrintF("CCommunicationInterface::Server_Init_t()\n");
+        CPutString("CCommunicationInterface::Server_Init_t()\n");
       }
 
       // Start new master server
       if (GetComm().IsNetworkEnabled())
       {
         if (ms_bDebugOutput) {
-          CPrintF("  MS_OnServerStart()\n");
+          CPutString("  MS_OnServerStart()\n");
         }
         MS_OnServerStart();
       }
@@ -69,7 +69,7 @@ class CComIntPatch : public CCommunicationInterface {
       (this->*pServerClose)();
       
       if (ms_bDebugOutput) {
-        CPrintF("CCommunicationInterface::Server_Close()\n");
+        CPutString("CCommunicationInterface::Server_Close()\n");
       }
 
       // Stop new master server
@@ -78,7 +78,7 @@ class CComIntPatch : public CCommunicationInterface {
       if (symptr.GetIndex())
       {
         if (ms_bDebugOutput) {
-          CPrintF("  MS_OnServerEnd()\n");
+          CPutString("  MS_OnServerEnd()\n");
         }
         MS_OnServerEnd();
       }
@@ -107,7 +107,7 @@ class CMessageDisPatch : public CMessageDispatcher {
       if (eMessage == MSG_REP_CONNECTPLAYER && symptr.GetIndex())
       {
         if (ms_bDebugOutput) {
-          CPrintF("  MS_OnServerStateChanged()\n");
+          CPutString("  MS_OnServerStateChanged()\n");
         }
         MS_OnServerStateChanged();
       }
@@ -198,7 +198,7 @@ class CSessionStatePatch : public CSessionState {
 
       if (GetComm().IsNetworkEnabled() && symptr.GetIndex()) {
         if (ms_bDebugOutput) {
-          //CPrintF("CSessionState::FlushProcessedPredictions() -> MS_OnServerUpdate()\n");
+          //CPutString("CSessionState::FlushProcessedPredictions() -> MS_OnServerUpdate()\n");
         }
         MS_OnServerUpdate();
       }

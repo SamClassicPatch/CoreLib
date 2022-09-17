@@ -188,8 +188,8 @@ void CLegacyQuery::EnumTrigger(BOOL bInternet)
 
     WSADATA wsadata;
     if (WSAStartup(MAKEWORD(2,2), &wsadata) != 0) {
-        CPrintF("Error initializing winsock!\n");
-        return;
+      CPutString("Error initializing winsock!\n");
+      return;
     }
 
     /* Open a socket and connect to the Master server */
@@ -200,23 +200,23 @@ void CLegacyQuery::EnumTrigger(BOOL bInternet)
 
     _sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (_sock < 0) {
-        CPrintF("Error creating TCP socket!\n");
-        WSACleanup();
-        return;
+      CPutString("Error creating TCP socket!\n");
+      WSACleanup();
+      return;
     }
     if (connect(_sock, (struct sockaddr *)&peer, sizeof(peer)) < 0) {
-        CPrintF("Error connecting to TCP socket!\n");
-        CLEANMSSRUFF1;
-        return;
+      CPutString("Error connecting to TCP socket!\n");
+      CLEANMSSRUFF1;
+      return;
     }
 
     /* Allocate memory for a buffer and get a pointer to it */
 
     cResponse = (char*) malloc(BUFFSZSTR + 1);
     if (!cResponse) {
-        CPrintF("Error initializing memory buffer!\n");
-        CLEANMSSRUFF1;
-        return;
+      CPutString("Error initializing memory buffer!\n");
+      CLEANMSSRUFF1;
+      return;
     }
 
     // Master Server should respond to the game.
@@ -225,9 +225,9 @@ void CLegacyQuery::EnumTrigger(BOOL bInternet)
     iLen = 0;
     iErr = recv(_sock, (char*)cResponse + iLen, BUFFSZSTR - iLen, 0);
     if (iErr < 0) {
-        CPrintF("Error reading from TCP socket!\n");
-        CLEANMSSRUFF2;
-        return;
+      CPutString("Error reading from TCP socket!\n");
+      CLEANMSSRUFF2;
+      return;
     }
 
     iLen += iErr;
@@ -237,9 +237,9 @@ void CLegacyQuery::EnumTrigger(BOOL bInternet)
 
     ucSec = (u_char*) malloc(BUFFSZSTR + 1);
     if (!ucSec) {
-        CPrintF("Error initializing memory buffer!\n");
-        CLEANMSSRUFF2;
-        return;
+      CPutString("Error initializing memory buffer!\n");
+      CLEANMSSRUFF2;
+      return;
     }
     memcpy ( ucSec, cResponse,  BUFFSZSTR);
     ucSec[iLen] = 0x00;
@@ -248,9 +248,9 @@ void CLegacyQuery::EnumTrigger(BOOL bInternet)
 
     cSec = strstr(cResponse, "\\secure\\");
     if (!cSec) {
-        CPrintF("Not valid master server response!\n");
-        CLEANMSSRUFF2;
-        return;
+      CPutString("Not valid master server response!\n");
+      CLEANMSSRUFF2;
+      return;
     } else {
         ucSec  += 15;
 
@@ -267,9 +267,9 @@ void CLegacyQuery::EnumTrigger(BOOL bInternet)
 
     cMsstring = (char*) malloc(BUFFSZSTR + 1);
     if (!cMsstring) {
-        CPrintF("Not valid master server response!\n");
-        CLEANMSSRUFF1;
-        return;
+      CPutString("Not valid master server response!\n");
+      CLEANMSSRUFF1;
+      return;
     }
 
     iLen = _snprintf(
@@ -290,25 +290,25 @@ void CLegacyQuery::EnumTrigger(BOOL bInternet)
     /* The string sent to master server */
 
     if (send(_sock,cMsstring, iLen, 0) < 0){
-        CPrintF("Error reading from TCP socket!\n");
-        if (cMsstring) free (cMsstring);
-        CLEANMSSRUFF1;
-        return;
+      CPutString("Error reading from TCP socket!\n");
+      if (cMsstring) free (cMsstring);
+      CLEANMSSRUFF1;
+      return;
     }
     if (cMsstring) free (cMsstring);
 
     /* Allocate memory for a buffer and get a pointer to it */
 
     if (_szIPPortBuffer ) {
-        CLEANMSSRUFF1;
-        return;
+      CLEANMSSRUFF1;
+      return;
     };
 
     _szIPPortBuffer = (char*) malloc(BUFFSZ + 1);
     if (!_szIPPortBuffer) {
-        CPrintF("Error reading from TCP socket!\n");
-        CLEANMSSRUFF1;
-        return;
+      CPutString("Error reading from TCP socket!\n");
+      CLEANMSSRUFF1;
+      return;
     }
     iDynsz = BUFFSZ;
 
@@ -316,17 +316,17 @@ void CLegacyQuery::EnumTrigger(BOOL bInternet)
 
     iLen = 0;
     while((iErr = recv(_sock, _szIPPortBuffer + iLen, iDynsz - iLen, 0)) > 0) {
-        iLen += iErr;
-        if (iLen >= iDynsz) {
-            iDynsz += BUFFSZ;
-            _szIPPortBuffer = (char*)realloc(_szIPPortBuffer, iDynsz);
-            if (!_szIPPortBuffer) {
-                CPrintF("Error reallocation memory buffer!\n");
-                if (_szIPPortBuffer) free (_szIPPortBuffer);
-                CLEANMSSRUFF1;
-                return;
-            }
+      iLen += iErr;
+      if (iLen >= iDynsz) {
+        iDynsz += BUFFSZ;
+        _szIPPortBuffer = (char*)realloc(_szIPPortBuffer, iDynsz);
+        if (!_szIPPortBuffer) {
+          CPutString("Error reallocation memory buffer!\n");
+          if (_szIPPortBuffer) free (_szIPPortBuffer);
+          CLEANMSSRUFF1;
+          return;
         }
+      }
     }
 
     CLEANMSSRUFF1;
@@ -556,7 +556,7 @@ DWORD WINAPI _MS_Thread(LPVOID lpParam)
         sPch = strstr(_szBuffer, "\\gamename\\" SERIOUSSAMSTR "\\");
 
         if (!sPch) {
-          CPrintF("Unknown query server response!\n");
+          CPutString("Unknown query server response!\n");
           return -1;
         } else {
           ParseStatusResponse(_sinClient, FALSE);
@@ -696,7 +696,7 @@ DWORD WINAPI _LocalNet_Thread(LPVOID lpParam)
         sPch = strstr(_szBuffer, "\\gamename\\" SERIOUSSAMSTR "\\");
 
         if (!sPch) {
-          CPrintF("Unknown query server response!\n");
+          CPutString("Unknown query server response!\n");
 
           if (_szIPPortBufferLocal != NULL) {
             delete[] _szIPPortBufferLocal;

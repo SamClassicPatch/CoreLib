@@ -122,7 +122,7 @@ void _initializeWinsock(void)
 
   // start WSA
   if (WSAStartup(MAKEWORD(2, 2), _wsaData) != 0) {
-    CPrintF("Error initializing winsock!\n");
+    CPutString("Error initializing winsock!\n");
     _uninitWinsock();
     return;
   }
@@ -177,7 +177,7 @@ void _initializeWinsock(void)
     int optval = 1;
     if (setsockopt(_socket, SOL_SOCKET, SO_BROADCAST, (char *)&optval, sizeof(optval)) != 0)
     {
-      CPrintF("Error while allowing UDP broadcast receiving for socket.");
+      CPutString("Error while allowing UDP broadcast receiving for socket.");
       _uninitWinsock();
       return;
     }
@@ -189,7 +189,7 @@ void _initializeWinsock(void)
   // set the socket to be nonblocking
   DWORD dwNonBlocking = 1;
   if (ioctlsocket(_socket, FIONBIO, &dwNonBlocking) != 0) {
-    CPrintF("Error setting socket to nonblocking!\n");
+    CPutString("Error setting socket to nonblocking!\n");
     _uninitWinsock();
     return;
   }

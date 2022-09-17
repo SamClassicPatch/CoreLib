@@ -99,7 +99,7 @@ void CECIL_InitCore(void) {
   _pShell->DeclareSymbol("user void PatchInfo(void);", &PatchInfo);
 
   // Function patches
-  CPrintF("--- Core: Intercepting Engine functions ---\n");
+  CPutString("--- Core: Intercepting Engine functions ---\n");
 
   extern void CECIL_ApplyMasterServerPatch(void);
   extern void CECIL_ApplyRenderPatch(void);
@@ -108,7 +108,7 @@ void CECIL_InitCore(void) {
   CECIL_ApplyRenderPatch();
   CECIL_ApplyUndecoratedPatch();
 
-  CPrintF("--- Done! ---\n");
+  CPutString("--- Done! ---\n");
 
   // Common symbols
   if (GetAPI()->IsGameApp() || GetAPI()->IsServerApp())

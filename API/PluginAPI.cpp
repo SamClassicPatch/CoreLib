@@ -20,11 +20,11 @@ static void ListPlugins(void) {
   CPluginStock *pStock = GetPluginAPI()->pPluginStock;
 
   if (pStock->GetTotalCount() == 0) {
-    CPrintF("No plugins have been loaded!\n");
+    CPutString("No plugins have been loaded!\n");
     return;
   }
 
-  CPrintF("^cffffffLoaded plugins:\n");
+  CPutString("^cffffffLoaded plugins:\n");
   
   for (INDEX iPlugin = 0; iPlugin < pStock->GetTotalCount(); iPlugin++) {
     CPluginModule *pPlugin = pStock->st_ctObjects.Pointer(iPlugin);
