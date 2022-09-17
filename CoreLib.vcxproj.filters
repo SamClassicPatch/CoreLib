@@ -13,9 +13,6 @@
       <UniqueIdentifier>{f483e665-b347-4776-8c97-9c8eae695c22}</UniqueIdentifier>
       <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
     </Filter>
-    <Filter Include="Header Files\Game">
-      <UniqueIdentifier>{70bf311d-f27f-450d-825b-7860b10e9162}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Patcher">
       <UniqueIdentifier>{dada0e2a-5921-4e12-9666-80fe63db0206}</UniqueIdentifier>
     </Filter>
@@ -67,14 +64,11 @@
     <Filter Include="Source Files\Definitions">
       <UniqueIdentifier>{72c3b40a-c044-400f-ac18-816894dbd3e6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Compatibility headers">
+      <UniqueIdentifier>{ab696bd7-cab8-4911-ae6c-e03beff1c913}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Game\Game.h">
-      <Filter>Header Files\Game</Filter>
-    </ClInclude>
-    <ClInclude Include="Game\PlayerSettings.h">
-      <Filter>Header Files\Game</Filter>
-    </ClInclude>
     <ClInclude Include="StdH.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -168,8 +162,14 @@
     <ClInclude Include="Interfaces\PropertyFunctions.h">
       <Filter>Header Files\Interfaces headers</Filter>
     </ClInclude>
-    <ClInclude Include="SymbolPtr.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Compatibility\Game.h">
+      <Filter>Header Files\Compatibility headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Compatibility\PlayerSettings.h">
+      <Filter>Header Files\Compatibility headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Compatibility\SymbolPtr.h">
+      <Filter>Header Files\Compatibility headers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
