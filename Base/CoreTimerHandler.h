@@ -13,6 +13,13 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
+#ifndef CECIL_INCL_CORETIMERHANDLER_H
+#define CECIL_INCL_CORETIMERHANDLER_H
+
+#ifdef PRAGMA_ONCE
+  #pragma once
+#endif
+
 // Timer handler for constant functionatily
 class CCoreTimerHandler : public CTimerHandler {
   public:
@@ -28,3 +35,5 @@ class CCoreTimerHandler : public CTimerHandler {
 
 // Declare pointer to the timer handler
 extern CCoreTimerHandler *_pTimerHandler;
+
+#endif
