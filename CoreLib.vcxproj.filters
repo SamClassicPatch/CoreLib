@@ -67,6 +67,12 @@
     <Filter Include="Header Files\Compatibility headers">
       <UniqueIdentifier>{ab696bd7-cab8-4911-ae6c-e03beff1c913}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Base">
+      <UniqueIdentifier>{2b2b2b15-12df-4bb2-9b38-35c1cf49ebdf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Base headers">
+      <UniqueIdentifier>{b52060bd-6184-498b-832a-c880d6837c2b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StdH.h">
@@ -171,6 +177,9 @@
     <ClInclude Include="Compatibility\SymbolPtr.h">
       <Filter>Header Files\Compatibility headers</Filter>
     </ClInclude>
+    <ClInclude Include="Base\CoreTimerHandler.h">
+      <Filter>Header Files\Base headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="StdH.cpp">
@@ -247,6 +256,9 @@
     </ClCompile>
     <ClCompile Include="Networking\AntiFlood.cpp">
       <Filter>Source Files\Networking</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\CoreTimerHandler.cpp">
+      <Filter>Source Files\Base</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
