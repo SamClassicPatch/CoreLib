@@ -158,6 +158,9 @@ class CCoreAPI {
     // Load Game library as a plugin
     void LoadGameLib(const CTString &strSettingsFile);
 
+    // Set metadata for the Game plugin
+    class CPluginModule *LoadGamePlugin(void);
+
     // Load all user plugins of specific utility types
     void LoadPlugins(ULONG ulUtilityFlags);
 

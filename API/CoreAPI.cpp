@@ -79,17 +79,8 @@ void CCoreAPI::LoadGameLib(const CTString &strSettingsFile) {
   if (_pGame != NULL) return;
 
   try {
-    // Obtain Game library
-    CPluginModule *pGameLib = GetPluginAPI()->LoadPlugin_t(GetGameLibPath());
-    CPrintF(TRANS("Loading game library '%s'...\n"), pGameLib->GetName());
-
-    // Set metadata
-    CPluginAPI::PluginInfo &info = pGameLib->_info;
-
-    info.strName = "Game library";
-    info.strAuthor = "Croteam";
-    info.ulVersion = MakeVersion(1, 0, _SE_BUILD_MINOR);
-    info.strDescription = "Main component that provides game logic.";
+    // Obtain Game plugin
+    CPluginModule *pGameLib = LoadGamePlugin();
 
     // Create Game class
     CGame *(*pGameCreateFunc)(void) = NULL;
@@ -108,6 +99,23 @@ void CCoreAPI::LoadGameLib(const CTString &strSettingsFile) {
     // Hook default fields
     GetGameAPI()->HookFields();
   }
+};
+
+// Set metadata for the Game plugin
+CPluginModule *CCoreAPI::LoadGamePlugin(void) {
+  // Obtain Game library
+  CPluginModule *pGameLib = GetPluginAPI()->LoadPlugin_t(GetGameLibPath());
+  CPrintF(TRANS("Loading game library '%s'...\n"), pGameLib->GetName());
+
+  // Set metadata
+  CPluginAPI::PluginInfo &info = pGameLib->_info;
+
+  info.strName = "Game library";
+  info.strAuthor = "Croteam";
+  info.ulVersion = MakeVersion(1, 0, _SE_BUILD_MINOR);
+  info.strDescription = "Main component that provides game logic.";
+
+  return pGameLib;
 };
 
 // Load all user plugins of specific utility types
