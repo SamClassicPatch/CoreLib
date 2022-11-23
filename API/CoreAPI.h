@@ -56,7 +56,13 @@ class CCoreAPI {
     CCoreAPI();
 
     // Get running application type after initializing the core
-    virtual EAppType GetApplication(void) {
+    // For modules that aren't utilizing Core library directly (e.g. plugins)
+    virtual EAppType GetAppType(void) {
+      return eAppType;
+    };
+
+    // Get running application type before initializing the core
+    static inline EAppType GetApplication(void) {
       return eAppType;
     };
 
