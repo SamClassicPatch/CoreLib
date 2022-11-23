@@ -150,7 +150,7 @@ class CCoreAPI {
     void DisableGameSpy(void);
 
     // Load Game library as a plugin
-    void LoadGameLib(void);
+    void LoadGameLib(const CTString &strSettingsFile = "Data\\SeriousSam.gms");
 
     // Load all user plugins of specific utility types
     void LoadPlugins(ULONG ulUtilityFlags);

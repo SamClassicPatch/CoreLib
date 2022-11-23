@@ -74,7 +74,7 @@ void CCoreAPI::DisableGameSpy(void) {
 };
 
 // Load Game library as a plugin
-void CCoreAPI::LoadGameLib(void) {
+void CCoreAPI::LoadGameLib(const CTString &strSettingsFile) {
   // Already loaded
   if (_pGame != NULL) return;
 
@@ -102,7 +102,7 @@ void CCoreAPI::LoadGameLib(void) {
   }
 
   // Initialize Game
-  _pGame->Initialize(CTString("Data\\SeriousSam.gms"));
+  _pGame->Initialize(strSettingsFile);
 
   // Hook default fields
   GetGameAPI()->HookFields();
