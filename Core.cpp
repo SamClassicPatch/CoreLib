@@ -58,18 +58,6 @@ void CECIL_InitCore(void) {
   // Information about the patch
   _pShell->DeclareSymbol("user void PatchInfo(void);", &PatchInfo);
 
-  // Function patches
-  CPutString("--- Core: Intercepting Engine functions ---\n");
-
-  extern void CECIL_ApplyMasterServerPatch(void);
-  extern void CECIL_ApplyRenderPatch(void);
-  extern void CECIL_ApplyUndecoratedPatch(void);
-  CECIL_ApplyMasterServerPatch();
-  CECIL_ApplyRenderPatch();
-  CECIL_ApplyUndecoratedPatch();
-
-  CPutString("--- Done! ---\n");
-
   // Common symbols
   if (GetAPI()->IsGameApp() || GetAPI()->IsServerApp())
   {
@@ -85,6 +73,9 @@ void CECIL_InitCore(void) {
     _pShell->DeclareSymbol("persistent user INDEX ser_iMaxMessagesPerSecond;", &ser_iMaxMessagesPerSecond);
     _pShell->DeclareSymbol("persistent user INDEX ser_iMaxPlayersPerClient;",  &ser_iMaxPlayersPerClient);
   }
+
+  // Initialize query manager
+  InitQuery();
 
   // Create timer handler for constant functionatily
   _pTimerHandler = new CCoreTimerHandler;

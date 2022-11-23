@@ -98,6 +98,21 @@ INDEX GetPlayerCount(void) {
 
 // [Cecil] Initialize query manager
 void InitQuery(void) {
+  // Custom symbols
+  _pShell->DeclareSymbol("persistent user CTString ms_strGameAgentMS;",  &ms_strGameAgentMS);
+  _pShell->DeclareSymbol("persistent user CTString ms_strMSLegacy;",     &ms_strMSLegacy);
+  _pShell->DeclareSymbol("persistent user CTString ms_strDarkPlacesMS;", &ms_strDarkPlacesMS);
+  _pShell->DeclareSymbol("persistent user INDEX ms_iProtocol;",          &ms_iProtocol);
+  _pShell->DeclareSymbol("persistent user INDEX ms_bDebugOutput;",       &ms_bDebugOutput);
+
+  // Master server protocol types
+  static const INDEX iMSLegacy   = E_MS_LEGACY;
+  static const INDEX iDarkPlaces = E_MS_DARKPLACES;
+  static const INDEX iGameAgent  = E_MS_GAMEAGENT;
+  _pShell->DeclareSymbol("const INDEX MS_LEGACY;",     (void *)&iMSLegacy);
+  _pShell->DeclareSymbol("const INDEX MS_DARKPLACES;", (void *)&iDarkPlaces);
+  _pShell->DeclareSymbol("const INDEX MS_GAMEAGENT;",  (void *)&iGameAgent);
+
   // Retrieve commonly used symbols
   _piNetPort.Find("net_iPort");
   _pstrLocalHost.Find("net_strLocalHost");

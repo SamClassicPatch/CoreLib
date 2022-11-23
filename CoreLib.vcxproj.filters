@@ -31,9 +31,6 @@
     <Filter Include="Header Files\Query headers">
       <UniqueIdentifier>{09b746b9-5938-4d3c-a0ed-e0149901a281}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\EnginePatches">
-      <UniqueIdentifier>{8eadc3a3-ee62-48eb-b290-edea08b9ac12}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Objects headers">
       <UniqueIdentifier>{5dbc8b17-0de1-41ce-8097-fd417cff859d}</UniqueIdentifier>
     </Filter>
@@ -212,9 +209,6 @@
     <ClCompile Include="Query\DarkPlacesQuery.cpp">
       <Filter>Source Files\Query</Filter>
     </ClCompile>
-    <ClCompile Include="EnginePatches\NetworkPatch.cpp">
-      <Filter>Source Files\EnginePatches</Filter>
-    </ClCompile>
     <ClCompile Include="Objects\Node.cpp">
       <Filter>Source Files\Objects</Filter>
     </ClCompile>
@@ -238,12 +232,6 @@
     </ClCompile>
     <ClCompile Include="API\PatchAPI.cpp">
       <Filter>Source Files\API</Filter>
-    </ClCompile>
-    <ClCompile Include="EnginePatches\RenderPatch.cpp">
-      <Filter>Source Files\EnginePatches</Filter>
-    </ClCompile>
-    <ClCompile Include="EnginePatches\UndecoratedPatch.cpp">
-      <Filter>Source Files\EnginePatches</Filter>
     </ClCompile>
     <ClCompile Include="Definitions\InlineDefinitions.cpp">
       <Filter>Source Files\Definitions</Filter>
