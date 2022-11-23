@@ -101,11 +101,13 @@ void CCoreAPI::LoadGameLib(const CTString &strSettingsFile) {
     FatalError("%s", strError);
   }
 
-  // Initialize Game
-  _pGame->Initialize(strSettingsFile);
+  // Initialize Game, if needed
+  if (strSettingsFile != "") {
+    _pGame->Initialize(strSettingsFile);
 
-  // Hook default fields
-  GetGameAPI()->HookFields();
+    // Hook default fields
+    GetGameAPI()->HookFields();
+  }
 };
 
 // Load all user plugins of specific utility types
