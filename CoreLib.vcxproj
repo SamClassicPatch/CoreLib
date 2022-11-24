@@ -93,6 +93,10 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_TFE105|Win32'">Create</PrecompiledHeader>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Definitions\GraphicsDefs.inl" />
+    <None Include="Definitions\TextureEffectsDefs.inl" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <SccProjectName>
     </SccProjectName>

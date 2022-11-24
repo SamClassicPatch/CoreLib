@@ -17,6 +17,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 // Define all inline methods
 #include "ActionBufferDefs.inl"
+#include "GraphicsDefs.inl"
 #include "PlayerActionDefs.inl"
 #include "PlayerCharacterDefs.inl"
 #include "PlayerTargetDefs.inl"
+#include "TextureEffectsDefs.inl"

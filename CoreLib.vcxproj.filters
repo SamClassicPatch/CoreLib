@@ -249,4 +249,12 @@
       <Filter>Source Files\Base</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Definitions\TextureEffectsDefs.inl">
+      <Filter>Header Files\Definitions headers</Filter>
+    </None>
+    <None Include="Definitions\GraphicsDefs.inl">
+      <Filter>Header Files\Definitions headers</Filter>
+    </None>
+  </ItemGroup>
 </Project>
