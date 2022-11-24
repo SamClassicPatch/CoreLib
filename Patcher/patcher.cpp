@@ -186,8 +186,13 @@ bool CPatch::CanRewriteInstructionSet(long iAddress, int &iRewriteLen)
   
   // [Cecil] Output patcher log
   if (GetDebug()) {
+    // Output next 8 instruction bytes
+    UBYTE *pInstr = reinterpret_cast<UBYTE *>(iAddress);
+
     CTString strError;
-    strError.PrintF("\nInvalid instruction! (0x%X)", *reinterpret_cast<char *>(iAddress));
+    strError.PrintF("\nInvalid instruction! Next bytes: %02X %02X %02X %02X %02X %02X %02X %02X",
+                    *(pInstr + 0), *(pInstr + 1), *(pInstr + 2), *(pInstr + 3),
+                    *(pInstr + 4), *(pInstr + 5), *(pInstr + 6), *(pInstr + 7));
 
     InfoMessage(_strPatcherLog + strError);
   }
