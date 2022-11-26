@@ -63,6 +63,12 @@ class CSymbolPtr {
       ASSERT(_pss != NULL);
       return *(CTString *)_pss->ss_pvValue;
     };
+
+    // Get pointer to the value
+    const void *GetValue(void) const {
+      ASSERT(_pss != NULL);
+      return _pss->ss_pvValue;
+    };
 };
 
 #endif
