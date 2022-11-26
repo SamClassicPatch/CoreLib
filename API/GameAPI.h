@@ -141,8 +141,24 @@ class CGameAPI {
       return ctPlayerProfiles;
     };
 
+  // Shell symbol wrappers
+  public:
+
+    // Get name of a specific gamemode
+    virtual CTString GetGameTypeNameSS(INDEX iGameMode);
+
+    // Get name of the current gamemode
+    virtual CTString GetCurrentGameTypeNameSS(void);
+
+    // Get spawn flags of a specific gamemode
+    virtual ULONG GetSpawnFlagsForGameTypeSS(INDEX iGameMode);
+
+    // Check if some menu is enabled
+    virtual BOOL IsMenuEnabledSS(const CTString &strMenu);
+
   // CGame field wrappers
   public:
+
     // Get console state
     virtual INDEX GetConState(void) const {
       return *piConsoleState;

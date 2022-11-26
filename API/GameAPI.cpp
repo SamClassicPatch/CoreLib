@@ -19,9 +19,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 CGameAPI::CGameAPI() {
   // Session properties game modes used by the patch
   sp_aiGameModes.New(2);
-  sp_aiGameModes[0] = -1; // Flyover
-  sp_aiGameModes[1] =  0; // Cooperative
-  
+  sp_aiGameModes[0] = -1; // Flyover - for intro screen
+  sp_aiGameModes[1] =  0; // Cooperative - for singleplayer
+
   // Session properties difficulties used by the patch
   sp_aGameDifficulties.New(6);
   sp_aGameDifficulties[0] = Difficulty(-1, "Tourist");
@@ -75,6 +75,85 @@ void CGameAPI::HookFields(void) {
 
   // Mark as hooked
   SetHooked(TRUE);
+};
+
+// Get name of a specific gamemode
+CTString CGameAPI::GetGameTypeNameSS(INDEX iGameMode)
+{
+  static CSymbolPtr symptr("GetGameTypeName");
+
+  // No symbol
+  if (!symptr.Exists()) {
+    ASSERT(FALSE);
+    return "";
+  }
+
+  typedef CTString (*CGetNameFunc)(INDEX);
+  CGetNameFunc pFunc = (CGetNameFunc)symptr.GetValue();
+
+  // Retrieve the name
+  return pFunc(iGameMode);
+};
+
+// Get name of the current gamemode
+CTString CGameAPI::GetCurrentGameTypeNameSS(void)
+{
+  static CSymbolPtr symptr("GetCurrentGameTypeName");
+
+  // No symbol
+  if (!symptr.Exists()) {
+    ASSERT(FALSE);
+    return "";
+  }
+
+  typedef CTString (*CGetCurrentNameFunc)(void);
+  CGetCurrentNameFunc pFunc = (CGetCurrentNameFunc)symptr.GetValue();
+
+  // Retrieve the name
+  return pFunc();
+};
+
+// Get spawn flags of a specific gamemode
+ULONG CGameAPI::GetSpawnFlagsForGameTypeSS(INDEX iGameMode)
+{
+  // Default to singleplayer
+  if (iGameMode == -1) {
+    return SPF_SINGLEPLAYER;
+  }
+
+  static CSymbolPtr symptr("GetSpawnFlagsForGameType");
+
+  // No symbol
+  if (!symptr.Exists()) {
+    ASSERT(FALSE);
+    return NONE;
+  }
+
+  typedef ULONG (*CGetSpawnFlagsFunc)(INDEX);
+  CGetSpawnFlagsFunc pFunc = (CGetSpawnFlagsFunc)symptr.GetValue();
+
+  // Retrieve the flags
+  return pFunc(iGameMode);
+};
+
+// Check if some menu is enabled
+BOOL CGameAPI::IsMenuEnabledSS(const CTString &strMenu)
+{
+  static CSymbolPtr symptr("IsMenuEnabled");
+
+  // No symbol
+  if (!symptr.Exists()) {
+    ASSERT(FALSE);
+
+    // All menus are enabled
+    return TRUE;
+  }
+
+  typedef INDEX (*CIsMenuEnabledFunc)(const CTString &);
+  CIsMenuEnabledFunc pFunc = (CIsMenuEnabledFunc)symptr.GetValue();
+
+  // Retrieve menu state
+  return pFunc(strMenu);
 };
 
 // Get one of the high score entries
