@@ -18,8 +18,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define DP_NET_PROTOCOL_VERSION 3
 
-extern CTString _getCurrentGameTypeName();
-
 // [Cecil] Use query data here
 using namespace QueryData;
 
@@ -41,7 +39,7 @@ void DarkPlaces_BuildQCStatus(CTString &strStatus)
 {
   INDEX ctFreeSlots = _pNetwork->ga_sesSessionState.ses_ctMaxPlayers - GetClientCount();
   
-  strStatus.PrintF("%s:%s:P%d:S%d:F%d:M%s::score!!", _getCurrentGameTypeName(), "0.8.2", 0, ctFreeSlots, 0, sam_strGameName);
+  strStatus.PrintF("%s:%s:P%d:S%d:F%d:M%s::score!!", GetGameAPI()->GetCurrentGameTypeNameSS(), "0.8.2", 0, ctFreeSlots, 0, sam_strGameName);
 }
 
 // Builds status string.

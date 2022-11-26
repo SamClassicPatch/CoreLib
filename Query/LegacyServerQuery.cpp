@@ -60,8 +60,6 @@ extern unsigned char *gsseckey(u_char *secure, u_char *key, int enctype);
                     "\\final\\" \
                     "\\queryid\\1.1"
 
-extern CTString _getCurrentGameTypeName();
-
 // [Cecil] Use query data here
 using namespace QueryData;
 
@@ -127,7 +125,7 @@ void CLegacyQuery::ServerParsePacket(INDEX iLength)
       GetGameAPI()->GetSessionName(),
       _piNetPort.GetIndex(),
       _pNetwork->ga_World.wo_strName,
-      _getCurrentGameTypeName(),
+      GetGameAPI()->GetCurrentGameTypeNameSS(),
       GetPlayerCount(),
       _pNetwork->ga_sesSessionState.ses_ctMaxPlayers,
       symptrFF.GetIndex(),
@@ -174,7 +172,7 @@ void CLegacyQuery::ServerParsePacket(INDEX iLength)
       GetGameAPI()->GetSessionName(),
       _piNetPort.GetIndex(),
       _pNetwork->ga_World.wo_strName,
-      _getCurrentGameTypeName(),
+      GetGameAPI()->GetCurrentGameTypeNameSS(),
       GetPlayerCount(),
       _pNetwork->ga_sesSessionState.ses_ctMaxPlayers);
     _sendPacketTo(strPacket, &_sinFrom);

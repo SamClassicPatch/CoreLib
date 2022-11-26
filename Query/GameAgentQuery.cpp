@@ -15,8 +15,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "StdH.h"
 
-extern CTString _getCurrentGameTypeName();
-
 // [Cecil] Use query data here
 using namespace QueryData;
 
@@ -35,7 +33,7 @@ void CGameAgentQuery::BuildHearthbeatPacket(CTString &strPacket, INDEX iChalleng
       GetPlayerCount(),
       _pNetwork->ga_sesSessionState.ses_ctMaxPlayers,
       _pNetwork->ga_World.wo_strName,
-      _getCurrentGameTypeName(),
+      GetGameAPI()->GetCurrentGameTypeNameSS(),
       _SE_VER_STRING,
       sam_strGameName);
 }
@@ -61,7 +59,7 @@ void CGameAgentQuery::ServerParsePacket(INDEX iLength)
         GetPlayerCount(),
         _pNetwork->ga_sesSessionState.ses_ctMaxPlayers,
         _pNetwork->ga_World.wo_strName,
-        _getCurrentGameTypeName(),
+        GetGameAPI()->GetCurrentGameTypeNameSS(),
         _SE_VER_STRING,
         sam_strGameName,
         GetGameAPI()->GetSessionName());

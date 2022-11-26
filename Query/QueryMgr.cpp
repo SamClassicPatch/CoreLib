@@ -248,31 +248,6 @@ int _recvPacket()
   return recvfrom(_socket, _szBuffer, 2048, 0, (sockaddr*)&_sinFrom, &fromLength);
 }
 
-CTString _getGameModeName(INDEX iGameMode)
-{
-  // get function that will provide us the info about gametype
-  CShellSymbol *pss = _pShell->GetSymbol("GetGameTypeName", /*bDeclaredOnly=*/ TRUE);
-
-  if (pss == NULL) {
-    return "";
-  }
-
-  CTString (*pFunc)(INDEX) = (CTString (*)(INDEX))pss->ss_pvValue;
-  return pFunc(iGameMode);
-}
-
-extern CTString _getCurrentGameTypeName()
-{
-  CShellSymbol *pss = _pShell->GetSymbol("GetCurrentGameTypeName", /*bDeclaredOnly=*/ TRUE);
-
-  if (pss == NULL) {
-    return "";
-  }
-
-  CTString (*pFunc)(void) = (CTString (*)(void))pss->ss_pvValue;
-  return pFunc();
-}
-
 void MS_SendHeartbeat(INDEX iChallenge)
 {
   CTString strPacket;
