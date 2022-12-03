@@ -29,10 +29,13 @@ static void ListPlugins(void) {
   for (INDEX iPlugin = 0; iPlugin < pStock->GetTotalCount(); iPlugin++) {
     CPluginModule *pPlugin = pStock->st_ctObjects.Pointer(iPlugin);
 
+    // Light blue - ON; Red - OFF
+    CPutString(pPlugin->IsInitialized() ? "^c00ffff" : "^cff0000");
+
     // Indent the index
     const INDEX ctIdent = ClampDn(2 - INDEX(log10((FLOAT)iPlugin)), (INDEX)0);
 
-    CPrintF("^c00ffff%*s%d - %s\n", ctIdent, "", iPlugin, pPlugin->GetName().str_String);
+    CPrintF("%*s%d - %s\n", ctIdent, "", iPlugin, pPlugin->GetName().str_String);
 
     // Print metadata
     const CPluginAPI::PluginInfo &info = pPlugin->GetInfo();
@@ -67,11 +70,11 @@ CPluginModule *CPluginAPI::ObtainPlugin_t(const CTFileName &fnmModule, ULONG ulU
   BOOL bVersion = (info.apiVer == CORE_API_VERSION);
   BOOL bUtility = (info.ulFlags & ulUtilityFlags) != 0;
 
-  // Warn about load cancelling
+  // Warn about loading cancelling
   if (!bVersion) {
-    CPrintF("'%s' load cancelled: Wrong API version (%u)\n", strFileName, info.apiVer);
+    CPrintF(TRANS("'%s' loading cancelled: Wrong API version (%u)\n"), strFileName, info.apiVer);
   } else if (!bUtility) {
-    CPrintF("'%s' load cancelled: Mismatching utility flags (0x%X)\n", strFileName, info.ulFlags);
+    CPrintF(TRANS("'%s' loading cancelled: Mismatching utility flags (0x%X)\n"), strFileName, info.ulFlags);
   }
   
   // Cannot load some plugin
