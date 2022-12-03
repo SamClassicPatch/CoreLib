@@ -22,3 +22,4 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "PlayerCharacterDefs.inl"
 #include "PlayerTargetDefs.inl"
 #include "TextureEffectsDefs.inl"
+#include "UnzipDefs.inl"

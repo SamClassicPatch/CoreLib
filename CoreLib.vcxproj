@@ -96,6 +96,7 @@
   <ItemGroup>
     <None Include="Definitions\GraphicsDefs.inl" />
     <None Include="Definitions\TextureEffectsDefs.inl" />
+    <None Include="Definitions\UnzipDefs.inl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <SccProjectName>

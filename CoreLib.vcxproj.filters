@@ -256,5 +256,8 @@
     <None Include="Definitions\GraphicsDefs.inl">
       <Filter>Header Files\Definitions headers</Filter>
     </None>
+    <None Include="Definitions\UnzipDefs.inl">
+      <Filter>Header Files\Definitions headers</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -37,6 +37,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // &_areRenderers[0]
 #define ADDR_RENDERER_ARRAY ((CRenderer *)(ULONG *)CHOOSE_FOR_GAME(0x6029C4F8, 0x6026C538, 0x602CDAF0))
 
+// Static variables from Unzip.cpp
+#define ADDR_UNZIP_CRITSEC  ((CTCriticalSection *)(ULONG *)CHOOSE_FOR_GAME(0x602A0388, 0x602703C8, 0x602D31C8)) // &zip_csLock
+#define ADDR_UNZIP_HANDLES  ((ULONG *)CHOOSE_FOR_GAME(0x60285030, 0x60255070, 0x602B6298)) // &_azhHandles
+#define ADDR_UNZIP_ENTRIES  ((ULONG *)CHOOSE_FOR_GAME(0x60285040, 0x60255080, 0x602B62A8)) // &_azeFiles
+#define ADDR_UNZIP_ARCHIVES ((ULONG *)CHOOSE_FOR_GAME(0x60285024, 0x60255064, 0x602B628C)) // &_afnmArchives
+
 // UNZIP* methods
 #define ADDR_UNZIP_OPEN      (CHOOSE_FOR_GAME(0x600E19E0, 0x600B1A70, 0x600EDD50)) // UNZIPOpen_t()
 #define ADDR_UNZIP_GETSIZE   (CHOOSE_FOR_GAME(0x600E1D90, 0x600B1E20, 0x600EE100)) // UNZIPGetSize()

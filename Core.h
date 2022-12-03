@@ -29,6 +29,11 @@ typedef UBYTE CSesPropsContainer[NET_MAXSESSIONPROPERTIES];
   #pragma comment(lib, "Core.lib")
 #endif
 
+// Import zlib
+#ifndef CORE_NO_ZLIB
+  #pragma comment(lib, "zlib.lib")
+#endif
+
 // Pointer to the Game module
 extern CGame *_pGame;
 
