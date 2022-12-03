@@ -48,13 +48,63 @@ static void ListPlugins(void) {
   }
 };
 
+// Enable specific plugin
+static void EnablePlugin(INDEX iPlugin) {
+  CPluginStock *pStock = GetPluginAPI()->pPluginStock;
+
+  if (iPlugin < 0 || iPlugin >= pStock->GetTotalCount()) {
+    CPutString(TRANS("Invalid plugin index!\n"));
+    return;
+  }
+
+  CPluginModule *pPlugin = pStock->st_ctObjects.Pointer(iPlugin);
+  const char *strPlugin = pPlugin->GetName().str_String;
+
+  if (pPlugin->IsInitialized()) {
+    CPrintF(TRANS("'%s' plugin is already enabled!\n"), strPlugin);
+    return;
+  }
+
+  pPlugin->Initialize();
+
+  if (pPlugin->IsInitialized()) {
+    CPrintF(TRANS("Successfully enabled '%s' plugin!\n"), strPlugin);
+  } else {
+    CPrintF(TRANS("Cannot enable '%s' plugin!\n"), strPlugin);
+  }
+};
+
+// Disable specific plugin
+static void DisablePlugin(INDEX iPlugin) {
+  CPluginStock *pStock = GetPluginAPI()->pPluginStock;
+
+  if (iPlugin < 0 || iPlugin >= pStock->GetTotalCount()) {
+    CPutString(TRANS("Invalid plugin index!\n"));
+    return;
+  }
+
+  CPluginModule *pPlugin = pStock->st_ctObjects.Pointer(iPlugin);
+  const char *strPlugin = pPlugin->GetName().str_String;
+
+  if (!pPlugin->IsInitialized()) {
+    CPrintF(TRANS("'%s' plugin is already disabled!\n"), strPlugin);
+    return;
+  }
+
+  pPlugin->Deactivate();
+
+  CPrintF(TRANS("Successfully disabled '%s' plugin!\n"), strPlugin);
+};
+
 // Constructor
 CPluginAPI::CPluginAPI() {
   // Create stock of plugin modules
   pPluginStock = new CPluginStock;
 
-  // List loaded plugin modules
-  _pShell->DeclareSymbol("user void ListPlugins(void);", &ListPlugins);
+  // Commands for manually toggling plugins
+  _pShell->DeclareSymbol("user void ListPlugins(void);",    &ListPlugins);
+  _pShell->DeclareSymbol("user void EnablePlugin(INDEX);",  &EnablePlugin);
+  _pShell->DeclareSymbol("user void DisablePlugin(INDEX);", &DisablePlugin);
 };
 
 // Obtain pointer to a plugin module of specific utility types
