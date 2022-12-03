@@ -15,6 +15,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "StdH.h"
 
+#include "Interfaces/DataFunctions.h"
+
 // Define external core API
 CCoreAPI *_pCoreAPI = NULL;
 
@@ -121,8 +123,8 @@ CPluginModule *CCoreAPI::LoadGamePlugin(void) {
 // Load all user plugins of specific utility types
 void CCoreAPI::LoadPlugins(ULONG ulUtilityFlags) {
   // List all library files
-  CDynamicStackArray<CTFileName> afnmDir;
-  MakeDirList(afnmDir, CTString("Bin\\Plugins\\"), "*.dll", DLI_RECURSIVE);
+  CDynamicFileStack afnmDir;
+  IData::ListGameFiles(afnmDir, "Bin\\Plugins\\", "*.dll", IData::FLF_RECURSIVE | IData::FLF_SEARCHMOD);
 
   CPrintF("--- Loading user plugins (flags: 0x%X) ---\n", ulUtilityFlags);
 
