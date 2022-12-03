@@ -39,11 +39,21 @@ void CPluginModule::Initialize(void) {
   _bInitialized = TRUE;
 };
 
+// Module deactivation
+void CPluginModule::Deactivate(void) {
+  if (!IsInitialized()) return;
+
+  // Stop the plugin
+  OnShutdown();
+
+  _bInitialized = FALSE;
+};
+
 // Module cleanup
 void CPluginModule::Clear(void) {
   // Release DLL
   if (_hiLibrary != NULL) {
-    OnShutdown();
+    Deactivate();
     FreeLibrary(_hiLibrary);
   }
 

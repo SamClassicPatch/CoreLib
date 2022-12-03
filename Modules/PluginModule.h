@@ -60,6 +60,9 @@ class CPluginModule : public CSerial
     // Module initialization
     virtual void Initialize(void);
 
+    // Module deactivation
+    virtual void Deactivate(void);
+
     // Module cleanup
     virtual void Clear(void);
 
