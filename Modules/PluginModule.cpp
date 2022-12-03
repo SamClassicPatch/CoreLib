@@ -55,7 +55,17 @@ void CPluginModule::Deactivate(void) {
 
   // Destroy all patches
   for (INDEX i = 0; i < _cPatches.Count(); i++) {
-    delete _cPatches.Pointer(i);
+    CPatch *pPatch = _cPatches.Pointer(i);
+
+    // Remove from the storage
+    SFuncPatch *pfp = GetPatchAPI()->FindFuncPatch(pPatch);
+
+    if (pfp != NULL) {
+      GetPatchAPI()->cPatches.Remove(pfp);
+    }
+
+    // Remove the patch
+    delete pPatch;
   }
 
   _cPatches.Clear();
