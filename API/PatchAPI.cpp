@@ -18,11 +18,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // List available function patches
 static void ListFuncPatches(void) {
   if (GetPatchAPI()->aPatches.Count() == 0) {
-    CPutString("No function patches available!\n");
+    CPutString(TRANS("No function patches available!\n"));
     return;
   }
 
-  CPutString("Available function patches:\n");
+  CPutString(TRANS("Available function patches:\n"));
   
   for (INDEX iPatch = 0; iPatch < GetPatchAPI()->aPatches.Count(); iPatch++) {
     const SFuncPatch &fpPatch = GetPatchAPI()->aPatches[iPatch];
@@ -37,26 +37,32 @@ static void ListFuncPatches(void) {
 
 // Enable specific function patch
 static void EnableFuncPatch(INDEX iPatch) {
-  iPatch = Clamp(iPatch, (INDEX)0, INDEX(GetPatchAPI()->aPatches.Count() - 1));
+  if (iPatch < 0 || iPatch >= GetPatchAPI()->aPatches.Count()) {
+    CPutString(TRANS("Invalid patch index!\n"));
+    return;
+  }
 
   const CTString &strPatch = GetPatchAPI()->aPatches[iPatch].strName;
   BOOL bPatched = GetPatchAPI()->EnablePatch(iPatch);
 
   if (bPatched) {
-    CPrintF("Successfully set '%s' function patch!\n", strPatch);
+    CPrintF(TRANS("Successfully set '%s' function patch!\n"), strPatch);
   } else {
-    CPrintF("Cannot set '%s' function patch!\n", strPatch);
+    CPrintF(TRANS("Cannot set '%s' function patch!\n"), strPatch);
   }
 };
 
 // Disable specific function patch
 static void DisableFuncPatch(INDEX iPatch) {
-  iPatch = Clamp(iPatch, (INDEX)0, INDEX(GetPatchAPI()->aPatches.Count() - 1));
+  if (iPatch < 0 || iPatch >= GetPatchAPI()->aPatches.Count()) {
+    CPutString(TRANS("Invalid patch index!\n"));
+    return;
+  }
 
   const CTString &strPatch = GetPatchAPI()->aPatches[iPatch].strName;
   GetPatchAPI()->DisablePatch(iPatch);
 
-  CPrintF("Successfully removed '%s' function patch!\n", strPatch);
+  CPrintF(TRANS("Successfully removed '%s' function patch!\n"), strPatch);
 };
 
 // Constructor
