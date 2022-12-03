@@ -17,15 +17,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 // List available function patches
 static void ListFuncPatches(void) {
-  if (GetPatchAPI()->aPatches.Count() == 0) {
+  if (GetPatchAPI()->cPatches.Count() == 0) {
     CPutString(TRANS("No function patches available!\n"));
     return;
   }
 
   CPutString(TRANS("Available function patches:\n"));
-  
-  for (INDEX iPatch = 0; iPatch < GetPatchAPI()->aPatches.Count(); iPatch++) {
-    const SFuncPatch &fpPatch = GetPatchAPI()->aPatches[iPatch];
+  const INDEX ctPatches = GetPatchAPI()->cPatches.Count();
+
+  for (INDEX iPatch = 0; iPatch < ctPatches; iPatch++) {
+    const SFuncPatch &fpPatch = GetPatchAPI()->cPatches[iPatch];
 
     // Mark as enabled or not and indent the index
     const char *strPatched = (fpPatch.pPatch->IsPatched() ? " [^c00ff00ON^r]" : "[^cff0000OFF^r]");
@@ -37,12 +38,12 @@ static void ListFuncPatches(void) {
 
 // Enable specific function patch
 static void EnableFuncPatch(INDEX iPatch) {
-  if (iPatch < 0 || iPatch >= GetPatchAPI()->aPatches.Count()) {
+  if (iPatch < 0 || iPatch >= GetPatchAPI()->cPatches.Count()) {
     CPutString(TRANS("Invalid patch index!\n"));
     return;
   }
 
-  const CTString &strPatch = GetPatchAPI()->aPatches[iPatch].strName;
+  const CTString &strPatch = GetPatchAPI()->cPatches[iPatch].strName;
   BOOL bPatched = GetPatchAPI()->EnablePatch(iPatch);
 
   if (bPatched) {
@@ -54,12 +55,12 @@ static void EnableFuncPatch(INDEX iPatch) {
 
 // Disable specific function patch
 static void DisableFuncPatch(INDEX iPatch) {
-  if (iPatch < 0 || iPatch >= GetPatchAPI()->aPatches.Count()) {
+  if (iPatch < 0 || iPatch >= GetPatchAPI()->cPatches.Count()) {
     CPutString(TRANS("Invalid patch index!\n"));
     return;
   }
 
-  const CTString &strPatch = GetPatchAPI()->aPatches[iPatch].strName;
+  const CTString &strPatch = GetPatchAPI()->cPatches[iPatch].strName;
   GetPatchAPI()->DisablePatch(iPatch);
 
   CPrintF(TRANS("Successfully removed '%s' function patch!\n"), strPatch);
@@ -80,7 +81,7 @@ CPatch *CPatchAPI::CreatePatch(BOOL bSetForever) {
 
 // Enable specific function patch
 BOOL CPatchAPI::EnablePatch(INDEX iPatch) {
-  SFuncPatch &fpPatch = aPatches[iPatch];
+  SFuncPatch &fpPatch = cPatches[iPatch];
   fpPatch.pPatch->SetPatch();
 
   return fpPatch.pPatch->IsValid();
@@ -88,17 +89,17 @@ BOOL CPatchAPI::EnablePatch(INDEX iPatch) {
 
 // Disable specific function patch
 void CPatchAPI::DisablePatch(INDEX iPatch) {
-  SFuncPatch &fpPatch = aPatches[iPatch];
+  SFuncPatch &fpPatch = cPatches[iPatch];
   fpPatch.pPatch->RemovePatch();
 };
 
 // Find function patch index by its name
 INDEX CPatchAPI::FindPatch(const CTString &strName) {
   const ULONG ulNameHash = strName.GetHash();
-  const INDEX ctPatches = aPatches.Count();
+  const INDEX ctPatches = cPatches.Count();
 
   for (INDEX iPatch = 0; iPatch < ctPatches; iPatch++) {
-    const SFuncPatch &fpPatch = aPatches[iPatch];
+    const SFuncPatch &fpPatch = cPatches[iPatch];
 
     // Matching name hash
     if (fpPatch.ulHash == ulNameHash) {
@@ -109,4 +110,22 @@ INDEX CPatchAPI::FindPatch(const CTString &strName) {
 
   // Not found
   return -1;
+};
+
+// Find function patch by its patch pointer
+SFuncPatch *CPatchAPI::FindFuncPatch(CPatch *pPatch) {
+  const INDEX ctPatches = cPatches.Count();
+
+  for (INDEX iPatch = 0; iPatch < ctPatches; iPatch++) {
+    SFuncPatch *pfpPatch = cPatches.Pointer(iPatch);
+
+    // Matching pointer
+    if (pfpPatch->pPatch == pPatch) {
+      // Found function patch
+      return pfpPatch;
+    }
+  }
+
+  // Not found
+  return NULL;
 };

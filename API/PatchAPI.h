@@ -47,7 +47,7 @@ struct SFuncPatch {
 // API for handling function patches
 class CPatchAPI {
   public:
-    CStaticStackArray<SFuncPatch> aPatches; // Function patch storage
+    CDynamicContainer<SFuncPatch> cPatches; // Function patch storage
     
   public:
     // Constructor
@@ -64,6 +64,9 @@ class CPatchAPI {
 
     // Find function patch index by its name
     virtual INDEX FindPatch(const CTString &strName);
+
+    // Find function patch by its patch pointer
+    virtual SFuncPatch *FindFuncPatch(CPatch *pPatch);
 };
 
 #endif
