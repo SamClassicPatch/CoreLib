@@ -19,6 +19,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "PluginModule.h"
 
+// Current plugin in the process of initialization
+CPluginModule *_pInitializingPlugin = NULL;
+
 // Constructor
 CPluginModule::CPluginModule() {
   ResetFields();
@@ -33,8 +36,15 @@ CPluginModule::~CPluginModule() {
 void CPluginModule::Initialize(void) {
   if (IsInitialized()) return;
 
+  // Set to the current plugin
+  CPluginModule *pLastPlugin = _pInitializingPlugin;
+  _pInitializingPlugin = this;
+
   // Start the plugin
   OnStartup();
+
+  // Restore last plugin
+  _pInitializingPlugin = pLastPlugin;
 
   _bInitialized = TRUE;
 };

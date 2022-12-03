@@ -155,3 +155,13 @@ CPluginModule *CPluginAPI::LoadPlugin_t(const CTFileName &fnmModule)
 CDynamicContainer<CPluginModule> &CPluginAPI::GetPlugins(void) {
   return pPluginStock->st_ctObjects;
 };
+
+// Add plugin's function patch into its patch container
+void CPluginAPI::AddNewPatch(CPatch *pPatch) {
+  extern CPluginModule *_pInitializingPlugin;
+  ASSERT(_pInitializingPlugin != NULL);
+
+  if (!_pInitializingPlugin->_cPatches.IsMember(pPatch)) {
+    _pInitializingPlugin->_cPatches.Add(pPatch);
+  }
+};

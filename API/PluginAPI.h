@@ -83,6 +83,9 @@ class CPluginAPI {
     // Retrieve loaded plugins
     virtual CDynamicContainer<CPluginModule> &GetPlugins(void);
 
+    // Add plugin's function patch into its patch container
+    virtual void AddNewPatch(CPatch *pPatch);
+
     // Register a symbol from the plugin and set a pointer to the symbol to it
     static inline void RegisterSymbol(CPluginSymbol *pps, const char *strName)
     {
@@ -137,6 +140,13 @@ class CPluginAPI {
       // E.g. "user INDEX GetValue(void);"
       strDeclaration.PrintF("%s%s %s(%s);", strDeclFlags, strType, strName, strArguments);
       _pShell->DeclareSymbol(strDeclaration, pFunction);
+    };
+
+    // Create a new function patch for the plugin
+    template<class FuncType1, class FuncType2> inline
+    CPatch *NewPatch(FuncType1 &funcOld, FuncType2 funcNew, const char *strName, BOOL bAddToRegistry = TRUE) {
+      // Add it to the plugin
+      AddNewPatch(::NewPatch(funcOld, funcNew, strName, bAddToRegistry));
     };
 };
 
