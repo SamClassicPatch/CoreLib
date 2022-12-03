@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <Extras/zlib/zlib.h>
 
 #include <Engine/Base/Unzip.h>
+#include <CoreLib/Interfaces/DataFunctions.h>
 
 // [Cecil] Pointer to 'zip_csLock' in the engine
 static CTCriticalSection *_pcsZipLockEngine = ADDR_UNZIP_CRITSEC;
@@ -352,14 +353,7 @@ static void ReadZIPDirectory_t(CTFileName *pfnmZip)
       ctFiles++;
 
       // Convert slashes in the filename
-      {
-        char *str = strBuffer;
-
-        while (*str != '\0') {
-          if (*str == '/') *str = '\\';
-          ++str;
-        }
-      }
+      IData::ConvertSlashes(strBuffer);
 
       // Create a new entry
       CZipEntry &ze = _aFilesEngine.Push();

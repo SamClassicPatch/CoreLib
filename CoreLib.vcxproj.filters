@@ -177,6 +177,9 @@
     <ClInclude Include="Base\CoreTimerHandler.h">
       <Filter>Header Files\Base headers</Filter>
     </ClInclude>
+    <ClInclude Include="Interfaces\DataFunctions.h">
+      <Filter>Header Files\Interfaces headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="StdH.cpp">

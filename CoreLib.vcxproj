@@ -45,6 +45,7 @@
       <FileType>Document</FileType>
     </ClInclude>
     <ClInclude Include="GameSpecific.h" />
+    <ClInclude Include="Interfaces\DataFunctions.h" />
     <ClInclude Include="Interfaces\PropertyFunctions.h" />
     <ClInclude Include="Interfaces\RenderFunctions.h" />
     <ClInclude Include="Interfaces\WorldFunctions.h" />
