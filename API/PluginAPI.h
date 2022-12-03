@@ -146,7 +146,10 @@ class CPluginAPI {
     template<class FuncType1, class FuncType2> inline
     CPatch *NewPatch(FuncType1 &funcOld, FuncType2 funcNew, const char *strName, BOOL bAddToRegistry = TRUE) {
       // Add it to the plugin
-      AddNewPatch(::NewPatch(funcOld, funcNew, strName, bAddToRegistry));
+      CPatch *pPatch = ::NewPatch(funcOld, funcNew, strName, bAddToRegistry);
+      AddNewPatch(pPatch);
+
+      return pPatch;
     };
 };
 
