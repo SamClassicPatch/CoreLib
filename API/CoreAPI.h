@@ -21,7 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 
 // Current API version
-#define CORE_API_VERSION 2
+#define CORE_API_VERSION 3
 
 // Declare API submodules
 class CPatchAPI;
