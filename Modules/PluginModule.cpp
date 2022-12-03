@@ -43,6 +43,13 @@ void CPluginModule::Initialize(void) {
 void CPluginModule::Deactivate(void) {
   if (!IsInitialized()) return;
 
+  // Destroy all patches
+  for (INDEX i = 0; i < _cPatches.Count(); i++) {
+    delete _cPatches.Pointer(i);
+  }
+
+  _cPatches.Clear();
+
   // Stop the plugin
   OnShutdown();
 

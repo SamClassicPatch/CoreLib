@@ -33,7 +33,9 @@ class CPluginModule : public CSerial
   public:
     HINSTANCE _hiLibrary; // Library handle
     BOOL _bInitialized; // Plugin has been initialized
+
     CPluginAPI::PluginInfo _info; // Plugin information
+    CDynamicContainer<CPatch> _cPatches; // Custom patches
 
   public:
     // Constructor
