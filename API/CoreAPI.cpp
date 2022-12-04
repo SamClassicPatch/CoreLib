@@ -179,6 +179,8 @@ void CCoreAPI::OnGameStart(void)
 {
   // Call game start function for each plugin
   FOREACHPLUGINHANDLER(GetPluginAPI()->cNetworkEvents, INetworkEvents, pEvents) {
+    if ((IAbstractEvents *)pEvents == NULL) continue;
+
     pEvents->OnGameStart();
   }
 };
@@ -188,6 +190,8 @@ void CCoreAPI::OnGameStop(void)
 {
   // Call game stop function for each plugin
   FOREACHPLUGINHANDLER(GetPluginAPI()->cNetworkEvents, INetworkEvents, pEvents) {
+    if ((IAbstractEvents *)pEvents == NULL) continue;
+
     pEvents->OnGameStop();
   }
 };
@@ -197,6 +201,8 @@ void CCoreAPI::OnTick(void)
 {
   // Call step function for each plugin
   FOREACHPLUGINHANDLER(GetPluginAPI()->cProcessors, IProcessingEvents, pEvents) {
+    if ((IAbstractEvents *)pEvents == NULL) continue;
+
     pEvents->OnStep();
   }
 };
@@ -206,6 +212,8 @@ void CCoreAPI::OnPreDraw(CDrawPort *pdp)
 {
   // Call pre-draw function for each plugin
   FOREACHPLUGINHANDLER(GetPluginAPI()->cRenderers, IRenderingEvents, pEvents) {
+    if ((IAbstractEvents *)pEvents == NULL) continue;
+
     pEvents->OnPreDraw(pdp);
   }
 };
@@ -215,6 +223,8 @@ void CCoreAPI::OnPostDraw(CDrawPort *pdp)
 {
   // Call post-draw function for each plugin
   FOREACHPLUGINHANDLER(GetPluginAPI()->cRenderers, IRenderingEvents, pEvents) {
+    if ((IAbstractEvents *)pEvents == NULL) continue;
+
     pEvents->OnPostDraw(pdp);
   }
 };
@@ -224,6 +234,8 @@ void CCoreAPI::OnFrame(CDrawPort *pdp)
 {
   // Call frame function for each plugin
   FOREACHPLUGINHANDLER(GetPluginAPI()->cProcessors, IProcessingEvents, pEvents) {
+    if ((IAbstractEvents *)pEvents == NULL) continue;
+
     pEvents->OnFrame(pdp);
   }
 };

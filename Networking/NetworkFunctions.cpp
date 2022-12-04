@@ -49,8 +49,9 @@ BOOL INetwork::ServerHandle(CMessageDispatcher *pmd, INDEX iClient, CNetworkMess
   nmMessage >> ulType;
 
   // Let plugins handle packets
-  FOREACHPLUGINHANDLER(GetPluginAPI()->cNetworkEvents, INetworkEvents, pEvents)
-  {
+  FOREACHPLUGINHANDLER(GetPluginAPI()->cNetworkEvents, INetworkEvents, pEvents) {
+    if ((IAbstractEvents *)pEvents == NULL) continue;
+
     // Handle packet through this plugin handler
     if (pEvents->OnServerPacket(nmMessage, ulType)) {
       // Quit if packet has been handled
@@ -83,8 +84,9 @@ BOOL INetwork::ClientHandle(CSessionState *pses, CNetworkMessage &nmMessage) {
   nmMessage >> ulType;
 
   // Let plugins handle packets
-  FOREACHPLUGINHANDLER(GetPluginAPI()->cNetworkEvents, INetworkEvents, pEvents)
-  {
+  FOREACHPLUGINHANDLER(GetPluginAPI()->cNetworkEvents, INetworkEvents, pEvents) {
+    if ((IAbstractEvents *)pEvents == NULL) continue;
+
     // Handle packet through this plugin handler
     if (pEvents->OnClientPacket(nmMessage, ulType)) {
       // Quit if packet has been handled
