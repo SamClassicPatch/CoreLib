@@ -229,6 +229,17 @@ void CCoreAPI::OnPostDraw(CDrawPort *pdp)
   }
 };
 
+// Called after rendering the world
+void CCoreAPI::OnRenderView(CWorld &wo, CEntity *penViewer, CAnyProjection3D &apr, CDrawPort *pdp)
+{
+  // Call render view function for each plugin
+  FOREACHPLUGINHANDLER(GetPluginAPI()->cRenderers, IRenderingEvents, pEvents) {
+    if ((IAbstractEvents *)pEvents == NULL) continue;
+
+    pEvents->OnRenderView(wo, penViewer, apr, pdp);
+  }
+};
+
 // Called every render frame
 void CCoreAPI::OnFrame(CDrawPort *pdp)
 {

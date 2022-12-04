@@ -182,6 +182,9 @@ class CCoreAPI {
     // Called after redrawing game view
     virtual void OnPostDraw(CDrawPort *pdp);
 
+    // Called after rendering the world
+    virtual void OnRenderView(CWorld &wo, CEntity *penViewer, CAnyProjection3D &apr, CDrawPort *pdp);
+
     // Called every render frame
     virtual void OnFrame(CDrawPort *pdp);
 };
