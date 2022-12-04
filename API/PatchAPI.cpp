@@ -93,16 +93,16 @@ void CPatchAPI::DisablePatch(INDEX iPatch) {
   fpPatch.pPatch->RemovePatch();
 };
 
-// Find function patch index by its name
-INDEX CPatchAPI::FindPatch(const CTString &strName) {
+// Get function patch index by its name or patch pointer
+INDEX CPatchAPI::GetPatchIndex(const CTString &strName, CPatch *pPatch) {
   const ULONG ulNameHash = strName.GetHash();
   const INDEX ctPatches = cPatches.Count();
 
   for (INDEX iPatch = 0; iPatch < ctPatches; iPatch++) {
-    const SFuncPatch &fpPatch = cPatches[iPatch];
+    SFuncPatch &fp = cPatches[iPatch];
 
-    // Matching name hash
-    if (fpPatch.ulHash == ulNameHash) {
+    // Matching pointer or name hash
+    if (fp.pPatch == pPatch || fp.ulHash == ulNameHash) {
       // Found function patch
       return iPatch;
     }
@@ -112,17 +112,18 @@ INDEX CPatchAPI::FindPatch(const CTString &strName) {
   return -1;
 };
 
-// Find function patch by its patch pointer
-SFuncPatch *CPatchAPI::FindFuncPatch(CPatch *pPatch) {
+// Find function patch by its name or its patch pointer
+SFuncPatch *CPatchAPI::FindFuncPatch(const CTString &strName, CPatch *pPatch) {
+  const ULONG ulNameHash = strName.GetHash();
   const INDEX ctPatches = cPatches.Count();
 
   for (INDEX iPatch = 0; iPatch < ctPatches; iPatch++) {
-    SFuncPatch *pfpPatch = cPatches.Pointer(iPatch);
+    SFuncPatch &fp = cPatches[iPatch];
 
-    // Matching pointer
-    if (pfpPatch->pPatch == pPatch) {
+    // Matching pointer or name hash
+    if (fp.pPatch == pPatch || fp.ulHash == ulNameHash) {
       // Found function patch
-      return pfpPatch;
+      return &fp;
     }
   }
 

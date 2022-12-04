@@ -62,11 +62,11 @@ class CPatchAPI {
     // Disable specific function patch
     virtual void DisablePatch(INDEX iPatch);
 
-    // Find function patch index by its name
-    virtual INDEX FindPatch(const CTString &strName);
+    // Get function patch index by its name or patch pointer
+    virtual INDEX GetPatchIndex(const CTString &strName, CPatch *pPatch);
 
-    // Find function patch by its patch pointer
-    virtual SFuncPatch *FindFuncPatch(CPatch *pPatch);
+    // Find function patch by its name or patch pointer
+    virtual SFuncPatch *FindFuncPatch(const CTString &strName, CPatch *pPatch);
 };
 
 #endif
