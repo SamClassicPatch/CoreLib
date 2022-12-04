@@ -65,7 +65,7 @@ BOOL INetwork::ServerHandle(CMessageDispatcher *pmd, INDEX iClient, CNetworkMess
     
     // Invalid packets
     default: {
-      CPrintF("Server received PCK_EXTENSION of an invalid (%u) type!\n", ulType);
+      CPrintF(TRANS("Server received PCK_EXTENSION of an invalid (%u) type!\n"), ulType);
       ASSERT(FALSE);
     }
   }
@@ -100,7 +100,7 @@ BOOL INetwork::ClientHandle(CSessionState *pses, CNetworkMessage &nmMessage) {
 
     // Invalid packets
     default: {
-      CPrintF("Client received PCK_EXTENSION of an invalid (%u) type!\n", ulType);
+      CPrintF(TRANS("Client received PCK_EXTENSION of an invalid (%u) type!\n"), ulType);
       ASSERT(FALSE);
     }
   }

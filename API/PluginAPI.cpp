@@ -20,11 +20,11 @@ static void ListPlugins(void) {
   CPluginStock *pStock = GetPluginAPI()->pPluginStock;
 
   if (pStock->GetTotalCount() == 0) {
-    CPutString("No plugins have been loaded!\n");
+    CPutString(TRANS("No plugins have been loaded!\n"));
     return;
   }
 
-  CPutString("^cffffffLoaded plugins:\n");
+  CPutString(TRANS("^cffffffLoaded plugins:\n"));
   
   for (INDEX iPlugin = 0; iPlugin < pStock->GetTotalCount(); iPlugin++) {
     CPluginModule *pPlugin = pStock->st_ctObjects.Pointer(iPlugin);
@@ -40,10 +40,10 @@ static void ListPlugins(void) {
     // Print metadata
     const CPluginAPI::PluginInfo &info = pPlugin->GetInfo();
 
-    CPrintF("  Name: %s\n", info.strName);
-    CPrintF("  Author: %s\n", info.strAuthor);
-    CPrintF("  Version: %s\n", CCoreAPI::MakeVersionString(info.ulVersion));
-    CPrintF("  Description: %s\n", info.strDescription);
+    CPrintF(TRANS("  Name: %s\n"), info.strName);
+    CPrintF(TRANS("  Author: %s\n"), info.strAuthor);
+    CPrintF(TRANS("  Version: %s\n"), CCoreAPI::MakeVersionString(info.ulVersion));
+    CPrintF(TRANS("  Description: %s\n"), info.strDescription);
     CPutString("---\n");
   }
 };
