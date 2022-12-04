@@ -26,33 +26,46 @@ class IAbstractEvents {
     // Container to utilize for registering and unregistering
     CDynamicContainer<IAbstractEvents> *_pHandlers;
 
+    // Index of the handler in the container
+    INDEX _iHandler;
+
+    // Default constructor
+    IAbstractEvents() : _pHandlers(NULL), _iHandler(-1)
+    {
+    };
+
     // Destructor with automatic unregistering
     virtual ~IAbstractEvents() {
       Unregister();
     };
-    
+
     // Register events
     virtual void Register(void) {
       if (_pHandlers == NULL) {
         return;
       }
-      
+
+      // Restore the pointer if it has a dedicated slot
+      if (_iHandler != -1) {
+        _pHandlers->sa_Array[_iHandler] = this;
+
       // Add to handlers if it's not there
-      if (!_pHandlers->IsMember(this)) {
+      } else if (!_pHandlers->IsMember(this)) {
+        _iHandler = _pHandlers->Count();
         _pHandlers->Add(this);
       }
     };
-    
+
     // Unregister events
     virtual void Unregister(void) {
       if (_pHandlers == NULL) {
         return;
       }
 
-      // Remove from handlers if it's there
-      if (_pHandlers->IsMember(this)) {
-        _pHandlers->Remove(this);
-      }
+      ASSERT(_iHandler != -1);
+
+      // Remove the pointer from the dedicated slot
+      _pHandlers->sa_Array[_iHandler] = NULL;
     };
 };
 
@@ -61,7 +74,7 @@ class IProcessingEvents : public IAbstractEvents {
   public:
     virtual void OnStep(void); // Every simulation tick for synchronized logic
     virtual void OnFrame(CDrawPort *pdp); // After rendering everything
-    
+
     // Assign handlers container
     void Register(void) {
       _pHandlers = &GetPluginAPI()->cProcessors;
@@ -74,10 +87,10 @@ class IRenderingEvents : public IAbstractEvents {
   public:
     virtual void OnPreDraw(CDrawPort *pdp); // Before drawing the game view
     virtual void OnPostDraw(CDrawPort *pdp); // After drawing the game view
-    
+
     // After rendering the world
     virtual void OnRenderView(CWorld &wo, CEntity *penViewer, CAnyProjection3D &apr, CDrawPort *pdp);
-    
+
     // Assign handlers container
     void Register(void) {
       _pHandlers = &GetPluginAPI()->cRenderers;
