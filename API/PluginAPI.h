@@ -86,6 +86,12 @@ class CPluginAPI {
     // Add plugin's function patch into its patch container
     virtual void AddNewPatch(CPatch *pPatch);
 
+    // Register a custom chat command
+    virtual void RegisterChatCommand(const char *strName, void *pHandler);
+
+    // Unregister a custom chat command
+    virtual void UnregisterChatCommand(const char *strName);
+
     // Register a symbol from the plugin and set a pointer to the symbol to it
     static inline void RegisterSymbol(CPluginSymbol *pps, const char *strName)
     {

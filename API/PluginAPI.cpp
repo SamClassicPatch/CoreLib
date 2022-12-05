@@ -15,6 +15,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "StdH.h"
 
+#include "Networking/ChatCommands.h"
+
 // List loaded plugin modules
 static void ListPlugins(void) {
   CPluginStock *pStock = GetPluginAPI()->pPluginStock;
@@ -164,4 +166,14 @@ void CPluginAPI::AddNewPatch(CPatch *pPatch) {
   if (!_pInitializingPlugin->_cPatches.IsMember(pPatch)) {
     _pInitializingPlugin->_cPatches.Add(pPatch);
   }
+};
+
+// Register a custom chat command
+void CPluginAPI::RegisterChatCommand(const char *strName, void *pHandler) {
+  IChatCommands::Register(strName, (SChatCommand::CCommandFunc)pHandler);
+};
+
+// Unregister a custom chat command
+void CPluginAPI::UnregisterChatCommand(const char *strName) {
+  IChatCommands::Unregister(strName);
 };
