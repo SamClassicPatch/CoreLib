@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "NetworkFunctions.h"
 
 #include "AntiFlood.h"
+#include "ChatCommands.h"
 #include "SplitScreenClients.h"
 
 // Client requesting the session state
@@ -55,6 +56,17 @@ BOOL OnChatInRequest(INDEX iClient, CNetworkMessage &nmMessage)
   // Skip messages blocked by the anti-flood system
   if (IAntiFlood::HandleChatMessage(iClient)) {
     return FALSE;
+  }
+
+  ULONG ulFrom, ulTo;
+  CTString strMessage;
+
+  nmMessage >> ulFrom >> ulTo >> strMessage;
+  nmMessage.Rewind();
+
+  // Handle chat command if the message starts with a command prefix
+  if (strMessage.HasPrefix(ser_strCommandPrefix)) {
+    return IChatCommands::HandleCommand(iClient, strMessage);
   }
 
   return TRUE;

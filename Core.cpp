@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "Base/CoreTimerHandler.h"
 
 #include "Networking/AntiFlood.h"
+#include "Networking/ChatCommands.h"
 #include "Networking/SplitScreenClients.h"
 
 // Pointer to the Game module
@@ -72,10 +73,14 @@ void CECIL_InitCore(void) {
     _pShell->DeclareSymbol("persistent user INDEX ser_iPacketFloodThreshold;", &ser_iPacketFloodThreshold);
     _pShell->DeclareSymbol("persistent user INDEX ser_iMaxMessagesPerSecond;", &ser_iMaxMessagesPerSecond);
     _pShell->DeclareSymbol("persistent user INDEX ser_iMaxPlayersPerClient;",  &ser_iMaxPlayersPerClient);
+    _pShell->DeclareSymbol("persistent user CTString ser_strCommandPrefix;",   &ser_strCommandPrefix);
   }
 
   // Initialize query manager
   InitQuery();
+
+  // Register default chat commands
+  IChatCommands::RegisterDefaultCommands();
 
   // Create timer handler for constant functionatily
   _pTimerHandler = new CCoreTimerHandler;
