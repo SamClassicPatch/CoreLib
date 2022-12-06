@@ -20,6 +20,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "Networking/AntiFlood.h"
 #include "Networking/SplitScreenClients.h"
 
+// Define pointer to the timer handler
+CCoreTimerHandler *_pTimerHandler = NULL;
+
 // This is called every CTimer::TickQuantum seconds
 void CCoreTimerHandler::HandleTimer(void) {
   // Called every game tick, even if no session was started and while in pause
@@ -49,6 +52,3 @@ void CCoreTimerHandler::OnSecond(void)
   // Reset anti-flood counters
   IAntiFlood::ResetCounters();
 };
-
-// Define pointer to the timer handler
-CCoreTimerHandler *_pTimerHandler = NULL;
