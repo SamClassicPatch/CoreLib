@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "CoreTimerHandler.h"
 
-#include "Networking/AntiFlood.h"
-#include "Networking/SplitScreenClients.h"
+#include "Networking/Modules.h"
 
 // Define pointer to the timer handler
 CCoreTimerHandler *_pTimerHandler = NULL;

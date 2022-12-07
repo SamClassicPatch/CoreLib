@@ -16,8 +16,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef CECIL_INCL_ANTISPAM_H
 #define CECIL_INCL_ANTISPAM_H
 
-#include "CommInterface.h"
-
 // Kick clients for attempted packet flood
 extern INDEX ser_bEnableAntiFlood;
 

@@ -56,6 +56,7 @@
     <ClInclude Include="Networking\CommInterface.h" />
     <ClInclude Include="Networking\MessageProcessing.h" />
     <ClInclude Include="Networking\NetworkFunctions.h" />
+    <ClInclude Include="Networking\Modules.h" />
     <ClInclude Include="Networking\SplitScreenClients.h" />
     <ClInclude Include="Networking\StreamBlock.h" />
     <ClInclude Include="Objects\Node.h" />

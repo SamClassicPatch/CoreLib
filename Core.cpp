@@ -17,9 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "Base/CoreTimerHandler.h"
 
-#include "Networking/AntiFlood.h"
-#include "Networking/ChatCommands.h"
-#include "Networking/SplitScreenClients.h"
+#include "Networking/Modules.h"
 
 // Pointer to the Game module
 CGame *_pGame = NULL;
