@@ -15,6 +15,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "StdH.h"
 
+#include "Networking/NetworkFunctions.h"
+
 // [Cecil] Use query data here
 using namespace QueryData;
 
@@ -30,7 +32,7 @@ void CGameAgentQuery::BuildHearthbeatPacket(CTString &strPacket, INDEX iChalleng
 {
   strPacket.PrintF("0;challenge;%d;players;%d;maxplayers;%d;level;%s;gametype;%s;version;%s;product;%s",
       iChallenge,
-      GetPlayerCount(),
+      INetwork::CountPlayers(FALSE),
       _pNetwork->ga_sesSessionState.ses_ctMaxPlayers,
       _pNetwork->ga_World.wo_strName,
       GetGameAPI()->GetCurrentGameTypeNameSS(),
@@ -40,6 +42,9 @@ void CGameAgentQuery::BuildHearthbeatPacket(CTString &strPacket, INDEX iChalleng
 
 void CGameAgentQuery::ServerParsePacket(INDEX iLength)
 {
+  // [Cecil] Player count
+  const INDEX ctPlayers = INetwork::CountPlayers(FALSE);
+
   // check the received packet ID
   switch (_szBuffer[0])
   {
@@ -56,7 +61,7 @@ void CGameAgentQuery::ServerParsePacket(INDEX iLength)
       // send the status response
       CTString strPacket;
       strPacket.PrintF("0;players;%d;maxplayers;%d;level;%s;gametype;%s;version;%s;gamename;%s;sessionname;%s",
-        GetPlayerCount(),
+        ctPlayers,
         _pNetwork->ga_sesSessionState.ses_ctMaxPlayers,
         _pNetwork->ga_World.wo_strName,
         GetGameAPI()->GetCurrentGameTypeNameSS(),
@@ -71,8 +76,8 @@ void CGameAgentQuery::ServerParsePacket(INDEX iLength)
     {
       // send the player status response
       CTString strPacket;
-      strPacket.PrintF("\x01players\x02%d\x03", GetPlayerCount());
-      for (INDEX i=0; i<GetPlayerCount(); i++) {
+      strPacket.PrintF("\x01players\x02%d\x03", ctPlayers);
+      for (INDEX i = 0; i < ctPlayers; i++) {
         CPlayerBuffer &plb = _pNetwork->ga_srvServer.srv_aplbPlayers[i];
         CPlayerTarget &plt = _pNetwork->ga_sesSessionState.ses_apltPlayers[i];
         if (plt.plt_bActive) {
@@ -101,7 +106,7 @@ void CGameAgentQuery::ServerParsePacket(INDEX iLength)
     {
       // just send back 1 byte and the amount of players in the server (this could be useful in some cases for external scripts)
       CTString strPacket;
-      strPacket.PrintF("\x04%d", GetPlayerCount());
+      strPacket.PrintF("\x04%d", ctPlayers);
       _sendPacketTo(strPacket, &_sinFrom);
       break;
     }

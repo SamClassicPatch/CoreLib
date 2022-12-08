@@ -15,6 +15,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "StdH.h"
 
+#include "Networking/NetworkFunctions.h"
+
 #define MSPORT      28900
 #define BUFFSZ      8192
 #define BUFFSZSTR   4096
@@ -97,6 +99,9 @@ void CLegacyQuery::ServerParsePacket(INDEX iLength)
     CPrintF("Received data[%d]:\n%s\n", iLength, _szBuffer);
   }
 
+  // [Cecil] Player count
+  const INDEX ctPlayers = INetwork::CountPlayers(FALSE);
+
   // status request
   if (sPch1) {
     CTString strPacket;
@@ -126,7 +131,7 @@ void CLegacyQuery::ServerParsePacket(INDEX iLength)
       _piNetPort.GetIndex(),
       _pNetwork->ga_World.wo_strName,
       GetGameAPI()->GetCurrentGameTypeNameSS(),
-      GetPlayerCount(),
+      ctPlayers,
       _pNetwork->ga_sesSessionState.ses_ctMaxPlayers,
       symptrFF.GetIndex(),
       symptrWeap.GetIndex(),
@@ -137,7 +142,7 @@ void CLegacyQuery::ServerParsePacket(INDEX iLength)
       symptrIA.GetIndex(),
       symptrResp.GetIndex());
 
-      for (INDEX i=0; i<GetPlayerCount(); i++)
+      for (INDEX i = 0; i < ctPlayers; i++)
       {
         CPlayerBuffer &plb = _pNetwork->ga_srvServer.srv_aplbPlayers[i];
         CPlayerTarget &plt = _pNetwork->ga_sesSessionState.ses_apltPlayers[i];
@@ -173,7 +178,7 @@ void CLegacyQuery::ServerParsePacket(INDEX iLength)
       _piNetPort.GetIndex(),
       _pNetwork->ga_World.wo_strName,
       GetGameAPI()->GetCurrentGameTypeNameSS(),
-      GetPlayerCount(),
+      ctPlayers,
       _pNetwork->ga_sesSessionState.ses_ctMaxPlayers);
     _sendPacketTo(strPacket, &_sinFrom);
 
@@ -208,7 +213,7 @@ void CLegacyQuery::ServerParsePacket(INDEX iLength)
     CTString strPacket;
     strPacket = "";
 
-    for (INDEX i=0; i<GetPlayerCount(); i++) {
+    for (INDEX i = 0; i < ctPlayers; i++) {
       CPlayerBuffer &plb = _pNetwork->ga_srvServer.srv_aplbPlayers[i];
       CPlayerTarget &plt = _pNetwork->ga_sesSessionState.ses_apltPlayers[i];
       if (plt.plt_bActive) {

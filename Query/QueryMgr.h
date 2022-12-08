@@ -53,12 +53,6 @@ extern INDEX ms_bDebugOutput;
 extern CSymbolPtr _piNetPort;
 extern CSymbolPtr _pstrLocalHost;
 
-// [Cecil] Get amount of server clients
-INDEX GetClientCount(void);
-
-// [Cecil] Get number of active server players
-INDEX GetPlayerCount(void);
-
 // [Cecil] Initialize query manager
 void InitQuery(void);
 

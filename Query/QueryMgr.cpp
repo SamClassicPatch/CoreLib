@@ -64,38 +64,6 @@ INDEX ms_bDebugOutput = FALSE;
 CSymbolPtr _piNetPort;
 CSymbolPtr _pstrLocalHost;
 
-// [Cecil] Get amount of server clients
-INDEX GetClientCount(void) {
-  CServer &srv = _pNetwork->ga_srvServer;
-  INDEX ctClients = 0;
-
-  for (INDEX iSession = 0; iSession < srv.srv_assoSessions.Count(); iSession++) {
-    CSessionSocket &sso = srv.srv_assoSessions[iSession];
-
-    if (iSession > 0 && !sso.sso_bActive) {
-      continue;
-    }
-
-    ctClients++;
-  }
-
-  return ctClients;
-};
-
-// [Cecil] Get number of active server players
-INDEX GetPlayerCount(void) {
-  CServer &srv = _pNetwork->ga_srvServer;
-  INDEX ctPlayers = 0;
-
-  FOREACHINSTATICARRAY(srv.srv_aplbPlayers, CPlayerBuffer, itplb) {
-    if (itplb->IsActive()) {
-      ctPlayers++;
-    }
-  }
-
-  return ctPlayers;
-};
-
 // [Cecil] Initialize query manager
 void InitQuery(void) {
   // Custom symbols

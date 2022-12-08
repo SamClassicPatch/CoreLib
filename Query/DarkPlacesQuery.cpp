@@ -16,6 +16,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "StdH.h"
 
+#include "Networking/NetworkFunctions.h"
+
 #define DP_NET_PROTOCOL_VERSION 3
 
 // [Cecil] Use query data here
@@ -37,7 +39,7 @@ void CDarkPlacesQuery::BuildHearthbeatPacket(CTString &strPacket)
 // Builds game status string.
 void DarkPlaces_BuildQCStatus(CTString &strStatus)
 {
-  INDEX ctFreeSlots = _pNetwork->ga_sesSessionState.ses_ctMaxPlayers - GetClientCount();
+  INDEX ctFreeSlots = _pNetwork->ga_sesSessionState.ses_ctMaxPlayers - INetwork::CountClients(FALSE);
   
   strStatus.PrintF("%s:%s:P%d:S%d:F%d:M%s::score!!", GetGameAPI()->GetCurrentGameTypeNameSS(), "0.8.2", 0, ctFreeSlots, 0, sam_strGameName);
 }
@@ -61,7 +63,8 @@ void DarkPlaces_BuildStatusResponse(const char* challenge, CTString &strPacket, 
             bFullStatus ? "statusResponse" : "infoResponse",
             // [Cecil] "$version" -> _SE_VER_STRING
             sam_strGameName, "", _SE_VER_STRING, ctMaxPlayers,
-            GetClientCount(), 0, _pNetwork->ga_World.wo_strName, GetGameAPI()->GetSessionName(), DP_NET_PROTOCOL_VERSION,
+            INetwork::CountClients(FALSE), 0, _pNetwork->ga_World.wo_strName,
+            GetGameAPI()->GetSessionName(), DP_NET_PROTOCOL_VERSION,
             "\\qcstatus\\", strStatus,
             challenge ? "\\challenge\\" : "", challenge ? challenge : "",
             "", "", // Crypto Key
