@@ -85,6 +85,139 @@ class INetwork {
 
     // Send chat message to a client with custom name of a sender
     static void SendChatToClient(INDEX iClient, const CTString &strFromName, const CTString &strMessage);
+
+  // CServer method reimplementations
+  public:
+
+    // Get number of active players
+    static inline INDEX CountPlayers(BOOL bOnlyVIP) {
+      CServer &srv = _pNetwork->ga_srvServer;
+      INDEX ctPlayers = 0;
+
+      FOREACHINSTATICARRAY(srv.srv_aplbPlayers, CPlayerBuffer, itplb)
+      {
+        // Skip inactive players
+        if (!itplb->IsActive()) continue;
+
+        // Any or VIP
+        if (!bOnlyVIP || srv.srv_assoSessions[itplb->plb_iClient].sso_bVIP) {
+          ctPlayers++;
+        }
+      }
+
+      return ctPlayers;
+    };
+
+    // Get number of active clients
+    static inline INDEX CountClients(BOOL bOnlyVIP) {
+      CServer &srv = _pNetwork->ga_srvServer;
+
+      const INDEX ctSessions = srv.srv_assoSessions.Count();
+      INDEX ctClients = 0;
+
+      for (INDEX i = 0; i < ctSessions; i++) {
+        CSessionSocket &sso = srv.srv_assoSessions[i];
+
+        // Skip inactive clients
+        if (i > 0 && !sso.sso_bActive) continue;
+
+        // Any or VIP
+        if (!bOnlyVIP || sso.sso_bVIP) {
+          ctClients++;
+        }
+      }
+
+      return ctClients;
+    };
+
+    // Get number of active observers
+    static inline INDEX CountObservers(void) {
+      CServer &srv = _pNetwork->ga_srvServer;
+
+      const INDEX ctSessions = srv.srv_assoSessions.Count();
+      INDEX ctClients = 0;
+
+      for (INDEX i = 0; i < ctSessions; i++) {
+        CSessionSocket &sso = srv.srv_assoSessions[i];
+
+        // Skip inactive clients
+        if (i > 0 && !sso.sso_bActive) continue;
+
+        // Client with no players
+        if (sso.sso_ctLocalPlayers == 0) {
+          ctClients++;
+        }
+      }
+
+      return ctClients;
+    };
+
+    // Get number of active players of a specific client
+    static inline INDEX CountClientPlayers(INDEX iClient) {
+      CServer &srv = _pNetwork->ga_srvServer;
+      INDEX ctPlayers = 0;
+
+      FOREACHINSTATICARRAY(srv.srv_aplbPlayers, CPlayerBuffer, itplb)
+      {
+        // Active player with a matching client index
+        if (itplb->IsActive() && itplb->plb_iClient == iClient) {
+          ctPlayers++;
+        }
+      }
+
+      return ctPlayers;
+    };
+
+    // Find first inactive client
+    static inline CPlayerBuffer *FirstInactivePlayer(void) {
+      CServer &srv = _pNetwork->ga_srvServer;
+
+      FOREACHINSTATICARRAY(srv.srv_aplbPlayers, CPlayerBuffer, itplb)
+      {
+        // Found inactive player
+        if (!itplb->IsActive()) {
+          return itplb;
+        }
+      }
+
+      // No inactive players
+      return NULL;
+    };
+
+    // Check if some character already exists in this session
+    static inline BOOL IsCharacterUsed(const CPlayerCharacter &pc) {
+      CServer &srv = _pNetwork->ga_srvServer;
+
+      FOREACHINSTATICARRAY(srv.srv_aplbPlayers, CPlayerBuffer, itplb)
+      {
+        // Active player with a matching character
+        if (itplb->IsActive() && itplb->plb_pcCharacter == pc) {
+          return TRUE;
+        }
+      }
+
+      // No matching character found
+      return FALSE;
+    };
+
+    // Compose a bit mask of all players of a specific client
+    static inline ULONG MaskOfClientPlayers(INDEX iClient) {
+      CServer &srv = _pNetwork->ga_srvServer;
+
+      const INDEX ctPlayers = srv.srv_aplbPlayers.Count();
+      ULONG ulMask = 0;
+
+      for (INDEX i = 0; i < ctPlayers; i++) {
+        CPlayerBuffer &plb = srv.srv_aplbPlayers[i];
+
+        // Active player with a matching client index
+        if (plb.IsActive() && plb.plb_iClient == iClient) {
+          ulMask |= (1UL << i);
+        }
+      }
+
+      return ulMask;
+    };
 };
 
 #endif

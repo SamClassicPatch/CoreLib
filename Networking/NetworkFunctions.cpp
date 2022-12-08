@@ -42,8 +42,6 @@ BOOL INetwork::ServerHandle(CMessageDispatcher *pmd, INDEX iClient, CNetworkMess
   // Let CServer::Handle process packets of other types
   if (nmMessage.GetType() != PCK_EXTENSION) return TRUE;
 
-  CServer &srv = _pNetwork->ga_srvServer;
-
   // Handle specific packet types
   ULONG ulType;
   nmMessage >> ulType;
@@ -62,14 +60,14 @@ BOOL INetwork::ServerHandle(CMessageDispatcher *pmd, INDEX iClient, CNetworkMess
   switch (ulType)
   {
     case 0: // [Cecil] TEMP
-    
+
     // Invalid packets
     default: {
       CPrintF(TRANS("Server received PCK_EXTENSION of an invalid (%u) type!\n"), ulType);
       ASSERT(FALSE);
     }
   }
-  
+
   // No extra processing needed
   return FALSE;
 };
@@ -78,7 +76,7 @@ BOOL INetwork::ServerHandle(CMessageDispatcher *pmd, INDEX iClient, CNetworkMess
 BOOL INetwork::ClientHandle(CSessionState *pses, CNetworkMessage &nmMessage) {
   // Let default methods handle packets of other types
   if (nmMessage.GetType() != PCK_EXTENSION) return TRUE;
-  
+
   // Handle specific packet types
   ULONG ulType;
   nmMessage >> ulType;
