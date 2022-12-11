@@ -21,7 +21,7 @@ extern CTString ser_strCommandPrefix;
 
 // Chat command structure
 struct SChatCommand {
-  typedef void (*CCommandFunc)(CTString &strResult, const CTString &strArguments);
+  typedef BOOL (*CCommandFunc)(CTString &strResult, INDEX iClient, const CTString &strArguments);
 
   const char *strName;
   CCommandFunc pHandler;
@@ -45,7 +45,7 @@ extern CDynamicContainer<SChatCommand> _cChatCommands;
 class IChatCommands {
   public:
     // Handle chat command from a client
-    static BOOL HandleCommand(INDEX iClient, CTString strCommand);
+    static BOOL HandleCommand(INDEX iClient, const CTString &strCommand);
 
     // Register a new chat command
     static void Register(const char *strName, SChatCommand::CCommandFunc pFunction);

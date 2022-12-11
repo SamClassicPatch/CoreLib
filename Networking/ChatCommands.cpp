@@ -18,6 +18,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "ChatCommands.h"
 #include "NetworkFunctions.h"
 
+#include "ClientLogging.h"
+#include "ClientRestrictions.h"
+
 // Prefix that the chat commands start with
 CTString ser_strCommandPrefix = "!";
 
@@ -49,25 +52,28 @@ static INDEX ExtractCommand(CTString &strCommand) {
 };
 
 // Interface for chat commands
-BOOL IChatCommands::HandleCommand(INDEX iClient, CTString strCommand)
+BOOL IChatCommands::HandleCommand(INDEX iClient, const CTString &strCommand)
 {
+  // Copy full command for extracting arguments
+  CTString strArguments = strCommand;
+
   // Try to remove the command prefix
-  if (!strCommand.RemovePrefix(ser_strCommandPrefix)) {
+  if (!strArguments.RemovePrefix(ser_strCommandPrefix)) {
     return TRUE;
   }
 
   // Extract command name
-  CTString strCommandName = strCommand;
+  CTString strCommandName = strArguments;
   INDEX iCutOff = ExtractCommand(strCommandName);
 
   // Remove command name from the string
   if (iCutOff != -1) {
-    strCommand.RemovePrefix(strCommandName);
-    strCommand.TrimSpacesLeft();
+    strArguments.RemovePrefix(strCommandName);
+    strArguments.TrimSpacesLeft();
 
   // Nothing left
   } else {
-    strCommand = "";
+    strArguments = "";
   }
 
   // Go through the commands
@@ -75,12 +81,18 @@ BOOL IChatCommands::HandleCommand(INDEX iClient, CTString strCommand)
   {
     // Found matching command
     if (itcom->strName == strCommandName) {
-      // Process it
-      CTString strOut;
-      itcom->pHandler(strOut, strCommand);
+      // Execute it
+      CTString strOut = "";
+      BOOL bHandled = itcom->pHandler(strOut, iClient, strArguments);
 
-      // Reply to the client
-      INetwork::SendChatToClient(iClient, " ", strOut);
+      // Process as a normal chat message upon failure
+      if (!bHandled) {
+        return TRUE;
+      }
+
+      // Reply to the client with the inputted command
+      const CTString strReply = strCommand + "\n" + strOut;
+      INetwork::SendChatToClient(iClient, "Chat command", strReply);
 
       // Don't process as a chat message
       return FALSE;
