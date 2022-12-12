@@ -27,19 +27,19 @@ INDEX ser_iPacketFloodThreshold = 10;
 // Allowed messages from client per second
 INDEX ser_iMaxMessagesPerSecond = 2;
 
-// Individual client data
-struct ClientData {
+// Individual data about packet flood
+struct SClientFloodData {
   INDEX ctLastSecPackets; // Packets sent in the past second
   INDEX ctLastSecMessages; // Chat messages sent in the past second
 
   // Constructor
-  ClientData() : ctLastSecPackets(0), ctLastSecMessages(0)
+  SClientFloodData() : ctLastSecPackets(0), ctLastSecMessages(0)
   {
   };
 };
 
 // Anti-flood data per server client
-static ClientData _aClients[SERVER_CLIENTS];
+static SClientFloodData _aClientFloodData[SERVER_CLIENTS];
 
 // See if should check for packet flooding for this client
 static BOOL CheckForPacketFlood(INDEX iClient) {
@@ -59,7 +59,7 @@ static BOOL CheckForPacketFlood(INDEX iClient) {
 // Detect potential packet flood and deal with it
 static BOOL DetectPacketFlood(INDEX iClient)
 {
-  INDEX &ctPackets = _aClients[iClient].ctLastSecPackets;
+  INDEX &ctPackets = _aClientFloodData[iClient].ctLastSecPackets;
 
   // Client haven't exceeded the flood threshold
   if (ser_iPacketFloodThreshold < 0 || ctPackets <= ser_iPacketFloodThreshold) {
@@ -86,7 +86,7 @@ BOOL IAntiFlood::HandleCharacterChange(INDEX iClient)
   }
 
   // Count one packet from the client
-  _aClients[iClient].ctLastSecPackets++;
+  _aClientFloodData[iClient].ctLastSecPackets++;
 
   // Deal with packet flood
   return DetectPacketFlood(iClient);
@@ -100,8 +100,8 @@ BOOL IAntiFlood::HandleChatMessage(INDEX iClient)
   }
 
   // Count one chat message from the client
-  _aClients[iClient].ctLastSecPackets++;
-  _aClients[iClient].ctLastSecMessages++;
+  _aClientFloodData[iClient].ctLastSecPackets++;
+  _aClientFloodData[iClient].ctLastSecMessages++;
 
   // If detected packet flood
   if (DetectPacketFlood(iClient)) {
@@ -115,7 +115,7 @@ BOOL IAntiFlood::HandleChatMessage(INDEX iClient)
   }
 
   // If client sent too many messages in the past second
-  if (_aClients[iClient].ctLastSecMessages > ser_iMaxMessagesPerSecond) {
+  if (_aClientFloodData[iClient].ctLastSecMessages > ser_iMaxMessagesPerSecond) {
     // Notify the client about spam
     CTString strWarning;
 
@@ -143,6 +143,6 @@ BOOL IAntiFlood::HandleChatMessage(INDEX iClient)
 void IAntiFlood::ResetCounters(void)
 {
   for (INDEX i = 0; i < SERVER_CLIENTS; i++) {
-    _aClients[i].ctLastSecPackets = 0;
+    _aClientFloodData[i].ctLastSecPackets = 0;
   }
 };
