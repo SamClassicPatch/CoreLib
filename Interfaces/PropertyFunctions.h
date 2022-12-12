@@ -44,19 +44,19 @@ class IProperties {
         CEntityProperty::EPT_INDEX,
         CEntityProperty::EPT_INDEX,
         CEntityProperty::EPT_INDEX,
-        -1, // EPT_FLOATAABBOX3D,
+        -1, // EPT_FLOATAABBOX3D
         CEntityProperty::EPT_FLOAT,
         CEntityProperty::EPT_FLOAT3D,
         CEntityProperty::EPT_FLOAT3D,
-        -1, // EPT_FLOATplane3D,
+        -1, // EPT_FLOATplane3D
         -1, // EPT_MODELOBJECT
-        -1, // EPT_PLACEMENT3D,
+        -1, // EPT_PLACEMENT3D
         -1, // EPT_ANIMOBJECT
         CEntityProperty::EPT_STRING,
         -1, // EPT_SOUNDOBJECT
         CEntityProperty::EPT_STRING,
-        -1, // EPT_FLOATQUAT3D,
-        -1, // EPT_FLOATMATRIX3D,
+        -1, // EPT_FLOATQUAT3D
+        -1, // EPT_FLOATMATRIX3D
         CEntityProperty::EPT_INDEX,
         -1, // EPT_MODELINSTANCE
       };
