@@ -213,6 +213,56 @@ class IData {
         }
       }
     };
+
+    // Print out specific time in details (years, days, hours, minutes, seconds)
+    static inline void PrintDetailedTime(CTString &strOut, CTimerValue tvTime) {
+      // Get precise seconds
+      __int64 iSeconds = (tvTime.tv_llValue / _pTimer->tm_llPerformanceCounterFrequency);
+
+      // Limit down to 0 seconds
+      iSeconds = ClampDn(iSeconds, __int64(0));
+
+      // Timeout
+      if (iSeconds == 0) {
+        strOut = "0s";
+        return;
+      }
+
+      // Display seconds
+      const ULONG ulSec = iSeconds % 60;
+
+      if (ulSec > 0) {
+        strOut.PrintF("%us", ulSec);
+      }
+
+      // Display minutes
+      const ULONG ulMin = (iSeconds / 60) % 60;
+
+      if (ulMin > 0) {
+        strOut.PrintF("%um %s", ulMin, strOut);
+      }
+
+      // Display hours
+      const ULONG ulHours = (iSeconds / 3600) % 24;
+
+      if (ulHours > 0) {
+        strOut.PrintF("%uh %s", ulHours, strOut);
+      }
+
+      // Display days
+      const ULONG ulDaysTotal = iSeconds / 3600 / 24;
+      const ULONG ulDays = ulDaysTotal % 365;
+
+      if (ulDays > 0) {
+        strOut.PrintF("%ud %s", ulDays, strOut);
+      }
+
+      const ULONG ulYearsTotal = (ulDaysTotal / 365);
+
+      if (ulYearsTotal > 0) {
+        strOut.PrintF("%uy %s", ulYearsTotal, strOut);
+      }
+    };
 };
 
 #endif
