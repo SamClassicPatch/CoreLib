@@ -43,8 +43,6 @@ CCoreAPI::CCoreAPI() :
 
   ulVersion = MakeVersion(1, 3, 1);
 
-  pdpRenderSpace = NULL;
-
   // Output patcher actions
   if (FileExists(_fnmApplicationExe.FileDir() + "PatcherOutput")) {
     CPatch::SetDebug(true);
