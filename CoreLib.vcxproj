@@ -60,6 +60,7 @@
     <ClInclude Include="Networking\SplitScreenClients.h" />
     <ClInclude Include="Networking\StreamBlock.h" />
     <ClInclude Include="Objects\Node.h" />
+    <ClInclude Include="Objects\StructPtr.h" />
     <ClInclude Include="Patcher\FuncPatching.h" />
     <ClInclude Include="Patcher\patcher.h" />
     <ClInclude Include="Patcher\patcher_defines.h" />
@@ -223,7 +224,6 @@
     </Bscmake>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <SubSystem>Console</SubSystem>
     </Link>
     <CustomBuildStep />
     <PostBuildEvent />
@@ -259,7 +259,6 @@
     </Bscmake>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <SubSystem>Console</SubSystem>
     </Link>
     <CustomBuildStep />
     <PostBuildEvent />
@@ -295,7 +294,6 @@
     </Bscmake>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <SubSystem>Console</SubSystem>
     </Link>
     <CustomBuildStep />
     <PostBuildEvent />
@@ -331,7 +329,6 @@
     </Bscmake>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <SubSystem>Console</SubSystem>
     </Link>
     <CustomBuildStep />
     <PostBuildEvent />

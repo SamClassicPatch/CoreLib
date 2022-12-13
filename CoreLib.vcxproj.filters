@@ -186,6 +186,9 @@
     <ClInclude Include="Networking\Modules.h">
       <Filter>Header Files\Networking headers</Filter>
     </ClInclude>
+    <ClInclude Include="Objects\StructPtr.h">
+      <Filter>Header Files\Objects headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="StdH.cpp">
