@@ -21,25 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 
 #include "patcher.h"
-
-// Caster from raw addresses to function pointers
-template<class FuncType>
-struct FuncPtr {
-  union {
-    ULONG ulAddress; // Raw address of the function
-    FuncType pFunction; // Pointer to the function
-  };
-
-  // Constructor from raw address
-  FuncPtr(ULONG ulSetAddress = NULL) : ulAddress(ulSetAddress)
-  {
-  };
-
-  // Constructor from a function pointer
-  FuncPtr(FuncType pSetFunction) : pFunction(pSetFunction)
-  {
-  };
-};
+#include <CoreLib/Objects/StructPtr.h>
 
 // Don't terminate the game in debug
 #ifndef NDEBUG
@@ -59,7 +41,10 @@ CPatch *NewPatch(FuncType1 &funcOld, FuncType2 funcNew, const char *strName, BOO
 
   // Create new patch and hook the functions
   CPatch *pPatch = GetPatchAPI()->CreatePatch(FALSE);
-  pPatch->HookClassFunctions(funcOld, funcNew, true);
+
+  long &iNewCallAddress = *reinterpret_cast<long *>(&funcOld);
+  long iJumpAddress = *reinterpret_cast<long *>(&funcNew);
+  pPatch->HookFunction(iNewCallAddress, iJumpAddress, &iNewCallAddress, true);
 
   // Successfully patched
   if (pPatch->IsValid()) {
@@ -87,7 +72,10 @@ CPatch *NewRawPatch(FuncType1 &funcOld, FuncType2 funcNew, const char *strName) 
 
   // Create new patch and hook the functions
   CPatch *pPatch = new CPatch(FALSE);
-  pPatch->HookClassFunctions(funcOld, funcNew, true);
+
+  long &iNewCallAddress = *reinterpret_cast<long *>(&funcOld);
+  long iJumpAddress = *reinterpret_cast<long *>(&funcNew);
+  pPatch->HookFunction(iNewCallAddress, iJumpAddress, &iNewCallAddress, true);
 
   // Couldn't patch
   if (!pPatch->IsValid()) {

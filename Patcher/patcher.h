@@ -54,7 +54,8 @@ class CPatch
       HookFunction(iNewCallAddress, iJumpAddress, &iNewCallAddress, bPatchNow);
     };
 
-  protected:
+  // [Cecil] Made public
+  public:
     virtual bool CanRewriteInstructionSet(long iAddress, int &iRewriteLen);
     virtual BOOL HookFunction(long iFuncToHook, long iFuncToCall, long *piNewCallAddress, bool bPatchNow = true);
 
