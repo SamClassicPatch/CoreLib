@@ -75,6 +75,7 @@ void CECIL_InitCore(void) {
   }
 
   // Initialize query manager
+  extern void InitQuery(void);
   InitQuery();
 
   // Register default chat commands

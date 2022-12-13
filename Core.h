@@ -49,7 +49,6 @@ extern CTString sam_strVersion;
 // Common components
 #include "API/CoreAPI.h"
 #include "Patcher/FuncPatching.h"
-#include "Query/QueryMgr.h"
 #include "Modules/PluginStock.h"
 
 #include "Interfaces/RenderFunctions.h"

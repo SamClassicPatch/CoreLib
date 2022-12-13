@@ -15,6 +15,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "StdH.h"
 
+#include "QueryMgr.h"
+
 #define MSPORT      28900
 #define BUFFSZ      8192
 #define BUFFSZSTR   4096

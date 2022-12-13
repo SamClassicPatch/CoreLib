@@ -15,12 +15,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #ifndef SE_INCL_GAMEAGENT_H
 #define SE_INCL_GAMEAGENT_H
+
 #ifdef PRAGMA_ONCE
   #pragma once
 #endif
-
-// [Cecil] Get game name directly
-extern CTString sam_strGameName;
 
 extern CTString ms_strGameAgentMS;
 extern CTString ms_strMSLegacy;
@@ -52,9 +50,6 @@ extern INDEX ms_bDebugOutput;
 // [Cecil] Commonly used symbols
 extern CSymbolPtr _piNetPort;
 extern CSymbolPtr _pstrLocalHost;
-
-// [Cecil] Initialize query manager
-void InitQuery(void);
 
 void MS_OnServerStart(void);
 void MS_OnServerEnd(void);

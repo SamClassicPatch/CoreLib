@@ -16,7 +16,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "StdH.h"
 
-// [Cecil] Use communication interface
+#include "QueryMgr.h"
 #include "Networking/CommInterface.h"
 
 #pragma comment(lib, "wsock32.lib")
@@ -65,7 +65,7 @@ CSymbolPtr _piNetPort;
 CSymbolPtr _pstrLocalHost;
 
 // [Cecil] Initialize query manager
-void InitQuery(void) {
+extern void InitQuery(void) {
   // Custom symbols
   _pShell->DeclareSymbol("persistent user CTString ms_strGameAgentMS;",  &ms_strGameAgentMS);
   _pShell->DeclareSymbol("persistent user CTString ms_strMSLegacy;",     &ms_strMSLegacy);
