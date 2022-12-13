@@ -16,6 +16,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef CECIL_INCL_NETWORKPACKETS_H
 #define CECIL_INCL_NETWORKPACKETS_H
 
+#ifdef PRAGMA_ONCE
+  #pragma once
+#endif
+
 #include "CommInterface.h"
 #include "StreamBlock.h"
 
@@ -73,7 +77,7 @@ class INetwork {
         ((CNetStream &)sso.sso_nsBuffer).AddBlock(nsb);
       }
     };
-    
+
     // Handle packets coming from a client (CServer::Handle alternative)
     static BOOL ServerHandle(CMessageDispatcher *pmd, INDEX iClient, CNetworkMessage &nmReceived);
 

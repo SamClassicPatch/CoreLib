@@ -16,6 +16,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef CECIL_INCL_NETWORKMODULES_H
 #define CECIL_INCL_NETWORKMODULES_H
 
+#ifdef PRAGMA_ONCE
+  #pragma once
+#endif
+
 #include "AntiFlood.h"
 #include "ChatCommands.h"
 #include "SplitScreenClients.h"

@@ -16,6 +16,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef CECIL_INCL_MESSAGEPROCESSING_H
 #define CECIL_INCL_MESSAGEPROCESSING_H
 
+#ifdef PRAGMA_ONCE
+  #pragma once
+#endif
+
 // Client requesting the session state
 BOOL OnConnectRemoteSessionStateRequest(INDEX iClient, CNetworkMessage &nmMessage);
 

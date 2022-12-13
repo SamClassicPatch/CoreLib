@@ -15,6 +15,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 // [Cecil] Definitions of unexported methods for working with ZIP archives from the engine
 
+#ifndef CECIL_INCL_UNZIP_DEFS_H
+#define CECIL_INCL_UNZIP_DEFS_H
+
+#ifdef PRAGMA_ONCE
+  #pragma once
+#endif
+
 #ifndef CORE_NO_ZLIB
 
 #include <Extras/zlib/zlib.h>
@@ -790,5 +797,7 @@ void UNZIPClose(INDEX iHandle)
   // Clear it
   _aHandlesEngine[iHandle].Clear();
 };
+
+#endif
 
 #endif

@@ -16,6 +16,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef CECIL_INCL_SPLITSCREENCLIENTS_H
 #define CECIL_INCL_SPLITSCREENCLIENTS_H
 
+#ifdef PRAGMA_ONCE
+  #pragma once
+#endif
+
 // How many local players are allowed per client
 extern INDEX ser_iMaxPlayersPerClient;
 

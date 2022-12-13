@@ -16,6 +16,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef CECIL_INCL_COMMINTERFACE_H
 #define CECIL_INCL_COMMINTERFACE_H
 
+#ifdef PRAGMA_ONCE
+  #pragma once
+#endif
+
 // Compatibility with SE1.05
 #if SE1_VER == 105
   #include <Engine/Network/Comm.h>

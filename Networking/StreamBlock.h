@@ -16,6 +16,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef CECIL_INCL_STREAMBLOCK_H
 #define CECIL_INCL_STREAMBLOCK_H
 
+#ifdef PRAGMA_ONCE
+  #pragma once
+#endif
+
 // A message block used for streaming data across network
 // Reimplementation of Serious Engine's CNetworkStreamBlock
 class CNetStreamBlock : public CNetworkMessage {
