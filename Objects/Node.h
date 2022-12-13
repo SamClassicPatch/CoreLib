@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <Engine/Base/Lists.h>
 
 //! Class that represents object type that can form trees.
-class CNode
+class CORE_API CNode
 {
   public:
     CNode *n_pParent;       // parent node

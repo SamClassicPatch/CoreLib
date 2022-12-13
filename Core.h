@@ -29,19 +29,22 @@ typedef UBYTE CSesPropsContainer[NET_MAXSESSIONPROPERTIES];
   #pragma comment(lib, "Core.lib")
 #endif
 
+// [Cecil] TEMP: Define as nothing for static libraries
+#define CORE_API
+
 // Import zlib
 #ifndef CORE_NO_ZLIB
   #pragma comment(lib, "zlib.lib")
 #endif
 
 // Pointer to the Game module
-extern CGame *_pGame;
+CORE_API extern CGame *_pGame;
 
 // Common game variables
-extern CTString sam_strFirstLevel;
-extern CTString sam_strIntroLevel;
-extern CTString sam_strGameName;
-extern CTString sam_strVersion;
+CORE_API extern CTString sam_strFirstLevel;
+CORE_API extern CTString sam_strIntroLevel;
+CORE_API extern CTString sam_strGameName;
+CORE_API extern CTString sam_strVersion;
 
 // Game-specific definitions
 #include "GameSpecific.h"
@@ -55,7 +58,7 @@ extern CTString sam_strVersion;
 #include "Interfaces/WorldFunctions.h"
 
 // Initialize Core module (always after Serious Engine!)
-void CECIL_InitCore(void);
+CORE_API void CECIL_InitCore(void);
 
 // Clean up Core module (always before Serious Engine!)
-void CECIL_EndCore(void);
+CORE_API void CECIL_EndCore(void);

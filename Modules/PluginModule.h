@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 
 // Abstract class that represents loaded plugin library
-class CPluginModule : public CSerial
+class CORE_API CPluginModule : public CSerial
 {
   public:
     // Plugin method types

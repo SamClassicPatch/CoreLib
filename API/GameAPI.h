@@ -25,7 +25,7 @@ class CHighScoreEntry; // #include <Game/Game.h>
 class CControls;       // #include <Game/Game.h>
 
 // API class for the Game library
-class CGameAPI {
+class CORE_API CGameAPI {
   public:
     // Network provider type for CGame
     enum ENetworkProvider {

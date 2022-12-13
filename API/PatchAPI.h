@@ -45,7 +45,7 @@ struct SFuncPatch {
 };
 
 // API for handling function patches
-class CPatchAPI {
+class CORE_API CPatchAPI {
   public:
     CDynamicContainer<SFuncPatch> cPatches; // Function patch storage
     

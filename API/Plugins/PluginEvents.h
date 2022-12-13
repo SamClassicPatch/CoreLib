@@ -21,7 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 
 // Abstract class for plugin events
-class IAbstractEvents {
+class CORE_API IAbstractEvents {
   public:
     // Container to utilize for registering and unregistering
     CDynamicContainer<IAbstractEvents> *_pHandlers;

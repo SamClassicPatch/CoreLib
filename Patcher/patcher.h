@@ -14,7 +14,7 @@
   #pragma warning(disable : 4311)
 #endif
 
-class CPatch
+class CORE_API CPatch
 {
   private:
     // Don't care about leaks, it is allocated only once

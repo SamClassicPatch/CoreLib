@@ -20,6 +20,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #pragma once
 #endif
 
+// Define empty API if not utilizing Core directly
+#ifndef CORE_API
+  #define CORE_API
+  #define CORE_POINTER_API "C" __declspec(dllexport)
+
+#else
+  #define CORE_POINTER_API CORE_API
+#endif
+
 // Current API version
 #define CORE_API_VERSION 3
 
@@ -29,7 +38,7 @@ class CGameAPI;
 class CPluginAPI;
 
 // Core API class
-class CCoreAPI {
+class CORE_API CCoreAPI {
   public:
     // Types of available applications on Serious Engine
     enum EAppType {
@@ -174,7 +183,7 @@ class CCoreAPI {
 // This variable can be used to access API of the EXE patch.
 // It needs to be defined separately for outside projects. Visit for more info:
 // https://github.com/SamClassicPatch/SuperProject/wiki/User-plugins-&-modding#api-utilization
-extern "C" __declspec(dllexport) CCoreAPI *_pCoreAPI;
+extern CORE_POINTER_API CCoreAPI *_pCoreAPI;
 
 // These methods should only be used outside the Classics patch project
 #ifndef CORE_EXPORTS

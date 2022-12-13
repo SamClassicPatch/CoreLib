@@ -45,26 +45,26 @@ inline INDEX GetProtocol(void) {
 };
 
 // [Cecil] Debug output for query
-extern INDEX ms_bDebugOutput;
+CORE_API extern INDEX ms_bDebugOutput;
 
 // [Cecil] Commonly used symbols
 extern CSymbolPtr _piNetPort;
 extern CSymbolPtr _pstrLocalHost;
 
-void MS_OnServerStart(void);
-void MS_OnServerEnd(void);
-void MS_OnServerUpdate(void);
-void MS_OnServerStateChanged(void);
+CORE_API void MS_OnServerStart(void);
+CORE_API void MS_OnServerEnd(void);
+CORE_API void MS_OnServerUpdate(void);
+CORE_API void MS_OnServerStateChanged(void);
 
 // Common Serverlist Enumeration
-void MS_SendHeartbeat(INDEX iChallenge);
+CORE_API void MS_SendHeartbeat(INDEX iChallenge);
 
-void MS_EnumTrigger(BOOL bInternet);
-void MS_EnumUpdate(void);
-void MS_EnumCancel(void);
+CORE_API void MS_EnumTrigger(BOOL bInternet);
+CORE_API void MS_EnumUpdate(void);
+CORE_API void MS_EnumCancel(void);
 
 // [Cecil] Replacement for CNetworkLibrary::EnumSessions
-void MS_EnumSessions(BOOL bInternet);
+CORE_API void MS_EnumSessions(BOOL bInternet);
 
 // GameAgent Master Server
 class CGameAgentQuery

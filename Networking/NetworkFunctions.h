@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "StreamBlock.h"
 
 // Interface of network methods
-class INetwork {
+class CORE_API INetwork {
   public:
     // New network packet types
     enum ENetPackets {

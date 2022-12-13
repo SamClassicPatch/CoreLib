@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 // A message block used for streaming data across network
 // Reimplementation of Serious Engine's CNetworkStreamBlock
-class CNetStreamBlock : public CNetworkMessage {
+class CORE_API CNetStreamBlock : public CNetworkMessage {
   public:
     CListNode nsb_lnInStream; // Node in list of blocks in stream
     INDEX nsb_iSequenceNumber; // Index for sorting in list
@@ -56,7 +56,7 @@ class CNetStreamBlock : public CNetworkMessage {
 
 // Stream of message blocks that can be sent across network
 // Reimplementation of Serious Engine's CNetworkStream
-class CNetStream {
+class CORE_API CNetStream {
   public:
     CListHead ns_lhBlocks; // List of blocks of this stream (higher sequences first)
 

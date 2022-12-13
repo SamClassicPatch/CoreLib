@@ -29,7 +29,7 @@ class CPluginStock;    // #include <CoreLib/Modules/PluginStock.h>
 class IAbstractEvents; // Included at the end
 
 // API for handling plugin modules
-class CPluginAPI {
+class CORE_API CPluginAPI {
   public:
     // Various plugin flags
     enum EPluginFlags {
