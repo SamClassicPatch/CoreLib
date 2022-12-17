@@ -42,6 +42,23 @@ extern CSymbolPtr _pstrLocalHost;
 // Internal query functionality
 class IQuery {
   public:
+  #pragma pack(push, 1)
+    // Structure housing an IP address with a port
+    struct Address {
+      union {
+        UBYTE aIP[4]; // IP address byte by byte
+        ULONG ulIP; // Full IP address
+      };
+      UWORD uwPort; // Port
+
+      // Print IP address
+      __forceinline void Print(CTString &str) const {
+        str.PrintF("%u.%u.%u.%u", aIP[0], aIP[1], aIP[2], aIP[3]);
+      };
+    };
+  #pragma pack(pop)
+
+  public:
     static sockaddr_in sinFrom;
     static char *pBuffer;
 

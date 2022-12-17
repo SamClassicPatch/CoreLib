@@ -1,4 +1,4 @@
-/* Copyright (c) 2002-2012 Croteam Ltd. 
+/* Copyright (c) 2002-2012 Croteam Ltd.
 This program is free software; you can redistribute it and/or modify
 it under the terms of version 2 of the GNU General Public License as published by
 the Free Software Foundation
@@ -16,714 +16,659 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "StdH.h"
 
 #include "QueryMgr.h"
-
-#define MSPORT      28900
-#define BUFFSZ      8192
-#define BUFFSZSTR   4096
-
-#define CLEANMSSRUFF1       closesocket(_sock); \
-                            WSACleanup();
-
-#define CLEANMSSRUFF2       if (cResponse) free (cResponse); \
-                            closesocket(_sock); \
-                            WSACleanup();
-
-#define CHK_BUFFSTRLEN if ((iLen < 0) || (iLen > BUFFSZSTR)) { \
-                        CPrintF("\n" \
-                            "Error: the used buffer is smaller than how much needed (%d < %d)\n" \
-                            "\n", iLen, BUFFSZSTR); \
-                            if (cMsstring) free (cMsstring); \
-                            closesocket(_sock); \
-                            WSACleanup(); \
-                        }
+#include "Interfaces/DataFunctions.h"
 
 extern unsigned char *gsseckey(u_char *secure, u_char *key, int enctype);
 extern u_int resolv(char *host);
 
-#define PCK         "\\gamename\\%s" \
-                    "\\enctype\\%d" \
-                    "\\validate\\%s" \
-                    "\\final\\" \
-                    "\\queryid\\1.1" \
-                    "\\list\\cmp" \
-                    "\\gamename\\%s" \
-                    "\\gamever\\1.05" \
-                    "%s%s" \
-                    "\\final\\"
+// Buffer lengths
+static const ULONG _ulBufferLength = 8192;
+static const ULONG _ulStringLength = 4096;
 
 // Buffer of online IP addresses
-static char *_szIPPortBuffer = NULL;
-static INDEX _iIPPortBufferLen = 0;
+static char *_pOnlineAddressBuffer = NULL;
+static INDEX _ctOnlineBuffer = 0;
+
+// Socket for interacting with the master server
+static SOCKET _iSocket;
 
 // Buffer of local IP addresses
-static char *_szIPPortBufferLocal = NULL;
-static INDEX _iIPPortBufferLocalLen = 0;
+static char *_pLocalAddressBuffer = NULL;
+static INDEX _ctLocalBuffer = 0;
 
 // Enumeration activation
 static BOOL _bActivated = FALSE;
 static BOOL _bActivatedLocal = FALSE;
 
-static void _LocalSearch()
-{
-  // make sure that there are no requests still stuck in buffer
+// Start local server search
+static void StartLocalSearch(void) {
+  // Reset requests
   IQuery::aRequests.Clear();
 
-  // we're not a server
+  // Not a server
   IQuery::bServer = FALSE;
   _pNetwork->ga_strEnumerationStatus = ".";
 
-  WORD     _wsaRequested;
-  WSADATA  wsaData;
-  PHOSTENT _phHostinfo;
-  ULONG    _uIP,*_pchIP = &_uIP;
-  USHORT   _uPort,*_pchPort = &_uPort;
-  INT      _iLen;
-  char     _cName[256],*_pch,_strFinal[8] = {0};
-
-  struct in_addr addr;
-
-  // make the buffer that we'll use for packet reading
-  if (_szIPPortBufferLocal != NULL) {
-     return;
-  }
-  _szIPPortBufferLocal = new char[1024];
-
-  // start WSA
-  _wsaRequested = MAKEWORD( 2, 2 );
-  if (WSAStartup(_wsaRequested, &wsaData) != 0) {
-    CPrintF("Error initializing winsock!\n");
-    if (_szIPPortBufferLocal != NULL) {
-      delete[] _szIPPortBufferLocal;
-    }
-    _szIPPortBufferLocal = NULL;
-    IQuery::CloseWinsock();
-    IQuery::bInitialized = FALSE;
-    _pNetwork->ga_bEnumerationChange = FALSE;
-    _pNetwork->ga_strEnumerationStatus = "";
-    WSACleanup();
-
+  // Buffer already exists
+  if (_pLocalAddressBuffer != NULL) {
     return;
   }
 
-  _pch = _szIPPortBufferLocal;
-  _iLen = 0;
-  strcpy(_strFinal,"\\final\\");
+  // Create a buffer for packet reading
+  _pLocalAddressBuffer = new char[1024];
 
-  if (gethostname ( _cName, sizeof(_cName)) == 0)
-  {
-    if ((_phHostinfo = gethostbyname(_cName)) != NULL)
-    {
-      int _iCount = 0;
-      while(_phHostinfo->h_addr_list[_iCount])
-      {
-        
-        addr.s_addr = *(u_long *) _phHostinfo->h_addr_list[_iCount];
-        _uIP = htonl(addr.s_addr);
-       
-        //CPrintF("%lu\n", _uIP);
-        
-        for (UINT uPort = 25601; uPort < 25622; ++uPort){
-          _uPort = htons(uPort);
-          memcpy(_pch,_pchIP,4);
-          _pch  +=4;
-          _iLen +=4;
-          memcpy(_pch,_pchPort,2);
-          _pch  +=2;
-          _iLen +=2;
+  // Start socket address
+  WSADATA wsaData;
+
+  if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
+    // Something went wrong
+    CPutString("Error initializing winsock!\n");
+
+    // Delete local buffer
+    if (_pLocalAddressBuffer != NULL) {
+      delete[] _pLocalAddressBuffer;
+    }
+    _pLocalAddressBuffer = NULL;
+
+    // Stop enumeration
+    IQuery::CloseWinsock();
+    IQuery::bInitialized = FALSE;
+
+    _pNetwork->ga_bEnumerationChange = FALSE;
+    _pNetwork->ga_strEnumerationStatus = "";
+
+    WSACleanup();
+    return;
+  }
+
+  // Buffer and its length
+  char *pBuffer = _pLocalAddressBuffer;
+  INDEX iLength = 0;
+
+  char strName[256];
+  struct in_addr addr;
+
+  // Get host by its name
+  if (gethostname(strName, sizeof(strName)) == 0) {
+    PHOSTENT phHostinfo = gethostbyname(strName);
+
+    if (phHostinfo != NULL) {
+      INDEX ct = 0;
+
+      // Go through the address list
+      while (phHostinfo->h_addr_list[ct] != NULL) {
+        // Get address IP
+        addr.s_addr = *(u_long *)phHostinfo->h_addr_list[ct++];
+        ULONG ulIP = htonl(addr.s_addr);
+
+        // Write 20 IP addresses with different ports
+        for (INDEX iPort = 25601; iPort <= 25621; iPort++) {
+          UWORD uwPort = htons(iPort);
+
+          memcpy(pBuffer, &ulIP, 4);
+          pBuffer += 4;
+          iLength += 4;
+
+          memcpy(pBuffer, &uwPort, 2);
+          pBuffer += 2;
+          iLength += 2;
         }
-        ++_iCount;
       }
 
-      memcpy(_pch,_strFinal, 7);
-      _pch  +=7;
-      _iLen +=7;
-      _pch[_iLen] = 0x00;
+      // Packet end
+      memcpy(pBuffer, "\\final\\", 7);
+      pBuffer += 7;
+      iLength += 7;
+
+      // End with a null terminator
+      pBuffer[iLength] = '\0';
     }
   }
 
-  _iIPPortBufferLocalLen = _iLen;
-
+  // Start local search
+  _ctLocalBuffer = iLength;
   _bActivatedLocal = TRUE;
+
   IQuery::bInitialized = TRUE;
   IQuery::InitWinsock();
-}
+};
+
+// Abort online server search
+static void AbortSearch(char *pFreeBuffer = NULL) {
+  // Free some buffer and close the socket
+  if (pFreeBuffer != NULL) {
+    free(pFreeBuffer);
+  }
+
+  closesocket(_iSocket);
+  WSACleanup();
+};
+
+// Start internet server search
+static void StartInternetSearch(void) {
+  // Reset requests
+  IQuery::aRequests.Clear();
+
+  // Not a server
+  IQuery::bServer = FALSE;
+  _pNetwork->ga_strEnumerationStatus = ".";
+
+  // Start socket address
+  WSADATA wsaData;
+
+  if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
+    // Something went wrong
+    CPutString("Error initializing winsock!\n");
+    return;
+  }
+
+  // Open a socket
+  _iSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+
+  if (_iSocket < 0) {
+    CPutString("Error creating TCP socket!\n");
+    WSACleanup();
+    return;
+  }
+
+  // Connect to the master server
+  extern CTString ms_strMSLegacy;
+  char *strMasterServer = ms_strMSLegacy.str_String;
+
+  struct sockaddr_in addr;
+  addr.sin_addr.s_addr = resolv(strMasterServer);
+  addr.sin_port = htons(28900);
+  addr.sin_family = AF_INET;
+
+  if (connect(_iSocket, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
+    CPutString("Error connecting to TCP socket!\n");
+    AbortSearch();
+    return;
+  }
+
+  INDEX iLength;
+  INDEX iReceived;
+
+  {
+    // Allocate memory for receiving a response
+    char *strResponse = (char *)malloc(_ulStringLength + 1);
+
+    if (strResponse == NULL) {
+      CPutString("Error allocating memory buffer!\n");
+      AbortSearch();
+      return;
+    }
+
+    // Receive response from the master server with the secret key
+    iReceived = recv(_iSocket, strResponse, _ulStringLength, 0);
+
+    if (iReceived < 0) {
+      CPutString("Error reading from TCP socket!\n");
+      AbortSearch(strResponse);
+      return;
+    }
+
+    // Terminate the response
+    iLength = iReceived;
+    strResponse[iLength] = '\0';
+
+    // Check for a secure key
+    if (strstr(strResponse, "\\secure\\") == NULL) {
+      CPutString("Invalid master server response!\n");
+      AbortSearch(strResponse);
+      return;
+    }
+
+    // Get secret key for validation
+    UBYTE *pSecretKey = gsseckey((UBYTE *)strResponse + 15, (UBYTE *)SAM_MS_KEY, 0);
+
+    // Reset the string for sending a response
+    memset(strResponse, 0, _ulStringLength + 1);
+
+    iLength = _snprintf(strResponse, _ulStringLength,
+      "\\gamename\\%s\\enctype\\%d\\validate\\%s\\final\\"
+      "\\queryid\\1.1\\list\\cmp\\gamename\\%s\\gamever\\1.05\\final\\",
+      SAM_MS_NAME, 0, pSecretKey, SAM_MS_NAME);
+
+    // Check the buffer
+    if (iLength < 0 || iLength > _ulStringLength) {
+      CPrintF("\nError composing a response to the master server (length: %d/%d)\n\n", iLength, _ulStringLength);
+      AbortSearch(strResponse);
+      return;
+    }
+
+    // Send response to the master server
+    if (send(_iSocket, strResponse, iLength, 0) < 0) {
+      CPutString("Error reading from TCP socket!\n");
+      AbortSearch(strResponse);
+      return;
+    }
+
+    // Delete response string
+    if (strResponse != NULL) {
+      free(strResponse);
+    }
+  }
+
+  // Buffer already exists
+  if (_pOnlineAddressBuffer != NULL) {
+    AbortSearch();
+    return;
+  }
+
+  // Allocate memory for a buffer
+  _pOnlineAddressBuffer = (char *)malloc(_ulBufferLength + 1);
+
+  if (_pOnlineAddressBuffer == NULL) {
+    CPutString("Error reading from TCP socket!\n");
+    AbortSearch();
+    return;
+  }
+
+  INDEX iNewLength = _ulBufferLength;
+  iLength = 0;
+
+  // Receive encoded data after sending the validation key
+  while ((iReceived = recv(_iSocket, _pOnlineAddressBuffer + iLength, iNewLength - iLength, 0)) > 0) {
+    // Advance
+    iLength += iReceived;
+
+    // If current length exceeds the buffer size
+    if (iLength >= iNewLength) {
+      // Reallocate the buffer
+      iNewLength += _ulBufferLength;
+      _pOnlineAddressBuffer = (char *)realloc(_pOnlineAddressBuffer, iNewLength);
+
+      if (_pOnlineAddressBuffer == NULL) {
+        // Couldn't reallocate the buffer
+        CPutString("Error reallocating memory buffer!\n");
+        AbortSearch(_pOnlineAddressBuffer);
+        return;
+      }
+    }
+  }
+
+  AbortSearch();
+
+  // Start internet search
+  _ctOnlineBuffer = iLength;
+  _bActivated = TRUE;
+
+  IQuery::bInitialized = TRUE;
+  IQuery::InitWinsock();
+};
+
+static void ParseStatusResponse(sockaddr_in &sinClient, BOOL bIgnorePing) {
+  // Skip separator at the beginning
+  const char *strData = IQuery::pBuffer + 1;
+
+  // Key and value strings
+  CTString strKey;
+  CTString strValue;
+
+  // Values for reading
+  CTString strGameName, strGameVer, strLocation, strHostName, strHostPort, strMapName, strGameType, strActiveMod;
+  INDEX ctPlayers, ctMaxPlayers;
+
+  BOOL bReadValue = FALSE;
+
+  while (*strData != '\0')
+  {
+    switch (*strData) {
+      // Data separator
+      case '\\': {
+        if (bReadValue && strKey != "gamemode") {
+          if (strKey == "gamename") {
+            strGameName = strValue;
+
+          } else if (strKey == "gamever") {
+            strGameVer = strValue;
+
+          } else if (strKey == "location") {
+            strLocation = strValue;
+
+          } else if (strKey == "hostname") {
+            strHostName = strValue;
+
+          } else if (strKey == "hostport") {
+            strHostPort = strValue;
+
+          } else if (strKey == "mapname") {
+            strMapName = strValue;
+
+          } else if (strKey == "gametype") {
+            strGameType = strValue;
+
+          } else if (strKey == "activemod") {
+            strActiveMod = strValue;
+
+          } else if (strKey == "numplayers") {
+            ctPlayers = atoi(strValue);
+
+          } else if (strKey == "maxplayers") {
+            ctMaxPlayers = atoi(strValue);
+          }
+
+          // Reset key and value
+          strKey = "";
+          strValue = "";
+        }
+
+        // Toggle between the key and the value
+        bReadValue = !bReadValue;
+
+        // Proceed
+        strData++;
+      } break;
+
+      // Data
+      default: {
+        // Extract substring until a separator or the end
+        ULONG ulSep = IData::FindChar(strData, '\\');
+        CTString strExtracted = IData::ExtractSubstr(strData, 0, ulSep);
+
+        // Set new key or value
+        if (bReadValue) {
+          strValue = strExtracted;
+        } else {
+          strKey = strExtracted;
+        }
+
+        // Advance the packet data
+        strData += strExtracted.Length();
+      } break;
+    }
+  }
+
+  // Set active mod as the game name
+  if (strActiveMod != "") {
+    strGameName = strActiveMod;
+  }
+
+  // Get request time from some server request
+  CTimerValue tvPingTime = SServerRequest::PopRequestTime(sinClient);
+
+  // Get ping in milliseconds
+  __int64 llPingTime = 0;
+
+  if (!bIgnorePing && tvPingTime.tv_llValue != -1) {
+    llPingTime = (_pTimer->GetHighPrecisionTimer() - tvPingTime).GetMilliseconds();
+  }
+
+  if (bIgnorePing || (llPingTime > 0 && llPingTime < 2500000)) {
+    // Create a new server listing
+    CNetworkSession &ns = *new CNetworkSession;
+    _pNetwork->ga_lhEnumeratedSessions.AddTail(ns.ns_lnNode);
+
+    ns.ns_strAddress.PrintF("%s:%d", inet_ntoa(sinClient.sin_addr), htons(sinClient.sin_port) - 1);
+    ns.ns_tmPing = FLOAT(llPingTime) / 1000.0f;
+
+    ns.ns_strSession = strHostName;
+    ns.ns_strWorld = strMapName;
+    ns.ns_ctPlayers = ctPlayers;
+    ns.ns_ctMaxPlayers = ctMaxPlayers;
+
+    ns.ns_strGameType = strGameType;
+    ns.ns_strMod = strGameName;
+    ns.ns_strVer = strGameVer;
+  }
+};
+
+// Receive server data for enumeration
+static BOOL ReceiveServerData(SOCKET &iSocketUDP, BOOL bLocal) {
+  // Define empty read set with a socket
+  fd_set fdsReadUDP;
+  FD_ZERO(&fdsReadUDP);
+  FD_SET(iSocketUDP, &fdsReadUDP);
+
+  // Define a time value
+  struct timeval timeoutUDP;
+  timeoutUDP.tv_sec = 0; // 0 second timeout
+  timeoutUDP.tv_usec = (bLocal ? 250000 : 50000); // Add 0.25 or 0.05 seconds
+
+  int iNumber = select(iSocketUDP + 1, &fdsReadUDP, NULL, NULL, &timeoutUDP);
+
+  if (iNumber <= 0) {
+    return FALSE;
+  }
+
+  if (ms_bDebugOutput) {
+    CPrintF("Received %d answers\n", iNumber);
+  }
+
+  // Receive data
+  sockaddr_in sinClient;
+  int iClientLength = sizeof(sinClient);
+
+  INDEX iReceived = recvfrom(iSocketUDP, IQuery::pBuffer, 2048, 0, (sockaddr *)&sinClient, &iClientLength);
+  FD_CLR(iSocketUDP, &fdsReadUDP);
+
+  // If received enough data
+  if (iReceived != SOCKET_ERROR && iReceived > 100) {
+    // End with a null terminator
+    IQuery::pBuffer[iReceived] = '\0';
+
+    // Check game name
+    if (strstr(IQuery::pBuffer, "\\gamename\\" SAM_MS_NAME "\\") == NULL) {
+      // Terminate upon unknown response
+      CPutString("Unknown query server response!\n");
+
+      if (bLocal) {
+        if (_pLocalAddressBuffer != NULL) {
+          delete[] _pLocalAddressBuffer;
+        }
+        _pLocalAddressBuffer = NULL;
+
+        WSACleanup();
+      }
+      return TRUE;
+
+    } else {
+      // Ignore ping in local networks
+      ParseStatusResponse(sinClient, bLocal);
+    }
+
+  } else {
+    // Search for a request to remove it
+    SServerRequest *preq = SServerRequest::Find(sinClient);
+
+    if (preq != NULL) {
+      IQuery::aRequests.Delete(preq);
+    }
+  }
+
+  return FALSE;
+};
+
+static DWORD WINAPI MasterServerThread(LPVOID lpParam) {
+  IQuery::SetStatus("");
+
+  // Create a UDP socket
+  SOCKET iSocketUDP = socket(AF_INET, SOCK_DGRAM, 0);
+
+  if (iSocketUDP == INVALID_SOCKET) {
+    WSACleanup();
+    return -1;
+  }
+
+  const INDEX iAddrLength = 6;
+  const char *pServers = _pOnlineAddressBuffer;
+
+  while (_ctOnlineBuffer >= iAddrLength) {
+    // Doesn't end with a final tag
+    if (!strncmp((char *)pServers, "\\final\\", 7)) {
+      break;
+    }
+
+    // Get address at the current position
+    IQuery::Address addr = *(IQuery::Address *)pServers;
+
+    // Make an address string
+    CTString strIP;
+    addr.Print(strIP);
+
+    // Socket address for the server
+    sockaddr_in sinServer;
+    sinServer.sin_family = AF_INET;
+    sinServer.sin_addr.s_addr = inet_addr(strIP);
+    sinServer.sin_port = addr.uwPort;
+
+    // Add a new server status request
+    SServerRequest::AddRequest(sinServer);
+
+    // Send packet to the server
+    sendto(iSocketUDP, "\\status\\", 8, 0, (sockaddr *)&sinServer, sizeof(sinServer));
+
+    // Receive server data for enumeration
+    if (ReceiveServerData(iSocketUDP, FALSE)) {
+      return -1;
+    }
+
+    // Get next address
+    pServers += iAddrLength;
+    _ctOnlineBuffer -= iAddrLength;
+  }
+
+  // Delete buffer
+  if (_pOnlineAddressBuffer) {
+    free(_pOnlineAddressBuffer);
+  }
+  _pOnlineAddressBuffer = NULL;
+
+  // Stop enumeration
+  closesocket(iSocketUDP);
+
+  IQuery::CloseWinsock();
+  IQuery::bInitialized = FALSE;
+
+  _pNetwork->ga_bEnumerationChange = FALSE;
+  WSACleanup();
+
+  return 0;
+};
+
+static DWORD WINAPI LocalNetworkThread(LPVOID lpParam) {
+  // Create a UDP socket
+  SOCKET iSocketUDP = socket(AF_INET, SOCK_DGRAM, 0);
+
+  if (iSocketUDP == INVALID_SOCKET) {
+    WSACleanup();
+    _pNetwork->ga_strEnumerationStatus = "";
+
+    // Delete local buffer
+    if (_pLocalAddressBuffer != NULL) {
+      delete[] _pLocalAddressBuffer;
+    }
+    _pLocalAddressBuffer = NULL;
+
+    return -1;
+  }
+
+  // Allow receiving UDP broadcast
+  BOOL bOpt = TRUE;
+
+  if (setsockopt(iSocketUDP, SOL_SOCKET, SO_BROADCAST, (char *)&bOpt, sizeof(bOpt)) != 0) {
+    return -1;
+  }
+
+  const INDEX iAddrLength = 6;
+  const char *pServers = _pLocalAddressBuffer;
+
+  struct sockaddr_in saddr;
+  saddr.sin_family = AF_INET;
+  saddr.sin_addr.s_addr = 0xFFFFFFFF;
+
+  for (INDEX i = 25601 ; i <= 25621; i++) {
+    saddr.sin_port = htons(i);
+    sendto(iSocketUDP, "\\status\\", 8, 0, (sockaddr *)&saddr, sizeof(saddr));
+  }
+
+  //while (_ctLocalBuffer >= iAddrLength)
+  {
+    // Doesn't end with a final tag
+    /*if (strncmp(pServerIP, "\\final\\", 7) == 0) {
+      break;
+    }*/
+
+    // Get address at the current position
+    IQuery::Address addr = *(IQuery::Address *)pServers;
+
+    // Make a reverse address string
+    CTString strIP;
+    addr.Print(strIP);
+
+    // Socket address for the server
+    /*sockaddr_in sinServer;
+    sinServer.sin_family = AF_INET;
+    sinServer.sin_addr.s_addr = inet_addr(strIP);
+    sinServer.sin_port = addr.uwPort;
+
+    // Add a new server status request
+    SServerRequest::AddRequest(sinServer);
+
+    // Send packet to the server
+    sendto(iSocketUDP, "\\status\\", 8, 0, (sockaddr *)&sinServer, sizeof(sinServer));*/
+
+    // Receive server data for enumeration
+    if (ReceiveServerData(iSocketUDP, TRUE)) {
+      return -1;
+    }
+
+    // Get next address
+    //pServerIP += iAddrLength;
+    //_ctLocalBuffer -= iAddrLength;
+  }
+
+  // Delete local buffer
+  if (_pLocalAddressBuffer != NULL) {
+    delete[] _pLocalAddressBuffer;
+  }
+  _pLocalAddressBuffer = NULL;
+
+  // Stop enumeration
+  closesocket(iSocketUDP);
+
+  IQuery::CloseWinsock();
+  IQuery::bInitialized = FALSE;
+
+  _pNetwork->ga_bEnumerationChange = FALSE;
+  _pNetwork->ga_strEnumerationStatus = "";
+
+  WSACleanup();
+  return 0;
+};
 
 void CLegacyQuery::EnumTrigger(BOOL bInternet)
 {
-  // Local Search with Legacy Protocol
-  if (!bInternet) {
-    _LocalSearch();
-    return;
-
-  // Internet Search
+  if (bInternet) {
+    StartInternetSearch();
   } else {
-
-    // make sure that there are no requests still stuck in buffer
-    IQuery::aRequests.Clear();
-    // we're not a server
-    IQuery::bServer = FALSE;
-    _pNetwork->ga_strEnumerationStatus = ".";
-
-    struct  sockaddr_in peer;
-
-    SOCKET  _sock               = NULL;
-    u_int   uiMSIP;
-    int     iErr,
-            iLen,
-            iDynsz,
-            iEnctype             = 0;
-    u_short usMSport             = MSPORT;
-
-    u_char  ucGamekey[]          = {SAM_MS_KEY},
-            ucGamestr[]          = {SAM_MS_NAME},
-            *ucSec               = NULL,
-            *ucKey               = NULL;
-
-    char    *cFilter             = "",
-            *cWhere              = "",
-            cMS[128]             = {0},
-            *cResponse           = NULL,
-            *cMsstring           = NULL,
-            *cSec                = NULL;
-
-    extern CTString ms_strMSLegacy;
-    strcpy(cMS, ms_strMSLegacy);
-
-    WSADATA wsadata;
-    if (WSAStartup(MAKEWORD(2,2), &wsadata) != 0) {
-      CPutString("Error initializing winsock!\n");
-      return;
-    }
-
-    /* Open a socket and connect to the Master server */
-
-    peer.sin_addr.s_addr = uiMSIP = resolv(cMS);
-    peer.sin_port        = htons(usMSport);
-    peer.sin_family      = AF_INET;
-
-    _sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-    if (_sock < 0) {
-      CPutString("Error creating TCP socket!\n");
-      WSACleanup();
-      return;
-    }
-    if (connect(_sock, (struct sockaddr *)&peer, sizeof(peer)) < 0) {
-      CPutString("Error connecting to TCP socket!\n");
-      CLEANMSSRUFF1;
-      return;
-    }
-
-    /* Allocate memory for a buffer and get a pointer to it */
-
-    cResponse = (char*) malloc(BUFFSZSTR + 1);
-    if (!cResponse) {
-      CPutString("Error initializing memory buffer!\n");
-      CLEANMSSRUFF1;
-      return;
-    }
-
-    // Master Server should respond to the game.
-    /* Reading response from Master Server - returns the string with the secret key */
-
-    iLen = 0;
-    iErr = recv(_sock, (char*)cResponse + iLen, BUFFSZSTR - iLen, 0);
-    if (iErr < 0) {
-      CPutString("Error reading from TCP socket!\n");
-      CLEANMSSRUFF2;
-      return;
-    }
-
-    iLen += iErr;
-    cResponse[iLen] = 0x00; // Terminate the response.
-
-    /* Allocate memory for a buffer and get a pointer to it */
-
-    ucSec = (u_char*) malloc(BUFFSZSTR + 1);
-    if (!ucSec) {
-      CPutString("Error initializing memory buffer!\n");
-      CLEANMSSRUFF2;
-      return;
-    }
-    memcpy ( ucSec, cResponse,  BUFFSZSTR);
-    ucSec[iLen] = 0x00;
-
-    /* Geting the secret key from a string */
-
-    cSec = strstr(cResponse, "\\secure\\");
-    if (!cSec) {
-      CPutString("Not valid master server response!\n");
-      CLEANMSSRUFF2;
-      return;
-    } else {
-        ucSec  += 15;
-
-    /* Creating a key for authentication (Validate key) */
-
-        ucKey = gsseckey(ucSec, ucGamekey, iEnctype);
-    }
-
-    ucSec -= 15;
-    if (cResponse) free (cResponse);
-    if (ucSec) free (ucSec);
-
-    /* Generate a string for the response (to Master Server) with the specified (Validate ucKey) */
-
-    cMsstring = (char*) malloc(BUFFSZSTR + 1);
-    if (!cMsstring) {
-      CPutString("Not valid master server response!\n");
-      CLEANMSSRUFF1;
-      return;
-    }
-
-    iLen = _snprintf(
-        cMsstring,
-        BUFFSZSTR,
-        PCK,
-        ucGamestr,
-        iEnctype,
-        ucKey,
-        ucGamestr,
-        cWhere,
-        cFilter);
-
-    /* Check the buffer */
-
-    CHK_BUFFSTRLEN;
-
-    /* The string sent to master server */
-
-    if (send(_sock,cMsstring, iLen, 0) < 0){
-      CPutString("Error reading from TCP socket!\n");
-      if (cMsstring) free (cMsstring);
-      CLEANMSSRUFF1;
-      return;
-    }
-    if (cMsstring) free (cMsstring);
-
-    /* Allocate memory for a buffer and get a pointer to it */
-
-    if (_szIPPortBuffer ) {
-      CLEANMSSRUFF1;
-      return;
-    };
-
-    _szIPPortBuffer = (char*) malloc(BUFFSZ + 1);
-    if (!_szIPPortBuffer) {
-      CPutString("Error reading from TCP socket!\n");
-      CLEANMSSRUFF1;
-      return;
-    }
-    iDynsz = BUFFSZ;
-
-    /* The received encoded data after sending the string (Validate key) */
-
-    iLen = 0;
-    while((iErr = recv(_sock, _szIPPortBuffer + iLen, iDynsz - iLen, 0)) > 0) {
-      iLen += iErr;
-      if (iLen >= iDynsz) {
-        iDynsz += BUFFSZ;
-        _szIPPortBuffer = (char*)realloc(_szIPPortBuffer, iDynsz);
-        if (!_szIPPortBuffer) {
-          CPutString("Error reallocation memory buffer!\n");
-          if (_szIPPortBuffer) free (_szIPPortBuffer);
-          CLEANMSSRUFF1;
-          return;
-        }
-      }
-    }
-
-    CLEANMSSRUFF1;
-    _iIPPortBufferLen = iLen;
-
-    _bActivated = TRUE;
-    IQuery::bInitialized = TRUE;
-    IQuery::InitWinsock();
-     
+    StartLocalSearch();
   }
-}
+};
 
-static DWORD WINAPI _MS_Thread(LPVOID lpParam);
-static DWORD WINAPI _LocalNet_Thread(LPVOID lpParam);
+void CLegacyQuery::EnumUpdate(void) {
+  DWORD dwThreadId;
 
-void CLegacyQuery::EnumUpdate(void)
-{
-  if (_bActivated)
-  {
-    HANDLE  _hThread;
-    DWORD   _dwThreadId;
+  // Start master server thread
+  if (_bActivated) {
+    HANDLE hThread = CreateThread(NULL, 0, MasterServerThread, 0, 0, &dwThreadId);
 
-    _hThread = CreateThread(NULL, 0, _MS_Thread, 0, 0, &_dwThreadId);
-    if (_hThread != NULL) {
-      CloseHandle(_hThread);
+    if (hThread != NULL) {
+      CloseHandle(hThread);
     }
+
     _bActivated = FALSE;
   }
 
-  if (_bActivatedLocal)
-  {
-    HANDLE  _hThread;
-    DWORD   _dwThreadId;
+  // Start local network thread
+  if (_bActivatedLocal) {
+    HANDLE hThread = CreateThread(NULL, 0, LocalNetworkThread, 0, 0, &dwThreadId);
 
-    _hThread = CreateThread(NULL, 0, _LocalNet_Thread, 0, 0, &_dwThreadId);
-    if (_hThread != NULL) {
-      CloseHandle(_hThread);
+    if (hThread != NULL) {
+      CloseHandle(hThread);
     }
 
     _bActivatedLocal = FALSE;
   }
-}
-
-static void ParseStatusResponse(sockaddr_in &_sinClient, BOOL bIgnorePing)
-{
-  CTString strPlayers;
-  CTString strMaxPlayers;
-  CTString strLevel;
-  CTString strGameType;
-  CTString strVersion;
-  CTString strGameName;
-  CTString strSessionName;
-
-  CTString strGamePort;
-  CTString strServerLocation;
-  CTString strGameMode;
-  CTString strActiveMod;
-
-  CHAR* pszPacket = IQuery::pBuffer + 1; // we do +1 because the first character is always '\', which we don't care about.
-
-  BOOL bReadValue = FALSE;
-  CTString strKey;
-  CTString strValue;
-
-  while(*pszPacket != 0)
-  {
-    switch (*pszPacket)
-    {
-      case '\\': {
-        if (strKey != "gamemode") {
-          if (bReadValue) {
-            // we're done reading the value, check which key it was
-            if (strKey == "gamename") {
-              strGameName = strValue;
-            } else if (strKey == "gamever") {
-              strVersion = strValue;
-            } else if (strKey == "location") {
-              strServerLocation = strValue;
-            } else if (strKey == "hostname") {
-              strSessionName = strValue;
-            } else if (strKey == "hostport") {
-              strGamePort = strValue;
-            } else if (strKey == "mapname") {
-              strLevel = strValue;
-            } else if (strKey == "gametype") {
-              strGameType = strValue;
-            } else if (strKey == "activemod") {
-              strActiveMod = strValue;
-            } else if (strKey == "numplayers") {
-              strPlayers = strValue;
-            } else if (strKey == "maxplayers") {
-              strMaxPlayers = strValue;
-            } else {
-              //CPrintF("Unknown MSLegacy parameter key '%s'!\n", strKey);
-            }
-            // reset temporary holders
-            strKey = "";
-            strValue = "";
-          }
-        }
-        bReadValue = !bReadValue;
-      } break;
-
-      default: {
-        // read into the value or into the key, depending where we are
-        if (bReadValue) {
-          strValue.InsertChar(strValue.Length(), *pszPacket);
-        } else {
-          strKey.InsertChar(strKey.Length(), *pszPacket);
-        }
-      } break;
-    }
-
-    // move to next character
-    pszPacket++;
-  }
-
-  // check if we still have a maxplayers to back up
-  if (strKey == "gamemode") {
-      strGameMode = strValue;
-  }
-
-  if (strActiveMod != "") {
-      strGameName = strActiveMod;
-  }
-
-  CTimerValue tvPing = SServerRequest::PopRequestTime(_sinClient);
-  __int64 tmPing = 0;
-
-  if (!bIgnorePing && tvPing.tv_llValue != -1) {
-    tmPing = (_pTimer->GetHighPrecisionTimer() - tvPing).GetMilliseconds();
-  }
-
-  if (bIgnorePing || (tmPing > 0 && tmPing < 2500000))
-  {
-    // insert the server into the serverlist
-    CNetworkSession &ns = *new CNetworkSession;
-    _pNetwork->ga_lhEnumeratedSessions.AddTail(ns.ns_lnNode);
-
-    // add the server to the serverlist
-    ns.ns_strSession = strSessionName;
-    ns.ns_strAddress = inet_ntoa(_sinClient.sin_addr) + CTString(":") + CTString(0, "%d", htons(_sinClient.sin_port) - 1);
-    ns.ns_tmPing = (tmPing / 1000.0f);
-    ns.ns_strWorld = strLevel;
-    ns.ns_ctPlayers = atoi(strPlayers);
-    ns.ns_ctMaxPlayers = atoi(strMaxPlayers);
-    ns.ns_strGameType = strGameType;
-    ns.ns_strMod = strGameName;
-    ns.ns_strVer = strVersion;
-  }
-}
-
-DWORD WINAPI _MS_Thread(LPVOID lpParam)
-{
-  SOCKET _sockudp = NULL;
-  struct _sIPPort {
-    UBYTE bFirst;
-    UBYTE bSecond;
-    UBYTE bThird;
-    UBYTE bFourth;
-    USHORT iPort;
-  };
-
-  IQuery::SetStatus("");
-  _sockudp = socket(AF_INET, SOCK_DGRAM, 0);
-
-  if (_sockudp == INVALID_SOCKET){
-    WSACleanup();
-    return -1;
-  }
-
-  _sIPPort* pServerIP = (_sIPPort*)(_szIPPortBuffer);
-  while(_iIPPortBufferLen >= 6)
-  {
-    if (!strncmp((char *)pServerIP, "\\final\\", 7)) {
-      break;
-    }
-
-    _sIPPort ip = *pServerIP;
-
-    CTString strIP;
-    strIP.PrintF("%d.%d.%d.%d", ip.bFirst, ip.bSecond, ip.bThird, ip.bFourth);
-
-    sockaddr_in sinServer;
-    sinServer.sin_family = AF_INET;
-    sinServer.sin_addr.s_addr = inet_addr(strIP);
-    sinServer.sin_port = ip.iPort;
-
-    // insert server status request into container
-    SServerRequest::AddRequest(sinServer);
-
-    // send packet to server
-    sendto(_sockudp,"\\status\\",8,0,
-        (sockaddr *) &sinServer, sizeof(sinServer));
-
-    sockaddr_in _sinClient;
-    int _iClientLength = sizeof(_sinClient);
-
-    fd_set readfds_udp;                         // declare a read set
-    struct timeval timeout_udp;                 // declare a timeval for our timer
-    int iRet = -1;
-
-    FD_ZERO(&readfds_udp);                      // zero out the read set
-    FD_SET(_sockudp, &readfds_udp);                // add socket to the read set
-    timeout_udp.tv_sec = 0;                     // timeout = 0 seconds
-    timeout_udp.tv_usec = 50000;               // timeout += 0.05 seconds
-    int _iN = select(_sockudp + 1, &readfds_udp, NULL, NULL, &timeout_udp);
-
-    if (_iN > 0)
-    {
-      /** do recvfrom stuff **/
-      iRet =  recvfrom(_sockudp, IQuery::pBuffer, 2048, 0, (sockaddr*)&_sinClient, &_iClientLength);
-      FD_CLR(_sockudp, &readfds_udp);
-
-      if (iRet != -1 && iRet > 100 && iRet != SOCKET_ERROR) {
-        // null terminate the buffer
-        IQuery::pBuffer[iRet] = 0;
-        char *sPch = NULL;
-        sPch = strstr(IQuery::pBuffer, "\\gamename\\" SAM_MS_NAME "\\");
-
-        if (!sPch) {
-          CPutString("Unknown query server response!\n");
-          return -1;
-        } else {
-          ParseStatusResponse(_sinClient, FALSE);
-        }
-
-      } else {
-        SServerRequest *preq = SServerRequest::Find(_sinClient);
-
-        if (preq != NULL) {
-          IQuery::aRequests.Delete(preq);
-        }
-      }
-    }
-
-    pServerIP++;
-    _iIPPortBufferLen -= 6;
-  }
-
-  if (_szIPPortBuffer) free (_szIPPortBuffer);
-  _szIPPortBuffer = NULL;
-
-  closesocket(_sockudp);
-  IQuery::InitWinsock();
-  IQuery::bInitialized = FALSE;
-  _pNetwork->ga_bEnumerationChange = FALSE;
-  WSACleanup();
-
-  return 0;
-}
-
-DWORD WINAPI _LocalNet_Thread(LPVOID lpParam)
-{
-  SOCKET _sockudp = NULL;
-  struct _sIPPort {
-    UBYTE bFirst;
-    UBYTE bSecond;
-    UBYTE bThird;
-    UBYTE bFourth;
-    USHORT iPort;
-  };
-
-  _sockudp = socket(AF_INET, SOCK_DGRAM, 0);
-
-  if (_sockudp == INVALID_SOCKET)
-  {
-    WSACleanup();
-    _pNetwork->ga_strEnumerationStatus = "";
-
-    if (_szIPPortBufferLocal != NULL) {
-      delete[] _szIPPortBufferLocal;
-    }
-
-    _szIPPortBufferLocal = NULL;
-    return -1;
-  }
-
-  _sIPPort* pServerIP = (_sIPPort*)(_szIPPortBufferLocal);
-  
-  int optval = 1;
-  if (setsockopt(_sockudp, SOL_SOCKET, SO_BROADCAST, (char *)&optval, sizeof(optval)) != 0)
-  {
-    return -1;
-  }
-
-  struct   sockaddr_in saddr;
-  saddr.sin_family = AF_INET;
-  saddr.sin_addr.s_addr = 0xFFFFFFFF;
-  
-  unsigned short startport = 25601;
-  unsigned short endport =  startport + 20;
-  
-  for (int i = startport ; i <= endport ; i += 1)
-  {
-    saddr.sin_port = htons(i);
-    sendto(_sockudp, "\\status\\", 8, 0, (sockaddr *) &saddr, sizeof(saddr));
-  }
-
-  //while(_iIPPortBufferLocalLen >= 6)
-  {
-    /*if (!strncmp((char *)pServerIP, "\\final\\", 7)) {
-      break;
-    }*/
-
-    _sIPPort ip = *pServerIP;
-
-    CTString strIP;
-    strIP.PrintF("%d.%d.%d.%d", ip.bFourth, ip.bThird, ip.bSecond, ip.bFirst);
-
-    /*
-    sockaddr_in sinServer;
-    sinServer.sin_family = AF_INET;
-    sinServer.sin_addr.s_addr = inet_addr(strIP);
-    sinServer.sin_port = ip.iPort;
-    */
-
-    // insert server status request into container
-    /*
-    CServerRequest &sreq = ga_asrRequests.Push();
-    sreq.sr_ulAddress = sinServer.sin_addr.s_addr;
-    sreq.sr_iPort = sinServer.sin_port;
-    sreq.sr_tmRequestTime = _pTimer->GetHighPrecisionTimer().GetMilliseconds();*/
-
-    // send packet to server
-    //sendto(_sockudp,"\\status\\",8,0, (sockaddr *) &sinServer, sizeof(sinServer));
-
-    sockaddr_in _sinClient;
-    int _iClientLength = sizeof(_sinClient);
-
-    fd_set readfds_udp;                         // declare a read set
-    struct timeval timeout_udp;                 // declare a timeval for our timer
-    int iRet = -1;
-
-    FD_ZERO(&readfds_udp);                      // zero out the read set
-    FD_SET(_sockudp, &readfds_udp);             // add socket to the read set
-    timeout_udp.tv_sec = 0;                     // timeout = 0 seconds
-    timeout_udp.tv_usec = 250000; // 0.25 sec //50000;                // timeout += 0.05 seconds
-
-    int _iN = select(_sockudp + 1, &readfds_udp, NULL, NULL, &timeout_udp);
-    
-    //CPrintF("Received %d answers.\n", _iN);
-
-    if (_iN > 0)
-    {
-      /** do recvfrom stuff **/
-      iRet =  recvfrom(_sockudp, IQuery::pBuffer, 2048, 0, (sockaddr*)&_sinClient, &_iClientLength);
-      FD_CLR(_sockudp, &readfds_udp);
-
-      if (iRet != -1 && iRet > 100 && iRet != SOCKET_ERROR)
-      {
-        // null terminate the buffer
-        IQuery::pBuffer[iRet] = 0;
-        char *sPch = NULL;
-        sPch = strstr(IQuery::pBuffer, "\\gamename\\" SAM_MS_NAME "\\");
-
-        if (!sPch) {
-          CPutString("Unknown query server response!\n");
-
-          if (_szIPPortBufferLocal != NULL) {
-            delete[] _szIPPortBufferLocal;
-          }
-          _szIPPortBufferLocal = NULL;               
-          WSACleanup();
-          return -1;
-        } else {
-          ParseStatusResponse(_sinClient, TRUE);
-        }
-
-      } else {
-        SServerRequest *preq = SServerRequest::Find(_sinClient);
-
-        if (preq != NULL) {
-          IQuery::aRequests.Delete(preq);
-        }
-      }
-    }
-
-   // pServerIP++;
-    //_iIPPortBufferLocalLen -= 6;
-  }
-
-  if (_szIPPortBufferLocal != NULL) {
-    delete[] _szIPPortBufferLocal;
-  }
-
-  _szIPPortBufferLocal = NULL;
-
-  closesocket(_sockudp);
-  IQuery::CloseWinsock();
-  IQuery::bInitialized = FALSE;
-  _pNetwork->ga_bEnumerationChange = FALSE;
-  _pNetwork->ga_strEnumerationStatus = "";
-  WSACleanup();
-
-  return 0;
-}
+};

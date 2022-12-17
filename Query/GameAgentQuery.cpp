@@ -1,4 +1,4 @@
-/* Copyright (c) 2002-2012 Croteam Ltd. 
+/* Copyright (c) 2002-2012 Croteam Ltd.
 This program is free software; you can redistribute it and/or modify
 it under the terms of version 2 of the GNU General Public License as published by
 the Free Software Foundation
@@ -17,254 +17,261 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "QueryMgr.h"
 #include "Networking/NetworkFunctions.h"
+#include "Interfaces/DataFunctions.h"
+#include "Interfaces/WorldFunctions.h"
 
-// Builds hearthbeat packet.
+static void ClientParsePacket(INDEX iLength) {
+  // String of data
+  const char *strData = IQuery::pBuffer;
+
+  // Server status request
+  if (*strData == 's') {
+    _pNetwork->ga_strEnumerationStatus = "";
+
+    const INDEX iAddrLength = 6;
+    const char *pServers = strData + 1;
+
+    // As long as there's enough data for an address
+    while (iLength - (pServers - strData) >= iAddrLength) {
+      // Get address at the current position
+      IQuery::Address addr = *(IQuery::Address *)pServers;
+
+      // Make an address string
+      CTString strIP;
+      addr.Print(strIP);
+
+      // Socket address for the server
+      sockaddr_in sinServer;
+      sinServer.sin_family = AF_INET;
+      sinServer.sin_addr.s_addr = inet_addr(strIP);
+      sinServer.sin_port = htons(addr.uwPort + 1);
+
+      // Add a new server status request
+      SServerRequest::AddRequest(sinServer);
+
+      // send packet to server
+      IQuery::SendPacketTo(&sinServer, "\x02", 1);
+
+      // Get next address
+      pServers += iAddrLength;
+    }
+    return;
+  }
+
+  // Status response
+  if (*strData == '0') {
+    // Skip packet index with a separator
+    strData += 2;
+
+    // Key and value strings
+    CTString strKey;
+    CTString strValue;
+
+    // Values for reading
+    INDEX ctPlayers, ctMaxPlayers;
+    CTString strLevel, strGameType, strVersion, strGameName, strSessionName;
+
+    BOOL bReadValue = FALSE;
+
+    // Go until the end of the string
+    while (strData != NULL && *strData != '\0')
+    {
+      switch (*strData) {
+        // Data separator
+        case ';': {
+          // Fill server listing with data (without session name)
+          if (bReadValue && strKey != "sessionname")
+          {
+            if (strKey == "players") {
+              ctPlayers = atoi(strValue);
+
+            } else if (strKey == "maxplayers") {
+              ctMaxPlayers = atoi(strValue);
+
+            } else if (strKey == "level") {
+              strLevel = strValue;
+
+            } else if (strKey == "gametype") {
+              strGameType = strValue;
+
+            } else if (strKey == "version") {
+              strVersion = strValue;
+
+            } else if (strKey == "gamename") {
+              strGameName = strValue;
+            }
+
+            // Reset key and value
+            strKey = "";
+            strValue = "";
+          }
+
+          // Toggle between the key and the value
+          bReadValue = !bReadValue;
+
+          // Proceed
+          strData++;
+        } break;
+
+        // Data
+        default: {
+          // Set session name at the very end
+          if (strKey == "sessionname") {
+            strSessionName = strData;
+
+            // Stop parsing
+            strData = NULL;
+            break;
+          }
+
+          // Extract substring until a separator or the end
+          ULONG ulSep = IData::FindChar(strData, ';');
+          CTString strExtracted = IData::ExtractSubstr(strData, 0, ulSep);
+
+          // Set new key or value
+          if (bReadValue) {
+            strValue = strExtracted;
+          } else {
+            strKey = strExtracted;
+          }
+
+          // Advance the packet data
+          strData += strExtracted.Length();
+        } break;
+      }
+    }
+
+    // Get request time from some server request
+    CTimerValue tvPingTime = SServerRequest::PopRequestTime(IQuery::sinFrom);
+
+    // Server status hasn't been requested
+    if (tvPingTime.tv_llValue == -1) {
+      return;
+    }
+
+    // Get ping in seconds
+    const FLOAT tmPingTime = (_pTimer->GetHighPrecisionTimer() - tvPingTime).GetMilliseconds() / 1000.0f;
+
+    // Create a new server listing
+    CNetworkSession &ns = *new CNetworkSession;
+    _pNetwork->ga_lhEnumeratedSessions.AddTail(ns.ns_lnNode);
+
+    ns.ns_strAddress.PrintF("%s:%d", inet_ntoa(IQuery::sinFrom.sin_addr), htons(IQuery::sinFrom.sin_port) - 1);
+    ns.ns_tmPing = tmPingTime;
+
+    ns.ns_strSession = strSessionName;
+    ns.ns_strWorld = strLevel;
+    ns.ns_ctPlayers = ctPlayers;
+    ns.ns_ctMaxPlayers = ctMaxPlayers;
+
+    ns.ns_strGameType = strGameType;
+    ns.ns_strMod = strGameName;
+    ns.ns_strVer = strVersion;
+    return;
+  }
+
+  // Unknown packet
+  CPrintF("Unknown enumeration packet ID: 0x%X\n", *strData);
+};
+
 void CGameAgentQuery::BuildHearthbeatPacket(CTString &strPacket, INDEX iChallenge)
 {
   strPacket.PrintF("0;challenge;%d;players;%d;maxplayers;%d;level;%s;gametype;%s;version;%s;product;%s",
-      iChallenge,
-      INetwork::CountPlayers(FALSE),
-      _pNetwork->ga_sesSessionState.ses_ctMaxPlayers,
-      _pNetwork->ga_World.wo_strName,
-      GetGameAPI()->GetCurrentGameTypeNameSS(),
-      _SE_VER_STRING,
-      sam_strGameName);
-}
+    iChallenge, INetwork::CountPlayers(FALSE), _pNetwork->ga_sesSessionState.ses_ctMaxPlayers,
+    IWorld::GetWorld()->wo_strName, GetGameAPI()->GetCurrentGameTypeNameSS(), _SE_VER_STRING, sam_strGameName);
+};
 
-void CGameAgentQuery::ServerParsePacket(INDEX iLength)
-{
-  // [Cecil] Player count
-  const INDEX ctPlayers = INetwork::CountPlayers(FALSE);
-
-  // check the received packet ID
-  switch (IQuery::pBuffer[0])
-  {
-    case 1: // server join response
-    {
-      int iChallenge = *(INDEX*)(IQuery::pBuffer + 1);
-      // send the challenge
-      IMasterServer::SendHeartbeat(iChallenge);
-      break;
-    }
-
-    case 2: // server status request
-    {
-      // send the status response
-      CTString strPacket;
-      strPacket.PrintF("0;players;%d;maxplayers;%d;level;%s;gametype;%s;version;%s;gamename;%s;sessionname;%s",
-        ctPlayers,
-        _pNetwork->ga_sesSessionState.ses_ctMaxPlayers,
-        _pNetwork->ga_World.wo_strName,
-        GetGameAPI()->GetCurrentGameTypeNameSS(),
-        _SE_VER_STRING,
-        sam_strGameName,
-        GetGameAPI()->GetSessionName());
-      IQuery::SendReply(strPacket);
-      break;
-    }
-
-    case 3: // player status request
-    {
-      // send the player status response
-      CTString strPacket;
-      strPacket.PrintF("\x01players\x02%d\x03", ctPlayers);
-      for (INDEX i = 0; i < ctPlayers; i++) {
-        CPlayerBuffer &plb = _pNetwork->ga_srvServer.srv_aplbPlayers[i];
-        CPlayerTarget &plt = _pNetwork->ga_sesSessionState.ses_apltPlayers[i];
-        if (plt.plt_bActive) {
-          CTString strPlayer;
-
-          // [Cecil] 'GetGameAgentPlayerInfo' -> 'plt_penPlayerEntity->GetGameSpyPlayerInfo'
-          plt.plt_penPlayerEntity->GetGameSpyPlayerInfo(plb.plb_Index, strPlayer);
-
-          // if we don't have enough space left for the next player
-          if (strPacket.Length() + strPlayer.Length() > 2048) {
-            // send the packet
-            IQuery::SendReply(strPacket);
-            strPacket = "";
-          }
-
-          strPacket += strPlayer;
-        }
-      }
-
-      strPacket += "\x04";
-      IQuery::SendReply(strPacket);
-      break;
-    }
-
-    case 4: // ping
-    {
-      // just send back 1 byte and the amount of players in the server (this could be useful in some cases for external scripts)
-      CTString strPacket;
-      strPacket.PrintF("\x04%d", ctPlayers);
-      IQuery::SendReply(strPacket);
-      break;
-    }
-  }
-}
-
-void CGameAgentQuery::EnumTrigger(BOOL bInternet)
-{
-  // Make sure that there are no requests still stuck in buffer.
+void CGameAgentQuery::EnumTrigger(BOOL bInternet) {
+  // Reset requests
   IQuery::aRequests.Clear();
 
-  // We're not a server.
+  // Initialize as a client
   IQuery::bServer = FALSE;
-  // Initialization.
   IQuery::bInitialized = TRUE;
-  // Send enumeration packet to masterserver.
+
+  // Send request for enumeration
   IQuery::SendPacket("e");
   IQuery::SetStatus(".");
-}
+};
 
-static void ClientParsePacket(INDEX iLength)
-{
-  switch (IQuery::pBuffer[0])
-  {
-    case 's':
-    {
-      struct sIPPort {
-        UBYTE bFirst;
-        UBYTE bSecond;
-        UBYTE bThird;
-        UBYTE bFourth;
-        USHORT iPort;
-      };
-
-      _pNetwork->ga_strEnumerationStatus = "";
-  
-      sIPPort* pServers = (sIPPort*)(IQuery::pBuffer + 1);
-
-      while(iLength - ((CHAR*)pServers - IQuery::pBuffer) >= sizeof(sIPPort)) {
-        sIPPort ip = *pServers;
-  
-        CTString strIP;
-        strIP.PrintF("%d.%d.%d.%d", ip.bFirst, ip.bSecond, ip.bThird, ip.bFourth);
-  
-        sockaddr_in sinServer;
-        sinServer.sin_family = AF_INET;
-        sinServer.sin_addr.s_addr = inet_addr(strIP);
-        sinServer.sin_port = htons(ip.iPort + 1);
-  
-        // insert server status request into container
-        SServerRequest::AddRequest(sinServer);
-  
-        // send packet to server
-        IQuery::SendPacketTo(&sinServer, "\x02", 1);
-  
-        pServers++;
-      }
-    } break;
-    
-    case '0':
-    {
-      CTString strPlayers;
-      CTString strMaxPlayers;
-      CTString strLevel;
-      CTString strGameType;
-      CTString strVersion;
-      CTString strGameName;
-      CTString strSessionName;
-  
-      CHAR* pszPacket = IQuery::pBuffer + 2; // we do +2 because the first character is always ';', which we don't care about.
-  
-      BOOL bReadValue = FALSE;
-      CTString strKey;
-      CTString strValue;
-  
-      while(*pszPacket != 0)
-      {
-        switch (*pszPacket)
-        {
-          case ';': {
-            if (strKey != "sessionname") {
-              if (bReadValue) {
-                // we're done reading the value, check which key it was
-                if (strKey == "players") {
-                  strPlayers = strValue;
-                } else if (strKey == "maxplayers") {
-                  strMaxPlayers = strValue;
-                } else if (strKey == "level") {
-                  strLevel = strValue;
-                } else if (strKey == "gametype") {
-                  strGameType = strValue;
-                } else if (strKey == "version") {
-                  strVersion = strValue;
-                } else if (strKey == "gamename") {
-                  strGameName = strValue;
-                } else {
-                  CPrintF("Unknown GameAgent parameter key '%s'!", strKey);
-                }
-    
-                // reset temporary holders
-                strKey = "";
-                strValue = "";
-              }
-            }
-
-            bReadValue = !bReadValue;
-          } break;
-  
-          default: {
-            // read into the value or into the key, depending where we are
-            if (bReadValue) {
-              strValue.InsertChar(strValue.Length(), *pszPacket);
-            } else {
-              strKey.InsertChar(strKey.Length(), *pszPacket);
-            }
-          } break;
-        }
-  
-        // move to next character
-        pszPacket++;
-      }
-  
-      // check if we still have a sessionname to back up
-      if (strKey == "sessionname") {
-        strSessionName = strValue;
-      }
-  
-      // insert the server into the serverlist
-      CNetworkSession &ns = *new CNetworkSession;
-      _pNetwork->ga_lhEnumeratedSessions.AddTail(ns.ns_lnNode);
-  
-      CTimerValue tvPing = SServerRequest::PopRequestTime(IQuery::sinFrom);
-  
-      if (tvPing.tv_llValue == -1) {
-        // server status was never requested
-        break;
-      }
-
-      __int64 tmPing = (_pTimer->GetHighPrecisionTimer() - tvPing).GetMilliseconds();
-  
-      // add the server to the serverlist
-      ns.ns_strSession = strSessionName;
-      ns.ns_strAddress = inet_ntoa(IQuery::sinFrom.sin_addr) + CTString(":") + CTString(0, "%d", htons(IQuery::sinFrom.sin_port) - 1);
-      ns.ns_tmPing = (tmPing / 1000.0f);
-      ns.ns_strWorld = strLevel;
-      ns.ns_ctPlayers = atoi(strPlayers);
-      ns.ns_ctMaxPlayers = atoi(strMaxPlayers);
-      ns.ns_strGameType = strGameType;
-      ns.ns_strMod = strGameName;
-      ns.ns_strVer = strVersion;
-    } break;
-    
-    default: {
-      CPrintF("Unknown enum packet ID %x!\n", IQuery::pBuffer[0]);
-    } break;
-  }
-}
-
-void CGameAgentQuery::EnumUpdate(void)
-{
+void CGameAgentQuery::EnumUpdate(void) {
   int iLength = IQuery::ReceivePacket();
 
   if (iLength == -1) {
     return;
   }
 
-  IQuery::pBuffer[iLength] = 0; // Terminate the buffer with NULL.
-
+  // End with a null terminator
+  IQuery::pBuffer[iLength] = '\0';
   ClientParsePacket(iLength);
-}
+};
+
+void CGameAgentQuery::ServerParsePacket(INDEX iLength) {
+  // Data buffer and player count
+  const char *pData = IQuery::pBuffer;
+  const INDEX ctPlayers = INetwork::CountPlayers(FALSE);
+
+  // Response data packet
+  CTString strPacket;
+
+  // Received packet ID
+  switch (pData[0])
+  {
+    // Server join request
+    case 1: {
+      // Send the challenge
+      INDEX iChallenge = *(INDEX *)(pData + 1);
+      IMasterServer::SendHeartbeat(iChallenge);
+    } break;
+
+    // Server status request
+    case 2: {
+      // Send status response
+      strPacket.PrintF("0;players;%d;maxplayers;%d;level;%s;gametype;%s;version;%s;gamename;%s;sessionname;%s",
+        ctPlayers, _pNetwork->ga_sesSessionState.ses_ctMaxPlayers,
+        IWorld::GetWorld()->wo_strName, GetGameAPI()->GetCurrentGameTypeNameSS(),
+        _SE_VER_STRING, sam_strGameName, GetGameAPI()->GetSessionName());
+
+      IQuery::SendReply(strPacket);
+    } break;
+
+    // Player status request
+    case 3: {
+      // Compose player status response
+      strPacket.PrintF("\x01players\x02%d\x03", ctPlayers);
+
+      // Go through server players
+      for (INDEX i = 0; i < ctPlayers; i++) {
+        CPlayerTarget &plt = _pNetwork->ga_sesSessionState.ses_apltPlayers[i];
+        CPlayerBuffer &plb = _pNetwork->ga_srvServer.srv_aplbPlayers[i];
+
+        if (plt.plt_bActive) {
+          // Get info about an individual player
+          CTString strPlayer;
+          plt.plt_penPlayerEntity->GetGameSpyPlayerInfo(plb.plb_Index, strPlayer);
+
+          // If not enough space for the next player info
+          if (strPacket.Length() + strPlayer.Length() > 2048) {
+            // Send existing packet and reset it
+            IQuery::SendReply(strPacket);
+            strPacket = "";
+          }
+
+          // Append player info
+          strPacket += strPlayer;
+        }
+      }
+
+      // Send the packet
+      strPacket += "\x04";
+      IQuery::SendReply(strPacket);
+    } break;
+
+    // Ping request
+    case 4: {
+      // Send 1 byte and the player count (useful in some cases for external scripts)
+      strPacket.PrintF("\x04%d", ctPlayers);
+      IQuery::SendReply(strPacket);
+    } break;
+  }
+};

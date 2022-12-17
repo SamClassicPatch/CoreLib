@@ -113,7 +113,7 @@ void IMasterServer::OnServerUpdate(void) {
   // If there's any data
   if (iLength > 0) {
     if (ms_bDebugOutput) {
-      CPrintF("Received packet, length: %d\n", iLength);
+      CPrintF("Received packet (%d bytes)\n", iLength);
     }
 
     // Parse received packet

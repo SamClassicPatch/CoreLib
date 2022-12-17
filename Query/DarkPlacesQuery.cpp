@@ -1,5 +1,4 @@
-/* Copyright (c) 2021-2022 by ZCaliptium.
-
+/* Copyright (c) 2022 Dreamy Cecil
 This program is free software; you can redistribute it and/or modify
 it under the terms of version 2 of the GNU General Public License as published by
 the Free Software Foundation
@@ -18,385 +17,364 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "QueryMgr.h"
 #include "Networking/NetworkFunctions.h"
+#include "Interfaces/DataFunctions.h"
+#include "Interfaces/WorldFunctions.h"
 
-#define DP_NET_PROTOCOL_VERSION 3
+// Used DarkPlaces protocol
+static const INDEX _iProtocolVersion = 3;
 
-// Builds hearthbeat packet.
-void CDarkPlacesQuery::BuildHearthbeatPacket(CTString &strPacket)
-{
-  strPacket.PrintF("\xFF\xFF\xFF\xFFheartbeat DarkPlaces\x0A");
-}
-
-// Builds game status string.
-void DarkPlaces_BuildQCStatus(CTString &strStatus)
-{
-  INDEX ctFreeSlots = _pNetwork->ga_sesSessionState.ses_ctMaxPlayers - INetwork::CountClients(FALSE);
-  
-  strStatus.PrintF("%s:%s:P%d:S%d:F%d:M%s::score!!", GetGameAPI()->GetCurrentGameTypeNameSS(), "0.8.2", 0, ctFreeSlots, 0, sam_strGameName);
-}
-
-// Builds status string.
-// Reply to getStatus or getInfo
-void DarkPlaces_BuildStatusResponse(const char* challenge, CTString &strPacket, BOOL bFullStatus)
-{
-  CTString strStatus;
-  DarkPlaces_BuildQCStatus(strStatus);
-  
-  INDEX ctMaxPlayers = _pNetwork->ga_sesSessionState.ses_ctMaxPlayers;
-  
-  strPacket.PrintF("\xFF\xFF\xFF\xFF%s\x0A"
-            "\\gamename\\%s\\modname\\%s\\gameversion\\%s\\sv_maxclients\\%d"
-            "\\clients\\%d\\bots\\%d\\mapname\\%s\\hostname\\%s\\protocol\\%d"
-            "%s%s"
-            "%s%s"
-            "%s%s"
-            "%s",
-            bFullStatus ? "statusResponse" : "infoResponse",
-            // [Cecil] "$version" -> _SE_VER_STRING
-            sam_strGameName, "", _SE_VER_STRING, ctMaxPlayers,
-            INetwork::CountClients(FALSE), 0, _pNetwork->ga_World.wo_strName,
-            GetGameAPI()->GetSessionName(), DP_NET_PROTOCOL_VERSION,
-            "\\qcstatus\\", strStatus,
-            challenge ? "\\challenge\\" : "", challenge ? challenge : "",
-            "", "", // Crypto Key
-            "");
-}
-
-// Process packets while running server.
-void CDarkPlacesQuery::ServerParsePacket(INDEX iLength)
-{
-  char *string = IQuery::pBuffer;
-  unsigned char *data = (unsigned char*)IQuery::pBuffer;
-  
-  if (iLength >= 5 && data[0] == 0xFF && data[1] == 0xFF && data[2] == 0xFF && data[3] == 0xFF)
-  {
-    data += 4;
-    string += 4;
-    iLength -= 4;
-    
-    // Short info.
-    if (iLength >= 7 && !memcmp(data, "getinfo", 7))
-    {
-      if (ms_bDebugOutput) {
-        CPutString("Received 'getinfo' text command!\n");
-      }
-
-      const char *challenge = NULL;
-      
-      if (iLength > 8 && string[7] == ' ') {
-        challenge = string + 8;
-      }
-      
-      CTString strPacket;
-      
-      DarkPlaces_BuildStatusResponse(challenge, strPacket, false);
-
-      IQuery::SendPacket(strPacket);
-      return;
-    }
-
-    // Full status.
-    if (iLength >= 9 && !memcmp(string, "getstatus", 9))
-    {
-      if (ms_bDebugOutput) {
-        CPutString("Received 'getstatus' text command!\n");
-      }
-
-      const char *challenge = NULL;
-      
-      if (iLength > 10 && string[9] == ' ') {
-        challenge = string + 10;
-      }
-      
-      CTString strPacket;
-
-      DarkPlaces_BuildStatusResponse(challenge, strPacket, true);
-
-      IQuery::SendReply(strPacket);
-      
-      return;
-    }
-    
-    if (iLength >= 12 && !memcmp(string, "getchallenge", 12))
-    {
-      CTString strPacket;
-      
-      strPacket.PrintF("\xFF\xFF\xFF\xFFreject Wrong door!");
-      
-      IQuery::SendReply(strPacket);
-      
-      if (ms_bDebugOutput) {
-        CPutString("Received 'getchallenge' text command!\n");
-      }
-      
-      return;
-    }
-    
-    if (ms_bDebugOutput) {
-      CPutString("Received unknown text command!\n");
-      CPrintF("Data[%d]: %s\n", iLength, data);
-    }
-  }
-}
-
-// Parse server-list received from the Master Server.
-void DarkPlaces_ParseServerList(unsigned char *data, INDEX iLength, BOOL bExtended)
-{
+// Parse server list data from the master server
+static void ParseServerList(const UBYTE *pData, INDEX iLength, BOOL bExtended) {
   if (ms_bDebugOutput) {
-    CPrintF("Data Length: %d\n", iLength);
+    CPrintF("Data length: %d\n", iLength);
   }
-  
+
+  // As long as there's enough data
   while (iLength >= 7)
   {
-    // IPV4 Address.
-    if (data[0] == '\\') {
-      
-      unsigned short uPort = data[5] * 256 + data[6];
-      
-      if (uPort != 0 && (data[1] != 0xFF || data[2] != 0xFF || data[3] != 0xFF || data[4] != 0xFF))
-      {
+    // Retrieve IPv4 address
+    if (pData[0] == '\\') {
+      // Get address with the port
+      const IQuery::Address addr = *(IQuery::Address *)(pData + 1);
+
+      // If valid port and at least one valid address byte
+      if (addr.uwPort != 0 && addr.ulIP != 0xFFFFFFFF) {
+        // Make an address string
         CTString strIP;
-        strIP.PrintF("%u.%u.%u.%u", data[1], data[2], data[3], data[4]);
-    
-        if (ms_bDebugOutput) {
-          CPrintF("%s:%hu\n", strIP, uPort);
-        }
-        
+        addr.Print(strIP);
+
+        // Socket address for the server
         sockaddr_in sinServer;
         sinServer.sin_family = AF_INET;
         sinServer.sin_addr.s_addr = inet_addr(strIP);
-        sinServer.sin_port = htons(uPort);
-  
-        // insert server status request into container
+        sinServer.sin_port = htons(addr.uwPort);
+
+        // Add a new server status request
         SServerRequest::AddRequest(sinServer);
-  
-        // send packet to server
-        IQuery::SendPacketTo(&sinServer, "\xFF\xFF\xFF\xFFgetstatus", 13);
+
+        // Send packet to the server
+        CTString strRequest = "\xFF\xFF\xFF\xFFgetstatus";
+        IQuery::SendPacketTo(&sinServer, strRequest, strRequest.Length());
       }
-      
-      data += 7;
+
+      pData += 7;
       iLength -= 7;
+      continue;
+    }
 
-    // IPV6 Address.
-    } else if (iLength >= 19 && data[0] == '/' && bExtended) {
-      
-      // Just skip it. Because our game don't have IPV6 support.
-      data += 19;
+    // Skip IPv6 address
+    if (bExtended && iLength >= 19 && pData[0] == '/') {
+      pData += 19;
       iLength -= 19;
-      
-    // Unknown Data.
-    } else {
-      if (ms_bDebugOutput) {
-        CPutString("Error! Unknown data while parsing server list!\n");
-      }
-      break;
+      continue;
     }
+
+    // Unknown data
+    if (ms_bDebugOutput) {
+      CPutString("Received unknown data upon parsing the server list!\n");
+    }
+    break;
   }
-}
+};
 
-// Process packets while running client.
-void DarkPlaces_ClientParsePacket(INDEX iLength)
-{
-  char *string = IQuery::pBuffer;
-  unsigned char *data = (unsigned char*)IQuery::pBuffer;
-  
-  if (iLength >= 5 && data[0] == 0xFF && data[1] == 0xFF && data[2] == 0xFF && data[3] == 0xFF)
+static void ClientParsePacket(INDEX iLength) {
+  // String of data
+  const char *strData = IQuery::pBuffer;
+
+  // Not long enough or doesn't start with full bytes
+  if (iLength <= 4 || memcmp(strData, "\xFF\xFF\xFF\xFF", 4) != 0) {
+    return;
+  }
+
+  strData += 4;
+  iLength -= 4;
+
+  // Regular response
+  if (iLength >= 18 && memcmp(strData, "getserversResponse", 18) == 0)
   {
-    data += 4;
-    string += 4;
-    iLength -= 4;
-    
-    // Regular Servers Response.
-    if (iLength >= 19 && !memcmp(string, "getserversResponse\\", 19))
-    {
-      if (ms_bDebugOutput) {
-        CPutString("Received 'getserversResponse\\'!\n");
-      }
-
-      data += 18;
-      string += 18;
-      iLength -= 18;
-
-      DarkPlaces_ParseServerList(data, iLength, FALSE);
-
-      return;
+    if (ms_bDebugOutput) {
+      CPutString("Received 'getserversResponse'!\n");
     }
-    
-    // Extended Servers Response.
-    if (iLength >= 21 && !memcmp(string, "getserversExtResponse", 21))
-    {
-      if (ms_bDebugOutput) {
-        CPutString("Received 'getserversExtResponse'!\n");
-      }
 
-      data += 21;
-      string += 21;
-      iLength -= 21;
+    ParseServerList((UBYTE *)(strData + 18), iLength - 18, FALSE);
+    return;
+  }
 
-      DarkPlaces_ParseServerList(data, iLength, TRUE);
-
-      return;
+  // Extended response
+  if (iLength >= 21 && memcmp(strData, "getserversExtResponse", 21) == 0)
+  {
+    if (ms_bDebugOutput) {
+      CPutString("Received 'getserversExtResponse'!\n");
     }
-    
-    // Status Response from one of servers from Server List
-    if (iLength >= 15 && !memcmp(string, "statusResponse\x0A", 15))
-    {
-      if (ms_bDebugOutput) {
-        CPutString("Received 'statusResponse'!\n");
-      }
-      
-      data += 15;
-      string += 15;
-      iLength -= 15;
 
-      if (ms_bDebugOutput) {
-        CPrintF("Data[%d]: %s\n", iLength, data);
-      }  
+    ParseServerList((UBYTE *)(strData + 21), iLength - 21, TRUE);
+    return;
+  }
 
-      CNetworkSession &ns = *new CNetworkSession;
-      _pNetwork->ga_lhEnumeratedSessions.AddTail(ns.ns_lnNode);
-      
-      BOOL bReadValue = FALSE;
-      CTString strKey;
-      CTString strValue;
-      
-      CTString strPlayers;
-      CTString strMaxPlayers;
-      CTString strLevel;
-      CTString strGameType;
-      CTString strVersion;
-      CTString strGameName;
-      CTString strSessionName;
-
-      CTString strGamePort;
-      CTString strServerLocation;
-      CTString strGameMode;
-      CTString strActiveMod;
-      
-      // Skip first separator!
-      if (*data == '\\') {
-        data += 1;
-        string += 1;
-        iLength -= 1;
-      }
-
-      while (*data != 0)
-      {
-        switch (data[0])
-        {
-          case '\\': {
-            //if (strKey != "gamemode") {
-              if (bReadValue) {
-                // we're done reading the value, check which key it was
-                if (strKey == "gamename") {
-                  strGameName = strValue;
-                } else if (strKey == "gameversion") {
-                  strVersion = strValue;
-                } else if (strKey == "location") {
-                  strServerLocation = strValue;
-                } else if (strKey == "hostname") {
-                  strSessionName = strValue;
-                } else if (strKey == "hostport") {
-                  strGamePort = strValue;
-                } else if (strKey == "qcstatus") {
-                  strGameMode = strValue;
-                } else if (strKey == "mapname") {
-                  strLevel = strValue;
-                } else if (strKey == "modname") {
-                  strActiveMod = strValue;
-                } else if (strKey == "clients") {
-                  strPlayers = strValue;
-                } else if (strKey == "bots") {
-                } else if (strKey == "protocol") {
-                } else if (strKey == "sv_maxclients") {
-                  strMaxPlayers = strValue;
-                } else {
-                  if (ms_bDebugOutput) {
-                    CPrintF("Unknown DarkPlaces parameter key '%s'!\n", strKey);
-                  }
-                }
-                // reset temporary holders
-                strKey = "";
-                strValue = "";
-              }
-            //}
-
-            bReadValue = !bReadValue;
-          } break;
-          
-          default: {
-            
-            // read into the value or into the key, depending where we are
-            if (bReadValue) {
-              strValue.InsertChar(strValue.Length(), *data);
-            } else {
-              strKey.InsertChar(strKey.Length(), *data);
-            }
-          }
-        }
-        
-        data += 1;
-        iLength -= 1;
-      }
-      
-      if (strGameMode != "")
-      {
-        CTString strDummy;
-
-        for (INDEX i = 0; i < strGameMode.Length(); i++)
-        {
-          if (strGameMode.str_String[i] == ':') {
-            strGameMode.Split(i, strGameType, strDummy);
-            break;
-          }
-        }
-      }
-
-      // add the server to the serverlist
-      ns.ns_strSession = strSessionName;
-      ns.ns_strAddress = inet_ntoa(IQuery::sinFrom.sin_addr) + CTString(":") + CTString(0, "%d", htons(IQuery::sinFrom.sin_port) - 1);
-      ns.ns_tmPing = (10000.0F / 1000.0f);
-      ns.ns_strWorld = strLevel;
-      ns.ns_ctPlayers = atoi(strPlayers);
-      ns.ns_ctMaxPlayers = atoi(strMaxPlayers);
-      ns.ns_strGameType = strGameType;
-      ns.ns_strMod = strGameName;
-      ns.ns_strVer = strVersion;
-      
-      return;
+  // Status response from one of the servers in the list
+  if (iLength >= 15 && memcmp(strData, "statusResponse\x0A", 15) == 0)
+  {
+    if (ms_bDebugOutput) {
+      CPutString("Received 'statusResponse'!\n");
     }
+
+    strData += 15;
+    iLength -= 15;
 
     if (ms_bDebugOutput) {
-      CPutString("Received unknown text command!\n");
-      CPrintF("Data[%d]: %s\n", iLength, data);
+      CPrintF("Data (%d bytes): %s\n", iLength, strData);
     }
+
+    // Skip initial separator
+    if (*strData == '\\') {
+      strData++;
+    }
+
+    // Key and value strings
+    CTString strKey;
+    CTString strValue;
+
+    // Values for reading
+    CTString strGameName, strGameVer, strHostName, strMode, strMapName;
+    INDEX ctClients, ctMaxClients;
+
+    BOOL bReadValue = FALSE;
+
+    // Go until the end of the string
+    while (*strData != '\0')
+    {
+      switch (*strData) {
+        // Data separator
+        case '\\': {
+          // Fill server listing with data
+          if (bReadValue)
+          {
+            if (strKey == "gamename") {
+              strGameName = strValue;
+
+            } else if (strKey == "gameversion") {
+              strGameVer = strValue;
+
+            } else if (strKey == "hostname") {
+              strHostName = strValue;
+
+            } else if (strKey == "qcstatus") {
+              strMode = strValue;
+
+            } else if (strKey == "mapname") {
+              strMapName = strValue;
+
+            } else if (strKey == "clients") {
+              ctClients = atoi(strValue);
+
+            } else if (strKey == "sv_maxclients") {
+              ctMaxClients = atoi(strValue);
+
+            // [Cecil] NOTE: Unused
+            } else if (strKey == "location" || strKey == "hostport" || strKey == "modname"
+                    || strKey == "bots" || strKey == "protocol") {
+              NOTHING;
+            }
+
+            // Reset key and value
+            strKey = "";
+            strValue = "";
+          }
+
+          // Toggle between the key and the value
+          bReadValue = !bReadValue;
+
+          // Proceed
+          strData++;
+        } break;
+
+        // Data
+        default: {
+          // Extract substring until a separator or the end
+          ULONG ulSep = IData::FindChar(strData, '\\');
+          CTString strExtracted = IData::ExtractSubstr(strData, 0, ulSep);
+
+          // Set new key or value
+          if (bReadValue) {
+            strValue = strExtracted;
+          } else {
+            strKey = strExtracted;
+          }
+
+          // Advance the packet data
+          strData += strExtracted.Length();
+        } break;
+      }
+    }
+
+    // Get request time from some server request
+    CTimerValue tvPingTime = SServerRequest::PopRequestTime(IQuery::sinFrom);
+
+    // Server status hasn't been requested
+    if (tvPingTime.tv_llValue == -1) {
+      return;
+    }
+
+    // Get ping in seconds
+    const FLOAT tmPingTime = (_pTimer->GetHighPrecisionTimer() - tvPingTime).GetMilliseconds() / 1000.0f;
+
+    // Create a new server listing
+    CNetworkSession &ns = *new CNetworkSession;
+    _pNetwork->ga_lhEnumeratedSessions.AddTail(ns.ns_lnNode);
+
+    ns.ns_strAddress.PrintF("%s:%d", inet_ntoa(IQuery::sinFrom.sin_addr), htons(IQuery::sinFrom.sin_port) - 1);
+    ns.ns_tmPing = tmPingTime;
+
+    ns.ns_strSession = strHostName;
+    ns.ns_strWorld = strMapName;
+    ns.ns_ctPlayers = ctClients;
+    ns.ns_ctMaxPlayers = ctMaxClients;
+
+    ns.ns_strMod = strGameName;
+    ns.ns_strVer = strGameVer;
+
+    // If there's any gamemode, find a separator
+    ULONG ulSep = IData::FindChar(strMode, ':');
+
+    // Extract game type before the separator
+    if (ulSep != -1) {
+      ns.ns_strGameType = IData::ExtractSubstr(strMode, 0, ulSep);
+    }
+    return;
   }
-}
 
-void CDarkPlacesQuery::EnumTrigger(BOOL bInternet)
-{
-  // Make sure that there are no requests still stuck in buffer.
+  if (ms_bDebugOutput) {
+    CPutString("Received unknown packet!\n");
+    CPrintF("Data (%d bytes): %s\n", iLength, strData);
+  }
+};
+
+// Compose status response packet
+static void ComposeStatusPacket(CTString &strPacket, const char *strChallenge, BOOL bFullStatus) {
+  const INDEX ctMaxPlayers = _pNetwork->ga_sesSessionState.ses_ctMaxPlayers;
+  const INDEX ctClients = INetwork::CountClients(FALSE);
+
+  // Compose the packet
+  strPacket.PrintF("\xFF\xFF\xFF\xFF%s\x0A"
+    "\\gamename\\%s\\modname\\%s\\gameversion\\%s"
+    "\\sv_maxclients\\%d\\clients\\%d\\bots\\%d\\mapname\\%s\\hostname\\%s\\protocol\\%d"
+    "\\qcstatus\\%s:%s:P%d:S%d:F%d:M%s::score!!",
+    // Response header
+    (bFullStatus ? "statusResponse" : "infoResponse"),
+    // Game info
+    sam_strGameName, "", _SE_VER_STRING,
+    // Server info
+    ctMaxPlayers, ctClients, 0, IWorld::GetWorld()->wo_strName, GetGameAPI()->GetSessionName(), _iProtocolVersion,
+    // Server status
+    GetGameAPI()->GetCurrentGameTypeNameSS(), "0.8.2", 0, ctMaxPlayers - ctClients, 0, sam_strGameName);
+
+  // Optional challenge
+  if (strChallenge != NULL) {
+    strPacket += "\\challenge\\" + CTString(strChallenge);
+  }
+
+  // [Cecil] NOTE: Unused extras (3 strings)
+  if (FALSE) {
+    strPacket += CTString(0, "%s%s%s", "", "", "");
+  }
+};
+
+void CDarkPlacesQuery::BuildHearthbeatPacket(CTString &strPacket) {
+  strPacket.PrintF("\xFF\xFF\xFF\xFFheartbeat DarkPlaces\x0A");
+};
+
+void CDarkPlacesQuery::EnumTrigger(BOOL bInternet) {
+  // Reset requests
   IQuery::aRequests.Clear();
-  
-  // We're not a server.
+
+  // Initialize as a client
   IQuery::bServer = FALSE;
-  // Initialization.
   IQuery::bInitialized = TRUE;
-  
+
+  // Send request for enumeration
   CTString strPacket;
-  strPacket.PrintF("\xFF\xFF\xFF\xFFgetservers %s %u empty full", sam_strGameName, DP_NET_PROTOCOL_VERSION);
-  IQuery::SendPacket(strPacket); // Send enumeration packet to masterserver.
+  strPacket.PrintF("\xFF\xFF\xFF\xFFgetservers %s %u empty full", sam_strGameName, _iProtocolVersion);
 
+  IQuery::SendPacket(strPacket);
   IQuery::SetStatus(".");
-}
+};
 
-void CDarkPlacesQuery::EnumUpdate(void)
-{
+void CDarkPlacesQuery::EnumUpdate(void) {
   int iLength = IQuery::ReceivePacket();
 
   if (iLength == -1) {
     return;
   }
-  
-  DarkPlaces_ClientParsePacket(iLength);
-}
+
+  ClientParsePacket(iLength);
+};
+
+void CDarkPlacesQuery::ServerParsePacket(INDEX iLength) {
+  // String of data
+  const char *strData = IQuery::pBuffer;
+
+  // Not long enough or doesn't start with full bytes
+  if (iLength <= 4 || memcmp(strData, "\xFF\xFF\xFF\xFF", 4) != 0) {
+    return;
+  }
+
+  strData += 4;
+  iLength -= 4;
+
+  // Challenge and packet strings
+  const char *strChallenge = NULL;
+  CTString strPacket;
+
+  // Requesting short information
+  if (iLength >= 7 && memcmp(strData, "getinfo", 7) == 0)
+  {
+    if (ms_bDebugOutput) {
+      CPutString("Received 'getinfo'!\n");
+    }
+
+    // Use the rest of the data as challenge
+    if (iLength > 8 && strData[7] == ' ') {
+      strChallenge = strData + 8;
+    }
+
+    ComposeStatusPacket(strPacket, strChallenge, FALSE);
+    IQuery::SendPacket(strPacket);
+    return;
+  }
+
+  // Requesting full information
+  if (iLength >= 9 && memcmp(strData, "getstatus", 9) == 0)
+  {
+    if (ms_bDebugOutput) {
+      CPutString("Received 'getstatus'!\n");
+    }
+
+    // Use the rest of the data as challenge
+    if (iLength > 10 && strData[9] == ' ') {
+      strChallenge = strData + 10;
+    }
+
+    ComposeStatusPacket(strPacket, strChallenge, TRUE);
+    IQuery::SendReply(strPacket);
+    return;
+  }
+
+  // Requesting challenge
+  if (iLength >= 12 && memcmp(strData, "getchallenge", 12) == 0)
+  {
+    if (ms_bDebugOutput) {
+      CPutString("Received 'getchallenge'!\n");
+    }
+
+    // No challenge to reply with
+    strPacket.PrintF("\xFF\xFF\xFF\xFFreject No challenge!");
+    IQuery::SendReply(strPacket);
+    return;
+  }
+
+  // Unknown request
+  if (ms_bDebugOutput) {
+    CPutString("Received unknown packet!\n");
+    CPrintF("Data (%d bytes): %s\n", iLength, strData);
+  }
+};
