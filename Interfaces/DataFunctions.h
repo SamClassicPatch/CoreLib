@@ -42,14 +42,50 @@ class IData {
     };
 
   public:
-    // Convert forward slashes to backslashes in a file path
-    static inline void ConvertSlashes(char *str) {
+    // Replace characters in a string
+    static inline void ReplaceChar(char *str, char chOld, char chNew) {
       while (*str != '\0') {
-        if (*str == '/') {
-          *str = '\\';
+        if (*str == chOld) {
+          *str = chNew;
         }
         ++str;
       }
+    };
+
+    // Find character in a string
+    static inline ULONG FindChar(const char *str, char ch, ULONG ulFrom = 0) {
+      // Iteration position
+      const char *pData = str + ulFrom;
+
+      // Go until the string end
+      while (*pData != '\0') {
+        // If found the character
+        if (*pData == ch) {
+          // Return current position relative to the beginning
+          return (pData - str);
+        }
+        ++pData;
+      }
+
+      // None found
+      return -1;
+    };
+
+    // Extract substring at a specific position
+    static inline CTString ExtractSubstr(const char *str, ULONG ulFrom, ULONG ulChars) {
+      // Limit character amount
+      ulChars = ClampUp(ulChars, ULONG(strlen(str)) - ulFrom);
+
+      // Copy substring into a null-terminated buffer
+      char *strBuffer = new char[ulChars + 1];
+      memcpy(strBuffer, str + ulFrom, ulChars);
+      strBuffer[ulChars] = '\0';
+
+      // Set a new string and discard the buffer
+      CTString strSubstr(strBuffer);
+      delete[] strBuffer;
+
+      return strSubstr;
     };
 
     // CTFileName comparison method for qsort()

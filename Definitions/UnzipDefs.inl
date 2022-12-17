@@ -360,7 +360,7 @@ static void ReadZIPDirectory_t(CTFileName *pfnmZip)
       ctFiles++;
 
       // Convert slashes in the filename
-      IData::ConvertSlashes(strBuffer);
+      IData::ReplaceChar(strBuffer, '/', '\\');
 
       // Create a new entry
       CZipEntry &ze = _aFilesEngine.Push();
