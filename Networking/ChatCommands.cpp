@@ -18,9 +18,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "ChatCommands.h"
 #include "NetworkFunctions.h"
 
-#include "ClientLogging.h"
-#include "ClientRestrictions.h"
-
 // Prefix that the chat commands start with
 CTString ser_strCommandPrefix = "!";
 
