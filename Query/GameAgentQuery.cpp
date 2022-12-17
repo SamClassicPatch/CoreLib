@@ -37,11 +37,11 @@ void CGameAgentQuery::ServerParsePacket(INDEX iLength)
   const INDEX ctPlayers = INetwork::CountPlayers(FALSE);
 
   // check the received packet ID
-  switch (_szBuffer[0])
+  switch (IQuery::pBuffer[0])
   {
     case 1: // server join response
     {
-      int iChallenge = *(INDEX*)(_szBuffer + 1);
+      int iChallenge = *(INDEX*)(IQuery::pBuffer + 1);
       // send the challenge
       IMasterServer::SendHeartbeat(iChallenge);
       break;
@@ -110,9 +110,9 @@ void CGameAgentQuery::EnumTrigger(BOOL bInternet)
   IQuery::aRequests.Clear();
 
   // We're not a server.
-  _bServer = FALSE;
+  IQuery::bServer = FALSE;
   // Initialization.
-  _bInitialized = TRUE;
+  IQuery::bInitialized = TRUE;
   // Send enumeration packet to masterserver.
   IQuery::SendPacket("e");
   IQuery::SetStatus(".");
@@ -120,7 +120,7 @@ void CGameAgentQuery::EnumTrigger(BOOL bInternet)
 
 static void ClientParsePacket(INDEX iLength)
 {
-  switch (_szBuffer[0])
+  switch (IQuery::pBuffer[0])
   {
     case 's':
     {
@@ -134,9 +134,9 @@ static void ClientParsePacket(INDEX iLength)
 
       _pNetwork->ga_strEnumerationStatus = "";
   
-      sIPPort* pServers = (sIPPort*)(_szBuffer + 1);
+      sIPPort* pServers = (sIPPort*)(IQuery::pBuffer + 1);
 
-      while(iLength - ((CHAR*)pServers - _szBuffer) >= sizeof(sIPPort)) {
+      while(iLength - ((CHAR*)pServers - IQuery::pBuffer) >= sizeof(sIPPort)) {
         sIPPort ip = *pServers;
   
         CTString strIP;
@@ -167,7 +167,7 @@ static void ClientParsePacket(INDEX iLength)
       CTString strGameName;
       CTString strSessionName;
   
-      CHAR* pszPacket = _szBuffer + 2; // we do +2 because the first character is always ';', which we don't care about.
+      CHAR* pszPacket = IQuery::pBuffer + 2; // we do +2 because the first character is always ';', which we don't care about.
   
       BOOL bReadValue = FALSE;
       CTString strKey;
@@ -229,7 +229,7 @@ static void ClientParsePacket(INDEX iLength)
       CNetworkSession &ns = *new CNetworkSession;
       _pNetwork->ga_lhEnumeratedSessions.AddTail(ns.ns_lnNode);
   
-      CTimerValue tvPing = SServerRequest::PopRequestTime(_sinFrom);
+      CTimerValue tvPing = SServerRequest::PopRequestTime(IQuery::sinFrom);
   
       if (tvPing.tv_llValue == -1) {
         // server status was never requested
@@ -240,7 +240,7 @@ static void ClientParsePacket(INDEX iLength)
   
       // add the server to the serverlist
       ns.ns_strSession = strSessionName;
-      ns.ns_strAddress = inet_ntoa(_sinFrom.sin_addr) + CTString(":") + CTString(0, "%d", htons(_sinFrom.sin_port) - 1);
+      ns.ns_strAddress = inet_ntoa(IQuery::sinFrom.sin_addr) + CTString(":") + CTString(0, "%d", htons(IQuery::sinFrom.sin_port) - 1);
       ns.ns_tmPing = (tmPing / 1000.0f);
       ns.ns_strWorld = strLevel;
       ns.ns_ctPlayers = atoi(strPlayers);
@@ -251,7 +251,7 @@ static void ClientParsePacket(INDEX iLength)
     } break;
     
     default: {
-      CPrintF("Unknown enum packet ID %x!\n", _szBuffer[0]);
+      CPrintF("Unknown enum packet ID %x!\n", IQuery::pBuffer[0]);
     } break;
   }
 }
@@ -264,7 +264,7 @@ void CGameAgentQuery::EnumUpdate(void)
     return;
   }
 
-  _szBuffer[iLength] = 0; // Terminate the buffer with NULL.
+  IQuery::pBuffer[iLength] = 0; // Terminate the buffer with NULL.
 
   ClientParsePacket(iLength);
 }

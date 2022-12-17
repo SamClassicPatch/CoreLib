@@ -65,8 +65,8 @@ void DarkPlaces_BuildStatusResponse(const char* challenge, CTString &strPacket, 
 // Process packets while running server.
 void CDarkPlacesQuery::ServerParsePacket(INDEX iLength)
 {
-  char *string = &_szBuffer[0];
-  unsigned char *data = (unsigned char*)&_szBuffer[0];
+  char *string = IQuery::pBuffer;
+  unsigned char *data = (unsigned char*)IQuery::pBuffer;
   
   if (iLength >= 5 && data[0] == 0xFF && data[1] == 0xFF && data[2] == 0xFF && data[3] == 0xFF)
   {
@@ -197,8 +197,8 @@ void DarkPlaces_ParseServerList(unsigned char *data, INDEX iLength, BOOL bExtend
 // Process packets while running client.
 void DarkPlaces_ClientParsePacket(INDEX iLength)
 {
-  char *string = &_szBuffer[0];
-  unsigned char *data = (unsigned char*)&_szBuffer[0];
+  char *string = IQuery::pBuffer;
+  unsigned char *data = (unsigned char*)IQuery::pBuffer;
   
   if (iLength >= 5 && data[0] == 0xFF && data[1] == 0xFF && data[2] == 0xFF && data[3] == 0xFF)
   {
@@ -354,7 +354,7 @@ void DarkPlaces_ClientParsePacket(INDEX iLength)
 
       // add the server to the serverlist
       ns.ns_strSession = strSessionName;
-      ns.ns_strAddress = inet_ntoa(_sinFrom.sin_addr) + CTString(":") + CTString(0, "%d", htons(_sinFrom.sin_port) - 1);
+      ns.ns_strAddress = inet_ntoa(IQuery::sinFrom.sin_addr) + CTString(":") + CTString(0, "%d", htons(IQuery::sinFrom.sin_port) - 1);
       ns.ns_tmPing = (10000.0F / 1000.0f);
       ns.ns_strWorld = strLevel;
       ns.ns_ctPlayers = atoi(strPlayers);
@@ -379,9 +379,9 @@ void CDarkPlacesQuery::EnumTrigger(BOOL bInternet)
   IQuery::aRequests.Clear();
   
   // We're not a server.
-  _bServer = FALSE;
+  IQuery::bServer = FALSE;
   // Initialization.
-  _bInitialized = TRUE;
+  IQuery::bInitialized = TRUE;
   
   CTString strPacket;
   strPacket.PrintF("\xFF\xFF\xFF\xFFgetservers %s %u empty full", sam_strGameName, DP_NET_PROTOCOL_VERSION);

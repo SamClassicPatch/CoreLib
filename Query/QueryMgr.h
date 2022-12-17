@@ -50,12 +50,6 @@ class IQuery {
 
     static CDynamicStackArray<SServerRequest> aRequests;
 
-    // [Cecil] TEMP: Old fields
-    #define _sinFrom      IQuery::sinFrom
-    #define _szBuffer     IQuery::pBuffer
-    #define _bServer      IQuery::bServer
-    #define _bInitialized IQuery::bInitialized
-
   public:
     // Initialize the socket
     static void InitWinsock(void);

@@ -72,21 +72,21 @@ void CLegacyQuery::BuildHearthbeatPacket(CTString &strPacket)
 void CLegacyQuery::ServerParsePacket(INDEX iLength)
 {
   // [Cecil] Moved here from MS_OnServerUpdate()
-  _szBuffer[iLength] = 0;
+  IQuery::pBuffer[iLength] = 0;
 
-  unsigned char *data = (unsigned char*)&_szBuffer[0];
+  unsigned char *data = (unsigned char*)IQuery::pBuffer;
 
   char *sPch1 = NULL, *sPch2 = NULL, *sPch3 = NULL, *sPch4 = NULL, *sPch5;
 
-  sPch1 = strstr(_szBuffer, "\\status\\");
-  sPch2 = strstr(_szBuffer, "\\info\\");
-  sPch3 = strstr(_szBuffer, "\\basic\\");
-  sPch4 = strstr(_szBuffer, "\\players\\");
+  sPch1 = strstr(IQuery::pBuffer, "\\status\\");
+  sPch2 = strstr(IQuery::pBuffer, "\\info\\");
+  sPch3 = strstr(IQuery::pBuffer, "\\basic\\");
+  sPch4 = strstr(IQuery::pBuffer, "\\players\\");
 
-  sPch5 = strstr(_szBuffer, "\\secure\\"); // [SSE] [ZCaliptium] Validation Fix.
+  sPch5 = strstr(IQuery::pBuffer, "\\secure\\"); // [SSE] [ZCaliptium] Validation Fix.
   
   if (ms_bDebugOutput) {
-    CPrintF("Received data[%d]:\n%s\n", iLength, _szBuffer);
+    CPrintF("Received data[%d]:\n%s\n", iLength, IQuery::pBuffer);
   }
 
   // [Cecil] Player count
@@ -253,7 +253,7 @@ void CLegacyQuery::ServerParsePacket(INDEX iLength)
 
   } else {
     CPutString("Unknown query server command!\n");
-    CPrintF("%s\n", _szBuffer);
+    CPrintF("%s\n", IQuery::pBuffer);
     return;
   }
 }

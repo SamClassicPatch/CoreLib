@@ -69,7 +69,7 @@ static void _LocalSearch()
   IQuery::aRequests.Clear();
 
   // we're not a server
-  _bServer = FALSE;
+  IQuery::bServer = FALSE;
   _pNetwork->ga_strEnumerationStatus = ".";
 
   WORD     _wsaRequested;
@@ -97,7 +97,7 @@ static void _LocalSearch()
     }
     _szIPPortBufferLocal = NULL;
     IQuery::CloseWinsock();
-    _bInitialized = FALSE;
+    IQuery::bInitialized = FALSE;
     _pNetwork->ga_bEnumerationChange = FALSE;
     _pNetwork->ga_strEnumerationStatus = "";
     WSACleanup();
@@ -144,7 +144,7 @@ static void _LocalSearch()
   _iIPPortBufferLocalLen = _iLen;
 
   _bActivatedLocal = TRUE;
-  _bInitialized = TRUE;
+  IQuery::bInitialized = TRUE;
   IQuery::InitWinsock();
 }
 
@@ -161,7 +161,7 @@ void CLegacyQuery::EnumTrigger(BOOL bInternet)
     // make sure that there are no requests still stuck in buffer
     IQuery::aRequests.Clear();
     // we're not a server
-    _bServer = FALSE;
+    IQuery::bServer = FALSE;
     _pNetwork->ga_strEnumerationStatus = ".";
 
     struct  sockaddr_in peer;
@@ -336,7 +336,7 @@ void CLegacyQuery::EnumTrigger(BOOL bInternet)
     _iIPPortBufferLen = iLen;
 
     _bActivated = TRUE;
-    _bInitialized = TRUE;
+    IQuery::bInitialized = TRUE;
     IQuery::InitWinsock();
      
   }
@@ -388,7 +388,7 @@ static void ParseStatusResponse(sockaddr_in &_sinClient, BOOL bIgnorePing)
   CTString strGameMode;
   CTString strActiveMod;
 
-  CHAR* pszPacket = _szBuffer + 1; // we do +1 because the first character is always '\', which we don't care about.
+  CHAR* pszPacket = IQuery::pBuffer + 1; // we do +1 because the first character is always '\', which we don't care about.
 
   BOOL bReadValue = FALSE;
   CTString strKey;
@@ -541,14 +541,14 @@ DWORD WINAPI _MS_Thread(LPVOID lpParam)
     if (_iN > 0)
     {
       /** do recvfrom stuff **/
-      iRet =  recvfrom(_sockudp, _szBuffer, 2048, 0, (sockaddr*)&_sinClient, &_iClientLength);
+      iRet =  recvfrom(_sockudp, IQuery::pBuffer, 2048, 0, (sockaddr*)&_sinClient, &_iClientLength);
       FD_CLR(_sockudp, &readfds_udp);
 
       if (iRet != -1 && iRet > 100 && iRet != SOCKET_ERROR) {
         // null terminate the buffer
-        _szBuffer[iRet] = 0;
+        IQuery::pBuffer[iRet] = 0;
         char *sPch = NULL;
-        sPch = strstr(_szBuffer, "\\gamename\\" SAM_MS_NAME "\\");
+        sPch = strstr(IQuery::pBuffer, "\\gamename\\" SAM_MS_NAME "\\");
 
         if (!sPch) {
           CPutString("Unknown query server response!\n");
@@ -575,7 +575,7 @@ DWORD WINAPI _MS_Thread(LPVOID lpParam)
 
   closesocket(_sockudp);
   IQuery::InitWinsock();
-  _bInitialized = FALSE;
+  IQuery::bInitialized = FALSE;
   _pNetwork->ga_bEnumerationChange = FALSE;
   WSACleanup();
 
@@ -676,15 +676,15 @@ DWORD WINAPI _LocalNet_Thread(LPVOID lpParam)
     if (_iN > 0)
     {
       /** do recvfrom stuff **/
-      iRet =  recvfrom(_sockudp, _szBuffer, 2048, 0, (sockaddr*)&_sinClient, &_iClientLength);
+      iRet =  recvfrom(_sockudp, IQuery::pBuffer, 2048, 0, (sockaddr*)&_sinClient, &_iClientLength);
       FD_CLR(_sockudp, &readfds_udp);
 
       if (iRet != -1 && iRet > 100 && iRet != SOCKET_ERROR)
       {
         // null terminate the buffer
-        _szBuffer[iRet] = 0;
+        IQuery::pBuffer[iRet] = 0;
         char *sPch = NULL;
-        sPch = strstr(_szBuffer, "\\gamename\\" SAM_MS_NAME "\\");
+        sPch = strstr(IQuery::pBuffer, "\\gamename\\" SAM_MS_NAME "\\");
 
         if (!sPch) {
           CPutString("Unknown query server response!\n");
@@ -720,7 +720,7 @@ DWORD WINAPI _LocalNet_Thread(LPVOID lpParam)
 
   closesocket(_sockudp);
   IQuery::CloseWinsock();
-  _bInitialized = FALSE;
+  IQuery::bInitialized = FALSE;
   _pNetwork->ga_bEnumerationChange = FALSE;
   _pNetwork->ga_strEnumerationStatus = "";
   WSACleanup();
