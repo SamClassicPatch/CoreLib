@@ -35,7 +35,7 @@ static sockaddr_in *_sinLocal = NULL;
 static SOCKET _socket = NULL;
 
 // Master server addresses
-extern CTString ms_strMSLegacy = "master.333networks.com";
+extern CTString ms_strLegacyMS = "master.333networks.com";
 static CTString ms_strGameAgentMS = "master.333networks.com";
 static CTString ms_strDarkPlacesMS = "192.168.1.4";
 
@@ -52,19 +52,19 @@ CSymbolPtr _pstrLocalHost;
 // Initialize query manager
 extern void InitQuery(void) {
   // Custom symbols
-  _pShell->DeclareSymbol("persistent user CTString ms_strMSLegacy;",     &ms_strMSLegacy);
+  _pShell->DeclareSymbol("persistent user CTString ms_strLegacyMS;",     &ms_strLegacyMS);
   _pShell->DeclareSymbol("persistent user CTString ms_strDarkPlacesMS;", &ms_strDarkPlacesMS);
   _pShell->DeclareSymbol("persistent user CTString ms_strGameAgentMS;",  &ms_strGameAgentMS);
   _pShell->DeclareSymbol("persistent user INDEX ms_iProtocol;",          &ms_iProtocol);
   _pShell->DeclareSymbol("persistent user INDEX ms_bDebugOutput;",       &ms_bDebugOutput);
 
   // Master server protocol types
-  static const INDEX iMSLegacy   = E_MS_LEGACY;
-  static const INDEX iDarkPlaces = E_MS_DARKPLACES;
-  static const INDEX iGameAgent  = E_MS_GAMEAGENT;
-  _pShell->DeclareSymbol("const INDEX MS_LEGACY;",     (void *)&iMSLegacy);
-  _pShell->DeclareSymbol("const INDEX MS_DARKPLACES;", (void *)&iDarkPlaces);
-  _pShell->DeclareSymbol("const INDEX MS_GAMEAGENT;",  (void *)&iGameAgent);
+  static const INDEX iLegacyMS     = E_MS_LEGACY;
+  static const INDEX iDarkPlacesMS = E_MS_DARKPLACES;
+  static const INDEX iGameAgentMS  = E_MS_GAMEAGENT;
+  _pShell->DeclareSymbol("const INDEX MS_LEGACY;",     (void *)&iLegacyMS);
+  _pShell->DeclareSymbol("const INDEX MS_DARKPLACES;", (void *)&iDarkPlacesMS);
+  _pShell->DeclareSymbol("const INDEX MS_GAMEAGENT;",  (void *)&iGameAgentMS);
 
   // Retrieve commonly used symbols
   _piNetPort.Find("net_iPort");
@@ -98,7 +98,7 @@ void IQuery::InitWinsock(void) {
 
   // Master server addresses
   static const CTString astrIPs[E_MS_MAX] = {
-    ms_strMSLegacy,
+    ms_strLegacyMS,
     ms_strDarkPlacesMS,
     ms_strGameAgentMS,
   };

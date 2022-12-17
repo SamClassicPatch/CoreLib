@@ -172,8 +172,8 @@ static void StartInternetSearch(void) {
   }
 
   // Connect to the master server
-  extern CTString ms_strMSLegacy;
-  char *strMasterServer = ms_strMSLegacy.str_String;
+  extern CTString ms_strLegacyMS;
+  char *strMasterServer = ms_strLegacyMS.str_String;
 
   struct sockaddr_in addr;
   addr.sin_addr.s_addr = resolv(strMasterServer);
