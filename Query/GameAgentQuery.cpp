@@ -18,16 +18,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "QueryMgr.h"
 #include "Networking/NetworkFunctions.h"
 
-// [Cecil] Use query data here
-using namespace QueryData;
-
-extern void _sendPacket(const char* szBuffer);
-extern void _sendPacket(const char* pubBuffer, INDEX iLen);
-extern void _sendPacketTo(const char* szBuffer, sockaddr_in* addsin);
-extern void _sendPacketTo(const char* pubBuffer, INDEX iLen, sockaddr_in* sin);
-extern void _setStatus(const CTString &strStatus);
-extern int _recvPacket();
-
 // Builds hearthbeat packet.
 void CGameAgentQuery::BuildHearthbeatPacket(CTString &strPacket, INDEX iChallenge)
 {
@@ -53,7 +43,7 @@ void CGameAgentQuery::ServerParsePacket(INDEX iLength)
     {
       int iChallenge = *(INDEX*)(_szBuffer + 1);
       // send the challenge
-      MS_SendHeartbeat(iChallenge);
+      IMasterServer::SendHeartbeat(iChallenge);
       break;
     }
 
@@ -69,7 +59,7 @@ void CGameAgentQuery::ServerParsePacket(INDEX iLength)
         _SE_VER_STRING,
         sam_strGameName,
         GetGameAPI()->GetSessionName());
-      _sendPacketTo(strPacket, &_sinFrom);
+      IQuery::SendReply(strPacket);
       break;
     }
 
@@ -90,7 +80,7 @@ void CGameAgentQuery::ServerParsePacket(INDEX iLength)
           // if we don't have enough space left for the next player
           if (strPacket.Length() + strPlayer.Length() > 2048) {
             // send the packet
-            _sendPacketTo(strPacket, &_sinFrom);
+            IQuery::SendReply(strPacket);
             strPacket = "";
           }
 
@@ -99,7 +89,7 @@ void CGameAgentQuery::ServerParsePacket(INDEX iLength)
       }
 
       strPacket += "\x04";
-      _sendPacketTo(strPacket, &_sinFrom);
+      IQuery::SendReply(strPacket);
       break;
     }
 
@@ -108,7 +98,7 @@ void CGameAgentQuery::ServerParsePacket(INDEX iLength)
       // just send back 1 byte and the amount of players in the server (this could be useful in some cases for external scripts)
       CTString strPacket;
       strPacket.PrintF("\x04%d", ctPlayers);
-      _sendPacketTo(strPacket, &_sinFrom);
+      IQuery::SendReply(strPacket);
       break;
     }
   }
@@ -117,15 +107,15 @@ void CGameAgentQuery::ServerParsePacket(INDEX iLength)
 void CGameAgentQuery::EnumTrigger(BOOL bInternet)
 {
   // Make sure that there are no requests still stuck in buffer.
-  ga_asrRequests.Clear();
+  IQuery::aRequests.Clear();
 
   // We're not a server.
   _bServer = FALSE;
   // Initialization.
   _bInitialized = TRUE;
   // Send enumeration packet to masterserver.
-  _sendPacket("e");
-  _setStatus(".");
+  IQuery::SendPacket("e");
+  IQuery::SetStatus(".");
 }
 
 static void ClientParsePacket(INDEX iLength)
@@ -158,13 +148,10 @@ static void ClientParsePacket(INDEX iLength)
         sinServer.sin_port = htons(ip.iPort + 1);
   
         // insert server status request into container
-        CServerRequest &sreq = ga_asrRequests.Push();
-        sreq.sr_ulAddress = sinServer.sin_addr.s_addr;
-        sreq.sr_iPort = sinServer.sin_port;
-        sreq.sr_tmRequestTime = _pTimer->GetHighPrecisionTimer().GetMilliseconds();
+        SServerRequest::AddRequest(sinServer);
   
         // send packet to server
-        _sendPacketTo("\x02", &sinServer);
+        IQuery::SendPacketTo(&sinServer, "\x02", 1);
   
         pServers++;
       }
@@ -242,24 +229,14 @@ static void ClientParsePacket(INDEX iLength)
       CNetworkSession &ns = *new CNetworkSession;
       _pNetwork->ga_lhEnumeratedSessions.AddTail(ns.ns_lnNode);
   
-      __int64 tmPing = -1; // [Cecil] 'long long' -> '__int64'
-
-      // find the request in the request array
-      for (INDEX i = 0; i < ga_asrRequests.Count(); i++)
-      {
-        CServerRequest &req = ga_asrRequests[i];
-
-        if (req.sr_ulAddress == _sinFrom.sin_addr.s_addr && req.sr_iPort == _sinFrom.sin_port) {
-          tmPing = _pTimer->GetHighPrecisionTimer().GetMilliseconds() - req.sr_tmRequestTime;
-          ga_asrRequests.Delete(&req);
-          break;
-        }
-      }
+      CTimerValue tvPing = SServerRequest::PopRequestTime(_sinFrom);
   
-      if (tmPing == -1) {
+      if (tvPing.tv_llValue == -1) {
         // server status was never requested
         break;
       }
+
+      __int64 tmPing = (_pTimer->GetHighPrecisionTimer() - tvPing).GetMilliseconds();
   
       // add the server to the serverlist
       ns.ns_strSession = strSessionName;
@@ -281,7 +258,7 @@ static void ClientParsePacket(INDEX iLength)
 
 void CGameAgentQuery::EnumUpdate(void)
 {
-  int iLength = _recvPacket();
+  int iLength = IQuery::ReceivePacket();
 
   if (iLength == -1) {
     return;

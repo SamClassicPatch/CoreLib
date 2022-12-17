@@ -1,5 +1,4 @@
-/* Copyright (c) 2021-2022 by ZCaliptium.
-
+/* Copyright (c) 2022 Dreamy Cecil
 This program is free software; you can redistribute it and/or modify
 it under the terms of version 2 of the GNU General Public License as published by
 the Free Software Foundation
@@ -17,59 +16,45 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "StdH.h"
 
 #include "QueryMgr.h"
-#include "Networking/CommInterface.h"
 
 #pragma comment(lib, "wsock32.lib")
 
-// [Cecil] Put under the namespace
-namespace QueryData {
-  WSADATA *_wsaData = NULL;
-  SOCKET _socket = NULL;
+// Internal query fields
+sockaddr_in IQuery::sinFrom;
+char *IQuery::pBuffer = NULL;
 
-  sockaddr_in* _sin = NULL;
-  sockaddr_in* _sinLocal = NULL;
-  sockaddr_in _sinFrom;
+BOOL IQuery::bServer = FALSE;
+BOOL IQuery::bInitialized = FALSE;
 
-  CHAR *_szBuffer = NULL;
-  CHAR *_szIPPortBuffer = NULL;
-  INT   _iIPPortBufferLen = 0;
-  CHAR *_szIPPortBufferLocal = NULL;
-  INT   _iIPPortBufferLocalLen = 0;
+CDynamicStackArray<SServerRequest> IQuery::aRequests;
 
-  BOOL _bServer = FALSE;
-  BOOL _bInitialized = FALSE;
-  BOOL _bActivated = FALSE;
-  BOOL _bActivatedLocal = FALSE;
+static WSADATA *_wsaData = NULL;
+static sockaddr_in *_sin = NULL;
+static sockaddr_in *_sinLocal = NULL;
 
-  CDynamicStackArray<CServerRequest> ga_asrRequests;
-};
+static SOCKET _socket = NULL;
 
-// [Cecil] Use query data here
-using namespace QueryData;
+// Master server addresses
+extern CTString ms_strMSLegacy = "master.333networks.com";
+static CTString ms_strGameAgentMS = "master.333networks.com";
+static CTString ms_strDarkPlacesMS = "192.168.1.4";
 
-// [Cecil] Made static
-static TIME _tmLastHeartbeat = -1.0f;
+// Current master server protocol
+extern INDEX ms_iProtocol = E_MS_LEGACY;
 
-CTString ms_strGameAgentMS = "master.333networks.com";
-CTString ms_strMSLegacy = "master.333networks.com";
-CTString ms_strDarkPlacesMS = "192.168.1.4";
-
-// [Cecil] Current master server protocol
-INDEX ms_iProtocol = E_MS_LEGACY;
-
-// [Cecil] Debug output for query
+// Debug output for query
 INDEX ms_bDebugOutput = FALSE;
 
-// [Cecil] Commonly used symbols
+// Commonly used symbols
 CSymbolPtr _piNetPort;
 CSymbolPtr _pstrLocalHost;
 
-// [Cecil] Initialize query manager
+// Initialize query manager
 extern void InitQuery(void) {
   // Custom symbols
-  _pShell->DeclareSymbol("persistent user CTString ms_strGameAgentMS;",  &ms_strGameAgentMS);
   _pShell->DeclareSymbol("persistent user CTString ms_strMSLegacy;",     &ms_strMSLegacy);
   _pShell->DeclareSymbol("persistent user CTString ms_strDarkPlacesMS;", &ms_strDarkPlacesMS);
+  _pShell->DeclareSymbol("persistent user CTString ms_strGameAgentMS;",  &ms_strGameAgentMS);
   _pShell->DeclareSymbol("persistent user INDEX ms_iProtocol;",          &ms_iProtocol);
   _pShell->DeclareSymbol("persistent user INDEX ms_bDebugOutput;",       &ms_bDebugOutput);
 
@@ -86,364 +71,149 @@ extern void InitQuery(void) {
   _pstrLocalHost.Find("net_strLocalHost");
 };
 
-void _uninitWinsock();
-
-void _initializeWinsock(void)
-{
+// Initialize the socket
+void IQuery::InitWinsock(void) {
+  // Already initialized
   if (_wsaData != NULL && _socket != NULL) {
     return;
   }
 
+  // Create new socket address
   _wsaData = new WSADATA;
   _socket = NULL;
 
-  // make the buffer that we'll use for packet reading
-  if (_szBuffer != NULL) {
-    delete[] _szBuffer;
+  // Create a buffer for packets
+  if (IQuery::pBuffer != NULL) {
+    delete[] IQuery::pBuffer;
   }
-  _szBuffer = new char[2050];
+  IQuery::pBuffer = new char[2050];
 
-  // start WSA
+  // Start socket address
   if (WSAStartup(MAKEWORD(2, 2), _wsaData) != 0) {
+    // Something went wrong
     CPutString("Error initializing winsock!\n");
-    _uninitWinsock();
+    CloseWinsock();
     return;
   }
 
-  // [Cecil] Arranged in an array
+  // Master server addresses
   static const CTString astrIPs[E_MS_MAX] = {
     ms_strMSLegacy,
     ms_strDarkPlacesMS,
     ms_strGameAgentMS,
   };
 
-  // [Cecil] Select IP first
-  const CTString &strMasterServerIP = astrIPs[GetProtocol()];
+  // Get host from the address
+  const CTString &strMasterServerIP = astrIPs[IMasterServer::GetProtocol()];
+  hostent* phe = gethostbyname(strMasterServerIP);
 
-  // get the host IP
-  hostent* phe = gethostbyname(strMasterServerIP); // [Cecil] Get host
-
-  // if we couldn't resolve the hostname
+  // Couldn't resolve the hostname
   if (phe == NULL) {
-    // report and stop
     CPrintF("Couldn't resolve the host server '%s'\n", strMasterServerIP);
-    _uninitWinsock();
+    CloseWinsock();
     return;
   }
 
-  // create the socket destination address
+  // Create destination address
   _sin = new sockaddr_in;
   _sin->sin_family = AF_INET;
-  _sin->sin_addr.s_addr = *(ULONG*)phe->h_addr_list[0];
+  _sin->sin_addr.s_addr = *(ULONG *)phe->h_addr_list[0];
 
-  // [Cecil] Arranged in an array
+  // Master server ports
   static const UWORD aiPorts[E_MS_MAX] = {
     27900,
     27950,
     9005,
   };
-  
-  // [SSE]
-  _sin->sin_port = htons(aiPorts[GetProtocol()]);
 
-  // create the socket
+  // Select master server port
+  _sin->sin_port = htons(aiPorts[IMasterServer::GetProtocol()]);
+
+  // Create the socket
   _socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 
-  // if we're a server
-  if (_bServer) {
-    // create the local socket source address
+  // If it's a server
+  if (IQuery::bServer) {
+    // Create local socket source address
     _sinLocal = new sockaddr_in;
     _sinLocal->sin_family = AF_INET;
     _sinLocal->sin_addr.s_addr = inet_addr("0.0.0.0");
     _sinLocal->sin_port = htons(_piNetPort.GetIndex() + 1);
-    
-    int optval = 1;
-    if (setsockopt(_socket, SOL_SOCKET, SO_BROADCAST, (char *)&optval, sizeof(optval)) != 0)
-    {
-      CPutString("Error while allowing UDP broadcast receiving for socket.");
-      _uninitWinsock();
+
+    // Allow receiving UDP broadcast
+    int iOpt = 1;
+
+    if (setsockopt(_socket, SOL_SOCKET, SO_BROADCAST, (char *)&iOpt, sizeof(iOpt)) != 0) {
+      CPutString("Couldn't allow receiving UDP broadcast for the socket!\n");
+      CloseWinsock();
       return;
     }
 
-    // bind the socket
-    bind(_socket, (sockaddr*)_sinLocal, sizeof(*_sinLocal));
+    // Bind the socket
+    bind(_socket, (sockaddr *)_sinLocal, sizeof(*_sinLocal));
   }
 
-  // set the socket to be nonblocking
+  // Set socket to be non-blocking
   DWORD dwNonBlocking = 1;
+
   if (ioctlsocket(_socket, FIONBIO, &dwNonBlocking) != 0) {
-    CPutString("Error setting socket to nonblocking!\n");
-    _uninitWinsock();
-    return;
-  }
-}
-
-void _uninitWinsock()
-{
-  if (_wsaData != NULL) {
-    closesocket(_socket);
-    delete _wsaData;
-    _wsaData = NULL;
-  }
-  _socket = NULL;
-}
-
-void _sendPacketTo(const char* pubBuffer, INDEX iLen, sockaddr_in* sin)
-{
-  sendto(_socket, pubBuffer, iLen, 0, (sockaddr*)sin, sizeof(sockaddr_in));
-}
-
-void _sendPacketTo(const char* szBuffer, sockaddr_in* addsin)
-{
-  sendto(_socket, szBuffer, strlen(szBuffer), 0, (sockaddr*)addsin, sizeof(sockaddr_in));
-}
-
-void _sendPacket(const char* pubBuffer, INDEX iLen)
-{
-  _initializeWinsock();
-  _sendPacketTo(pubBuffer, iLen, _sin);
-}
-
-void _sendPacket(const char* szBuffer)
-{
-  _initializeWinsock();
-  _sendPacketTo(szBuffer, _sin);
-}
-
-int _recvPacket()
-{
-  int fromLength = sizeof(_sinFrom);
-  return recvfrom(_socket, _szBuffer, 2048, 0, (sockaddr*)&_sinFrom, &fromLength);
-}
-
-void MS_SendHeartbeat(INDEX iChallenge)
-{
-  CTString strPacket;
-  
-  // [SSE]
-  switch (GetProtocol()) {
-    case E_MS_LEGACY:
-      CLegacyQuery::BuildHearthbeatPacket(strPacket);
-      break;
-
-    case E_MS_DARKPLACES:
-      CDarkPlacesQuery::BuildHearthbeatPacket(strPacket);
-      break;
-
-    case E_MS_GAMEAGENT:
-      CGameAgentQuery::BuildHearthbeatPacket(strPacket, iChallenge);
-      break;
-  }
-
-  _sendPacket(strPacket);
-  _tmLastHeartbeat = _pTimer->GetRealTimeTick();
-
-  if (ms_bDebugOutput) {
-    CPrintF("Sending heartbeat:\n%s\n", strPacket);
-  }
-}
-
-extern void _setStatus(const CTString &strStatus)
-{
-  _pNetwork->ga_bEnumerationChange = TRUE;
-  _pNetwork->ga_strEnumerationStatus = strStatus;
-}
-
-CServerRequest::CServerRequest(void)
-{
-  Clear();
-}
-
-CServerRequest::~CServerRequest(void) {}
-
-void CServerRequest::Clear(void)
-{
-  sr_ulAddress = 0;
-  sr_iPort = 0;
-  sr_tmRequestTime = 0;
-}
-
-// Called on every network server startup.
-void MS_OnServerStart(void)
-{
-  // join
-  _bServer = TRUE;
-  _bInitialized = TRUE;
-  
-  // [SSE]
-  switch (GetProtocol()) {
-    // [Cecil] Unused in SSE
-    /*case E_MS_LEGACY: {
-      CTString strPacket;
-      strPacket.PrintF("\\heartbeat\\%hu\\gamename\\%s", (_piNetPort.GetIndex() + 1), SERIOUSSAMSTR);
-
-      _sendPacket(strPacket);
-
-      if (ms_bDebugOutput) {
-        CPrintF("Server start:\n%s\n", strPacket);
-      }
-    } break;*/
-
-    case E_MS_DARKPLACES: {
-      CTString strPacket;
-      strPacket.PrintF("\xFF\xFF\xFF\xFFheartbeat DarkPlaces\x0A");
-    
-      _sendPacket(strPacket);
-    } break;
-
-    case E_MS_GAMEAGENT: {
-      _sendPacket("q");
-    } break;
-  }
-}
-
-// Called if server has been stopped.
-void MS_OnServerEnd(void)
-{
-  if (!_bInitialized) {
-    return;
-  }
-
-  const INDEX iProtocol = GetProtocol();
-
-  if (iProtocol == E_MS_DARKPLACES) {
-    MS_SendHeartbeat(0);
-    MS_SendHeartbeat(0);
-
-  // [Cecil] Anything but GameAgent
-  } else if (iProtocol != E_MS_GAMEAGENT) {
-    CTString strPacket;
-    strPacket.PrintF("\\heartbeat\\%hu\\gamename\\%s\\statechanged", (_piNetPort.GetIndex() + 1), SERIOUSSAMSTR);
-    _sendPacket(strPacket);
-
-    if (ms_bDebugOutput) {
-      CPrintF("Server end:\n%s\n", strPacket);
-    }
-  }
-
-  _uninitWinsock();
-  _bInitialized = FALSE;
-}
-
-// Regular network server update.
-// Responds to enumeration pings and sends pings to masterserver.
-void MS_OnServerUpdate(void)
-{
-  if ((_socket == NULL) || (!_bInitialized)) {
-    return;
-  }
-
-  memset(&_szBuffer[0], 0, 2050);
-  INDEX iLength = _recvPacket();
-
-  if (iLength > 0)
-  {
-    if (ms_bDebugOutput) {
-      CPrintF("Received packet, length: %d\n", iLength);
-    }
-
-    // [Cecil] Arranged in an array
-    static void (*apParsePacket[E_MS_MAX])(INDEX) = {
-      &CLegacyQuery::ServerParsePacket,
-      &CDarkPlacesQuery::ServerParsePacket,
-      &CGameAgentQuery::ServerParsePacket,
-    };
-
-    // [SSE]
-    (*apParsePacket[GetProtocol()])(iLength);
-  }
-
-  // send a heartbeat every 150 seconds
-  if (_pTimer->GetRealTimeTick() - _tmLastHeartbeat >= 150.0f) {
-    MS_SendHeartbeat(0);
+    CPutString("Couldn't make socket non-blocking!\n");
+    CloseWinsock();
   }
 };
 
-// Notify master server that the server state has changed.
-void MS_OnServerStateChanged(void)
-{
-  if (!_bInitialized) {
-    return;
+// Close the socket
+void IQuery::CloseWinsock(void) {
+  // If socket address exists
+  if (_wsaData != NULL) {
+    // Close the socket
+    closesocket(_socket);
+
+    // Delete socket address
+    delete _wsaData;
+    _wsaData = NULL;
   }
 
-  // [Cecil] Arranged in a switch-case
-  switch (GetProtocol()) {
-    case E_MS_LEGACY: {
-      CTString strPacket;
-      strPacket.PrintF("\\heartbeat\\%hu\\gamename\\%s\\statechanged", (_piNetPort.GetIndex() + 1), SERIOUSSAMSTR);
+  // Reset socket
+  _socket = NULL;
+};
 
-      _sendPacket(strPacket);
+// Check if the socket is usable
+BOOL IQuery::IsSocketUsable(void) {
+  return (_socket != NULL && bInitialized);
+};
 
-      if (ms_bDebugOutput) {
-        CPrintF("Sending state change:\n%s\n", strPacket);
-      }
-    } break;
+// Send packet with data from a buffer
+void IQuery::SendPacket(const char *pBuffer, int iLength) {
+  // Initialize the socket in case it's not
+  InitWinsock();
 
-    // Nothing for E_MS_DARKPLACES
-
-    case E_MS_GAMEAGENT: {
-      _sendPacket("u");
-    } break;
-  }
-}
-
-// Request serverlist enumeration. Sends request packet.
-void MS_EnumTrigger(BOOL bInternet)
-{
-  if (_pNetwork->ga_bEnumerationChange) {
-    return;
-  }
-  
-  // [Cecil] Arranged in an array
-  static void (*apEnumTrigger[E_MS_MAX])(BOOL) = {
-    &CLegacyQuery::EnumTrigger,
-    &CDarkPlacesQuery::EnumTrigger,
-    &CGameAgentQuery::EnumTrigger,
-  };
-
-  (*apEnumTrigger[GetProtocol()])(bInternet);
-}
-
-// Client update for enumerations.
-void MS_EnumUpdate(void)
-{
-  if ((_socket == NULL) || (!_bInitialized)) {
-    return;
-  }
-  
-  // [Cecil] Arranged in an array
-  static void (*apEnumUpdate[E_MS_MAX])(void) = {
-    &CLegacyQuery::EnumUpdate,
-    &CDarkPlacesQuery::EnumUpdate,
-    &CGameAgentQuery::EnumUpdate,
-  };
-
-  // [SSE]
-  (*apEnumUpdate[GetProtocol()])();
-}
-
-// Cancel the master server serverlist enumeration.
-void MS_EnumCancel(void)
-{
-  if (_bInitialized) {
-    ga_asrRequests.Clear();
-    _uninitWinsock();
-  }
-}
-
-// [Cecil] Replacement for CNetworkLibrary::EnumSessions
-void MS_EnumSessions(BOOL bInternet)
-{
-  // Clear old sessions
-  FORDELETELIST(CNetworkSession, ns_lnNode, _pNetwork->ga_lhEnumeratedSessions, itns) {
-    delete &*itns;
+  // Calculate buffer length
+  if (iLength == -1) {
+    iLength = strlen(pBuffer);
   }
 
-  if (!GetComm().IsNetworkEnabled()) {
-    // Have to enumerate as server
-    GetComm().PrepareForUse(TRUE, FALSE);
-  }
+  SendPacketTo(_sin, pBuffer, iLength);
+};
 
-  // Enumerate sessions using new query manager
-  MS_EnumTrigger(bInternet);
+// Send data packet through a specific socket
+void IQuery::SendPacketTo(sockaddr_in *psin, const char *pBuffer, int iLength) {
+  sendto(_socket, pBuffer, iLength, 0, (sockaddr *)psin, sizeof(sockaddr_in));
+};
+
+// Send reply packet with a message
+void IQuery::SendReply(const CTString &strMessage) {
+  SendPacketTo(&IQuery::sinFrom, strMessage.str_String, strMessage.Length());
+};
+
+// Receive some packet
+int IQuery::ReceivePacket(void) {
+  int ctFrom = sizeof(IQuery::sinFrom);
+  return recvfrom(_socket, IQuery::pBuffer, 2048, 0, (sockaddr *)&IQuery::sinFrom, &ctFrom);
+};
+
+// Set enumeration status
+void IQuery::SetStatus(const CTString &strStatus) {
+  _pNetwork->ga_bEnumerationChange = TRUE;
+  _pNetwork->ga_strEnumerationStatus = strStatus;
 };

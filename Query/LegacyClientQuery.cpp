@@ -51,21 +51,22 @@ extern u_int resolv(char *host);
                     "%s%s" \
                     "\\final\\"
 
-// [Cecil] Use query data here
-using namespace QueryData;
+// Buffer of online IP addresses
+static char *_szIPPortBuffer = NULL;
+static INDEX _iIPPortBufferLen = 0;
 
-extern void _initializeWinsock(void);
-extern void _uninitWinsock();
-extern void _sendPacket(const char* szBuffer);
-extern void _sendPacket(const char* pubBuffer, INDEX iLen);
-extern void _sendPacketTo(const char* szBuffer, sockaddr_in* addsin);
-extern void _sendPacketTo(const char* pubBuffer, INDEX iLen, sockaddr_in* sin);
-extern void _setStatus(const CTString &strStatus);
+// Buffer of local IP addresses
+static char *_szIPPortBufferLocal = NULL;
+static INDEX _iIPPortBufferLocalLen = 0;
+
+// Enumeration activation
+static BOOL _bActivated = FALSE;
+static BOOL _bActivatedLocal = FALSE;
 
 static void _LocalSearch()
 {
   // make sure that there are no requests still stuck in buffer
-  ga_asrRequests.Clear();
+  IQuery::aRequests.Clear();
 
   // we're not a server
   _bServer = FALSE;
@@ -95,7 +96,7 @@ static void _LocalSearch()
       delete[] _szIPPortBufferLocal;
     }
     _szIPPortBufferLocal = NULL;
-    _uninitWinsock();
+    IQuery::CloseWinsock();
     _bInitialized = FALSE;
     _pNetwork->ga_bEnumerationChange = FALSE;
     _pNetwork->ga_strEnumerationStatus = "";
@@ -144,7 +145,7 @@ static void _LocalSearch()
 
   _bActivatedLocal = TRUE;
   _bInitialized = TRUE;
-  _initializeWinsock();
+  IQuery::InitWinsock();
 }
 
 void CLegacyQuery::EnumTrigger(BOOL bInternet)
@@ -158,7 +159,7 @@ void CLegacyQuery::EnumTrigger(BOOL bInternet)
   } else {
 
     // make sure that there are no requests still stuck in buffer
-    ga_asrRequests.Clear();
+    IQuery::aRequests.Clear();
     // we're not a server
     _bServer = FALSE;
     _pNetwork->ga_strEnumerationStatus = ".";
@@ -173,8 +174,8 @@ void CLegacyQuery::EnumTrigger(BOOL bInternet)
             iEnctype             = 0;
     u_short usMSport             = MSPORT;
 
-    u_char  ucGamekey[]          = {SERIOUSSAMKEY},
-            ucGamestr[]          = {SERIOUSSAMSTR},
+    u_char  ucGamekey[]          = {SAM_MS_KEY},
+            ucGamestr[]          = {SAM_MS_NAME},
             *ucSec               = NULL,
             *ucKey               = NULL;
 
@@ -185,7 +186,7 @@ void CLegacyQuery::EnumTrigger(BOOL bInternet)
             *cMsstring           = NULL,
             *cSec                = NULL;
 
-
+    extern CTString ms_strMSLegacy;
     strcpy(cMS, ms_strMSLegacy);
 
     WSADATA wsadata;
@@ -336,10 +337,13 @@ void CLegacyQuery::EnumTrigger(BOOL bInternet)
 
     _bActivated = TRUE;
     _bInitialized = TRUE;
-    _initializeWinsock();
+    IQuery::InitWinsock();
      
   }
 }
+
+static DWORD WINAPI _MS_Thread(LPVOID lpParam);
+static DWORD WINAPI _LocalNet_Thread(LPVOID lpParam);
 
 void CLegacyQuery::EnumUpdate(void)
 {
@@ -452,19 +456,11 @@ static void ParseStatusResponse(sockaddr_in &_sinClient, BOOL bIgnorePing)
       strGameName = strActiveMod;
   }
 
-  __int64 tmPing = -1; // [Cecil] 'long long' -> '__int64'
-  // find the request in the request array
-  for (INDEX i=0; i<ga_asrRequests.Count(); i++) {
-      CServerRequest &req = ga_asrRequests[i];
-      if (req.sr_ulAddress == _sinClient.sin_addr.s_addr && req.sr_iPort == _sinClient.sin_port) {
-          tmPing = _pTimer->GetHighPrecisionTimer().GetMilliseconds() - req.sr_tmRequestTime;
-          ga_asrRequests.Delete(&req);
-          break;
-      }
-  }
-  
-  if (bIgnorePing) {
-    tmPing = 0;
+  CTimerValue tvPing = SServerRequest::PopRequestTime(_sinClient);
+  __int64 tmPing = 0;
+
+  if (!bIgnorePing && tvPing.tv_llValue != -1) {
+    tmPing = (_pTimer->GetHighPrecisionTimer() - tvPing).GetMilliseconds();
   }
 
   if (bIgnorePing || (tmPing > 0 && tmPing < 2500000))
@@ -497,7 +493,7 @@ DWORD WINAPI _MS_Thread(LPVOID lpParam)
     USHORT iPort;
   };
 
-  _setStatus("");
+  IQuery::SetStatus("");
   _sockudp = socket(AF_INET, SOCK_DGRAM, 0);
 
   if (_sockudp == INVALID_SOCKET){
@@ -523,10 +519,7 @@ DWORD WINAPI _MS_Thread(LPVOID lpParam)
     sinServer.sin_port = ip.iPort;
 
     // insert server status request into container
-    CServerRequest &sreq = ga_asrRequests.Push();
-    sreq.sr_ulAddress = sinServer.sin_addr.s_addr;
-    sreq.sr_iPort = sinServer.sin_port;
-    sreq.sr_tmRequestTime = _pTimer->GetHighPrecisionTimer().GetMilliseconds();
+    SServerRequest::AddRequest(sinServer);
 
     // send packet to server
     sendto(_sockudp,"\\status\\",8,0,
@@ -555,7 +548,7 @@ DWORD WINAPI _MS_Thread(LPVOID lpParam)
         // null terminate the buffer
         _szBuffer[iRet] = 0;
         char *sPch = NULL;
-        sPch = strstr(_szBuffer, "\\gamename\\" SERIOUSSAMSTR "\\");
+        sPch = strstr(_szBuffer, "\\gamename\\" SAM_MS_NAME "\\");
 
         if (!sPch) {
           CPutString("Unknown query server response!\n");
@@ -565,14 +558,10 @@ DWORD WINAPI _MS_Thread(LPVOID lpParam)
         }
 
       } else {
-        // find the request in the request array
-        for (INDEX i = 0; i < ga_asrRequests.Count(); i++)
-        {
-          CServerRequest &req = ga_asrRequests[i];
-          if (req.sr_ulAddress == _sinClient.sin_addr.s_addr && req.sr_iPort == _sinClient.sin_port) {
-            ga_asrRequests.Delete(&req);
-            break;
-          }
+        SServerRequest *preq = SServerRequest::Find(_sinClient);
+
+        if (preq != NULL) {
+          IQuery::aRequests.Delete(preq);
         }
       }
     }
@@ -585,7 +574,7 @@ DWORD WINAPI _MS_Thread(LPVOID lpParam)
   _szIPPortBuffer = NULL;
 
   closesocket(_sockudp);
-  _uninitWinsock();
+  IQuery::InitWinsock();
   _bInitialized = FALSE;
   _pNetwork->ga_bEnumerationChange = FALSE;
   WSACleanup();
@@ -695,7 +684,7 @@ DWORD WINAPI _LocalNet_Thread(LPVOID lpParam)
         // null terminate the buffer
         _szBuffer[iRet] = 0;
         char *sPch = NULL;
-        sPch = strstr(_szBuffer, "\\gamename\\" SERIOUSSAMSTR "\\");
+        sPch = strstr(_szBuffer, "\\gamename\\" SAM_MS_NAME "\\");
 
         if (!sPch) {
           CPutString("Unknown query server response!\n");
@@ -711,14 +700,10 @@ DWORD WINAPI _LocalNet_Thread(LPVOID lpParam)
         }
 
       } else {
-        // find the request in the request array
-        for (INDEX i=0; i<ga_asrRequests.Count(); i++)
-        {
-          CServerRequest &req = ga_asrRequests[i];
-          if (req.sr_ulAddress == _sinClient.sin_addr.s_addr && req.sr_iPort == _sinClient.sin_port) {
-            ga_asrRequests.Delete(&req);
-            break;
-          }
+        SServerRequest *preq = SServerRequest::Find(_sinClient);
+
+        if (preq != NULL) {
+          IQuery::aRequests.Delete(preq);
         }
       }
     }
@@ -734,7 +719,7 @@ DWORD WINAPI _LocalNet_Thread(LPVOID lpParam)
   _szIPPortBufferLocal = NULL;
 
   closesocket(_sockudp);
-  _uninitWinsock();
+  IQuery::CloseWinsock();
   _bInitialized = FALSE;
   _pNetwork->ga_bEnumerationChange = FALSE;
   _pNetwork->ga_strEnumerationStatus = "";

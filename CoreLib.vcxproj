@@ -59,12 +59,13 @@
     <ClInclude Include="Networking\Modules.h" />
     <ClInclude Include="Networking\SplitScreenClients.h" />
     <ClInclude Include="Networking\StreamBlock.h" />
-    <ClInclude Include="Objects\Node.h" />
     <ClInclude Include="Objects\StructPtr.h" />
     <ClInclude Include="Patcher\FuncPatching.h" />
     <ClInclude Include="Patcher\patcher.h" />
     <ClInclude Include="Patcher\patcher_defines.h" />
     <ClInclude Include="Query\QueryMgr.h" />
+    <ClInclude Include="Query\MasterServer.h" />
+    <ClInclude Include="Query\ServerRequest.h" />
     <ClInclude Include="StdH.h" />
   </ItemGroup>
   <ItemGroup>
@@ -83,7 +84,6 @@
     <ClCompile Include="Networking\NetworkFunctions.cpp" />
     <ClCompile Include="Networking\SplitScreenClients.cpp" />
     <ClCompile Include="Networking\StreamBlock.cpp" />
-    <ClCompile Include="Objects\Node.cpp" />
     <ClCompile Include="Patcher\patcher.cpp" />
     <ClCompile Include="Query\DarkPlacesQuery.cpp" />
     <ClCompile Include="Query\GameAgentQuery.cpp" />
@@ -91,6 +91,8 @@
     <ClCompile Include="Query\LegacyServerQuery.cpp" />
     <ClCompile Include="Query\Legacy_Functions.cpp" />
     <ClCompile Include="Query\QueryMgr.cpp" />
+    <ClCompile Include="Query\MasterServer.cpp" />
+    <ClCompile Include="Query\ServerRequest.cpp" />
     <ClCompile Include="StdH.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug_TSE107|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_TSE105|Win32'">Create</PrecompiledHeader>

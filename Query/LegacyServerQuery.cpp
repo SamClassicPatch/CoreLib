@@ -63,21 +63,10 @@ extern unsigned char *gsseckey(u_char *secure, u_char *key, int enctype);
                     "\\final\\" \
                     "\\queryid\\1.1"
 
-// [Cecil] Use query data here
-using namespace QueryData;
-
-extern void _initializeWinsock(void);
-extern void _uninitWinsock();
-extern void _sendPacket(const char* szBuffer);
-extern void _sendPacket(const char* pubBuffer, INDEX iLen);
-extern void _sendPacketTo(const char* szBuffer, sockaddr_in* addsin);
-extern void _sendPacketTo(const char* pubBuffer, INDEX iLen, sockaddr_in* sin);
-extern void _setStatus(const CTString &strStatus);
-
 // Builds hearthbeat packet.
 void CLegacyQuery::BuildHearthbeatPacket(CTString &strPacket)
 {
-  strPacket.PrintF("\\heartbeat\\%hu\\gamename\\%s", (_piNetPort.GetIndex() + 1), SERIOUSSAMSTR);
+  strPacket.PrintF("\\heartbeat\\%hu\\gamename\\%s", (_piNetPort.GetIndex() + 1), SAM_MS_NAME);
 }
 
 void CLegacyQuery::ServerParsePacket(INDEX iLength)
@@ -156,7 +145,7 @@ void CLegacyQuery::ServerParsePacket(INDEX iLength)
           // if we don't have enough space left for the next player
           if (strPacket.Length() + strPlayer.Length() > 2048) {
             // send the packet
-            _sendPacketTo(strPacket, &_sinFrom);
+            IQuery::SendReply(strPacket);
             strPacket = "";
           }
           strPacket += strPlayer;
@@ -164,7 +153,7 @@ void CLegacyQuery::ServerParsePacket(INDEX iLength)
       }
 
     strPacket += "\\final\\\\queryid\\333.1";
-    _sendPacketTo(strPacket, &_sinFrom);
+    IQuery::SendReply(strPacket);
 
     if (ms_bDebugOutput) {
       CPrintF("Sending status answer:\n%s\n", strPacket);
@@ -181,7 +170,7 @@ void CLegacyQuery::ServerParsePacket(INDEX iLength)
       GetGameAPI()->GetCurrentGameTypeNameSS(),
       ctPlayers,
       _pNetwork->ga_sesSessionState.ses_ctMaxPlayers);
-    _sendPacketTo(strPacket, &_sinFrom);
+    IQuery::SendReply(strPacket);
 
     if (ms_bDebugOutput) {
       CPrintF("Sending info answer:\n%s\n", strPacket);
@@ -201,7 +190,7 @@ void CLegacyQuery::ServerParsePacket(INDEX iLength)
       _SE_VER_STRING,
       //_pstrLocalHost.GetString());
       strLocation);
-    _sendPacketTo(strPacket, &_sinFrom);
+    IQuery::SendReply(strPacket);
 
     if (ms_bDebugOutput) {
       CPrintF("Sending basic answer:\n%s\n", strPacket);
@@ -226,7 +215,7 @@ void CLegacyQuery::ServerParsePacket(INDEX iLength)
         // if we don't have enough space left for the next player
         if (strlen(strPacket) + strlen(strPlayer) > 2048) {
           // send the packet
-          _sendPacketTo(strPacket, &_sinFrom);
+          IQuery::SendReply(strPacket);
           strPacket = "";
         }
 
@@ -235,7 +224,7 @@ void CLegacyQuery::ServerParsePacket(INDEX iLength)
     }
 
     strPacket += "\\final\\\\queryid\\6.1";
-    _sendPacketTo(strPacket, &_sinFrom);
+    IQuery::SendReply(strPacket);
 
     if (ms_bDebugOutput) {
       CPrintF("Sending players answer:\n%s\n", strPacket);
@@ -248,7 +237,7 @@ void CLegacyQuery::ServerParsePacket(INDEX iLength)
     
     //CPrintF("SecureKey: %s\n", data);
     
-    u_char  ucGamekey[]          = {SERIOUSSAMKEY};
+    u_char  ucGamekey[]          = {SAM_MS_NAME};
     //u_char  ucReckey[]          = {"XUCXHC"};
     //CPrintF("SecureKey: %s\n", ucReckey);
     unsigned char *pValidateKey = NULL;
@@ -256,7 +245,7 @@ void CLegacyQuery::ServerParsePacket(INDEX iLength)
     
     CTString strPacket;
     strPacket.PrintF("\\validate\\%s\\final\\%s\\queryid\\2.1", pValidateKey, "");
-    _sendPacketTo(strPacket, &_sinFrom);
+    IQuery::SendReply(strPacket);
 
     if (ms_bDebugOutput) {
       CPrintF("Sending validation answer:\n%s\n", strPacket);

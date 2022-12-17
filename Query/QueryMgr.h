@@ -1,4 +1,4 @@
-/* Copyright (c) 2002-2012 Croteam Ltd. 
+/* Copyright (c) 2022 Dreamy Cecil
 This program is free software; you can redistribute it and/or modify
 it under the terms of version 2 of the GNU General Public License as published by
 the Free Software Foundation
@@ -13,62 +13,77 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#ifndef SE_INCL_GAMEAGENT_H
-#define SE_INCL_GAMEAGENT_H
+#ifndef CECIL_INCL_QUERYMANAGER_H
+#define CECIL_INCL_QUERYMANAGER_H
 
 #ifdef PRAGMA_ONCE
   #pragma once
 #endif
 
-extern CTString ms_strGameAgentMS;
-extern CTString ms_strMSLegacy;
-extern CTString ms_strDarkPlacesMS;
+#include "MasterServer.h"
+#include "ServerRequest.h"
 
-// [Cecil] Master server protocols
-enum EMasterServerProtocols {
-  E_MS_LEGACY     = 0, // Default
+// Master server protocols
+enum EMasterServers {
+  E_MS_LEGACY     = 0, // GameSpy emulation (default)
   E_MS_DARKPLACES = 1, // Dark Places
-  E_MS_GAMEAGENT  = 2, // SE1.10
+  E_MS_GAMEAGENT  = 2, // GameAgent from 1.10
 
   E_MS_MAX,
 };
 
-// [Cecil] Current master server protocol
-extern INDEX ms_iProtocol;
-
-// [Cecil] Get current protocol
-inline INDEX GetProtocol(void) {
-  if (ms_iProtocol < E_MS_LEGACY || ms_iProtocol >= E_MS_MAX) {
-    return E_MS_LEGACY;
-  }
-  return ms_iProtocol;
-};
-
-// [Cecil] Debug output for query
+// Debug output for query
 CORE_API extern INDEX ms_bDebugOutput;
 
-// [Cecil] Commonly used symbols
+// Commonly used symbols
 extern CSymbolPtr _piNetPort;
 extern CSymbolPtr _pstrLocalHost;
 
-CORE_API void MS_OnServerStart(void);
-CORE_API void MS_OnServerEnd(void);
-CORE_API void MS_OnServerUpdate(void);
-CORE_API void MS_OnServerStateChanged(void);
+// Internal query functionality
+class IQuery {
+  public:
+    static sockaddr_in sinFrom;
+    static char *pBuffer;
 
-// Common Serverlist Enumeration
-CORE_API void MS_SendHeartbeat(INDEX iChallenge);
+    static BOOL bServer;
+    static BOOL bInitialized;
 
-CORE_API void MS_EnumTrigger(BOOL bInternet);
-CORE_API void MS_EnumUpdate(void);
-CORE_API void MS_EnumCancel(void);
+    static CDynamicStackArray<SServerRequest> aRequests;
 
-// [Cecil] Replacement for CNetworkLibrary::EnumSessions
-CORE_API void MS_EnumSessions(BOOL bInternet);
+    // [Cecil] TEMP: Old fields
+    #define _sinFrom      IQuery::sinFrom
+    #define _szBuffer     IQuery::pBuffer
+    #define _bServer      IQuery::bServer
+    #define _bInitialized IQuery::bInitialized
 
-// GameAgent Master Server
-class CGameAgentQuery
-{
+  public:
+    // Initialize the socket
+    static void InitWinsock(void);
+
+    // Close the socket
+    static void CloseWinsock();
+
+    // Check if the socket is usable
+    static BOOL IsSocketUsable(void);
+
+    // Send data packet
+    static void SendPacket(const char *pBuffer, int iLength = -1);
+
+    // Send data packet through a specific socket
+    static void SendPacketTo(sockaddr_in *psin, const char *pBuffer, int iLength);
+
+    // Send reply packet with a message
+    static void SendReply(const CTString &strMessage);
+
+    // Receive some packet
+    static int ReceivePacket(void);
+
+    // Set enumeration status
+    static void SetStatus(const CTString &strStatus);
+};
+
+// GameAgent protocol
+class CGameAgentQuery {
   public:
     static void BuildHearthbeatPacket(CTString &strPacket, INDEX iChallenge);
     static void EnumTrigger(BOOL bInternet);
@@ -76,9 +91,8 @@ class CGameAgentQuery
     static void ServerParsePacket(INDEX iLength);
 };
 
-// Legacy Master Server
-class CLegacyQuery
-{
+// Legacy protocol
+class CLegacyQuery {
   public:
     static void BuildHearthbeatPacket(CTString &strPacket);
     static void EnumTrigger(BOOL bInternet);
@@ -86,57 +100,17 @@ class CLegacyQuery
     static void ServerParsePacket(INDEX iLength);
 };
 
-// DarkPlaces Master Server
-class CDarkPlacesQuery
-{
-  public:  
+// DarkPlaces protocol
+class CDarkPlacesQuery {
+  public:
     static void BuildHearthbeatPacket(CTString &strPacket);
     static void EnumTrigger(BOOL bInternet);
     static void EnumUpdate(void);
     static void ServerParsePacket(INDEX iLength);
 };
 
-DWORD WINAPI _MS_Thread(LPVOID lpParam);
-DWORD WINAPI _LocalNet_Thread(LPVOID lpParam);
+// Game key and game name for the master server
+#define SAM_MS_KEY "AKbna4\0"
+#define SAM_MS_NAME CHOOSE_FOR_GAME("serioussam", "serioussamse", "serioussamse")
 
-//! Server request structure. Primarily used for getting server pings.
-class CServerRequest
-{
-  public:
-    ULONG sr_ulAddress;
-    USHORT sr_iPort;
-    __int64 sr_tmRequestTime; // [Cecil] 'long long' -> '__int64'
-
-  public:
-    CServerRequest(void);
-    ~CServerRequest(void);
-
-    //! Destroy all objects, and reset the array to initial (empty) state.
-    void Clear(void);
-};
-
-// [Cecil] Made query data available from anywhere
-namespace QueryData {
-  // Used by all
-  extern sockaddr_in _sinFrom;
-  extern CHAR* _szBuffer;
-
-  extern BOOL _bServer;
-  extern BOOL _bInitialized;
-  extern BOOL _bActivated;
-  extern BOOL _bActivatedLocal;
-
-  extern CDynamicStackArray<CServerRequest> ga_asrRequests;
-
-  // Used by MSLegacy
-  extern CHAR *_szIPPortBuffer;
-  extern INT   _iIPPortBufferLen;
-  extern CHAR *_szIPPortBufferLocal;
-  extern INT   _iIPPortBufferLocalLen;
-};
-
-// [Cecil] Moved out of Legacy query sources
-#define SERIOUSSAMKEY "AKbna4\0"
-#define SERIOUSSAMSTR CHOOSE_FOR_GAME("serioussam", "serioussamse", "serioussamse")
-
-#endif // include once check
+#endif

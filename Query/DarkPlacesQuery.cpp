@@ -21,16 +21,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define DP_NET_PROTOCOL_VERSION 3
 
-// [Cecil] Use query data here
-using namespace QueryData;
-
-extern void _sendPacket(const char* szBuffer);
-extern void _sendPacket(const char* pubBuffer, INDEX iLen);
-extern void _sendPacketTo(const char* szBuffer, sockaddr_in* addsin);
-extern void _sendPacketTo(const char* pubBuffer, INDEX iLen, sockaddr_in* sin);
-extern void _setStatus(const CTString &strStatus);
-extern int _recvPacket();
-
 // Builds hearthbeat packet.
 void CDarkPlacesQuery::BuildHearthbeatPacket(CTString &strPacket)
 {
@@ -101,7 +91,7 @@ void CDarkPlacesQuery::ServerParsePacket(INDEX iLength)
       
       DarkPlaces_BuildStatusResponse(challenge, strPacket, false);
 
-      _sendPacket(strPacket);
+      IQuery::SendPacket(strPacket);
       return;
     }
 
@@ -122,7 +112,7 @@ void CDarkPlacesQuery::ServerParsePacket(INDEX iLength)
 
       DarkPlaces_BuildStatusResponse(challenge, strPacket, true);
 
-      _sendPacketTo(strPacket, &_sinFrom);
+      IQuery::SendReply(strPacket);
       
       return;
     }
@@ -133,7 +123,7 @@ void CDarkPlacesQuery::ServerParsePacket(INDEX iLength)
       
       strPacket.PrintF("\xFF\xFF\xFF\xFFreject Wrong door!");
       
-      _sendPacketTo(strPacket, &_sinFrom);
+      IQuery::SendReply(strPacket);
       
       if (ms_bDebugOutput) {
         CPutString("Received 'getchallenge' text command!\n");
@@ -178,13 +168,10 @@ void DarkPlaces_ParseServerList(unsigned char *data, INDEX iLength, BOOL bExtend
         sinServer.sin_port = htons(uPort);
   
         // insert server status request into container
-        CServerRequest &sreq = ga_asrRequests.Push();
-        sreq.sr_ulAddress = sinServer.sin_addr.s_addr;
-        sreq.sr_iPort = sinServer.sin_port;
-        sreq.sr_tmRequestTime = _pTimer->GetHighPrecisionTimer().GetMilliseconds();
+        SServerRequest::AddRequest(sinServer);
   
         // send packet to server
-        _sendPacketTo("\xFF\xFF\xFF\xFFgetstatus", &sinServer);
+        IQuery::SendPacketTo(&sinServer, "\xFF\xFF\xFF\xFFgetstatus", 13);
       }
       
       data += 7;
@@ -389,7 +376,7 @@ void DarkPlaces_ClientParsePacket(INDEX iLength)
 void CDarkPlacesQuery::EnumTrigger(BOOL bInternet)
 {
   // Make sure that there are no requests still stuck in buffer.
-  ga_asrRequests.Clear();
+  IQuery::aRequests.Clear();
   
   // We're not a server.
   _bServer = FALSE;
@@ -398,14 +385,14 @@ void CDarkPlacesQuery::EnumTrigger(BOOL bInternet)
   
   CTString strPacket;
   strPacket.PrintF("\xFF\xFF\xFF\xFFgetservers %s %u empty full", sam_strGameName, DP_NET_PROTOCOL_VERSION);
-  _sendPacket(strPacket); // Send enumeration packet to masterserver.
+  IQuery::SendPacket(strPacket); // Send enumeration packet to masterserver.
 
-  _setStatus(".");
+  IQuery::SetStatus(".");
 }
 
 void CDarkPlacesQuery::EnumUpdate(void)
 {
-  int iLength = _recvPacket();
+  int iLength = IQuery::ReceivePacket();
 
   if (iLength == -1) {
     return;
