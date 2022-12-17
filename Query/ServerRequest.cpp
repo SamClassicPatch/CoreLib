@@ -16,7 +16,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "StdH.h"
 
 #include "ServerRequest.h"
-#include "QueryMgr.h"
+#include "QueryManager.h"
 
 // Add a new server request
 void SServerRequest::AddRequest(const sockaddr_in &addr) {

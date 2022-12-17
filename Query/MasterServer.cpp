@@ -16,7 +16,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "StdH.h"
 
 #include "MasterServer.h"
-#include "QueryMgr.h"
+#include "QueryManager.h"
 #include "Networking/CommInterface.h"
 
 // When the last heartbeat has been sent

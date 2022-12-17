@@ -84,7 +84,7 @@
     <ClInclude Include="API\CoreAPI.h">
       <Filter>Header Files\API headers</Filter>
     </ClInclude>
-    <ClInclude Include="Query\QueryMgr.h">
+    <ClInclude Include="Query\QueryManager.h">
       <Filter>Header Files\Query headers</Filter>
     </ClInclude>
     <ClInclude Include="Modules\PluginModule.h">
@@ -206,7 +206,7 @@
     <ClCompile Include="Query\GameAgentQuery.cpp">
       <Filter>Source Files\Query</Filter>
     </ClCompile>
-    <ClCompile Include="Query\Legacy_Functions.cpp">
+    <ClCompile Include="Query\LegacyFunctions.cpp">
       <Filter>Source Files\Query</Filter>
     </ClCompile>
     <ClCompile Include="Query\LegacyClientQuery.cpp">
@@ -215,7 +215,7 @@
     <ClCompile Include="Query\LegacyServerQuery.cpp">
       <Filter>Source Files\Query</Filter>
     </ClCompile>
-    <ClCompile Include="Query\QueryMgr.cpp">
+    <ClCompile Include="Query\QueryManager.cpp">
       <Filter>Source Files\Query</Filter>
     </ClCompile>
     <ClCompile Include="Query\DarkPlacesQuery.cpp">

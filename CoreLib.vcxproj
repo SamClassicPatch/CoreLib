@@ -63,7 +63,7 @@
     <ClInclude Include="Patcher\FuncPatching.h" />
     <ClInclude Include="Patcher\patcher.h" />
     <ClInclude Include="Patcher\patcher_defines.h" />
-    <ClInclude Include="Query\QueryMgr.h" />
+    <ClInclude Include="Query\QueryManager.h" />
     <ClInclude Include="Query\MasterServer.h" />
     <ClInclude Include="Query\ServerRequest.h" />
     <ClInclude Include="StdH.h" />
@@ -89,8 +89,8 @@
     <ClCompile Include="Query\GameAgentQuery.cpp" />
     <ClCompile Include="Query\LegacyClientQuery.cpp" />
     <ClCompile Include="Query\LegacyServerQuery.cpp" />
-    <ClCompile Include="Query\Legacy_Functions.cpp" />
-    <ClCompile Include="Query\QueryMgr.cpp" />
+    <ClCompile Include="Query\LegacyFunctions.cpp" />
+    <ClCompile Include="Query\QueryManager.cpp" />
     <ClCompile Include="Query\MasterServer.cpp" />
     <ClCompile Include="Query\ServerRequest.cpp" />
     <ClCompile Include="StdH.cpp">

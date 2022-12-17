@@ -15,7 +15,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "StdH.h"
 
-#include "QueryMgr.h"
+#include "QueryManager.h"
 #include "Interfaces/DataFunctions.h"
 
 extern unsigned char *gsseckey(u_char *secure, u_char *key, int enctype);
