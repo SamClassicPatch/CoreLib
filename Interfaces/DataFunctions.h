@@ -88,6 +88,50 @@ class IData {
       return strSubstr;
     };
 
+    // Get position of a decorated character in a decorated string (doesn't count color tags)
+    static inline INDEX GetDecoratedChar(const CTString &str, INDEX iChar) {
+      // Start at the beginning of a string
+      const char *pchSrc = str.str_String;
+      INDEX ctTags = 0;
+
+      // Repeat until the desired character index
+      while (--iChar >= 0) {
+        // String end
+        if (pchSrc[0] == '\0') {
+          break;
+        }
+
+        // If the source char is not escape char
+        if (pchSrc[0] != '^') {
+          // Count it normally
+          pchSrc++;
+          continue;
+        }
+
+        // Skip however many tag characters there are
+        switch (pchSrc[1]) {
+          case 'c': pchSrc += 2 + FindZero((UBYTE *)pchSrc + 2, 6); break;
+          case 'a': pchSrc += 2 + FindZero((UBYTE *)pchSrc + 2, 2); break;
+          case 'f': pchSrc += 2 + FindZero((UBYTE *)pchSrc + 2, 1); break;
+
+          case 'b': case 'i': case 'r': case 'o':
+          case 'C': case 'A': case 'F': case 'B': case 'I':
+            pchSrc += 2;
+            break;
+
+          case '^':
+            pchSrc++;
+            break;
+        }
+
+        // Skipped one full tag
+        ctTags++;
+      }
+
+      // Difference between the string beginning and where it stopped
+      return INDEX(pchSrc - str.str_String) + ctTags;
+    };
+
     // CTFileName comparison method for qsort()
     static inline int CompareFileNames(const void *pElement1, const void *pElement2)
     {
