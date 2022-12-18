@@ -117,33 +117,32 @@ void INetwork::SendDisconnectMessage(INDEX iClient, const char *strExplanation, 
   CSessionSocket &sso = _pNetwork->ga_srvServer.srv_assoSessions[iClient];
 
   if (!bStream) {
-    // Compose message
+    // Send message
     CNetworkMessage nmDisconnect(MSG_INF_DISCONNECTED);
     nmDisconnect << CTString(strExplanation);
 
-    // Send it
     _pNetwork->SendToClientReliable(iClient, nmDisconnect);
 
   } else {
+    // Send stream
     CTMemoryStream strmDisconnect;
     strmDisconnect << INDEX(MSG_INF_DISCONNECTED);
     strmDisconnect << CTString(strExplanation);
 
-    // Send the stream to the remote session state
     _pNetwork->SendToClientReliable(iClient, strmDisconnect);
   }
 
-  // Report that it has gone away
+  // Report that the packet has been sent
   CPrintF(TRANS("Client '%s' ordered to disconnect: %s\n"), GetComm().Server_GetClientName(iClient), strExplanation);
 
   // If not disconnected before
   if (sso.sso_iDisconnectedState == 0) {
-    // Mark the disconnection
+    // Mark for disconnection
     sso.sso_iDisconnectedState = 1;
 
-  // If the client was already kicked before, but is still hanging here
+  // If the client is still hanging here
   } else {
-    // Force the disconnection
+    // Force disconnection
     CPrintF(TRANS("Forcing client '%s' to disconnect\n"), GetComm().Server_GetClientName(iClient));
 
     sso.sso_iDisconnectedState = 2;
