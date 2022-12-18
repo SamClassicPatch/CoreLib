@@ -21,37 +21,55 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 
 #include "PluginModule.h"
+#include <Engine/Templates/DynamicContainer.h>
 
-// ENGINE_API is useless in this context, since it's an out-of-Engine stock
-#undef ENGINE_API
-#define ENGINE_API virtual // Workaround for marking certain methods as virtual
-
+// Declare plugin name table
 #define TYPE CPluginModule
-#define CStock_TYPE CStock_CPluginModule
-#define CNameTable_TYPE CNameTable_CPluginModule
-#define CNameTableSlot_TYPE CNameTableSlot_CPluginModule
+#define CNameTable_TYPE CPluginTable
+#define CNameTableSlot_TYPE CPluginTableSlot
 
 #include <Engine/Templates/NameTable.h>
-#include <Engine/Templates/Stock.h>
 
 #undef CNameTableSlot_TYPE
 #undef CNameTable_TYPE
-#undef CStock_TYPE
 #undef TYPE
 
-// Restore engine API
-#undef ENGINE_API
-#define ENGINE_API __declspec(dllimport)
-
-// Enhanced stock class
-class CPluginStock : public CStock_CPluginModule
-{
+// Stock of plugin modules that stores loaded plugins
+class CPluginStock {
   public:
+    CDynamicContainer<CPluginModule> st_ctObjects; // Plugins in the stock
+    CPluginTable st_ntObjects;  // Name table for looking up plugins
+
+  public:
+    // Constructor
+    CPluginStock(void);
+
+    // Destructor
+    ~CPluginStock(void);
+
     // Let plugin module load itself from a file
-    virtual CPluginModule *Obtain_t(const CTFileName &fnmFileName);
+    CPluginModule *Obtain_t(const CTFileName &fnmFileName);
 
     // Forcefully release a plugin
-    virtual void ForceRelease(CPluginModule *pPlugin);
+    void Release(CPluginModule *pPlugin);
+
+    // Free some plugin immediately
+    void Free(CPluginModule *pPlugin);
+
+    // Free unused plugins
+    void FreeUnused(void);
+
+    // Calculate used memory of all plugins
+    SLONG CalculateUsedMemory(void);
+
+    // Dump memory usage report into a file
+    void DumpMemoryUsage_t(CTStream &strm);
+
+    // Get number of plugins in the stock
+    INDEX GetTotalCount(void);
+
+    // Get number of used plugins in the stock
+    INDEX GetUsedCount(void);
 };
 
 #endif

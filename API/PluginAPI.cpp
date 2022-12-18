@@ -132,7 +132,7 @@ CPluginModule *CPluginAPI::ObtainPlugin_t(const CTFileName &fnmModule, ULONG ulU
   // Cannot load some plugin
   if (!bVersion || !bUtility) {
     // Release it
-    pPluginStock->ForceRelease(pPlugin);
+    pPluginStock->Release(pPlugin);
 
     // No plugin has been loaded
     return NULL;
