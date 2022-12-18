@@ -132,6 +132,29 @@ class IData {
       return INDEX(pchSrc - str.str_String) + ctTags;
     };
 
+    // Check if a string matches any line of the string mask
+    static inline BOOL MatchesMask(const CTString &strString, CTString strMask) {
+      CTString strLine;
+
+      // If there's still something in the mask
+      while (strMask != "") {
+        // Get first line of the mask
+        strLine = strMask;
+        strLine.OnlyFirstLine();
+
+        // Remove this line from the mask including the line break
+        strMask.TrimLeft(strMask.Length() - strLine.Length() + 1);
+
+        // Check if the string matches the line
+        if (strString.Matches(strLine)) {
+          return TRUE;
+        }
+      }
+
+      // No matching lines found
+      return FALSE;
+    };
+
     // CTFileName comparison method for qsort()
     static inline int CompareFileNames(const void *pElement1, const void *pElement2)
     {
