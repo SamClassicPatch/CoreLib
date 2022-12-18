@@ -432,10 +432,6 @@ static BOOL ReceiveServerData(SOCKET &iSocketUDP, BOOL bLocal) {
     return FALSE;
   }
 
-  if (ms_bDebugOutput) {
-    CPrintF("Received %d answers\n", iNumber);
-  }
-
   // Receive data
   sockaddr_in sinClient;
   int iClientLength = sizeof(sinClient);
