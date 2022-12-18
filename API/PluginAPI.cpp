@@ -163,9 +163,7 @@ void CPluginAPI::AddNewPatch(CPatch *pPatch) {
   extern CPluginModule *_pInitializingPlugin;
   ASSERT(_pInitializingPlugin != NULL);
 
-  if (!_pInitializingPlugin->_cPatches.IsMember(pPatch)) {
-    _pInitializingPlugin->_cPatches.Add(pPatch);
-  }
+  _pInitializingPlugin->AddPatch(pPatch);
 };
 
 // Register a custom chat command

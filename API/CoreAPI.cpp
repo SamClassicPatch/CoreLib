@@ -108,7 +108,7 @@ CPluginModule *CCoreAPI::LoadGamePlugin(void) {
   CPrintF(TRANS("Loading game library '%s'...\n"), pGameLib->GetName());
 
   // Set metadata
-  CPluginAPI::PluginInfo &info = pGameLib->_info;
+  CPluginAPI::PluginInfo &info = pGameLib->GetInfo();
 
   info.strName = "Game library";
   info.strAuthor = "Croteam";
