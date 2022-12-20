@@ -165,7 +165,7 @@
     <EmbedManifest>true</EmbedManifest>
     <OutDir>$(BinDir)</OutDir>
     <IntDir>$(ObjDir)</IntDir>
-    <TargetName>Core</TargetName>
+    <TargetName>ClassicsPatchCore</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_TSE107|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -175,7 +175,7 @@
     <EmbedManifest>true</EmbedManifest>
     <OutDir>$(BinDir)</OutDir>
     <IntDir>$(ObjDir)</IntDir>
-    <TargetName>Core</TargetName>
+    <TargetName>ClassicsPatchCore</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_TSE105|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -185,7 +185,7 @@
     <EmbedManifest>true</EmbedManifest>
     <OutDir>$(BinDir)</OutDir>
     <IntDir>$(ObjDir)</IntDir>
-    <TargetName>Core</TargetName>
+    <TargetName>ClassicsPatchCore</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_TFE105|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -195,7 +195,7 @@
     <EmbedManifest>true</EmbedManifest>
     <OutDir>$(BinDir)</OutDir>
     <IntDir>$(ObjDir)</IntDir>
-    <TargetName>Core</TargetName>
+    <TargetName>ClassicsPatchCore</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_TSE107|Win32'">
     <ClCompile>

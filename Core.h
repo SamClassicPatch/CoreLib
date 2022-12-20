@@ -26,7 +26,8 @@ typedef UBYTE CSesPropsContainer[NET_MAXSESSIONPROPERTIES];
 
 // Import library for use
 #ifndef CORE_EXPORTS
-  #pragma comment(lib, "Core.lib")
+  #pragma comment(lib, "ClassicsPatchCore.lib")
+  #pragma comment(lib, "Ws2_32.lib")
 #endif
 
 // [Cecil] TEMP: Define as nothing for static libraries
