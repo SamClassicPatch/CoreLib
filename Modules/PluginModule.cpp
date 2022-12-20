@@ -57,10 +57,10 @@ void CPluginModule::Deactivate(void) {
 
     // Remove from the storage
     SFuncPatch *pfp = GetPatchAPI()->FindFuncPatch("", pPatch);
+    ASSERTMSG(pfp == NULL, "Trying to remove a function patch that's not in the patch storage!");
 
     if (pfp != NULL) {
-      GetPatchAPI()->cPatches.Remove(pfp);
-      delete pfp;
+      GetPatchAPI()->aPatches.Delete(pfp);
     }
 
     // Remove the patch

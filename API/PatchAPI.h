@@ -27,12 +27,11 @@ class CPatch; // #include <CoreLib/Patcher/patcher.h>
 struct SFuncPatch {
   CTString strName; // Patch name
   ULONG ulHash; // Name hash
-
   CPatch *pPatch; // Pointer to the patch
   
   // Default constructor
-  SFuncPatch() : strName(""), ulHash(0), pPatch(NULL)
-  {
+  SFuncPatch() {
+    Clear();
   };
 
   // Constructor from name and patch
@@ -42,12 +41,19 @@ struct SFuncPatch {
     // Calculate name hash
     ulHash = strName.GetHash();
   };
+
+  // Clear the function patch
+  inline void Clear(void) {
+    strName = "";
+    ulHash = 0;
+    pPatch = NULL;
+  };
 };
 
 // API for handling function patches
 class CORE_API CPatchAPI {
   public:
-    CDynamicContainer<SFuncPatch> cPatches; // Function patch storage
+    CDynamicStackArray<SFuncPatch> aPatches; // Function patch storage
     
   public:
     // Constructor
