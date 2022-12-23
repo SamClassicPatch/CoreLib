@@ -78,6 +78,9 @@ class CORE_API INetwork {
       }
     };
 
+    // Initialize networking
+    static void Initialize(void);
+
     // Handle packets coming from a client (CServer::Handle alternative)
     static BOOL ServerHandle(CMessageDispatcher *pmd, INDEX iClient, CNetworkMessage &nmReceived);
 

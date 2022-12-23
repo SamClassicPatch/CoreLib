@@ -17,7 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "Base/CoreTimerHandler.h"
 
-#include "Networking/Modules.h"
+#include "Networking/NetworkFunctions.h"
 
 // Pointer to the Game module
 CGame *_pGame = NULL;
@@ -65,21 +65,10 @@ void CECIL_InitCore(void) {
     _pShell->DeclareSymbol("persistent user CTString sam_strIntroLevel;", &sam_strIntroLevel);
     _pShell->DeclareSymbol("persistent user CTString sam_strGameName;",   &sam_strGameName);
     _pShell->DeclareSymbol("           user CTString sam_strVersion;",    &sam_strVersion);
-
-    // Server commands
-    _pShell->DeclareSymbol("persistent user INDEX ser_bEnableAntiFlood;",      &ser_bEnableAntiFlood);
-    _pShell->DeclareSymbol("persistent user INDEX ser_iPacketFloodThreshold;", &ser_iPacketFloodThreshold);
-    _pShell->DeclareSymbol("persistent user INDEX ser_iMaxMessagesPerSecond;", &ser_iMaxMessagesPerSecond);
-    _pShell->DeclareSymbol("persistent user INDEX ser_iMaxPlayersPerClient;",  &ser_iMaxPlayersPerClient);
-    _pShell->DeclareSymbol("persistent user CTString ser_strCommandPrefix;",   &ser_strCommandPrefix);
   }
 
-  // Initialize query manager
-  extern void InitQuery(void);
-  InitQuery();
-
-  // Register default chat commands
-  IChatCommands::RegisterDefaultCommands();
+  // Initialize networking
+  INetwork::Initialize();
 
   // Create timer handler for constant functionatily
   _pTimerHandler = new CCoreTimerHandler;

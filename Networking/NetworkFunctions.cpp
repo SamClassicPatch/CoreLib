@@ -17,6 +17,27 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "NetworkFunctions.h"
 #include "MessageProcessing.h"
+#include "Modules.h"
+
+// Initialize networking
+void INetwork::Initialize(void) {
+  // Modeler applications don't need networking
+  if (GetAPI()->IsModelerApp()) return;
+
+  // Server commands
+  _pShell->DeclareSymbol("persistent user INDEX ser_bEnableAntiFlood;",      &ser_bEnableAntiFlood);
+  _pShell->DeclareSymbol("persistent user INDEX ser_iPacketFloodThreshold;", &ser_iPacketFloodThreshold);
+  _pShell->DeclareSymbol("persistent user INDEX ser_iMaxMessagesPerSecond;", &ser_iMaxMessagesPerSecond);
+  _pShell->DeclareSymbol("persistent user INDEX ser_iMaxPlayersPerClient;",  &ser_iMaxPlayersPerClient);
+  _pShell->DeclareSymbol("persistent user CTString ser_strCommandPrefix;",   &ser_strCommandPrefix);
+
+  // Initialize query manager
+  extern void InitQuery(void);
+  InitQuery();
+
+  // Register default chat commands
+  IChatCommands::RegisterDefaultCommands();
+};
 
 // Handle packets coming from a client (CServer::Handle alternative)
 BOOL INetwork::ServerHandle(CMessageDispatcher *pmd, INDEX iClient, CNetworkMessage &nmMessage) {
