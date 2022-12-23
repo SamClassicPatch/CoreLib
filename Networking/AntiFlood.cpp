@@ -34,8 +34,14 @@ struct SClientFloodData {
   INDEX ctLastSecMessages; // Chat messages sent in the past second
 
   // Constructor
-  SClientFloodData() : ctLastSecPackets(0), ctLastSecMessages(0)
-  {
+  SClientFloodData() {
+    Clear();
+  };
+
+  // Clear client data
+  void Clear(void) {
+    ctLastSecPackets = 0;
+    ctLastSecMessages = 0;
   };
 };
 
@@ -72,7 +78,7 @@ static BOOL DetectPacketFlood(INDEX iClient)
   sso.sso_iDisconnectedState = 2; // Force disconnect
 
   CTString strChatMessage;
-  strChatMessage.PrintF("^cFF0000 Client %d has been kicked for a packet flood attempt!", iClient);
+  strChatMessage.PrintF("^cff0000 Client %d has been kicked for a packet flood attempt!", iClient);
   _pNetwork->SendChat(0, -1, strChatMessage);
 
   // Detected
@@ -169,6 +175,6 @@ BOOL IAntiFlood::HandleChatMessage(INDEX iClient)
 void IAntiFlood::ResetCounters(void)
 {
   for (INDEX i = 0; i < SERVER_CLIENTS; i++) {
-    _aClientFloodData[i].ctLastSecPackets = 0;
+    _aClientFloodData[i].Clear();
   }
 };
