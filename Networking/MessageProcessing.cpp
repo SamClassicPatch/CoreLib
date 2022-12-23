@@ -83,13 +83,16 @@ BOOL OnPlayerConnectRequest(INDEX iClient, CNetworkMessage &nmMessage)
   // Add new character to the identity
   pci->AddNewCharacter(pcCharacter);
 
-  static CSymbolPtr pstrNameMask("ser_strNameMask");
-  static CSymbolPtr pbWhiteList("ser_bInverseBanning");
+  // Check for blacklisted/whitelisted character names
+  if (!GetComm().Server_IsClientLocal(iClient)) {
+    static CSymbolPtr pstrNameMask("ser_strNameMask");
+    static CSymbolPtr pbWhiteList("ser_bInverseBanning");
 
-  // Character name is banned
-  if (IData::MatchesMask(pcCharacter.GetName(), pstrNameMask.GetString()) == !pbWhiteList.GetIndex()) {
-    INetwork::SendDisconnectMessage(iClient, TRANS("You are banned from this server"), TRUE);
-    return FALSE;
+    // Character name is banned
+    if (IData::MatchesMask(pcCharacter.GetName(), pstrNameMask.GetString()) == !pbWhiteList.GetIndex()) {
+      INetwork::SendDisconnectMessage(iClient, TRANS("You are banned from this server"), FALSE);
+      return FALSE;
+    }
   }
 
   CServer &srv = _pNetwork->ga_srvServer;
