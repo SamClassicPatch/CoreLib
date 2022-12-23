@@ -17,6 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "ChatCommands.h"
 #include "NetworkFunctions.h"
+#include "StockCommands.h"
 
 // Prefix that the chat commands start with
 CTString ser_strCommandPrefix = "!";
@@ -123,5 +124,5 @@ void IChatCommands::Unregister(const char *strName)
 
 // Register default chat commands
 void IChatCommands::RegisterDefaultCommands(void) {
-  NOTHING;
+  Register("map",  &IStockCommands::CurrentMap);
 };

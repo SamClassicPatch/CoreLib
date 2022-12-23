@@ -53,6 +53,7 @@
     <ClInclude Include="Modules\PluginStock.h" />
     <ClInclude Include="Networking\AntiFlood.h" />
     <ClInclude Include="Networking\ChatCommands.h" />
+    <ClInclude Include="Networking\StockCommands.h" />
     <ClInclude Include="Networking\CommInterface.h" />
     <ClInclude Include="Networking\MessageProcessing.h" />
     <ClInclude Include="Networking\NetworkFunctions.h" />
@@ -80,6 +81,7 @@
     <ClCompile Include="Modules\PluginStock.cpp" />
     <ClCompile Include="Networking\AntiFlood.cpp" />
     <ClCompile Include="Networking\ChatCommands.cpp" />
+    <ClCompile Include="Networking\StockCommands.cpp" />
     <ClCompile Include="Networking\MessageProcessing.cpp" />
     <ClCompile Include="Networking\NetworkFunctions.cpp" />
     <ClCompile Include="Networking\SplitScreenClients.cpp" />

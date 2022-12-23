@@ -189,6 +189,9 @@
     <ClInclude Include="Query\ServerRequest.h">
       <Filter>Header Files\Query headers</Filter>
     </ClInclude>
+    <ClInclude Include="Networking\StockCommands.h">
+      <Filter>Header Files\Networking headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="StdH.cpp">
@@ -265,6 +268,9 @@
     </ClCompile>
     <ClCompile Include="Query\ServerRequest.cpp">
       <Filter>Source Files\Query</Filter>
+    </ClCompile>
+    <ClCompile Include="Networking\StockCommands.cpp">
+      <Filter>Source Files\Networking</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
