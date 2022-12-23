@@ -43,6 +43,8 @@ void CCoreTimerHandler::HandleTimer(void) {
 // Called every game tick
 void CCoreTimerHandler::OnTick(void)
 {
+  // Update client restriction records
+  CClientRestriction::UpdateExpirations();
 };
 
 // Called every game second

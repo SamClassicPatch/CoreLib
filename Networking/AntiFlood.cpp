@@ -118,19 +118,41 @@ BOOL IAntiFlood::HandleChatMessage(INDEX iClient)
     return FALSE;
   }
 
+  static CTString strKickWarning = TRANS("\n^cffffffFurther attempts may lead to a kick!");
+
+  // Check if the client is muted
+  CClientRestriction *pcr = CClientRestriction::IsMuted(pci);
+
+  if (pcr != NULL) {
+    // Notify the client about being muted
+    CTString strTime, strWarning;
+    pcr->PrintMuteTime(strTime);
+
+    strWarning.PrintF(TRANS("You are not allowed to chat for %s!"), strTime);
+
+    if (ser_iPacketFloodThreshold >= 0) {
+      strWarning += strKickWarning;
+    }
+
+    INetwork::SendChatToClient(iClient, "Server", strWarning);
+
+    // Don't show the message in chat
+    return TRUE;
+  }
+
   // If client sent too many messages in the past second
   if (_aClientFloodData[iClient].ctLastSecMessages > ser_iMaxMessagesPerSecond) {
     // Notify the client about spam
     CTString strWarning;
 
     if (ser_iMaxMessagesPerSecond > 0) {
-      strWarning = "Too many chat messages at once!";
+      strWarning = TRANS("Too many chat messages at once!");
     } else {
-      strWarning = "Chatting is disabled in this session!";
+      strWarning = TRANS("Chatting is disabled in this session!");
     }
 
     if (ser_iPacketFloodThreshold >= 0) {
-      strWarning += " Further attempts may lead to a kick!";
+      strWarning += strKickWarning;
     }
 
     INetwork::SendChatToClient(iClient, "Server", strWarning);

@@ -40,6 +40,28 @@ BOOL OnConnectRemoteSessionStateRequest(INDEX iClient, CNetworkMessage &nmMessag
   // Get client identity
   CClientIdentity *pci = IClientLogging::GetIdentity(iClient);
 
+  // Check if the client is banned
+  CClientRestriction *pcr = CClientRestriction::IsBanned(pci);
+  BOOL bBanned = (pcr != NULL);
+
+  static CSymbolPtr pbWhiteList("ser_bInverseBanning");
+
+  // Not allowed on the server
+  if (bBanned == !pbWhiteList.GetIndex()) {
+    // No specific ban record
+    if (!bBanned) {
+      INetwork::SendDisconnectMessage(iClient, TRANS("You are not allowed on this server!"), TRUE);
+      return FALSE;
+    }
+
+    CTString strTime, strReason;
+    pcr->PrintBanTime(strTime);
+
+    strReason.PrintF(TRANS("You have been banned for %s!"), strTime);
+    INetwork::SendDisconnectMessage(iClient, strReason, TRUE);
+    return FALSE;
+  }
+
   // Check for connecting clients with split-screen
   if (!CheckSplitScreenClients(iClient, nmMessage)) {
     return FALSE;
