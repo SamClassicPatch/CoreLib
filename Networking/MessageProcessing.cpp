@@ -22,6 +22,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "Interfaces/DataFunctions.h"
 #include "Query/QueryManager.h"
 
+// Client confirming the disconnection
+BOOL OnClientDisconnect(INDEX iClient, CNetworkMessage &nmMessage) {
+  CSessionSocket &sso = _pNetwork->ga_srvServer.srv_assoSessions[iClient];
+  sso.sso_iDisconnectedState = 2;
+
+  return FALSE;
+};
+
 // Client requesting the session state
 BOOL OnConnectRemoteSessionStateRequest(INDEX iClient, CNetworkMessage &nmMessage)
 {

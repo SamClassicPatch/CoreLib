@@ -20,6 +20,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #pragma once
 #endif
 
+// Client confirming the disconnection
+BOOL OnClientDisconnect(INDEX iClient, CNetworkMessage &nmMessage);
+
 // Client requesting the session state
 BOOL OnConnectRemoteSessionStateRequest(INDEX iClient, CNetworkMessage &nmMessage);
 

@@ -43,6 +43,12 @@ void INetwork::Initialize(void) {
 BOOL INetwork::ServerHandle(CMessageDispatcher *pmd, INDEX iClient, CNetworkMessage &nmMessage) {
   // Process some default packets
   switch (nmMessage.GetType()) {
+    #if SE1_VER >= 107
+    // Client confirming the disconnection
+    case MSG_REP_DISCONNECTED:
+      return OnClientDisconnect(iClient, nmMessage);
+    #endif
+
     // Client requesting the session state
     case MSG_REQ_CONNECTREMOTESESSIONSTATE:
       return OnConnectRemoteSessionStateRequest(iClient, nmMessage);
