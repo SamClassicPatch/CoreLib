@@ -16,6 +16,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "StdH.h"
 
 #include "AntiFlood.h"
+#include "ClientLogging.h"
 #include "NetworkFunctions.h"
 
 // Kick clients for attempted packet flood
@@ -95,6 +96,9 @@ BOOL IAntiFlood::HandleCharacterChange(INDEX iClient)
 // Handle chat messages from a client
 BOOL IAntiFlood::HandleChatMessage(INDEX iClient)
 {
+  // Get client identity
+  CClientIdentity *pci = IClientLogging::GetIdentity(iClient);
+
   if (!CheckForPacketFlood(iClient)) {
     return FALSE;
   }

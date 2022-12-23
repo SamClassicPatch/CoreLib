@@ -37,6 +37,8 @@ void INetwork::Initialize(void) {
 
   // Register default chat commands
   IChatCommands::RegisterDefaultCommands();
+
+  _aActiveClients.New(SERVER_CLIENTS);
 };
 
 // Handle packets coming from a client (CServer::Handle alternative)
@@ -174,6 +176,10 @@ void INetwork::SendDisconnectMessage(INDEX iClient, const char *strExplanation, 
 
     sso.sso_iDisconnectedState = 2;
   }
+
+  // Make client inactive
+  ASSERT(!GetComm().Server_IsClientLocal(iClient));
+  _aActiveClients[iClient].Reset();
 };
 
 // Send chat message to a client with custom name of a sender

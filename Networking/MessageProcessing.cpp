@@ -27,12 +27,19 @@ BOOL OnClientDisconnect(INDEX iClient, CNetworkMessage &nmMessage) {
   CSessionSocket &sso = _pNetwork->ga_srvServer.srv_assoSessions[iClient];
   sso.sso_iDisconnectedState = 2;
 
+  // Make client inactive
+  ASSERT(!GetComm().Server_IsClientLocal(iClient));
+  _aActiveClients[iClient].Reset();
+
   return FALSE;
 };
 
 // Client requesting the session state
 BOOL OnConnectRemoteSessionStateRequest(INDEX iClient, CNetworkMessage &nmMessage)
 {
+  // Get client identity
+  CClientIdentity *pci = IClientLogging::GetIdentity(iClient);
+
   // Check for connecting clients with split-screen
   if (!CheckSplitScreenClients(iClient, nmMessage)) {
     return FALSE;
@@ -47,6 +54,12 @@ BOOL OnPlayerConnectRequest(INDEX iClient, CNetworkMessage &nmMessage)
   // Read character data
   CPlayerCharacter pcCharacter;
   nmMessage >> pcCharacter;
+
+  // Get client identity
+  CClientIdentity *pci = IClientLogging::GetIdentity(iClient);
+
+  // Add new character to the identity
+  pci->AddNewCharacter(pcCharacter);
 
   static CSymbolPtr pstrNameMask("ser_strNameMask");
   static CSymbolPtr pbWhiteList("ser_bInverseBanning");
@@ -102,6 +115,12 @@ BOOL OnPlayerConnectRequest(INDEX iClient, CNetworkMessage &nmMessage)
 
     _pNetwork->SendToClientReliable(iClient, nmPlayerRegistered);
 
+    // Add new player to the active client
+    CActiveClient &acClient = _aActiveClients[iClient];
+    ASSERT(acClient.IsActive() && acClient.pClient == pci);
+
+    acClient.AddPlayer(pplbNew);
+
     // Notify master server that a player is connecting
     static CSymbolPtr symptr("ser_bEnumeration");
 
@@ -121,6 +140,19 @@ BOOL OnPlayerConnectRequest(INDEX iClient, CNetworkMessage &nmMessage)
 // Client changing the character
 BOOL OnCharacterChangeRequest(INDEX iClient, CNetworkMessage &nmMessage)
 {
+  // Read character data
+  INDEX iPlayer;
+  CPlayerCharacter pcCharacter;
+  nmMessage >> iPlayer >> pcCharacter;
+
+  nmMessage.Rewind();
+
+  // Get client identity
+  CClientIdentity *pci = IClientLogging::GetIdentity(iClient);
+
+  // Add new character to the identity
+  pci->AddNewCharacter(pcCharacter);
+
   // Skip character changes blocked by the anti-flood system
   if (IAntiFlood::HandleCharacterChange(iClient)) {
     return FALSE;
