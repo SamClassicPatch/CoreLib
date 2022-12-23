@@ -25,6 +25,15 @@ class IStockCommands {
   public:
     // Display name of the current map
     static BOOL CurrentMap(CTString &strResult, INDEX iClient, const CTString &strArguments);
+
+    // Display log of all clients
+    static BOOL ClientLog(CTString &strResult, INDEX iClient, const CTString &strArguments);
+
+    // Ban a specific client
+    static BOOL BanClient(CTString &strResult, INDEX iClient, const CTString &strArguments);
+
+    // Mute a specific client
+    static BOOL MuteClient(CTString &strResult, INDEX iClient, const CTString &strArguments);
 };
 
 #endif

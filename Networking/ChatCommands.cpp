@@ -125,4 +125,7 @@ void IChatCommands::Unregister(const char *strName)
 // Register default chat commands
 void IChatCommands::RegisterDefaultCommands(void) {
   Register("map",  &IStockCommands::CurrentMap);
+  Register("log",  &IStockCommands::ClientLog);
+  Register("ban",  &IStockCommands::BanClient);
+  Register("mute", &IStockCommands::MuteClient);
 };
