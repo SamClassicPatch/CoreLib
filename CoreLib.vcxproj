@@ -51,8 +51,12 @@
     <ClInclude Include="Interfaces\WorldFunctions.h" />
     <ClInclude Include="Modules\PluginModule.h" />
     <ClInclude Include="Modules\PluginStock.h" />
+    <ClInclude Include="Networking\ActiveClients.h" />
     <ClInclude Include="Networking\AntiFlood.h" />
     <ClInclude Include="Networking\ChatCommands.h" />
+    <ClInclude Include="Networking\ClientIdentity.h" />
+    <ClInclude Include="Networking\ClientLogging.h" />
+    <ClInclude Include="Networking\ClientRestrictions.h" />
     <ClInclude Include="Networking\StockCommands.h" />
     <ClInclude Include="Networking\CommInterface.h" />
     <ClInclude Include="Networking\MessageProcessing.h" />
@@ -79,8 +83,12 @@
     <ClCompile Include="Definitions\InlineDefinitions.cpp" />
     <ClCompile Include="Modules\PluginModule.cpp" />
     <ClCompile Include="Modules\PluginStock.cpp" />
+    <ClCompile Include="Networking\ActiveClients.cpp" />
     <ClCompile Include="Networking\AntiFlood.cpp" />
     <ClCompile Include="Networking\ChatCommands.cpp" />
+    <ClCompile Include="Networking\ClientIdentity.cpp" />
+    <ClCompile Include="Networking\ClientLogging.cpp" />
+    <ClCompile Include="Networking\ClientRestrictions.cpp" />
     <ClCompile Include="Networking\StockCommands.cpp" />
     <ClCompile Include="Networking\MessageProcessing.cpp" />
     <ClCompile Include="Networking\NetworkFunctions.cpp" />

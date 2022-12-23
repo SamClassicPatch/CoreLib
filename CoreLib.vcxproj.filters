@@ -180,6 +180,12 @@
     <ClInclude Include="Networking\Modules.h">
       <Filter>Header Files\Networking headers</Filter>
     </ClInclude>
+    <ClInclude Include="Networking\ClientLogging.h">
+      <Filter>Header Files\Networking headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Networking\ClientRestrictions.h">
+      <Filter>Header Files\Networking headers</Filter>
+    </ClInclude>
     <ClInclude Include="Objects\StructPtr.h">
       <Filter>Header Files\Objects headers</Filter>
     </ClInclude>
@@ -188,6 +194,12 @@
     </ClInclude>
     <ClInclude Include="Query\ServerRequest.h">
       <Filter>Header Files\Query headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Networking\ActiveClients.h">
+      <Filter>Header Files\Networking headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Networking\ClientIdentity.h">
+      <Filter>Header Files\Networking headers</Filter>
     </ClInclude>
     <ClInclude Include="Networking\StockCommands.h">
       <Filter>Header Files\Networking headers</Filter>
@@ -263,11 +275,23 @@
     <ClCompile Include="Networking\ChatCommands.cpp">
       <Filter>Source Files\Networking</Filter>
     </ClCompile>
+    <ClCompile Include="Networking\ClientLogging.cpp">
+      <Filter>Source Files\Networking</Filter>
+    </ClCompile>
+    <ClCompile Include="Networking\ClientRestrictions.cpp">
+      <Filter>Source Files\Networking</Filter>
+    </ClCompile>
     <ClCompile Include="Query\MasterServer.cpp">
       <Filter>Source Files\Query</Filter>
     </ClCompile>
     <ClCompile Include="Query\ServerRequest.cpp">
       <Filter>Source Files\Query</Filter>
+    </ClCompile>
+    <ClCompile Include="Networking\ActiveClients.cpp">
+      <Filter>Source Files\Networking</Filter>
+    </ClCompile>
+    <ClCompile Include="Networking\ClientIdentity.cpp">
+      <Filter>Source Files\Networking</Filter>
     </ClCompile>
     <ClCompile Include="Networking\StockCommands.cpp">
       <Filter>Source Files\Networking</Filter>
