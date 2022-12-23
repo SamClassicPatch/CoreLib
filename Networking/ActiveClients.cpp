@@ -31,6 +31,14 @@ void CActiveClient::Reset(void) {
   pClient = NULL;
   cPlayers.Clear();
   addr.SetIP(0);
+
+  ResetPacketCounters();
+};
+
+// Reset anti-flood counters
+void CActiveClient::ResetPacketCounters(void) {
+  ctLastSecPackets = 0;
+  ctLastSecMessages = 0;
 };
 
 // Check if client is active right now

@@ -38,7 +38,7 @@ class IAntiFlood {
     // Handle chat messages from a client
     static BOOL HandleChatMessage(INDEX iClient);
 
-    // Reset packet counter for each client
+    // Reset packet counters for each client
     static void ResetCounters(void);
 };
 

@@ -38,10 +38,15 @@ class CORE_API CActiveClient {
     // Address the client is playing from
     SClientAddress addr;
 
+    // Anti-flood system
+    INDEX ctLastSecPackets; // Packets sent in the past second
+    INDEX ctLastSecMessages; // Chat messages sent in the past second
+
   public:
     // Default constructor
     CActiveClient() : pClient(NULL)
     {
+      ResetPacketCounters();
     };
 
     // Setup the client to be active
@@ -49,6 +54,9 @@ class CORE_API CActiveClient {
 
     // Reset the client to be inactive
     void Reset(void);
+
+    // Reset anti-flood counters
+    void ResetPacketCounters(void);
 
     // Check if client is active right now
     BOOL IsActive(void) const;
