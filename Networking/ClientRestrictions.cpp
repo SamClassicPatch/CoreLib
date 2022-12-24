@@ -242,3 +242,32 @@ CTString CClientRestriction::MuteClient(INDEX iIdentity, FLOAT fTime) {
   // Report
   return CTString(0, TRANS("Client %d has been muted for %s!"), iIdentity, strTime);
 };
+
+// Kick a specific client by the identity index
+CTString CClientRestriction::KickClient(INDEX iIdentity, const CTString &strReason) {
+  // Get active clients of this identity
+  CActiveClient::List cActive;
+  CActiveClient::GetActiveClients(cActive, &_aClientIdentities[iIdentity]);
+
+  // Disconnect active clients
+  FOREACHINDYNAMICCONTAINER(cActive, CActiveClient, itac) {
+    // Get active client index
+    INDEX iBanClient = _aActiveClients.Index(itac);
+
+    // Don't disconnect server clients
+    if (GetComm().Server_IsClientLocal(iBanClient)) {
+      continue;
+    }
+
+    // No reason specified
+    if (strReason == "") {
+      INetwork::SendDisconnectMessage(iBanClient, TRANS("You have been kicked!"), FALSE);
+
+    } else {
+      INetwork::SendDisconnectMessage(iBanClient, strReason, FALSE);
+    }
+  }
+
+  // Report
+  return CTString(0, TRANS("Client %d has been kicked! Reason: \"%s\""), iIdentity, strReason);
+};

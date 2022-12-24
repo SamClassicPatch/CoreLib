@@ -128,4 +128,5 @@ void IChatCommands::RegisterDefaultCommands(void) {
   Register("log",  &IStockCommands::ClientLog);
   Register("ban",  &IStockCommands::BanClient);
   Register("mute", &IStockCommands::MuteClient);
+  Register("kick", &IStockCommands::KickClient);
 };

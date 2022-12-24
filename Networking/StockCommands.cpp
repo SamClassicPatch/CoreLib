@@ -149,6 +149,39 @@ static CTString TimedClientAction(INDEX &iIdentity, FLOAT &fTime, CTString strAr
   return "";
 };
 
+// Parse arguments of a reasoned action aimed at some client
+static CTString ReasonedClientAction(INDEX &iIdentity, CTString &strReason, CTString strArgs) {
+  // Get identity index from the arguments
+  if (strArgs.ScanF("%d", &iIdentity) < 1) {
+    return "Couldn't parse the client index!";
+  }
+
+  // Invalid index
+  if (iIdentity < 0 || iIdentity >= _aClientIdentities.Count()) {
+    return "Invalid client index!";
+  }
+
+  // Find first whitespace
+  const ULONG ulWhitespace = IData::FindChar(strArgs, ' ');
+
+  // If found
+  if (ulWhitespace != -1) {
+    // Remove everything before the whitespace and trim the rest
+    strArgs.TrimLeft(strArgs.Length() - ulWhitespace);
+    strArgs.TrimSpacesLeft();
+
+    // Use first 100 characters as a reason
+    strArgs.TrimRight(100);
+    strReason = strArgs;
+
+  } else {
+    // Otherwise no reason
+    strReason = "";
+  }
+
+  return "";
+};
+
 // Ban a specific client
 BOOL IStockCommands::BanClient(CTString &strResult, INDEX iClient, const CTString &strArguments) {
   IGNORE_CLIENTS;
@@ -186,5 +219,25 @@ BOOL IStockCommands::MuteClient(CTString &strResult, INDEX iClient, const CTStri
 
   // Mute client
   strResult = CClientRestriction::MuteClient(iIdentity, fTime);
+  return TRUE;
+};
+
+// Kick a specific client
+BOOL IStockCommands::KickClient(CTString &strResult, INDEX iClient, const CTString &strArguments) {
+  IGNORE_CLIENTS;
+
+  // Get arguments
+  INDEX iIdentity;
+  CTString strReason;
+
+  strResult = ReasonedClientAction(iIdentity, strReason, strArguments);
+
+  // Some error has occurred
+  if (strResult != "") {
+    return TRUE;
+  }
+
+  // Ban client
+  strResult = CClientRestriction::KickClient(iIdentity, strReason);
   return TRUE;
 };

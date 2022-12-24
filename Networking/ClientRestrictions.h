@@ -87,6 +87,9 @@ class CORE_API CClientRestriction {
 
     // Mute a specific client by the identity index
     static CTString MuteClient(INDEX iIdentity, FLOAT fTime);
+
+    // Kick a specific client by the identity index
+    static CTString KickClient(INDEX iIdentity, const CTString &strReason);
 };
 
 // Records of all client restrictions

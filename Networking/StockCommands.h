@@ -29,6 +29,9 @@ class IStockCommands {
     // Display log of all clients
     static BOOL ClientLog(CTString &strResult, INDEX iClient, const CTString &strArguments);
 
+    // Kick a specific client
+    static BOOL KickClient(CTString &strResult, INDEX iClient, const CTString &strArguments);
+
     // Ban a specific client
     static BOOL BanClient(CTString &strResult, INDEX iClient, const CTString &strArguments);
 
