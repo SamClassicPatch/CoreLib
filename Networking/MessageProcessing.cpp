@@ -90,7 +90,7 @@ BOOL OnPlayerConnectRequest(INDEX iClient, CNetworkMessage &nmMessage)
 
     // Character name is banned
     if (IData::MatchesMask(pcCharacter.GetName(), pstrNameMask.GetString()) == !pbWhiteList.GetIndex()) {
-      INetwork::SendDisconnectMessage(iClient, TRANS("You are banned from this server"), FALSE);
+      INetwork::SendDisconnectMessage(iClient, LOCALIZE("You are banned from this server"), FALSE);
       return FALSE;
     }
   }
@@ -100,7 +100,7 @@ BOOL OnPlayerConnectRequest(INDEX iClient, CNetworkMessage &nmMessage)
 
   // Check if someone's connecting with too many players
   if (iClient > 0 && INetwork::CountClientPlayers(iClient) >= sso.sso_ctLocalPlayers) {
-    INetwork::SendDisconnectMessage(iClient, TRANS("Protocol violation"), FALSE);
+    INetwork::SendDisconnectMessage(iClient, LOCALIZE("Protocol violation"), FALSE);
     return FALSE;
   }
 
@@ -111,7 +111,7 @@ BOOL OnPlayerConnectRequest(INDEX iClient, CNetworkMessage &nmMessage)
   if (INetwork::IsCharacterUsed(pcCharacter)) {
     // Refuse connection
     CTString strMessage;
-    strMessage.PrintF(TRANS("Player character '%s' already exists in this session."), pcCharacter.GetName());
+    strMessage.PrintF(LOCALIZE("Player character '%s' already exists in this session."), pcCharacter.GetName());
 
     INetwork::SendDisconnectMessage(iClient, strMessage, FALSE);
 
@@ -156,7 +156,7 @@ BOOL OnPlayerConnectRequest(INDEX iClient, CNetworkMessage &nmMessage)
   // If too many players
   } else {
     // Refuse connection
-    INetwork::SendDisconnectMessage(iClient, TRANS("Too many players in session."), FALSE);
+    INetwork::SendDisconnectMessage(iClient, LOCALIZE("Too many players in session."), FALSE);
   }
 
   return FALSE;

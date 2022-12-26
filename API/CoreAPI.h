@@ -246,4 +246,7 @@ inline CPluginAPI *GetPluginAPI(void) {
 // Next argument in the symbol function call
 #define NEXT_ARG(Type) (*((Type *&)pArgs)++)
 
+// Translate a string that has already been translated in vanilla localizations
+#define LOCALIZE(ConstString) ((char *)TranslateConst(ConstString, 0))
+
 #endif

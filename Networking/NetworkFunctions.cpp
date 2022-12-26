@@ -162,7 +162,7 @@ void INetwork::SendDisconnectMessage(INDEX iClient, const char *strExplanation, 
   }
 
   // Report that the packet has been sent
-  CPrintF(TRANS("Client '%s' ordered to disconnect: %s\n"), GetComm().Server_GetClientName(iClient), strExplanation);
+  CPrintF(LOCALIZE("Client '%s' ordered to disconnect: %s\n"), GetComm().Server_GetClientName(iClient), strExplanation);
 
   // If not disconnected before
   if (sso.sso_iDisconnectedState == 0) {
@@ -172,7 +172,7 @@ void INetwork::SendDisconnectMessage(INDEX iClient, const char *strExplanation, 
   // If the client is still hanging here
   } else {
     // Force disconnection
-    CPrintF(TRANS("Forcing client '%s' to disconnect\n"), GetComm().Server_GetClientName(iClient));
+    CPrintF(LOCALIZE("Forcing client '%s' to disconnect\n"), GetComm().Server_GetClientName(iClient));
 
     sso.sso_iDisconnectedState = 2;
   }

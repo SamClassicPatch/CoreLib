@@ -32,7 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // [Cecil] Pointer to 'zip_csLock' in the engine
 static CTCriticalSection *_pcsZipLockEngine = ADDR_UNZIP_CRITSEC;
 
-#pragma pack(1)
+#pragma pack(push, 1)
 
 // Before each file in the zip
 #define SIGNATURE_LFH 0x04034b50
@@ -107,7 +107,7 @@ struct EndOfDir {
 //  zipfile comment (variable size)
 };
 
-#pragma pack()
+#pragma pack(pop)
 
 // One entry (a zipped file) in a zip archive
 class CZipEntry {
@@ -147,24 +147,24 @@ class CZipHandle {
 CTString GetZlibError(int ierr)
 {
   switch (ierr) {
-    case Z_OK:            return TRANS("Z_OK           ");
-    case Z_STREAM_END:    return TRANS("Z_STREAM_END   ");
-    case Z_NEED_DICT:     return TRANS("Z_NEED_DICT    ");
-    case Z_STREAM_ERROR:  return TRANS("Z_STREAM_ERROR ");
-    case Z_DATA_ERROR:    return TRANS("Z_DATA_ERROR   ");
-    case Z_MEM_ERROR:     return TRANS("Z_MEM_ERROR    ");
-    case Z_BUF_ERROR:     return TRANS("Z_BUF_ERROR    ");
-    case Z_VERSION_ERROR: return TRANS("Z_VERSION_ERROR");
+    case Z_OK:            return "Z_OK           ";
+    case Z_STREAM_END:    return "Z_STREAM_END   ";
+    case Z_NEED_DICT:     return "Z_NEED_DICT    ";
+    case Z_STREAM_ERROR:  return "Z_STREAM_ERROR ";
+    case Z_DATA_ERROR:    return "Z_DATA_ERROR   ";
+    case Z_MEM_ERROR:     return "Z_MEM_ERROR    ";
+    case Z_BUF_ERROR:     return "Z_BUF_ERROR    ";
+    case Z_VERSION_ERROR: return "Z_VERSION_ERROR";
 
     case Z_ERRNO: {
       CTString strError;
-      strError.PrintF(TRANS("Z_ERRNO: %s"), strerror(errno));
+      strError.PrintF("Z_ERRNO: %s", strerror(errno));
       return strError; 
     }
 
     default: {
       CTString strError;
-      strError.PrintF(TRANS("Unknown ZLIB error: %d"), ierr);
+      strError.PrintF(LOCALIZE("Unknown ZLIB error: %d"), ierr);
       return strError;
     }
   }
@@ -205,7 +205,7 @@ void CZipHandle::Clear(void)
 
 void CZipHandle::ThrowZLIBError_t(int ierr, const CTString &strDescription)
 {
-  ThrowF_t(TRANS("(%s/%s) %s - ZLIB error: %s - %s"), zh_zeEntry.ze_pfnmArchive->str_String,
+  ThrowF_t(LOCALIZE("(%s/%s) %s - ZLIB error: %s - %s"), zh_zeEntry.ze_pfnmArchive->str_String,
     zh_zeEntry.ze_fnm.str_String, strDescription, GetZlibError(ierr), zh_zstream.msg);
 };
 
@@ -250,7 +250,7 @@ static void ReadZIPDirectory_t(CTFileName *pfnmZip)
   FILE *f = fopen(pfnmZip->str_String, "rb");
 
   if (f == NULL) {
-    ThrowF_t(TRANS("%s: Cannot open file (%s)"), pfnmZip->str_String, strerror(errno));
+    ThrowF_t(LOCALIZE("%s: Cannot open file (%s)"), pfnmZip->str_String, strerror(errno));
   }
 
   // Start at the end of file, minus expected minimum overhead
@@ -284,12 +284,12 @@ static void ReadZIPDirectory_t(CTFileName *pfnmZip)
       // Cannot have a multi-volume zip
       if (eod.eod_swDiskNo != 0 || eod.eod_swDirStartDiskNo != 0
        || eod.eod_swEntriesInDirOnThisDisk != eod.eod_swEntriesInDir) {
-        ThrowF_t(TRANS("%s: Multi-volume zips are not supported"), (CTString&)*pfnmZip);
+        ThrowF_t(LOCALIZE("%s: Multi-volume zips are not supported"), (CTString&)*pfnmZip);
       }
 
       // Cannot have an empty zip
       if (eod.eod_swEntriesInDir <= 0) {
-        ThrowF_t(TRANS("%s: Empty zip"), (CTString&)*pfnmZip);
+        ThrowF_t(LOCALIZE("%s: Empty zip"), (CTString&)*pfnmZip);
       }
 
       bEODFound = TRUE;
@@ -299,7 +299,7 @@ static void ReadZIPDirectory_t(CTFileName *pfnmZip)
 
   // EOD is not found
   if (!bEODFound) {
-    ThrowF_t(TRANS("%s: Cannot find 'end of central directory'"), (CTString&)*pfnmZip);
+    ThrowF_t(LOCALIZE("%s: Cannot find 'end of central directory'"), (CTString&)*pfnmZip);
   }
 
   // Check if the zip is from a mod
@@ -319,7 +319,7 @@ static void ReadZIPDirectory_t(CTFileName *pfnmZip)
 
     // Unexpected signature
     if (slSig != SIGNATURE_FH) {
-      ThrowF_t(TRANS("%s: Wrong signature for 'file header' number %d'"), pfnmZip->str_String, iFile);
+      ThrowF_t(LOCALIZE("%s: Wrong signature for 'file header' number %d'"), pfnmZip->str_String, iFile);
     }
 
     // Read its header
@@ -330,11 +330,11 @@ static void ReadZIPDirectory_t(CTFileName *pfnmZip)
     const SLONG slMaxFileName = 512;
 
     if (fh.fh_swFileNameLen > slMaxFileName) {
-      ThrowF_t(TRANS("%s: Too long filepath in zip"), pfnmZip->str_String);
+      ThrowF_t(LOCALIZE("%s: Too long filepath in zip"), pfnmZip->str_String);
     }
 
     if (fh.fh_swFileNameLen <= 0) {
-      ThrowF_t(TRANS("%s: Invalid filepath length in zip"), pfnmZip->str_String);
+      ThrowF_t(LOCALIZE("%s: Invalid filepath length in zip"), pfnmZip->str_String);
     }
     
     // Read the filename
@@ -352,7 +352,7 @@ static void ReadZIPDirectory_t(CTFileName *pfnmZip)
     if (strBuffer[strlen(strBuffer) - 1] == '/') {
       // Check the size
       if (fh.fh_slUncompressedSize != 0 || fh.fh_slCompressedSize != 0) {
-        ThrowF_t(TRANS("%s/%s: Invalid directory"), pfnmZip->str_String, strBuffer);
+        ThrowF_t(LOCALIZE("%s/%s: Invalid directory"), pfnmZip->str_String, strBuffer);
       }
 
     // If it's a file
@@ -382,7 +382,7 @@ static void ReadZIPDirectory_t(CTFileName *pfnmZip)
         ze.ze_bStored = FALSE;
 
       } else {
-        ThrowF_t(TRANS("%s/%s: Only 'deflate' compression is supported"),
+        ThrowF_t(LOCALIZE("%s/%s: Only 'deflate' compression is supported"),
           ze.ze_pfnmArchive->str_String, ze.ze_fnm.str_String);
       }
     }
@@ -390,11 +390,11 @@ static void ReadZIPDirectory_t(CTFileName *pfnmZip)
 
   // Some error has occurred
   if (ferror(f)) {
-    ThrowF_t(TRANS("%s: Error reading central directory"), (CTString&)*pfnmZip);
+    ThrowF_t(LOCALIZE("%s: Error reading central directory"), pfnmZip->str_String);
   }
 
   // Report that the file has been read
-  CPrintF(TRANS("  %s: %d files\n"), pfnmZip->str_String, ctFiles++);
+  CPrintF(LOCALIZE("  %s: %d files\n"), pfnmZip->str_String, ctFiles++);
 };
 
 // Read one directory of an archive
@@ -568,7 +568,7 @@ INDEX UNZIPOpen_t(const CTFileName &fnm)
 
   // Not found
   if (pze == NULL) {
-    ThrowF_t(TRANS("File not found: %s"), fnm.str_String);
+    ThrowF_t(LOCALIZE("File not found: %s"), fnm.str_String);
   }
 
   // Go through each existing handle
@@ -605,7 +605,7 @@ INDEX UNZIPOpen_t(const CTFileName &fnm)
     zh.Clear();
 
     // Report error
-    ThrowF_t(TRANS("Cannot open '%s': %s"), pze->ze_pfnmArchive->str_String, strerror(errno));
+    ThrowF_t(LOCALIZE("Cannot open '%s': %s"), pze->ze_pfnmArchive->str_String, strerror(errno));
   }
 
   // Seek to the local header of the entry
@@ -617,7 +617,7 @@ INDEX UNZIPOpen_t(const CTFileName &fnm)
 
   // Unexpected signature
   if (slSig != SIGNATURE_LFH) {
-    ThrowF_t(TRANS("%s/%s: Wrong signature for 'local file header'"), 
+    ThrowF_t(LOCALIZE("%s/%s: Wrong signature for 'local file header'"), 
       zh.zh_zeEntry.ze_pfnmArchive->str_String, zh.zh_zeEntry.ze_fnm.str_String);
   }
 
@@ -655,7 +655,7 @@ INDEX UNZIPOpen_t(const CTFileName &fnm)
     fclose(zh.zh_fFile);
     zh.zh_fFile = NULL;
 
-    zh.ThrowZLIBError_t(err, TRANS("Cannot init inflation"));
+    zh.ThrowZLIBError_t(err, LOCALIZE("Cannot init inflation"));
   }
 
   // Return the handle successfully
@@ -744,7 +744,7 @@ void UNZIPReadBlock_t(INDEX iHandle, UBYTE *pub, SLONG slStart, SLONG slLen)
     int ierr = inflate(&zh.zh_zstream, Z_SYNC_FLUSH);
 
     if (ierr != Z_OK && ierr != Z_STREAM_END) {
-      zh.ThrowZLIBError_t(ierr, TRANS("Error seeking in zip"));
+      zh.ThrowZLIBError_t(ierr, LOCALIZE("Error seeking in zip"));
     }
   }
 
@@ -784,7 +784,7 @@ void UNZIPReadBlock_t(INDEX iHandle, UBYTE *pub, SLONG slStart, SLONG slLen)
     int ierr = inflate(&zh.zh_zstream, Z_SYNC_FLUSH);
 
     if (ierr != Z_OK && ierr != Z_STREAM_END) {
-      zh.ThrowZLIBError_t(ierr, TRANS("Error reading from zip"));
+      zh.ThrowZLIBError_t(ierr, LOCALIZE("Error reading from zip"));
     }
   }
 };

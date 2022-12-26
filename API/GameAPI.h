@@ -46,7 +46,7 @@ class CORE_API CGameAPI {
 
       // Constructor with an index and a translated name
       Difficulty(INDEX iSetIndex, const char *strSetName) :
-        iIndex(iSetIndex), strName(TranslateConst(strSetName))
+        iIndex(iSetIndex), strName(TRANSV(strSetName))
       {
       };
     };
