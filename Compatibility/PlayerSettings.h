@@ -48,7 +48,7 @@ public:
     memset(achModelFile, 0, sizeof(achModelFile));
     memcpy(achModelFile, ps_achModelFile, sizeof(ps_achModelFile));
 // [Cecil] Different implementation
-#ifdef SE1_TFE
+#if SE1_GAME == SS_TFE
     CTString strModelFile = achModelFile;
     strModelFile = "Models\\Player\\"+strModelFile+".amc";
 #else

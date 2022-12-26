@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 CGame *_pGame = NULL;
 
 // Common game variables
-#ifdef SE1_TFE
+#if SE1_GAME == SS_TFE
   CTString sam_strFirstLevel = "Levels\\01_Hatshepsut.wld";
   CTString sam_strIntroLevel = "Levels\\Intro.wld";
   CTString sam_strGameName = "serioussam";

@@ -301,7 +301,7 @@ public:
   virtual void LCDRenderClouds1(void);
   virtual void LCDRenderClouds2(void);
 // [Cecil] Not present in TFE
-#ifndef SE1_TFE
+#if SE1_GAME != SS_TFE
           void LCDRenderCloudsForComp(void);
           void LCDRenderCompGrid(void);
 #endif

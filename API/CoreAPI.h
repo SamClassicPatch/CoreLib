@@ -121,7 +121,7 @@ class CORE_API CCoreAPI {
       CTString strGameLib = _fnmApplicationExe.FileDir() + "Game";
 
       // Append mod extension for TSE
-      #ifndef SE1_TFE
+      #if SE1_GAME != SS_TFE
         strGameLib += _strModExt;
       #endif
 
