@@ -41,7 +41,7 @@ class CORE_API CPluginAPI {
       PF_TOOLS  = (1 << 4), // Addons for other tools
 
       // All utility types
-      PF_UTILITY_ALL = (PF_ENGINE | PF_GAME | PF_SERVER | PF_EDITOR | PF_TOOLS),
+      PF_UTILITY_ALL = (1 << 5) - 1,
     };
 
     // Structure for information exchange between plugins and the core
@@ -59,6 +59,12 @@ class CORE_API CPluginAPI {
       PluginInfo() : apiVer(0), ulFlags(0), ulVersion(0),
         strAuthor("Unknown"), strName("No name"), strDescription("None")
       {
+      };
+
+      // Set utility flags (for module's Module_GetInfo method)
+      inline void SetUtility(ULONG ulSetFlags) {
+        apiVer = CORE_API_VERSION;
+        ulFlags = ulSetFlags;
       };
     };
 
