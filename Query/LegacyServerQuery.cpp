@@ -203,8 +203,8 @@ void CLegacyQuery::ServerParsePacket(INDEX iLength) {
     }
 
   // Unknown request
-  } else {
-    CPutString("Unknown query server request!\n");
-    CPrintF("Data (%d bytes): %s\n", IQuery::pBuffer);
+  } else if (ms_bDebugOutput) {
+    CPrintF("Unknown query server request!\n"
+            "Data (%d bytes): %s\n", iLength, strData);
   }
 };

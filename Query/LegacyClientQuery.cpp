@@ -447,7 +447,10 @@ static BOOL ReceiveServerData(SOCKET &iSocketUDP, BOOL bLocal) {
     // Check game name
     if (strstr(IQuery::pBuffer, "\\gamename\\" SAM_MS_NAME "\\") == NULL) {
       // Terminate upon unknown response
-      CPutString("Unknown query server response!\n");
+      if (ms_bDebugOutput) {
+        CPrintF("Unknown query server response!\n"
+                "Data (%d bytes): %s\n", iReceived, IQuery::pBuffer);
+      }
 
       if (bLocal) {
         if (_pLocalAddressBuffer != NULL) {
