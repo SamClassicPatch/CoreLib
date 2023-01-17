@@ -21,12 +21,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 
 // Choose value based on configuration
-#if SE1_GAME == SS_TFE
+#if SE1_VER == SE1_105 && SE1_GAME == SS_TFE
   #define CHOOSE_FOR_GAME(_TFE105, _TSE105, _TSE107) _TFE105
-#elif SE1_VER == SE1_105
+#elif SE1_VER == SE1_105 && SE1_GAME == SS_TSE
   #define CHOOSE_FOR_GAME(_TFE105, _TSE105, _TSE107) _TSE105
-#else
+#elif SE1_VER == SE1_107
   #define CHOOSE_FOR_GAME(_TFE105, _TSE105, _TSE107) _TSE107
+#else
+  #error Unsupported engine version!
 #endif
 
 // Addresses of specific engine elements

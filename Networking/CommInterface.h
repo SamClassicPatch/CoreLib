@@ -21,7 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 
 // Compatibility with SE1.05
-#if SE1_VER == SE1_105
+#if SE1_VER <= SE1_105
   #include <Engine/Network/Comm.h>
   typedef Communication CCommunicationInterface;
 #else
@@ -30,7 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 // Retrieve communication interface
 __forceinline CCommunicationInterface &GetComm(void) {
-  #if SE1_VER == SE1_105
+  #if SE1_VER <= SE1_105
     return comm;
   #else
     return _cmiComm;
