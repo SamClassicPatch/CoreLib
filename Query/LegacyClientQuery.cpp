@@ -86,7 +86,7 @@ static void StartLocalSearch(void) {
   INDEX iLength = 0;
 
   char strName[256];
-  struct in_addr addr;
+  in_addr addr;
 
   // Get host by its name
   if (gethostname(strName, sizeof(strName)) == 0) {
@@ -175,12 +175,12 @@ static void StartInternetSearch(void) {
   extern CTString ms_strLegacyMS;
   char *strMasterServer = ms_strLegacyMS.str_String;
 
-  struct sockaddr_in addr;
+  sockaddr_in addr;
   addr.sin_addr.s_addr = resolv(strMasterServer);
   addr.sin_port = htons(28900);
   addr.sin_family = AF_INET;
 
-  if (connect(_iSocket, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
+  if (connect(_iSocket, (sockaddr *)&addr, sizeof(addr)) < 0) {
     CPutString("Error connecting to TCP socket!\n");
     AbortSearch();
     return;
@@ -219,7 +219,7 @@ static void StartInternetSearch(void) {
       return;
     }
 
-    // Get secret key for validation
+    // Get secret key for validation (skip '\basic\\secure\')
     UBYTE *pSecretKey = gsseckey((UBYTE *)strResponse + 15, (UBYTE *)SAM_MS_KEY, 0);
 
     // Reset the string for sending a response
@@ -422,7 +422,7 @@ static BOOL ReceiveServerData(SOCKET &iSocketUDP, BOOL bLocal) {
   FD_SET(iSocketUDP, &fdsReadUDP);
 
   // Define a time value
-  struct timeval timeoutUDP;
+  timeval timeoutUDP;
   timeoutUDP.tv_sec = 0; // 0 second timeout
   timeoutUDP.tv_usec = (bLocal ? 250000 : 50000); // Add 0.25 or 0.05 seconds
 
@@ -495,7 +495,7 @@ static DWORD WINAPI MasterServerThread(LPVOID lpParam) {
 
   while (_ctOnlineBuffer >= iAddrLength) {
     // Doesn't end with a final tag
-    if (!strncmp((char *)pServers, "\\final\\", 7)) {
+    if (strncmp(pServers, "\\final\\", 7) == 0) {
       break;
     }
 
@@ -573,7 +573,7 @@ static DWORD WINAPI LocalNetworkThread(LPVOID lpParam) {
   const INDEX iAddrLength = 6;
   const char *pServers = _pLocalAddressBuffer;
 
-  struct sockaddr_in saddr;
+  sockaddr_in saddr;
   saddr.sin_family = AF_INET;
   saddr.sin_addr.s_addr = 0xFFFFFFFF;
 
@@ -582,12 +582,11 @@ static DWORD WINAPI LocalNetworkThread(LPVOID lpParam) {
     sendto(iSocketUDP, "\\status\\", 8, 0, (sockaddr *)&saddr, sizeof(saddr));
   }
 
-  //while (_ctLocalBuffer >= iAddrLength)
-  {
+  while (_ctLocalBuffer >= iAddrLength) {
     // Doesn't end with a final tag
-    /*if (strncmp(pServerIP, "\\final\\", 7) == 0) {
+    if (strncmp(pServers, "\\final\\", 7) == 0) {
       break;
-    }*/
+    }
 
     // Get address at the current position
     IQuery::Address addr = *(IQuery::Address *)pServers;
@@ -597,7 +596,7 @@ static DWORD WINAPI LocalNetworkThread(LPVOID lpParam) {
     addr.Print(strIP);
 
     // Socket address for the server
-    /*sockaddr_in sinServer;
+    sockaddr_in sinServer;
     sinServer.sin_family = AF_INET;
     sinServer.sin_addr.s_addr = inet_addr(strIP);
     sinServer.sin_port = addr.uwPort;
@@ -606,7 +605,7 @@ static DWORD WINAPI LocalNetworkThread(LPVOID lpParam) {
     SServerRequest::AddRequest(sinServer);
 
     // Send packet to the server
-    sendto(iSocketUDP, "\\status\\", 8, 0, (sockaddr *)&sinServer, sizeof(sinServer));*/
+    sendto(iSocketUDP, "\\status\\", 8, 0, (sockaddr *)&sinServer, sizeof(sinServer));
 
     // Receive server data for enumeration
     if (ReceiveServerData(iSocketUDP, TRUE)) {
@@ -614,8 +613,8 @@ static DWORD WINAPI LocalNetworkThread(LPVOID lpParam) {
     }
 
     // Get next address
-    //pServerIP += iAddrLength;
-    //_ctLocalBuffer -= iAddrLength;
+    pServers += iAddrLength;
+    _ctLocalBuffer -= iAddrLength;
   }
 
   // Delete local buffer
