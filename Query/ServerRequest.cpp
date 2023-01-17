@@ -49,9 +49,9 @@ CTimerValue SServerRequest::PopRequestTime(const sockaddr_in &addr) {
 
   // If found
   if (preq != NULL) {
-    // Return its time and remove it
+    // Get its time and clear it
     CTimerValue tvTime = preq->tvRequestTime;
-    IQuery::aRequests.Delete(preq);
+    preq->Clear();
 
     return tvTime;
   }

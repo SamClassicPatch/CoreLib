@@ -468,11 +468,11 @@ static BOOL ReceiveServerData(SOCKET &iSocketUDP, BOOL bLocal) {
     }
 
   } else {
-    // Search for a request to remove it
+    // Search for a request to clear it
     SServerRequest *preq = SServerRequest::Find(sinClient);
 
     if (preq != NULL) {
-      IQuery::aRequests.Delete(preq);
+      preq->Clear();
     }
   }
 
