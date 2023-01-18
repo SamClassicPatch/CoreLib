@@ -204,6 +204,9 @@
     <ClInclude Include="Networking\StockCommands.h">
       <Filter>Header Files\Networking headers</Filter>
     </ClInclude>
+    <ClInclude Include="Interfaces\GfxFunctions.h">
+      <Filter>Header Files\Interfaces headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="StdH.cpp">
