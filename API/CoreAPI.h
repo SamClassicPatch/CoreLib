@@ -23,10 +23,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Define empty API if not utilizing Core directly
 #ifndef CORE_API
   #define CORE_API
-  #define CORE_POINTER_API "C" __declspec(dllexport)
+  #define CORE_POINTER_API
 
 #else
-  #define CORE_POINTER_API CORE_API
+  #define CORE_POINTER_API "C" CORE_API
 #endif
 
 // Current API version
@@ -180,7 +180,7 @@ class CORE_API CCoreAPI {
     virtual void OnFrame(CDrawPort *pdp);
 };
 
-// This variable can be used to access API of the EXE patch.
+// This variable can be used to access API of the Classics patch.
 // It needs to be defined separately for outside projects. Visit for more info:
 // https://github.com/SamClassicPatch/SuperProject/wiki/User-plugins-&-modding#api-utilization
 extern CORE_POINTER_API CCoreAPI *_pCoreAPI;
@@ -199,15 +199,15 @@ extern CORE_POINTER_API CCoreAPI *_pCoreAPI;
     return FALSE;
   };
 
-  // Hook API pointer through the executable's module handle
-  inline BOOL HookExecutableAPI(void) {
-    // Get instance of the running executable
-    const CTFileName fnmEXE = _fnmApplicationPath + _fnmApplicationExe;
-    HMODULE pEXE = GetModuleHandleA(fnmEXE);
+  // Hook API pointer through the library's module handle
+  inline BOOL HookLibraryAPI(void) {
+    // Get instance of the Core library
+    const CTFileName fnmLib = _fnmApplicationExe.FileDir() + "ClassicsCore.dll";
+    HMODULE hLib = GetModuleHandleA(_fnmApplicationPath + fnmLib);
 
-    if (pEXE != NULL) {
-      // Get API pointer from the executable module
-      void *pPointerToAPI = GetProcAddress(pEXE, "_pCoreAPI");
+    if (hLib != NULL) {
+      // Get API pointer from the library module
+      void *pPointerToAPI = GetProcAddress(hLib, "_pCoreAPI");
 
       if (pPointerToAPI != NULL) {
         _pCoreAPI = *(CCoreAPI **)pPointerToAPI;
