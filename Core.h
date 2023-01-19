@@ -26,12 +26,13 @@ typedef UBYTE CSesPropsContainer[NET_MAXSESSIONPROPERTIES];
 
 // Import library for use
 #ifndef CORE_EXPORTS
-  #pragma comment(lib, "ClassicsPatchCore.lib")
+  #pragma comment(lib, "ClassicsCore.lib")
   #pragma comment(lib, "Ws2_32.lib")
-#endif
 
-// [Cecil] TEMP: Define as nothing for static libraries
-#define CORE_API
+  #define CORE_API __declspec(dllimport)
+#else
+  #define CORE_API __declspec(dllexport)
+#endif
 
 // Import zlib
 #ifndef CORE_NO_ZLIB
