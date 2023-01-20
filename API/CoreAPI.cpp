@@ -41,7 +41,7 @@ CCoreAPI::CCoreAPI() :
   ssNew.ss_pPreFunc = NULL; // Unused
   ssNew.ss_pPostFunc = NULL; // Unused
 
-  ulVersion = MakeVersion(1, 4, 0);
+  ulVersion = MakeVersion(1, 4, 1);
 
   // Output patcher actions
   if (FileExists(_fnmApplicationExe.FileDir() + "PatcherOutput")) {
