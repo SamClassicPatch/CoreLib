@@ -31,6 +31,8 @@ class IGfx {
     #else
       // Pointers to functions
       #define GFX_FUNC_POINTER *
+
+      typedef GfxCull GfxFace;
     #endif
 
     typedef void (GFX_FUNC_POINTER CVoidFunc   )(void);
