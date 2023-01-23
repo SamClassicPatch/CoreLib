@@ -46,14 +46,17 @@ class CSymbolPtr {
       return (_pss != NULL);
     };
 
+  // Constant getters
+  public:
+
     // Get index value
-    const INDEX GetIndex(void) const {
+    INDEX GetIndex(void) const {
       ASSERT(_pss != NULL);
       return *(INDEX *)_pss->ss_pvValue;
     };
 
     // Get float value
-    const FLOAT GetFloat(void) const {
+    FLOAT GetFloat(void) const {
       ASSERT(_pss != NULL);
       return *(FLOAT *)_pss->ss_pvValue;
     };
@@ -65,9 +68,30 @@ class CSymbolPtr {
     };
 
     // Get pointer to the value
-    const void *GetValue(void) const {
+    void *GetValue(void) const {
       ASSERT(_pss != NULL);
       return _pss->ss_pvValue;
+    };
+
+  // Reference getters
+  public:
+
+    // Get index value
+    INDEX &GetIndex(void) {
+      ASSERT(_pss != NULL);
+      return *(INDEX *)_pss->ss_pvValue;
+    };
+
+    // Get float value
+    FLOAT &GetFloat(void) {
+      ASSERT(_pss != NULL);
+      return *(FLOAT *)_pss->ss_pvValue;
+    };
+
+    // Get string value
+    CTString &GetString(void) {
+      ASSERT(_pss != NULL);
+      return *(CTString *)_pss->ss_pvValue;
     };
 };
 
