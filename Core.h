@@ -59,8 +59,8 @@ CORE_API extern CTString sam_strVersion;
 #include "Interfaces/RenderFunctions.h"
 #include "Interfaces/WorldFunctions.h"
 
-// Initialize Core module (always after Serious Engine!)
+// Initialize Core module (always after 'SE_InitEngine'!)
 CORE_API void CECIL_InitCore(void);
 
-// Clean up Core module (always before Serious Engine!)
+// Clean up Core module (always before 'SE_EndEngine'!)
 CORE_API void CECIL_EndCore(void);

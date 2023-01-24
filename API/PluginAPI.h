@@ -196,4 +196,7 @@ void CPluginSymbol::Register(const char *strSymbolName, const char *strPreFunc =
 // Define plugin event interfaces
 #include "Plugins/PluginEvents.h"
 
+// Exportable module symbols (use before defining plugin module methods)
+#define MODULE_API extern "C" __declspec(dllexport)
+
 #endif

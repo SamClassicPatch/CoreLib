@@ -20,6 +20,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #pragma once
 #endif
 
+// Include Serious Engine
+#include <Engine/Engine.h>
+
 // Define empty API if not utilizing Core directly
 #ifndef CORE_API
   #define CORE_API

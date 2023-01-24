@@ -97,7 +97,7 @@ class CPluginSymbol
     };
 
     // Get index value
-    const INDEX GetIndex(void) const {
+    INDEX GetIndex(void) const {
       ASSERT(_type == E_INDEX);
       ASSERT(_pss != NULL);
 
@@ -105,7 +105,7 @@ class CPluginSymbol
     };
 
     // Get float value
-    const FLOAT GetFloat(void) const {
+    FLOAT GetFloat(void) const {
       ASSERT(_type == E_FLOAT);
       ASSERT(_pss != NULL);
 
