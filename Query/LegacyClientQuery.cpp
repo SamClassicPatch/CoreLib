@@ -452,15 +452,19 @@ static BOOL ReceiveServerData(SOCKET &iSocketUDP, BOOL bLocal) {
                 "Data (%d bytes): %s\n", iReceived, IQuery::pBuffer);
       }
 
-      if (bLocal) {
-        if (_pLocalAddressBuffer != NULL) {
-          delete[] _pLocalAddressBuffer;
-        }
-        _pLocalAddressBuffer = NULL;
+      // [Cecil] TEMP: Don't terminate enumeration upon receiving random packets with players
+      if (strstr(IQuery::pBuffer, "\\player_0\\") == NULL)
+      {
+        if (bLocal) {
+          if (_pLocalAddressBuffer != NULL) {
+            delete[] _pLocalAddressBuffer;
+          }
+          _pLocalAddressBuffer = NULL;
 
-        WSACleanup();
+          WSACleanup();
+        }
+        return TRUE;
       }
-      return TRUE;
 
     } else {
       // Ignore ping in local networks
