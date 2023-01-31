@@ -396,11 +396,24 @@ static void ParseStatusResponse(sockaddr_in &sinClient, BOOL bIgnorePing) {
   }
 
   if (bIgnorePing || (llPingTime > 0 && llPingTime < 2500000)) {
+    // Check for sessions with the same address
+    const CTString strSessionAddress(0, "%s:%d", inet_ntoa(sinClient.sin_addr), htons(sinClient.sin_port) - 1);
+
+    FOREACHINLIST(CNetworkSession, ns_lnNode, _pNetwork->ga_lhEnumeratedSessions, itns) {
+      // Don't add a new session if it leads to the exact same server
+      if (itns->ns_strAddress == strSessionAddress) {
+        if (ms_bDebugOutput) {
+          CPrintF("'%s' is already listed, skipping duplicate...\n", itns->ns_strSession.Undecorated());
+        }
+        return;
+      }
+    }
+
     // Create a new server listing
     CNetworkSession &ns = *new CNetworkSession;
     _pNetwork->ga_lhEnumeratedSessions.AddTail(ns.ns_lnNode);
 
-    ns.ns_strAddress.PrintF("%s:%d", inet_ntoa(sinClient.sin_addr), htons(sinClient.sin_port) - 1);
+    ns.ns_strAddress = strSessionAddress;
     ns.ns_tmPing = FLOAT(llPingTime) / 1000.0f;
 
     ns.ns_strSession = strHostName;
