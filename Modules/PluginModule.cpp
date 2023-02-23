@@ -137,7 +137,7 @@ static HINSTANCE LoadLibrary_t(const char *strFileName) {
   LPVOID lpMsgBuf;
   DWORD dwSuccess = FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
     NULL, dwMessageId, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
-    (LPTSTR)&lpMsgBuf, 0, NULL);
+    (LPSTR)&lpMsgBuf, 0, NULL);
 
   CTString strWinError;
 
@@ -152,7 +152,7 @@ static HINSTANCE LoadLibrary_t(const char *strFileName) {
   // Otherwise report failure
   } else {
     strWinError.PrintF(TRANS(
-      "Cannot format error message!\nOriginal error code: %d,\nFormatting error code: %d.\n"),
+      "Cannot format error message!\nOriginal error code: %d\nFormatting error code: %d\n"),
       dwMessageId, GetLastError());
   }
 

@@ -18,6 +18,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "QueryManager.h"
 #include "Interfaces/DataFunctions.h"
 
+#include <errno.h>
+
 extern unsigned char *gsseckey(u_char *secure, u_char *key, int enctype);
 extern u_int resolv(char *host);
 
@@ -144,6 +146,53 @@ static void AbortSearch(char *pFreeBuffer = NULL) {
   WSACleanup();
 };
 
+// Select with a timeout to not get stuck indefinitely
+static int TimeoutSelect(SOCKET iSocket, int iSeconds) {
+  timeval timeout;
+  timeout.tv_sec = iSeconds;
+  timeout.tv_usec = 0;
+
+  fd_set fdsRead;
+  FD_ZERO(&fdsRead);
+  FD_SET(iSocket, &fdsRead);
+
+  if (select(iSocket + 1, &fdsRead, NULL, NULL, &timeout) <= 0) {
+    return -1;
+  }
+
+  return 0;
+};
+
+// Get last socket error as a string
+CTString GetSocketError(void) {
+  // Get the error code
+  DWORD dwMessageId = WSAGetLastError();
+
+  LPVOID lpMsgBuf;
+  DWORD dwSuccess = FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+    NULL, dwMessageId, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
+    (LPSTR)&lpMsgBuf, 0, NULL);
+
+  CTString strWinError;
+
+  // If formatting succeeds
+  if (dwSuccess != 0) {
+    // Copy the result
+    strWinError = (char *)lpMsgBuf;
+
+    // Free the Windows message buffer
+    LocalFree(lpMsgBuf);
+
+  // Otherwise report failure
+  } else {
+    strWinError.PrintF(TRANS(
+      "Cannot format error message!\nOriginal error code: %d\nFormatting error code: %d\n"),
+      dwMessageId, GetLastError());
+  }
+
+  return strWinError;
+};
+
 // Start internet server search
 static void StartInternetSearch(void) {
   // Reset requests
@@ -180,10 +229,72 @@ static void StartInternetSearch(void) {
   addr.sin_port = htons(28900);
   addr.sin_family = AF_INET;
 
-  if (connect(_iSocket, (sockaddr *)&addr, sizeof(addr)) < 0) {
-    CPutString("Error connecting to TCP socket!\n");
-    AbortSearch();
-    return;
+  // Try to connect with timeout
+  int iRes = connect(_iSocket, (sockaddr *)&addr, sizeof(addr));
+
+  if (iRes < 0) {
+    if (WSAGetLastError() == WSAEINPROGRESS) {
+      if (ms_bDebugOutput) {
+        CPutString("WSAEINPROGRESS in connect() - selecting...\n");
+      }
+
+      while (true) {
+        timeval tvConnection;
+        tvConnection.tv_sec = 2;
+        tvConnection.tv_usec = 0;
+
+        fd_set fdsConnect;
+        FD_ZERO(&fdsConnect);
+        FD_SET(_iSocket, &fdsConnect);
+
+        iRes = select(_iSocket + 1, NULL, &fdsConnect, NULL, &tvConnection);
+
+        if (iRes < 0 && WSAGetLastError() != WSAEINTR) {
+          if (ms_bDebugOutput) {
+            CPrintF("Error connecting: %s\n", GetSocketError());
+          }
+          AbortSearch();
+          return;
+
+        } else if (iRes > 0) {
+          int iOpt;
+          int ctOptLen = sizeof(iOpt);
+
+          // Socket selected for write
+          if (getsockopt(_iSocket, SOL_SOCKET, SO_ERROR, (char *)&iOpt, &ctOptLen) < 0) {
+            if (ms_bDebugOutput) {
+              CPrintF("Error in getsockopt(): %s\n", GetSocketError());
+            }
+            AbortSearch();
+            return;
+          }
+
+          // Check the returned value
+          if (iOpt) {
+            if (ms_bDebugOutput) {
+              CPrintF("Error in delayed connection (%d): %s\n", iOpt, strerror(iOpt));
+            }
+            AbortSearch();
+            return;
+          }
+          break;
+
+        } else {
+          if (ms_bDebugOutput) {
+            CPutString("Timeout in select() - aborting search...\n");
+          }
+          AbortSearch();
+          return;
+        }
+      }
+
+    } else {
+      if (ms_bDebugOutput) {
+        CPrintF("Error connecting: %s\n", GetSocketError());
+      }
+      AbortSearch();
+      return;
+    }
   }
 
   INDEX iLength;
@@ -269,7 +380,11 @@ static void StartInternetSearch(void) {
   iLength = 0;
 
   // Receive encoded data after sending the validation key
-  while ((iReceived = recv(_iSocket, _pOnlineAddressBuffer + iLength, iNewLength - iLength, 0)) > 0) {
+  while (!TimeoutSelect(_iSocket, 1)) {
+    iReceived = recv(_iSocket, _pOnlineAddressBuffer + iLength, iNewLength - iLength, 0);
+
+    if (iReceived <= 0) break;
+
     // Advance
     iLength += iReceived;
 
