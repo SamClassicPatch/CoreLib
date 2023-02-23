@@ -165,6 +165,46 @@ class IWorld {
       }
     };
 
+    // Check if the entity is derived from CLiveEntity
+    static inline BOOL IsLiveEntity(CEntity *pen) {
+      if (pen == NULL) {
+        ASSERT(FALSE);
+        return FALSE;
+      }
+
+      // Go through the class hierarchy
+      CDLLEntityClass *pdecClass = pen->GetClass()->ec_pdecDLLClass;
+
+      for (; pdecClass != NULL; pdecClass = pdecClass->dec_pdecBase) {
+        // Same ID as CLiveEntity_DLLClass
+        if (pdecClass->dec_iID == 32001) {
+          return TRUE;
+        }
+      }
+
+      return FALSE;
+    };
+
+    // Check if the entity is derived from CRationalEntity
+    static inline BOOL IsRationalEntity(CEntity *pen) {
+      if (pen == NULL) {
+        ASSERT(FALSE);
+        return FALSE;
+      }
+
+      // Go through the class hierarchy
+      CDLLEntityClass *pdecClass = pen->GetClass()->ec_pdecDLLClass;
+
+      for (; pdecClass != NULL; pdecClass = pdecClass->dec_pdecBase) {
+        // Same ID as CRationalEntity_DLLClass
+        if (pdecClass->dec_iID == 32002) {
+          return TRUE;
+        }
+      }
+
+      return FALSE;
+    };
+
     // Get pointers to local player entities
     static inline void GetLocalPlayers(CPlayerEntities &cOutput) {
       ASSERT(cOutput.Count() == 0);
