@@ -121,7 +121,7 @@ CPluginModule *CCoreAPI::LoadGamePlugin(void) {
 // Load all user plugins of specific utility types
 void CCoreAPI::LoadPlugins(ULONG ulUtilityFlags) {
   // List all library files
-  CDynamicFileStack afnmDir;
+  CFileList afnmDir;
   IData::ListGameFiles(afnmDir, "Bin\\Plugins\\", "*.dll", IData::FLF_RECURSIVE | IData::FLF_SEARCHMOD);
 
   CPrintF("--- Loading user plugins (flags: 0x%X) ---\n", ulUtilityFlags);

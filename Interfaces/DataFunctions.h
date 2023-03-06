@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <io.h>
 
-typedef CDynamicStackArray<CTFileName> CDynamicFileStack;
+typedef CDynamicStackArray<CTFileName> CFileList;
 
 // Interface of useful methods for data manipulation
 class IData {
@@ -165,7 +165,7 @@ class IData {
     };
 
     // Check if some name pattern matches any file in the list
-    static inline INDEX FileMatchesList(const CDynamicFileStack &afnm, const CTString &strPattern)
+    static inline INDEX FileMatchesList(const CFileList &afnm, const CTString &strPattern)
     {
       for (INDEX i = 0; i < afnm.Count(); i++) {
         const CTFileName &fnmCheck = afnm[i];
@@ -180,7 +180,7 @@ class IData {
     };
 
     // List files from a specific directory on a disk
-    static inline void ListFilesInDir(const CTFileName &fnmBaseDir, CDynamicFileStack &afnm,
+    static inline void ListFilesInDir(const CTFileName &fnmBaseDir, CFileList &afnm,
       const CTString &strDir, const CTString &strPattern, BOOL bRecursive)
     {
       // Add the directory to search list
@@ -242,14 +242,14 @@ class IData {
     };
 
     // List files from a specific game directory
-    static inline void ListGameFiles(CDynamicFileStack &afnmFiles, const CTString &strDir, const CTString &strPattern, ULONG ulFlags)
+    static inline void ListGameFiles(CFileList &afnmFiles, const CTString &strDir, const CTString &strPattern, ULONG ulFlags)
     {
       afnmFiles.PopAll();
 
       const BOOL bRecursive = ulFlags & FLF_RECURSIVE;
 
       // Make a temporary list
-      CDynamicFileStack afnmTemp;
+      CFileList afnmTemp;
 
       // List files exclusively from the mod
       if (ulFlags & FLF_MODONLY && _fnmMod != "") {
