@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #pragma once
 #endif
 
-#include <Engine/Base/Unzip.h>
+#include <CoreLib/Base/Unzip.h>
 
 #include <io.h>
 
@@ -271,10 +271,10 @@ class IData {
       }
 
       // For each file in the archives
-      INDEX ctFilesInZips = UNZIPGetFileCount();
+      INDEX ctFilesInZips = IUnzip::GetFileCount();
 
       for (INDEX iFileInZip = 0; iFileInZip < ctFilesInZips; iFileInZip++) {
-        const CTFileName &fnm = UNZIPGetFileAtIndex(iFileInZip);
+        const CTFileName &fnm = IUnzip::GetFileAtIndex(iFileInZip);
 
         // Skip if not under this directory
         if (bRecursive) {

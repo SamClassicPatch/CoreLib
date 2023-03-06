@@ -26,6 +26,7 @@
     <ClInclude Include="API\Plugins\PluginEvents.h" />
     <ClInclude Include="API\Plugins\PluginSymbols.h" />
     <ClInclude Include="Base\CoreTimerHandler.h" />
+    <ClInclude Include="Base\Unzip.h" />
     <ClInclude Include="Compatibility\Game.h" />
     <ClInclude Include="Compatibility\PlayerSettings.h" />
     <ClInclude Include="Compatibility\SymbolPtr.h" />
@@ -80,6 +81,7 @@
     <ClCompile Include="API\PatchAPI.cpp" />
     <ClCompile Include="API\PluginAPI.cpp" />
     <ClCompile Include="Base\CoreTimerHandler.cpp" />
+    <ClCompile Include="Base\Unzip.cpp" />
     <ClCompile Include="Core.cpp" />
     <ClCompile Include="Definitions\InlineDefinitions.cpp" />
     <ClCompile Include="Modules\PluginModule.cpp" />
@@ -114,7 +116,6 @@
   <ItemGroup>
     <None Include="Definitions\GraphicsDefs.inl" />
     <None Include="Definitions\TextureEffectsDefs.inl" />
-    <None Include="Definitions\UnzipDefs.inl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <SccProjectName>

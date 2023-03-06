@@ -207,6 +207,9 @@
     <ClInclude Include="Interfaces\GfxFunctions.h">
       <Filter>Header Files\Interfaces headers</Filter>
     </ClInclude>
+    <ClInclude Include="Base\Unzip.h">
+      <Filter>Header Files\Base headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="StdH.cpp">
@@ -299,15 +302,15 @@
     <ClCompile Include="Networking\StockCommands.cpp">
       <Filter>Source Files\Networking</Filter>
     </ClCompile>
+    <ClCompile Include="Base\Unzip.cpp">
+      <Filter>Source Files\Base</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Definitions\TextureEffectsDefs.inl">
       <Filter>Header Files\Definitions headers</Filter>
     </None>
     <None Include="Definitions\GraphicsDefs.inl">
-      <Filter>Header Files\Definitions headers</Filter>
-    </None>
-    <None Include="Definitions\UnzipDefs.inl">
       <Filter>Header Files\Definitions headers</Filter>
     </None>
   </ItemGroup>

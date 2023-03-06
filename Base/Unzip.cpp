@@ -1,4 +1,4 @@
-/* Copyright (c) 2002-2012 Croteam Ltd. 
+/* Copyright (c) 2023 Dreamy Cecil
 This program is free software; you can redistribute it and/or modify
 it under the terms of version 2 of the GNU General Public License as published by
 the Free Software Foundation
@@ -13,24 +13,79 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-// [Cecil] Definitions of unexported methods for working with ZIP archives from the engine
+#include "StdH.h"
 
-#ifndef CECIL_INCL_UNZIP_DEFS_H
-#define CECIL_INCL_UNZIP_DEFS_H
+#include "Unzip.h"
 
-#ifdef PRAGMA_ONCE
-  #pragma once
-#endif
+#ifdef CORE_NO_ZLIB
 
-#ifndef CORE_NO_ZLIB
+// zlib library isn't utilized
+#define NO_ZLIB_ERROR ASSERTALWAYS("zlib library usage has been disabled!")
+
+void IUnzip::AddArchive(const CTFileName &) {
+  NO_ZLIB_ERROR;
+};
+
+void IUnzip::ReadDirectoriesReverse_t(void) {
+  NO_ZLIB_ERROR;
+};
+
+INDEX IUnzip::GetFileCount(void) {
+  NO_ZLIB_ERROR;
+  return -1;
+};
+
+const CTFileName &IUnzip::GetFileAtIndex(INDEX) {
+  NO_ZLIB_ERROR;
+  static const CTFileName fnmNone = CTString("");
+  return fnmNone;
+};
+
+BOOL IUnzip::IsFileAtIndexMod(INDEX) {
+  NO_ZLIB_ERROR;
+  return FALSE;
+};
+
+INDEX IUnzip::GetFileIndex(const CTFileName &) {
+  NO_ZLIB_ERROR;
+  return -1;
+};
+
+void IUnzip::GetFileInfo(INDEX, CTFileName &, SLONG &, SLONG &, SLONG &, BOOL &) {
+  NO_ZLIB_ERROR;
+};
+
+INDEX IUnzip::Open_t(const CTFileName &) {
+  NO_ZLIB_ERROR;
+  return -1;
+};
+
+SLONG IUnzip::GetSize(INDEX) {
+  NO_ZLIB_ERROR;
+  return -1;
+};
+
+ULONG IUnzip::GetCRC(INDEX) {
+  NO_ZLIB_ERROR;
+  return 0;
+};
+
+void IUnzip::ReadBlock_t(INDEX, UBYTE *, SLONG, SLONG) {
+  NO_ZLIB_ERROR;
+};
+
+void IUnzip::Close(INDEX) {
+  NO_ZLIB_ERROR;
+};
+
+#else
+
+#include "Interfaces/DataFunctions.h"
 
 #include <Extras/zlib/zlib.h>
 
-#include <Engine/Base/Unzip.h>
-#include <CoreLib/Interfaces/DataFunctions.h>
-
 // [Cecil] Pointer to 'zip_csLock' in the engine
-static CTCriticalSection *_pcsZipLockEngine = ADDR_UNZIP_CRITSEC;
+static CTCriticalSection *_pcsZipLock = ADDR_UNZIP_CRITSEC;
 
 #pragma pack(push, 1)
 
@@ -48,10 +103,9 @@ struct LocalFileHeader {
   SLONG lfh_slUncompressedSize;
   SWORD lfh_swFileNameLen;
   SWORD lfh_swExtraFieldLen;
-
-// follows:
-//  filename (variable size)
-//  extra field (variable size)
+  // Follows:
+  // - filename (variable size)
+  // - extra field (variable size)
 };
 
 // After file data, only if compressed from a non-seekable stream
@@ -84,11 +138,10 @@ struct FileHeader {
   SWORD fh_swInternalFileAttributes;
   SLONG fh_swExternalFileAttributes;
   SLONG fh_slLocalHeaderOffset;
-
-// follows:
-//  filename (variable size)
-//  extra field (variable size)
-//  file comment (variable size)
+  // Follows:
+  // - filename (variable size)
+  // - extra field (variable size)
+  // - file comment (variable size)
 };
 
 // At the end of entire zip file
@@ -102,9 +155,8 @@ struct EndOfDir {
   SLONG eod_slSizeOfDir;
   SLONG eod_slDirOffsetInFile;
   SWORD eod_swCommentLenght;
-
-// follows: 
-//  zipfile comment (variable size)
+  // Follows:
+  // - zipfile comment (variable size)
 };
 
 #pragma pack(pop)
@@ -137,37 +189,11 @@ class CZipHandle {
     z_stream zh_zstream;  // zlib filestream for decompression
     FILE *zh_fFile;       // Open handle of the archive
     UBYTE *zh_pubBufIn;   // Input buffer
-
-    CZipHandle(void);
+    
+  public:
+    CZipHandle();
     void Clear(void);
-    void ThrowZLIBError_t(int ierr, const CTString &strDescription);
-};
-
-// Get error string for a zlib error
-CTString GetZlibError(int ierr)
-{
-  switch (ierr) {
-    case Z_OK:            return "Z_OK           ";
-    case Z_STREAM_END:    return "Z_STREAM_END   ";
-    case Z_NEED_DICT:     return "Z_NEED_DICT    ";
-    case Z_STREAM_ERROR:  return "Z_STREAM_ERROR ";
-    case Z_DATA_ERROR:    return "Z_DATA_ERROR   ";
-    case Z_MEM_ERROR:     return "Z_MEM_ERROR    ";
-    case Z_BUF_ERROR:     return "Z_BUF_ERROR    ";
-    case Z_VERSION_ERROR: return "Z_VERSION_ERROR";
-
-    case Z_ERRNO: {
-      CTString strError;
-      strError.PrintF("Z_ERRNO: %s", strerror(errno));
-      return strError; 
-    }
-
-    default: {
-      CTString strError;
-      strError.PrintF(LOCALIZE("Unknown ZLIB error: %d"), ierr);
-      return strError;
-    }
-  }
+    void Throw_t(int iErr, const CTString &strDescription);
 };
 
 CZipHandle::CZipHandle(void)
@@ -185,7 +211,7 @@ void CZipHandle::Clear(void)
   zh_zeEntry.Clear();
 
   // Clear the zlib stream
-  CTSingleLock slZip(_pcsZipLockEngine, TRUE);
+  CTSingleLock slZip(_pcsZipLock, TRUE);
 
   inflateEnd(&zh_zstream);
   memset(&zh_zstream, 0, sizeof(zh_zstream));
@@ -203,31 +229,45 @@ void CZipHandle::Clear(void)
   }
 };
 
-void CZipHandle::ThrowZLIBError_t(int ierr, const CTString &strDescription)
-{
+void CZipHandle::Throw_t(int iErr, const CTString &strDescription) {
+  CTString strError;
+
+  switch (iErr) {
+    case Z_OK:            strError = "Z_OK           "; break;
+    case Z_STREAM_END:    strError = "Z_STREAM_END   "; break;
+    case Z_NEED_DICT:     strError = "Z_NEED_DICT    "; break;
+    case Z_STREAM_ERROR:  strError = "Z_STREAM_ERROR "; break;
+    case Z_DATA_ERROR:    strError = "Z_DATA_ERROR   "; break;
+    case Z_MEM_ERROR:     strError = "Z_MEM_ERROR    "; break;
+    case Z_BUF_ERROR:     strError = "Z_BUF_ERROR    "; break;
+    case Z_VERSION_ERROR: strError = "Z_VERSION_ERROR"; break;
+    case Z_ERRNO: strError.PrintF("Z_ERRNO: %s", strerror(errno)); break;
+    default: strError.PrintF(LOCALIZE("Unknown ZLIB error: %d"), iErr);
+  }
+
   ThrowF_t(LOCALIZE("(%s/%s) %s - ZLIB error: %s - %s"), zh_zeEntry.ze_pfnmArchive->str_String,
-    zh_zeEntry.ze_fnm.str_String, strDescription, GetZlibError(ierr), zh_zstream.msg);
+    zh_zeEntry.ze_fnm.str_String, strDescription, strError.str_String, zh_zstream.msg);
 };
 
 // [Cecil] Pointer to '_azhHandles' in the engine
-static CStaticStackArray<CZipHandle> &_aHandlesEngine = *(CStaticStackArray<CZipHandle> *)ADDR_UNZIP_HANDLES;
+static CStaticStackArray<CZipHandle> &_aZipHandles = *(CStaticStackArray<CZipHandle> *)ADDR_UNZIP_HANDLES;
 
 // [Cecil] Pointer to '_azeFiles' in the engine
-static CStaticStackArray<CZipEntry> &_aFilesEngine = *(CStaticStackArray<CZipEntry> *)ADDR_UNZIP_ENTRIES;
+static CStaticStackArray<CZipEntry> &_aZipFiles = *(CStaticStackArray<CZipEntry> *)ADDR_UNZIP_ENTRIES;
 
 // [Cecil] Pointer to '_afnmArchives' in the engine
-static CStaticStackArray<CTFileName> &_aArchivesEngine = *(CStaticStackArray<CTFileName> *)ADDR_UNZIP_ARCHIVES;
+static CStaticStackArray<CTFileName> &_aZipArchives = *(CStaticStackArray<CTFileName> *)ADDR_UNZIP_ARCHIVES;
 
 // [Cecil] Handle verification (to avoid code duplication)
 static inline BOOL VerifyHandle(INDEX iHandle) {
   // Check handle number
-  if (iHandle < 0 || iHandle >= _aHandlesEngine.Count()) {
+  if (iHandle < 0 || iHandle >= _aZipHandles.Count()) {
     ASSERT(FALSE);
     return FALSE;
   }
 
   // Check the handle
-  CZipHandle &zh = _aHandlesEngine[iHandle];
+  CZipHandle &zh = _aZipHandles[iHandle];
 
   if (!zh.zh_bOpen) {
     ASSERT(FALSE);
@@ -238,9 +278,9 @@ static inline BOOL VerifyHandle(INDEX iHandle) {
 };
 
 // Add one zip archive to the currently active set
-void UNZIPAddArchive(const CTFileName &fnm)
+void IUnzip::AddArchive(const CTFileName &fnm)
 {
-  _aArchivesEngine.Push() = fnm;
+  _aZipArchives.Push() = fnm;
 };
 
 // Read directory of a zip archive and add all files in it to active set
@@ -363,7 +403,7 @@ static void ReadZIPDirectory_t(CTFileName *pfnmZip)
       IData::ReplaceChar(strBuffer, '/', '\\');
 
       // Create a new entry
-      CZipEntry &ze = _aFilesEngine.Push();
+      CZipEntry &ze = _aZipFiles.Push();
 
       // Remember file data
       ze.ze_fnm = CTString(strBuffer);
@@ -401,7 +441,7 @@ static void ReadZIPDirectory_t(CTFileName *pfnmZip)
 static void ReadOneArchiveDir_t(CTFileName &fnm)
 {
   // Remember current number of files
-  INDEX ctOrgFiles = _aFilesEngine.Count();
+  INDEX ctOrgFiles = _aZipFiles.Count();
 
   // Try to read the directory and add all files
   try {
@@ -409,12 +449,12 @@ static void ReadOneArchiveDir_t(CTFileName &fnm)
 
   } catch (char *) {
     // Remove added files
-    if (ctOrgFiles < _aFilesEngine.Count())
+    if (ctOrgFiles < _aZipFiles.Count())
     {
       if (ctOrgFiles == 0) {
-        _aFilesEngine.PopAll();
+        _aZipFiles.PopAll();
       } else {
-        _aFilesEngine.PopUntil(ctOrgFiles - 1);
+        _aZipFiles.PopUntil(ctOrgFiles - 1);
       }
     }
 
@@ -472,22 +512,22 @@ int qsort_ArchiveCTFileName_reverse(const void *pElement1, const void *pElement2
   return -stricmp(fnm1.str_String, fnm2.str_String);
 };
 
-// read directories of all currently added archives, in reverse alphabetical order
-void UNZIPReadDirectoriesReverse_t(void)
+// Read directories of all currently added archives in reverse alphabetical order
+void IUnzip::ReadDirectoriesReverse_t(void)
 {
   // No archives
-  if (_aArchivesEngine.Count() == 0) return;
+  if (_aZipArchives.Count() == 0) return;
 
   // Sort the archive filenames reversely
-  qsort(&_aArchivesEngine[0], _aArchivesEngine.Count(), sizeof(CTFileName), qsort_ArchiveCTFileName_reverse);
+  qsort(&_aZipArchives[0], _aZipArchives.Count(), sizeof(CTFileName), qsort_ArchiveCTFileName_reverse);
 
   CTString strAllErrors = "";
 
   // Go through the archives
-  for (INDEX iArchive = 0; iArchive < _aArchivesEngine.Count(); iArchive++) {
+  for (INDEX iArchive = 0; iArchive < _aZipArchives.Count(); iArchive++) {
     // Try to read the archive directory
     try {
-      ReadOneArchiveDir_t(_aArchivesEngine[iArchive]);
+      ReadOneArchiveDir_t(_aZipArchives[iArchive]);
 
     // Write the error
     } catch (char *strError) {
@@ -502,33 +542,27 @@ void UNZIPReadDirectoriesReverse_t(void)
   }
 };
 
-// Check if a file entry exists
-BOOL UNZIPFileExists(const CTFileName &fnm) {
-  // [Cecil] Check for the index to avoid code duplication
-  return (UNZIPGetFileIndex(fnm) != -1);
-};
-
 // Enumeration for all files in all zips
-INDEX UNZIPGetFileCount(void) {
-  return _aFilesEngine.Count();
+INDEX IUnzip::GetFileCount(void) {
+  return _aZipFiles.Count();
 };
 
 // Get file at a specific position
-const CTFileName &UNZIPGetFileAtIndex(INDEX i) {
-  return _aFilesEngine[i].ze_fnm;
+const CTFileName &IUnzip::GetFileAtIndex(INDEX i) {
+  return _aZipFiles[i].ze_fnm;
 };
 
 // Check if specific file is from a mod
-BOOL UNZIPIsFileAtIndexMod(INDEX i) {
-  return _aFilesEngine[i].ze_bMod;
+BOOL IUnzip::IsFileAtIndexMod(INDEX i) {
+  return _aZipFiles[i].ze_bMod;
 };
 
 // Get index of a specific file (-1 if no file)
-INDEX UNZIPGetFileIndex(const CTFileName &fnm)
+INDEX IUnzip::GetFileIndex(const CTFileName &fnm)
 {
-  for (INDEX iFile = 0; iFile < _aFilesEngine.Count(); iFile++) {
+  for (INDEX iFile = 0; iFile < _aZipFiles.Count(); iFile++) {
     // Filename matches
-    if (_aFilesEngine[iFile].ze_fnm == fnm) {
+    if (_aZipFiles[iFile].ze_fnm == fnm) {
       return iFile;
     }
   }
@@ -537,13 +571,13 @@ INDEX UNZIPGetFileIndex(const CTFileName &fnm)
 };
 
 // Get info of a zip file entry
-void UNZIPGetFileInfo(INDEX iHandle, CTFileName &fnmZip, 
+void IUnzip::GetFileInfo(INDEX iHandle, CTFileName &fnmZip, 
   SLONG &slOffset, SLONG &slSizeCompressed, SLONG &slSizeUncompressed, BOOL &bCompressed)
 {
   if (!VerifyHandle(iHandle)) return;
   
   // Get parameters of the entry
-  const CZipEntry &ze = _aHandlesEngine[iHandle].zh_zeEntry;
+  const CZipEntry &ze = _aZipHandles[iHandle].zh_zeEntry;
 
   fnmZip = *ze.ze_pfnmArchive;
   bCompressed = !ze.ze_bStored;
@@ -553,15 +587,15 @@ void UNZIPGetFileInfo(INDEX iHandle, CTFileName &fnmZip,
 };
 
 // Open a zip file entry for reading
-INDEX UNZIPOpen_t(const CTFileName &fnm)
+INDEX IUnzip::Open_t(const CTFileName &fnm)
 {
   CZipEntry *pze = NULL;
 
-  for (INDEX iFile = 0; iFile < _aFilesEngine.Count(); iFile++)
+  for (INDEX iFile = 0; iFile < _aZipFiles.Count(); iFile++)
   {
     // Stop searching if it's that one
-    if (_aFilesEngine[iFile].ze_fnm == fnm) {
-      pze = &_aFilesEngine[iFile];
+    if (_aZipFiles[iFile].ze_fnm == fnm) {
+      pze = &_aZipFiles[iFile];
       break;
     }
   }
@@ -575,9 +609,9 @@ INDEX UNZIPOpen_t(const CTFileName &fnm)
   BOOL bHandleFound = FALSE;
   INDEX iHandle = 1;
 
-  for (; iHandle < _aHandlesEngine.Count(); iHandle++) {
+  for (; iHandle < _aZipHandles.Count(); iHandle++) {
     // Found unused one
-    if (!_aHandlesEngine[iHandle].zh_bOpen) {
+    if (!_aZipHandles[iHandle].zh_bOpen) {
       bHandleFound = TRUE;
       break;
     }
@@ -586,12 +620,12 @@ INDEX UNZIPOpen_t(const CTFileName &fnm)
   // If no free handle found
   if (!bHandleFound) {
     // Create a new one
-    iHandle = _aHandlesEngine.Count();
-    _aHandlesEngine.Push(1);
+    iHandle = _aZipHandles.Count();
+    _aZipHandles.Push(1);
   }
   
   // Get the handle
-  CZipHandle &zh = _aHandlesEngine[iHandle];
+  CZipHandle &zh = _aZipHandles[iHandle];
 
   ASSERT(!zh.zh_bOpen);
   zh.zh_zeEntry = *pze;
@@ -635,7 +669,7 @@ INDEX UNZIPOpen_t(const CTFileName &fnm)
   zh.zh_pubBufIn = (UBYTE *)AllocMemory(BUF_SIZE);
 
   // Initialize zlib stream
-  CTSingleLock slZip(_pcsZipLockEngine, TRUE);
+  CTSingleLock slZip(_pcsZipLock, TRUE);
 
   zh.zh_zstream.next_out  = NULL;
   zh.zh_zstream.avail_out = 0;
@@ -644,10 +678,10 @@ INDEX UNZIPOpen_t(const CTFileName &fnm)
   zh.zh_zstream.zalloc = (alloc_func)Z_NULL;
   zh.zh_zstream.zfree = (free_func)Z_NULL;
 
-  int err = inflateInit2(&zh.zh_zstream, -15);
+  int iErr = inflateInit2(&zh.zh_zstream, -15);
 
   // If failed
-  if (err != Z_OK) {
+  if (iErr != Z_OK) {
     // Clean up what is possible
     FreeMemory(zh.zh_pubBufIn);
     zh.zh_pubBufIn = NULL;
@@ -655,7 +689,7 @@ INDEX UNZIPOpen_t(const CTFileName &fnm)
     fclose(zh.zh_fFile);
     zh.zh_fFile = NULL;
 
-    zh.ThrowZLIBError_t(err, LOCALIZE("Cannot init inflation"));
+    zh.Throw_t(iErr, LOCALIZE("Cannot init inflation"));
   }
 
   // Return the handle successfully
@@ -665,27 +699,27 @@ INDEX UNZIPOpen_t(const CTFileName &fnm)
 };
 
 // Get uncompressed size of a file
-SLONG UNZIPGetSize(INDEX iHandle)
+SLONG IUnzip::GetSize(INDEX iHandle)
 {
   if (!VerifyHandle(iHandle)) return 0;
 
-  return _aHandlesEngine[iHandle].zh_zeEntry.ze_slUncompressedSize;
+  return _aZipHandles[iHandle].zh_zeEntry.ze_slUncompressedSize;
 };
 
 // Get CRC of a file
-ULONG UNZIPGetCRC(INDEX iHandle)
+ULONG IUnzip::GetCRC(INDEX iHandle)
 {
   if (!VerifyHandle(iHandle)) return 0;
 
-  return _aHandlesEngine[iHandle].zh_zeEntry.ze_ulCRC;
+  return _aZipHandles[iHandle].zh_zeEntry.ze_ulCRC;
 };
 
 // Read a block from ZIP file
-void UNZIPReadBlock_t(INDEX iHandle, UBYTE *pub, SLONG slStart, SLONG slLen)
+void IUnzip::ReadBlock_t(INDEX iHandle, UBYTE *pub, SLONG slStart, SLONG slLen)
 {
   if (!VerifyHandle(iHandle)) return;
 
-  CZipHandle &zh = _aHandlesEngine[iHandle];
+  CZipHandle &zh = _aZipHandles[iHandle];
 
   // Over the end of file
   if (slStart >= zh.zh_zeEntry.ze_slUncompressedSize) {
@@ -703,7 +737,7 @@ void UNZIPReadBlock_t(INDEX iHandle, UBYTE *pub, SLONG slStart, SLONG slLen)
     return;
   }
 
-  CTSingleLock slZip(_pcsZipLockEngine, TRUE);
+  CTSingleLock slZip(_pcsZipLock, TRUE);
 
   // If behind the current pointer
   if (slStart < zh.zh_zstream.total_out) {
@@ -741,10 +775,10 @@ void UNZIPReadBlock_t(INDEX iHandle, UBYTE *pub, SLONG slStart, SLONG slLen)
     zh.zh_zstream.avail_out = Min(SLONG(slStart-zh.zh_zstream.total_out), SLONG(DUMMY_SIZE));
     zh.zh_zstream.next_out = aubDummy;
 
-    int ierr = inflate(&zh.zh_zstream, Z_SYNC_FLUSH);
+    int iErr = inflate(&zh.zh_zstream, Z_SYNC_FLUSH);
 
-    if (ierr != Z_OK && ierr != Z_STREAM_END) {
-      zh.ThrowZLIBError_t(ierr, LOCALIZE("Error seeking in zip"));
+    if (iErr != Z_OK && iErr != Z_STREAM_END) {
+      zh.Throw_t(iErr, LOCALIZE("Error seeking in zip"));
     }
   }
 
@@ -781,23 +815,21 @@ void UNZIPReadBlock_t(INDEX iHandle, UBYTE *pub, SLONG slStart, SLONG slLen)
     }
 
     // Decode to output
-    int ierr = inflate(&zh.zh_zstream, Z_SYNC_FLUSH);
+    int iErr = inflate(&zh.zh_zstream, Z_SYNC_FLUSH);
 
-    if (ierr != Z_OK && ierr != Z_STREAM_END) {
-      zh.ThrowZLIBError_t(ierr, LOCALIZE("Error reading from zip"));
+    if (iErr != Z_OK && iErr != Z_STREAM_END) {
+      zh.Throw_t(iErr, LOCALIZE("Error reading from zip"));
     }
   }
 };
 
 // Close a ZIP file entry
-void UNZIPClose(INDEX iHandle)
+void IUnzip::Close(INDEX iHandle)
 {
   if (!VerifyHandle(iHandle)) return;
 
   // Clear it
-  _aHandlesEngine[iHandle].Clear();
+  _aZipHandles[iHandle].Clear();
 };
-
-#endif
 
 #endif
