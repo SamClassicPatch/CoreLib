@@ -113,6 +113,47 @@ class IData {
       return INDEX(pchSrc - str.str_String) + ctTags;
     };
 
+    // Fixed function for reading lines from a stream without a delimiter at the last line
+    static inline void GetLineFromStream_t(CTStream &strm, char *strBuffer, SLONG slBufferSize, char cDelimiter = '\n') {
+      // Check parameters and that the stream can be read
+      ASSERT(strBuffer != NULL && slBufferSize > 0 && strm.IsReadable());
+
+      INDEX iLetters = 0;
+
+      // Check if already at the end
+      if (strm.AtEOF()) ThrowF_t(LOCALIZE("EOF reached, file %s"), strm.strm_strStreamDescription);
+
+      FOREVER {
+        char c;
+        strm.Read_t(&c, 1);
+
+        // [Cecil] Just skip instead of entering the block when it's not that
+        if (c == '\r') continue;
+
+        strBuffer[iLetters] = c;
+
+        // Stop reading after the delimiter
+        if (strBuffer[iLetters] == cDelimiter) {
+          strBuffer[iLetters] = '\0';
+          return;
+        }
+
+        // Go to the next destination letter
+        iLetters++;
+
+        // [Cecil] Cut off after actually setting the character
+        if (strm.AtEOF()) {
+          strBuffer[iLetters] = '\0';
+          return;
+        }
+
+        // Check if reached the maximum length
+        if (iLetters == slBufferSize) {
+          return;
+        }
+      }
+    };
+
     // Check if a string matches any line of the string mask
     static inline BOOL MatchesMask(const CTString &strString, CTString strMask) {
       CTString strLine;

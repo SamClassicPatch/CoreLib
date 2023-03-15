@@ -157,8 +157,10 @@ class CORE_API IFiles {
 
         // Add every non-empty line with trimmed spaces
         while (!strm.AtEOF()) {
-          CTString strLine;
-          strm.GetLine_t(strLine);
+          char strBuffer[1024];
+          IData::GetLineFromStream_t(strm, strBuffer, sizeof(strBuffer));
+
+          CTString strLine = strBuffer;
           strLine.TrimSpacesLeft();
           strLine.TrimSpacesRight();
 
