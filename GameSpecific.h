@@ -48,6 +48,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #define ADDR_UNZIP_ENTRIES  ((ULONG *)CHOOSE_FOR_GAME(0x60285040, 0x60255080, 0x602B62A8)) // &_azeFiles
   #define ADDR_UNZIP_ARCHIVES ((ULONG *)CHOOSE_FOR_GAME(0x60285020, 0x60255060, 0x602B6288)) // &_afnmArchives
 
+  // UNZIP* methods
+  #define ADDR_UNZIP_OPEN      (CHOOSE_FOR_GAME(0x600E19E0, 0x600B1A70, 0x600EDD50)) // UNZIPOpen_t()
+  #define ADDR_UNZIP_GETSIZE   (CHOOSE_FOR_GAME(0x600E1D90, 0x600B1E20, 0x600EE100)) // UNZIPGetSize()
+  #define ADDR_UNZIP_READBLOCK (CHOOSE_FOR_GAME(0x600E1DF0, 0x600B1E80, 0x600EE160)) // UNZIPReadBlock_t()
+  #define ADDR_UNZIP_CLOSE     (CHOOSE_FOR_GAME(0x600E20F0, 0x600B2180, 0x600EE460)) // UNZIPClose()
+  #define ADDR_UNZIP_GETFILECOUNT     (CHOOSE_FOR_GAME(0x600E18C0, 0x600B1950, 0x600EDC30)) // UNZIPGetFileCount()
+  #define ADDR_UNZIP_GETFILEATINDEX   (CHOOSE_FOR_GAME(0x600E18D0, 0x600B1960, 0x600EDC40)) // UNZIPGetFileAtIndex()
+  #define ADDR_UNZIP_ISFILEATINDEXMOD (CHOOSE_FOR_GAME(0x600E18F0, 0x600B1980, 0x600EDC60)) // UNZIPIsFileAtIndexMod()
+
 // Debug addresses
 #elif SE1_VER == SE1_107
   // InitStreams()
@@ -64,6 +73,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #define ADDR_UNZIP_HANDLES  ((ULONG *)0x10424158) // &_azhHandles
   #define ADDR_UNZIP_ENTRIES  ((ULONG *)0x10424168) // &_azeFiles
   #define ADDR_UNZIP_ARCHIVES ((ULONG *)0x10424148) // &_afnmArchives
+
+  // UNZIP* methods
+  #define ADDR_UNZIP_OPEN      (0x10002C20) // UNZIPOpen_t()
+  #define ADDR_UNZIP_GETSIZE   (0x1000720C) // UNZIPGetSize()
+  #define ADDR_UNZIP_READBLOCK (0x10008693) // UNZIPReadBlock_t()
+  #define ADDR_UNZIP_CLOSE     (0x100088FA) // UNZIPClose()
+  #define ADDR_UNZIP_GETFILECOUNT     (0x10001456) // UNZIPGetFileCount()
+  #define ADDR_UNZIP_GETFILEATINDEX   (0x10005268) // UNZIPGetFileAtIndex()
+  #define ADDR_UNZIP_ISFILEATINDEXMOD (0x1000A45C) // UNZIPIsFileAtIndexMod()
 #endif
 
 #endif
