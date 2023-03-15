@@ -33,6 +33,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 // Addresses of specific engine elements
 #ifdef NDEBUG
+  // InitStreams()
+  #define ADDR_INITSTREAMS (CHOOSE_FOR_GAME(0x600DA2C0, 0x600AA2C0, 0x600E65F0))
+
   // CRenderer::Render()
   #define ADDR_RENDERER_RENDER (CHOOSE_FOR_GAME(0x601A8CD0, 0x60178DB0, 0x601B4A00))
 
@@ -43,10 +46,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #define ADDR_UNZIP_CRITSEC  ((CTCriticalSection *)(ULONG *)CHOOSE_FOR_GAME(0x602A0388, 0x602703C8, 0x602D31C8)) // &zip_csLock
   #define ADDR_UNZIP_HANDLES  ((ULONG *)CHOOSE_FOR_GAME(0x60285030, 0x60255070, 0x602B6298)) // &_azhHandles
   #define ADDR_UNZIP_ENTRIES  ((ULONG *)CHOOSE_FOR_GAME(0x60285040, 0x60255080, 0x602B62A8)) // &_azeFiles
-  #define ADDR_UNZIP_ARCHIVES ((ULONG *)CHOOSE_FOR_GAME(0x60285024, 0x60255064, 0x602B628C)) // &_afnmArchives
+  #define ADDR_UNZIP_ARCHIVES ((ULONG *)CHOOSE_FOR_GAME(0x60285020, 0x60255060, 0x602B6288)) // &_afnmArchives
 
 // Debug addresses
 #elif SE1_VER == SE1_107
+  // InitStreams()
+  #define ADDR_INITSTREAMS (0x10007B49)
+
   // CRenderer::Render()
   #define ADDR_RENDERER_RENDER (0x10008062)
 
@@ -57,7 +63,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #define ADDR_UNZIP_CRITSEC  ((CTCriticalSection *)(ULONG *)0x10446BC8) // &zip_csLock
   #define ADDR_UNZIP_HANDLES  ((ULONG *)0x10424158) // &_azhHandles
   #define ADDR_UNZIP_ENTRIES  ((ULONG *)0x10424168) // &_azeFiles
-  #define ADDR_UNZIP_ARCHIVES ((ULONG *)0x1042414C) // &_afnmArchives
+  #define ADDR_UNZIP_ARCHIVES ((ULONG *)0x10424148) // &_afnmArchives
 #endif
 
 #endif
