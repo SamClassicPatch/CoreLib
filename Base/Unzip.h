@@ -42,6 +42,9 @@ class CORE_API IUnzip {
     // Get index of a specific file (-1 if no file)
     static INDEX GetFileIndex(const CTFileName &fnm);
 
+    // [Cecil] Get path to the archive with the file
+    static const CTFileName &GetFileArchive(const CTFileName &fnm);
+
     // Get info of a zip file entry
     static void GetFileInfo(INDEX iHandle, CTFileName &fnmZip,
       SLONG &slOffset, SLONG &slSizeCompressed, SLONG &slSizeUncompressed, 

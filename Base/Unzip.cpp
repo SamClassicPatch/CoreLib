@@ -51,6 +51,14 @@ INDEX IUnzip::GetFileIndex(const CTFileName &) {
   return -1;
 };
 
+// [Cecil] Get path to the archive with the file
+const CTFileName &IUnzip::GetFileArchive(const CTFileName &fnm) {
+  NO_ZLIB_ERROR;
+
+  static CTFileName fnmNoFile = CTString("");
+  return fnmNoFile;
+};
+
 void IUnzip::GetFileInfo(INDEX, CTFileName &, SLONG &, SLONG &, SLONG &, BOOL &) {
   NO_ZLIB_ERROR;
 };
@@ -570,6 +578,19 @@ INDEX IUnzip::GetFileIndex(const CTFileName &fnm)
   }
 
   return -1;
+};
+
+// [Cecil] Get path to the archive with the file
+const CTFileName &IUnzip::GetFileArchive(const CTFileName &fnm) {
+  for (INDEX iFile = 0; iFile < _aZipFiles.Count(); iFile++) {
+    // Filename matches
+    if (_aZipFiles[iFile].ze_fnm == fnm) {
+      return *_aZipFiles[iFile].ze_pfnmArchive;
+    }
+  }
+
+  static CTFileName fnmNoFile = CTString("");
+  return fnmNoFile;
 };
 
 // Get info of a zip file entry
