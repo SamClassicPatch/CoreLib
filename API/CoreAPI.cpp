@@ -161,12 +161,11 @@ void CCoreAPI::ReleasePlugins(ULONG ulUtilityFlags) {
     }
   }
 
-  // Delete plugin modules one by one
-  while (cToRelease.Count() > 0) {
-    CPluginModule *pModule = cToRelease.Pointer(0);
+  // Release plugin modules one by one
+  CPluginStock *pStock = GetPluginAPI()->pPluginStock;
 
-    cToRelease.Remove(pModule);
-    delete pModule;
+  FOREACHINDYNAMICCONTAINER(cToRelease, CPluginModule, itRelease) {
+    pStock->Release(itRelease);
   }
 
   CPrintF("--- Done! ---\n");
