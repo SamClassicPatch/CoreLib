@@ -16,7 +16,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "StdH.h"
 
 #include "Base/CoreTimerHandler.h"
-
+#include "Interfaces/FileFunctions.h"
 #include "Networking/NetworkFunctions.h"
 
 // Pointer to the Game module
@@ -53,6 +53,14 @@ static void PatchInfo(void) {
 void CECIL_InitCore(void) {
   // Create core API
   new CCoreAPI();
+
+  // Load custom include/exclude lists for mods
+  if (_fnmMod != "") {
+    IFiles::LoadStringList(IFiles::aBaseWriteInc, CTString("BaseWriteInclude.lst"));
+    IFiles::LoadStringList(IFiles::aBaseWriteExc, CTString("BaseWriteExclude.lst"));
+    IFiles::LoadStringList(IFiles::aBaseBrowseInc, CTString("BaseBrowseInclude.lst"));
+    IFiles::LoadStringList(IFiles::aBaseBrowseExc, CTString("BaseBrowseExclude.lst"));
+  }
 
   // Information about the patch
   _pShell->DeclareSymbol("user void PatchInfo(void);", &PatchInfo);
