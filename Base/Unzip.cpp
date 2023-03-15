@@ -286,11 +286,13 @@ void IUnzip::AddArchive(const CTFileName &fnm)
 // Read directory of a zip archive and add all files in it to active set
 static void ReadZIPDirectory_t(CTFileName *pfnmZip)
 {
+  char *strZip = pfnmZip->str_String;
+
   // Open the archive
-  FILE *f = fopen(pfnmZip->str_String, "rb");
+  FILE *f = fopen(strZip, "rb");
 
   if (f == NULL) {
-    ThrowF_t(LOCALIZE("%s: Cannot open file (%s)"), pfnmZip->str_String, strerror(errno));
+    ThrowF_t(LOCALIZE("%s: Cannot open file (%s)"), strZip, strerror(errno));
   }
 
   // Start at the end of file, minus expected minimum overhead
@@ -309,7 +311,7 @@ static void ReadZIPDirectory_t(CTFileName *pfnmZip)
   BOOL bEODFound = FALSE;
 
   // While not at the beginning
-  for(; iPos > iMinPos; iPos--) {
+  for (; iPos > iMinPos; iPos--) {
     // Read signature
     fseek(f, iPos, SEEK_SET);
 
@@ -324,12 +326,12 @@ static void ReadZIPDirectory_t(CTFileName *pfnmZip)
       // Cannot have a multi-volume zip
       if (eod.eod_swDiskNo != 0 || eod.eod_swDirStartDiskNo != 0
        || eod.eod_swEntriesInDirOnThisDisk != eod.eod_swEntriesInDir) {
-        ThrowF_t(LOCALIZE("%s: Multi-volume zips are not supported"), (CTString&)*pfnmZip);
+        ThrowF_t(LOCALIZE("%s: Multi-volume zips are not supported"), strZip);
       }
 
       // Cannot have an empty zip
       if (eod.eod_swEntriesInDir <= 0) {
-        ThrowF_t(LOCALIZE("%s: Empty zip"), (CTString&)*pfnmZip);
+        ThrowF_t(LOCALIZE("%s: Empty zip"), strZip);
       }
 
       bEODFound = TRUE;
@@ -339,7 +341,7 @@ static void ReadZIPDirectory_t(CTFileName *pfnmZip)
 
   // EOD is not found
   if (!bEODFound) {
-    ThrowF_t(LOCALIZE("%s: Cannot find 'end of central directory'"), (CTString&)*pfnmZip);
+    ThrowF_t(LOCALIZE("%s: Cannot find 'end of central directory'"), strZip);
   }
 
   // Check if the zip is from a mod
@@ -359,7 +361,7 @@ static void ReadZIPDirectory_t(CTFileName *pfnmZip)
 
     // Unexpected signature
     if (slSig != SIGNATURE_FH) {
-      ThrowF_t(LOCALIZE("%s: Wrong signature for 'file header' number %d'"), pfnmZip->str_String, iFile);
+      ThrowF_t(LOCALIZE("%s: Wrong signature for 'file header' number %d'"), strZip, iFile);
     }
 
     // Read its header
@@ -370,11 +372,11 @@ static void ReadZIPDirectory_t(CTFileName *pfnmZip)
     const SLONG slMaxFileName = 512;
 
     if (fh.fh_swFileNameLen > slMaxFileName) {
-      ThrowF_t(LOCALIZE("%s: Too long filepath in zip"), pfnmZip->str_String);
+      ThrowF_t(LOCALIZE("%s: Too long filepath in zip"), strZip);
     }
 
     if (fh.fh_swFileNameLen <= 0) {
-      ThrowF_t(LOCALIZE("%s: Invalid filepath length in zip"), pfnmZip->str_String);
+      ThrowF_t(LOCALIZE("%s: Invalid filepath length in zip"), strZip);
     }
     
     // Read the filename
@@ -392,7 +394,7 @@ static void ReadZIPDirectory_t(CTFileName *pfnmZip)
     if (strBuffer[strlen(strBuffer) - 1] == '/') {
       // Check the size
       if (fh.fh_slUncompressedSize != 0 || fh.fh_slCompressedSize != 0) {
-        ThrowF_t(LOCALIZE("%s/%s: Invalid directory"), pfnmZip->str_String, strBuffer);
+        ThrowF_t(LOCALIZE("%s/%s: Invalid directory"), strZip, strBuffer);
       }
 
     // If it's a file
@@ -430,11 +432,11 @@ static void ReadZIPDirectory_t(CTFileName *pfnmZip)
 
   // Some error has occurred
   if (ferror(f)) {
-    ThrowF_t(LOCALIZE("%s: Error reading central directory"), pfnmZip->str_String);
+    ThrowF_t(LOCALIZE("%s: Error reading central directory"), strZip);
   }
 
   // Report that the file has been read
-  CPrintF(LOCALIZE("  %s: %d files\n"), pfnmZip->str_String, ctFiles++);
+  CPrintF(LOCALIZE("  %s: %d files\n"), strZip, ctFiles++);
 };
 
 // Read one directory of an archive
@@ -502,7 +504,7 @@ int qsort_ArchiveCTFileName_reverse(const void *pElement1, const void *pElement2
     iPriority2 = 0;
   }
 
-  // find sorting order
+  // Find sorting order
   if (iPriority1 < iPriority2) {
     return +1;
   } else if (iPriority1 > iPriority2) {
