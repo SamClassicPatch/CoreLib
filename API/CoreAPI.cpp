@@ -15,7 +15,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "StdH.h"
 
-#include "Interfaces/DataFunctions.h"
+#include "Interfaces/FileFunctions.h"
 
 // Define external core API
 CCoreAPI *_pCoreAPI = NULL;
@@ -122,7 +122,7 @@ CPluginModule *CCoreAPI::LoadGamePlugin(void) {
 void CCoreAPI::LoadPlugins(ULONG ulUtilityFlags) {
   // List all library files
   CFileList afnmDir;
-  IData::ListGameFiles(afnmDir, "Bin\\Plugins\\", "*.dll", IData::FLF_RECURSIVE | IData::FLF_SEARCHMOD);
+  IFiles::ListGameFiles(afnmDir, "Bin\\Plugins\\", "*.dll", IFiles::FLF_RECURSIVE | IFiles::FLF_SEARCHMOD | IFiles::FLF_IGNORELISTS);
 
   CPrintF("--- Loading user plugins (flags: 0x%X) ---\n", ulUtilityFlags);
 

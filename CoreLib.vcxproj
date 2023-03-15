@@ -47,6 +47,7 @@
     </ClInclude>
     <ClInclude Include="GameSpecific.h" />
     <ClInclude Include="Interfaces\DataFunctions.h" />
+    <ClInclude Include="Interfaces\FileFunctions.h" />
     <ClInclude Include="Interfaces\GfxFunctions.h" />
     <ClInclude Include="Interfaces\PropertyFunctions.h" />
     <ClInclude Include="Interfaces\RenderFunctions.h" />
@@ -84,6 +85,7 @@
     <ClCompile Include="Base\Unzip.cpp" />
     <ClCompile Include="Core.cpp" />
     <ClCompile Include="Definitions\InlineDefinitions.cpp" />
+    <ClCompile Include="Interfaces\Interfaces.cpp" />
     <ClCompile Include="Modules\PluginModule.cpp" />
     <ClCompile Include="Modules\PluginStock.cpp" />
     <ClCompile Include="Networking\ActiveClients.cpp" />

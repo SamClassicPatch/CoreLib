@@ -67,6 +67,9 @@
     <Filter Include="Header Files\Base headers">
       <UniqueIdentifier>{b52060bd-6184-498b-832a-c880d6837c2b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Interfaces">
+      <UniqueIdentifier>{7126ce51-6526-42d7-a3f2-40d69c1bd290}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StdH.h">
@@ -210,6 +213,9 @@
     <ClInclude Include="Base\Unzip.h">
       <Filter>Header Files\Base headers</Filter>
     </ClInclude>
+    <ClInclude Include="Interfaces\FileFunctions.h">
+      <Filter>Header Files\Interfaces headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="StdH.cpp">
@@ -304,6 +310,9 @@
     </ClCompile>
     <ClCompile Include="Base\Unzip.cpp">
       <Filter>Source Files\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Interfaces\Interfaces.cpp">
+      <Filter>Source Files\Interfaces</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
