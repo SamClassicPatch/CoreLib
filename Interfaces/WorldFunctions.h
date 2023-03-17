@@ -35,6 +35,26 @@ typedef CDynamicContainer<CPlayerEntity>       CPlayerEntities;
 // Interface of useful methods for world and entity manipulation
 class IWorld {
   public:
+    // Structure for retrieving a library entity class from any of its owners
+    struct LibClassHolder {
+      CDLLEntityClass *pdec;
+
+      // Default constructor
+      LibClassHolder(CDLLEntityClass *pdecSet = NULL) : pdec(pdecSet) {};
+
+      // Constructor from an entity class
+      LibClassHolder(CEntityClass *pecSet) : pdec(pecSet->ec_pdecDLLClass) {};
+
+      // Constructor from an entity
+      LibClassHolder(CEntity *penSet) : pdec(penSet->en_pecClass->ec_pdecDLLClass) {};
+
+      // Implicit converters into the library entity class
+      inline CDLLEntityClass *operator->(void) const { return pdec; };
+      inline operator CDLLEntityClass *(void) const { return pdec; };
+      inline CDLLEntityClass &operator*(void) const { return *pdec; };
+    };
+
+  public:
     // Get current game world
     static inline CWorld *GetWorld(void) {
       return &_pNetwork->ga_World;
@@ -59,8 +79,8 @@ class IWorld {
     };
 
     // Find entity property by its ID or offset of a specific type
-    static inline CEntityProperty *PropertyForIdOrOffset(CEntity *pen, ULONG ulType, ULONG ulID, SLONG slOffset) {
-      CDLLEntityClass *pdec = pen->en_pecClass->ec_pdecDLLClass;
+    static inline CEntityProperty *PropertyForIdOrOffset(LibClassHolder lch, ULONG ulType, ULONG ulID, SLONG slOffset) {
+      CDLLEntityClass *pdec = lch;
 
       while (pdec != NULL) {
         // For each property
@@ -68,9 +88,7 @@ class IWorld {
           CEntityProperty &ep = pdec->dec_aepProperties[iProp];
 
           // Only check the matching type
-          if (ep.ep_eptType != ulType) {
-            continue;
-          }
+          if (ep.ep_eptType != ulType) continue;
 
           // Matching ID or offset (ID is more likely to remain the same)
           if (ep.ep_ulID == ulID || ep.ep_slOffset == slOffset) {
@@ -86,8 +104,8 @@ class IWorld {
     };
 
     // Find entity property by its name of a specific type
-    static inline CEntityProperty *PropertyForName(CEntity *pen, ULONG ulType, const CTString &strName) {
-      CDLLEntityClass *pdec = pen->en_pecClass->ec_pdecDLLClass;
+    static inline CEntityProperty *PropertyForName(LibClassHolder lch, ULONG ulType, const CTString &strName) {
+      CDLLEntityClass *pdec = lch;
 
       while (pdec != NULL) {
         // For each property
@@ -95,9 +113,7 @@ class IWorld {
           CEntityProperty &ep = pdec->dec_aepProperties[iProp];
 
           // Only check the matching type
-          if (ep.ep_eptType != ulType) {
-            continue;
-          }
+          if (ep.ep_eptType != ulType) continue;
 
           // Matching name
           if (strName == ep.ep_strName) {
@@ -113,13 +129,13 @@ class IWorld {
     };
 
     // Find entity property by its name or ID of a specific type
-    static inline CEntityProperty *PropertyForNameOrId(CEntity *pen, ULONG ulType, const CTString &strName, ULONG ulID) {
+    static inline CEntityProperty *PropertyForNameOrId(LibClassHolder lch, ULONG ulType, const CTString &strName, ULONG ulID) {
       // Find property by type and name first
-      CEntityProperty *pep = IWorld::PropertyForName(pen, ulType, strName);
+      CEntityProperty *pep = PropertyForName(lch, ulType, strName);
 
       // Try searching by type and ID
       if (pep == NULL) {
-        pep = pen->PropertyForTypeAndID(ulType, ulID);
+        pep = PropertyForIdOrOffset(lch, ulType, ulID, -1);
       }
 
       return pep;
@@ -132,7 +148,7 @@ class IWorld {
       if (penBack != NULL) {
         // Get property offset only once
         static SLONG slPointerOffset = -1;
-    
+
         if (slPointerOffset == -1) {
           // Obtain entity pointer property
           CEntityProperty *pep = penBack->PropertyForName("World settings controller");
@@ -142,7 +158,7 @@ class IWorld {
 
           slPointerOffset = pep->ep_slOffset;
         }
-    
+
         // Obtain WorldSettingsController
         return (CEntity *)ENTITYPROPERTY(penBack, slPointerOffset, CEntityPointer);
       }
