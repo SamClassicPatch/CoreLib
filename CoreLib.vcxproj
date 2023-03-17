@@ -67,6 +67,7 @@
     <ClInclude Include="Networking\Modules.h" />
     <ClInclude Include="Networking\SplitScreenClients.h" />
     <ClInclude Include="Networking\StreamBlock.h" />
+    <ClInclude Include="Objects\PropertyPtr.h" />
     <ClInclude Include="Objects\StructPtr.h" />
     <ClInclude Include="Patcher\FuncPatching.h" />
     <ClInclude Include="Patcher\patcher.h" />

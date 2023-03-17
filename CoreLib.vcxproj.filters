@@ -216,6 +216,9 @@
     <ClInclude Include="Interfaces\FileFunctions.h">
       <Filter>Header Files\Interfaces headers</Filter>
     </ClInclude>
+    <ClInclude Include="Objects\PropertyPtr.h">
+      <Filter>Header Files\Objects headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="StdH.cpp">
