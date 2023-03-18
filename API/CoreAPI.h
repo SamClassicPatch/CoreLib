@@ -33,7 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 
 // Current API version
-#define CORE_API_VERSION 3
+#define CORE_API_VERSION 4
 
 // Declare API submodules
 class CPatchAPI;
@@ -161,11 +161,23 @@ class CORE_API CCoreAPI {
     // Release all user plugins of specific utility types
     void ReleasePlugins(ULONG ulUtilityFlags);
 
+  // Global hooks
+  public:
+
     // Called after starting world simulation
     virtual void OnGameStart(void);
 
     // Called before stopping world simulation
     virtual void OnGameStop(void);
+
+    // Called after saving the game
+    virtual void OnGameSave(const CTFileName &fnmSave);
+
+    // Called after loading a saved game
+    virtual void OnGameLoad(const CTFileName &fnmSave);
+
+    // Called after finishing reading the world file
+    virtual void OnWorldLoad(CWorld *pwo, const CTFileName &fnmWorld);
 
     // Called every simulation tick
     virtual void OnTick(void);

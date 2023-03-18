@@ -175,7 +175,7 @@ void CCoreAPI::ReleasePlugins(ULONG ulUtilityFlags) {
 void CCoreAPI::OnGameStart(void)
 {
   // Call game start function for each plugin
-  FOREACHPLUGINHANDLER(GetPluginAPI()->cNetworkEvents, INetworkEvents, pEvents) {
+  FOREACHPLUGINHANDLER(GetPluginAPI()->cGameEvents, IGameEvents, pEvents) {
     if ((IAbstractEvents *)pEvents == NULL) continue;
 
     pEvents->OnGameStart();
@@ -186,10 +186,43 @@ void CCoreAPI::OnGameStart(void)
 void CCoreAPI::OnGameStop(void)
 {
   // Call game stop function for each plugin
-  FOREACHPLUGINHANDLER(GetPluginAPI()->cNetworkEvents, INetworkEvents, pEvents) {
+  FOREACHPLUGINHANDLER(GetPluginAPI()->cGameEvents, IGameEvents, pEvents) {
     if ((IAbstractEvents *)pEvents == NULL) continue;
 
     pEvents->OnGameStop();
+  }
+};
+
+// Called after saving the game
+void CCoreAPI::OnGameSave(const CTFileName &fnmSave)
+{
+  // Call game save function for each plugin
+  FOREACHPLUGINHANDLER(GetPluginAPI()->cGameEvents, IGameEvents, pEvents) {
+    if ((IAbstractEvents *)pEvents == NULL) continue;
+
+    pEvents->OnGameSave(fnmSave);
+  }
+};
+
+// Called after loading a saved game
+void CCoreAPI::OnGameLoad(const CTFileName &fnmSave)
+{
+  // Call game load function for each plugin
+  FOREACHPLUGINHANDLER(GetPluginAPI()->cGameEvents, IGameEvents, pEvents) {
+    if ((IAbstractEvents *)pEvents == NULL) continue;
+
+    pEvents->OnGameLoad(fnmSave);
+  }
+};
+
+// Called after finishing reading the world file
+void CCoreAPI::OnWorldLoad(CWorld *pwo, const CTFileName &fnmWorld)
+{
+  // Call world load function for each plugin
+  FOREACHPLUGINHANDLER(GetPluginAPI()->cWorldEvents, IWorldEvents, pEvents) {
+    if ((IAbstractEvents *)pEvents == NULL) continue;
+
+    pEvents->OnWorldLoad(pwo, fnmWorld);
   }
 };
 

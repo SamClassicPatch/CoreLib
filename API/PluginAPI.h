@@ -75,6 +75,8 @@ class CORE_API CPluginAPI {
     CDynamicContainer<IAbstractEvents> cProcessors;
     CDynamicContainer<IAbstractEvents> cRenderers;
     CDynamicContainer<IAbstractEvents> cNetworkEvents;
+    CDynamicContainer<IAbstractEvents> cGameEvents;
+    CDynamicContainer<IAbstractEvents> cWorldEvents;
 
   public:
     // Constructor

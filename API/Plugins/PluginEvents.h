@@ -42,6 +42,7 @@ class CORE_API IAbstractEvents {
     // Register events
     virtual void Register(void) {
       if (_pHandlers == NULL) {
+        ASSERTALWAYS("Pointer to the container of event handlers has not been set!");
         return;
       }
 
@@ -107,15 +108,44 @@ class INetworkEvents : public IAbstractEvents {
     // Upon receiving a packet as a client (returns TRUE if the packet was handled)
     virtual BOOL OnClientPacket(CNetworkMessage &nmMessage, const ULONG ulType);
 
+    // Assign handlers container
+    void Register(void) {
+      _pHandlers = &GetPluginAPI()->cNetworkEvents;
+      IAbstractEvents::Register();
+    };
+};
+
+// Game events
+class IGameEvents : public IAbstractEvents {
+  public:
     // After starting the server and loading in the world
     virtual void OnGameStart(void);
 
     // Before stopping the server
     virtual void OnGameStop(void);
 
+    // After saving a local game
+    virtual void OnGameSave(const CTFileName &fnmSave);
+
+    // After loading a local game
+    virtual void OnGameLoad(const CTFileName &fnmSave);
+
     // Assign handlers container
     void Register(void) {
-      _pHandlers = &GetPluginAPI()->cNetworkEvents;
+      _pHandlers = &GetPluginAPI()->cGameEvents;
+      IAbstractEvents::Register();
+    };
+};
+
+// World events
+class IWorldEvents : public IAbstractEvents {
+  public:
+    // After finishing reading the world file
+    virtual void OnWorldLoad(CWorld *pwo, const CTFileName &fnmWorld);
+
+    // Assign handlers container
+    void Register(void) {
+      _pHandlers = &GetPluginAPI()->cWorldEvents;
       IAbstractEvents::Register();
     };
 };
