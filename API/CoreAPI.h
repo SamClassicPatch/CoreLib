@@ -161,6 +161,9 @@ class CORE_API CCoreAPI {
     // Release all user plugins of specific utility types
     void ReleasePlugins(ULONG ulUtilityFlags);
 
+    // Reinitialize console in the engine
+    void ReinitConsole(INDEX ctCharsPerLine, INDEX ctLines);
+
   // Global hooks
   public:
 

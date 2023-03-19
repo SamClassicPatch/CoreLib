@@ -54,6 +54,9 @@ void CECIL_InitCore(void) {
   // Create core API
   new CCoreAPI();
 
+  // Allow more characters in console by default
+  GetAPI()->ReinitConsole(160, 512);
+
   // Load custom include/exclude lists for mods
   if (_fnmMod != "") {
     IFiles::LoadStringList(IFiles::aBaseWriteInc, CTString("BaseWriteInclude.lst"));

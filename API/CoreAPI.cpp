@@ -15,6 +15,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "StdH.h"
 
+#include <Engine/Base/Console_internal.h>
 #include "Interfaces/FileFunctions.h"
 
 // Define external core API
@@ -169,6 +170,67 @@ void CCoreAPI::ReleasePlugins(ULONG ulUtilityFlags) {
   }
 
   CPrintF("--- Done! ---\n");
+};
+
+// Reinitialize console in the engine
+void CCoreAPI::ReinitConsole(INDEX ctCharsPerLine, INDEX ctLines) {
+  CConsole &con = *_pConsole;
+
+  // Synchronize access to console
+  CTSingleLock slConsole(&con.con_csConsole, TRUE);
+
+  // Limit characters per line
+  ctCharsPerLine = Clamp(ctCharsPerLine, (INDEX)90, (INDEX)256);
+
+  // Save last console log
+  CStaticStackArray<CTString> aLastLines;
+  INDEX ctLastLines = con.con_ctLines;
+
+  while (--ctLastLines >= 0) {
+    CTString strLine = CON_GetLastLine(ctLastLines);
+
+    // Remove the rest of the line
+    strLine.TrimRight(con.con_ctCharsPerLine);
+    strLine.TrimSpacesRight();
+
+    aLastLines.Push() = strLine;
+  }
+
+  // Allocate the buffer
+  con.con_ctCharsPerLine = ctCharsPerLine;
+  con.con_ctLines = ctLines;
+  con.con_ctLinesPrinted = 0;
+
+  // Add line break to the line
+  ctCharsPerLine += 1;
+
+  // Add a null terminator at the end of string buffers
+  ResizeMemory((void **)&con.con_strBuffer, ctCharsPerLine * ctLines + 1);
+  ResizeMemory((void **)&con.con_strLineBuffer, ctCharsPerLine + 1);
+  ResizeMemory((void **)&con.con_atmLines, (ctLines + 1) * sizeof(TIME));
+
+  // Clear all lines
+  for (INDEX iLine = 0; iLine < ctLines; iLine++) {
+    // Fill the line with spaced from the start
+    char *pchLine = con.con_strBuffer + iLine * (con.con_ctCharsPerLine + 1);
+    memset(pchLine, ' ', con.con_ctCharsPerLine);
+
+    // Add line break at the end
+    pchLine[con.con_ctCharsPerLine] = '\n';
+    con.con_atmLines[iLine] = _pTimer->GetRealTimeTick();
+  }
+
+  // Set null terminator
+  con.con_strBuffer[ctCharsPerLine * ctLines] = '\0';
+
+  // Start printing from the last line
+  con.con_strLastLine = con.con_strBuffer + ctCharsPerLine * (ctLines - 1);
+  con.con_strCurrent = con.con_strLastLine;
+
+  // Restore contents of the last log
+  for (INDEX iRestore = 0; iRestore < aLastLines.Count(); iRestore++) {
+    CPutString(aLastLines[iRestore] + "\n");
+  }
 };
 
 // Called after starting world simulation
