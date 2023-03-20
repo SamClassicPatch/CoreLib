@@ -67,12 +67,18 @@ static void DisableFuncPatch(INDEX iPatch) {
   CPrintF(TRANS("Successfully removed '%s' function patch!\n"), strPatch);
 };
 
+// Get function patch index by its name
+static INDEX GetFuncPatch(const CTString &strName) {
+  return GetPatchAPI()->GetPatchIndex(strName, NULL);
+};
+
 // Constructor
 CPatchAPI::CPatchAPI() {
   // Commands for manually toggling function patches
   _pShell->DeclareSymbol("void ListPatches(void);",   &ListFuncPatches);
   _pShell->DeclareSymbol("void EnablePatch(INDEX);",  &EnableFuncPatch);
   _pShell->DeclareSymbol("void DisablePatch(INDEX);", &DisableFuncPatch);
+  _pShell->DeclareSymbol("INDEX GetFuncPatch(CTString);", &GetFuncPatch);
 };
 
 // Externally create a new patch class
