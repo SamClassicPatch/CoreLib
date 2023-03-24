@@ -138,9 +138,7 @@ void CCoreAPI::LoadPlugins(ULONG ulUtilityFlags) {
 
     } catch (char *strError) {
       // Plugin initialization failed
-      MessageBoxA(NULL, strError, TRANS("Warning"), MB_OK|MB_ICONEXCLAMATION|MB_SETFOREGROUND|MB_TASKMODAL);
-
-      CPrintF("%s\n", strError);
+      CPrintF("^cffff00%s\n", strError);
     }
   }
 
