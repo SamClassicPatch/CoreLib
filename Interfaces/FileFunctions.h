@@ -137,6 +137,25 @@ class CORE_API IFiles {
       fnm = strRemaining;
     };
 
+    // Convert relative paths into absolute paths and add missing backslashes
+    static inline void SetFullDirectory(CTFileName &fnmDir) {
+      INDEX iLength = fnmDir.Length();
+
+      // Add missing backslash at the end
+      if (fnmDir[iLength - 1] != '\\') {
+        fnmDir += CTString("\\");
+      }
+
+      // If shorter than 2 characters or doesn't start with a drive directory
+      if (iLength < 2 || fnmDir[1] != ':') {
+        // Convert relative path into absolute path
+        fnmDir = _fnmApplicationPath + fnmDir;
+      }
+
+      // Convert the rest of the path into absolute path
+      IFiles::SetAbsolutePath(fnmDir);
+    };
+
     // Check if the file is readable
     static inline BOOL IsReadable(const char *strFullPath) {
       FILE *pFile = fopen(strFullPath, "rb");
