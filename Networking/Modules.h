@@ -20,9 +20,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #pragma once
 #endif
 
-#include "AntiFlood.h"
-#include "ChatCommands.h"
-#include "SplitScreenClients.h"
-#include "ClientLogging.h"
+#include "Modules/AntiFlood.h"
+#include "Modules/ChatCommands.h"
+#include "Modules/SplitScreenClients.h"
+#include "Modules/ClientLogging.h"
 
 #endif

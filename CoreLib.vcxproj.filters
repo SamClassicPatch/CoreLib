@@ -70,6 +70,12 @@
     <Filter Include="Source Files\Interfaces">
       <UniqueIdentifier>{7126ce51-6526-42d7-a3f2-40d69c1bd290}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Networking headers\Modules headers">
+      <UniqueIdentifier>{d478dacd-19f8-4a3e-9b42-0db0d4cf502f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Networking\Modules">
+      <UniqueIdentifier>{6bbf8899-5c0a-4664-8f0f-20e8df2cda71}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StdH.h">
@@ -153,12 +159,6 @@
     <ClInclude Include="Networking\MessageProcessing.h">
       <Filter>Header Files\Networking headers</Filter>
     </ClInclude>
-    <ClInclude Include="Networking\AntiFlood.h">
-      <Filter>Header Files\Networking headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Networking\SplitScreenClients.h">
-      <Filter>Header Files\Networking headers</Filter>
-    </ClInclude>
     <ClInclude Include="Interfaces\PropertyFunctions.h">
       <Filter>Header Files\Interfaces headers</Filter>
     </ClInclude>
@@ -177,16 +177,7 @@
     <ClInclude Include="Interfaces\DataFunctions.h">
       <Filter>Header Files\Interfaces headers</Filter>
     </ClInclude>
-    <ClInclude Include="Networking\ChatCommands.h">
-      <Filter>Header Files\Networking headers</Filter>
-    </ClInclude>
     <ClInclude Include="Networking\Modules.h">
-      <Filter>Header Files\Networking headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Networking\ClientLogging.h">
-      <Filter>Header Files\Networking headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Networking\ClientRestrictions.h">
       <Filter>Header Files\Networking headers</Filter>
     </ClInclude>
     <ClInclude Include="Objects\StructPtr.h">
@@ -197,15 +188,6 @@
     </ClInclude>
     <ClInclude Include="Query\ServerRequest.h">
       <Filter>Header Files\Query headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Networking\ActiveClients.h">
-      <Filter>Header Files\Networking headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Networking\ClientIdentity.h">
-      <Filter>Header Files\Networking headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Networking\StockCommands.h">
-      <Filter>Header Files\Networking headers</Filter>
     </ClInclude>
     <ClInclude Include="Interfaces\GfxFunctions.h">
       <Filter>Header Files\Interfaces headers</Filter>
@@ -218,6 +200,30 @@
     </ClInclude>
     <ClInclude Include="Objects\PropertyPtr.h">
       <Filter>Header Files\Objects headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Networking\Modules\ActiveClients.h">
+      <Filter>Header Files\Networking headers\Modules headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Networking\Modules\AntiFlood.h">
+      <Filter>Header Files\Networking headers\Modules headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Networking\Modules\ChatCommands.h">
+      <Filter>Header Files\Networking headers\Modules headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Networking\Modules\ClientIdentity.h">
+      <Filter>Header Files\Networking headers\Modules headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Networking\Modules\ClientLogging.h">
+      <Filter>Header Files\Networking headers\Modules headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Networking\Modules\ClientRestrictions.h">
+      <Filter>Header Files\Networking headers\Modules headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Networking\Modules\SplitScreenClients.h">
+      <Filter>Header Files\Networking headers\Modules headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Networking\Modules\StockCommands.h">
+      <Filter>Header Files\Networking headers\Modules headers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -278,23 +284,8 @@
     <ClCompile Include="Networking\MessageProcessing.cpp">
       <Filter>Source Files\Networking</Filter>
     </ClCompile>
-    <ClCompile Include="Networking\SplitScreenClients.cpp">
-      <Filter>Source Files\Networking</Filter>
-    </ClCompile>
-    <ClCompile Include="Networking\AntiFlood.cpp">
-      <Filter>Source Files\Networking</Filter>
-    </ClCompile>
     <ClCompile Include="Base\CoreTimerHandler.cpp">
       <Filter>Source Files\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="Networking\ChatCommands.cpp">
-      <Filter>Source Files\Networking</Filter>
-    </ClCompile>
-    <ClCompile Include="Networking\ClientLogging.cpp">
-      <Filter>Source Files\Networking</Filter>
-    </ClCompile>
-    <ClCompile Include="Networking\ClientRestrictions.cpp">
-      <Filter>Source Files\Networking</Filter>
     </ClCompile>
     <ClCompile Include="Query\MasterServer.cpp">
       <Filter>Source Files\Query</Filter>
@@ -302,20 +293,35 @@
     <ClCompile Include="Query\ServerRequest.cpp">
       <Filter>Source Files\Query</Filter>
     </ClCompile>
-    <ClCompile Include="Networking\ActiveClients.cpp">
-      <Filter>Source Files\Networking</Filter>
-    </ClCompile>
-    <ClCompile Include="Networking\ClientIdentity.cpp">
-      <Filter>Source Files\Networking</Filter>
-    </ClCompile>
-    <ClCompile Include="Networking\StockCommands.cpp">
-      <Filter>Source Files\Networking</Filter>
-    </ClCompile>
     <ClCompile Include="Base\Unzip.cpp">
       <Filter>Source Files\Base</Filter>
     </ClCompile>
     <ClCompile Include="Interfaces\Interfaces.cpp">
       <Filter>Source Files\Interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="Networking\Modules\SplitScreenClients.cpp">
+      <Filter>Source Files\Networking\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="Networking\Modules\StockCommands.cpp">
+      <Filter>Source Files\Networking\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="Networking\Modules\ActiveClients.cpp">
+      <Filter>Source Files\Networking\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="Networking\Modules\AntiFlood.cpp">
+      <Filter>Source Files\Networking\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="Networking\Modules\ChatCommands.cpp">
+      <Filter>Source Files\Networking\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="Networking\Modules\ClientIdentity.cpp">
+      <Filter>Source Files\Networking\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="Networking\Modules\ClientLogging.cpp">
+      <Filter>Source Files\Networking\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="Networking\Modules\ClientRestrictions.cpp">
+      <Filter>Source Files\Networking\Modules</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

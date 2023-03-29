@@ -17,7 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "AntiFlood.h"
 #include "ClientLogging.h"
-#include "NetworkFunctions.h"
+#include "Networking/NetworkFunctions.h"
 
 // Kick clients for attempted packet flood
 INDEX ser_bEnableAntiFlood = TRUE;

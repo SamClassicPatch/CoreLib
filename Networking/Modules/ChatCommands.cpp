@@ -16,7 +16,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "StdH.h"
 
 #include "ChatCommands.h"
-#include "NetworkFunctions.h"
+#include "Networking/NetworkFunctions.h"
 #include "StockCommands.h"
 
 // Prefix that the chat commands start with

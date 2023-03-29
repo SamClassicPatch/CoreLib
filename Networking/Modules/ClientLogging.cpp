@@ -16,7 +16,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "StdH.h"
 
 #include "ClientLogging.h"
-#include "CommInterface.h"
+#include "Networking/CommInterface.h"
 
 // Get client's address by the client ID on the server
 void IClientLogging::GetAddress(SClientAddress &addr, INDEX iClient) {

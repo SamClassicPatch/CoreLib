@@ -17,7 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "ClientRestrictions.h"
 #include "ActiveClients.h"
-#include "NetworkFunctions.h"
+#include "Networking/NetworkFunctions.h"
 
 #include "Interfaces/DataFunctions.h"
 

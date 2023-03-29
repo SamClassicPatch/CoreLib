@@ -15,7 +15,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "StdH.h"
 
-#include "Networking/ChatCommands.h"
+#include "Networking/Modules/ChatCommands.h"
 
 // List loaded plugin modules
 static void ListPlugins(void) {
