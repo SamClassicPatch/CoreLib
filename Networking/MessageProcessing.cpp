@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "Query/QueryManager.h"
 
 // Client confirming the disconnection
-BOOL OnClientDisconnect(INDEX iClient, CNetworkMessage &nmMessage) {
+BOOL IProcessPacket::OnClientDisconnect(INDEX iClient, CNetworkMessage &nmMessage) {
   CSessionSocket &sso = _pNetwork->ga_srvServer.srv_assoSessions[iClient];
   sso.sso_iDisconnectedState = 2;
 
@@ -35,7 +35,7 @@ BOOL OnClientDisconnect(INDEX iClient, CNetworkMessage &nmMessage) {
 };
 
 // Client requesting the session state
-BOOL OnConnectRemoteSessionStateRequest(INDEX iClient, CNetworkMessage &nmMessage)
+BOOL IProcessPacket::OnConnectRemoteSessionStateRequest(INDEX iClient, CNetworkMessage &nmMessage)
 {
   // Get client identity
   CClientIdentity *pci = IClientLogging::GetIdentity(iClient);
@@ -71,7 +71,7 @@ BOOL OnConnectRemoteSessionStateRequest(INDEX iClient, CNetworkMessage &nmMessag
 };
 
 // Client requesting the connection to the server
-BOOL OnPlayerConnectRequest(INDEX iClient, CNetworkMessage &nmMessage)
+BOOL IProcessPacket::OnPlayerConnectRequest(INDEX iClient, CNetworkMessage &nmMessage)
 {
   // Read character data
   CPlayerCharacter pcCharacter;
@@ -163,7 +163,7 @@ BOOL OnPlayerConnectRequest(INDEX iClient, CNetworkMessage &nmMessage)
 };
 
 // Client changing the character
-BOOL OnCharacterChangeRequest(INDEX iClient, CNetworkMessage &nmMessage)
+BOOL IProcessPacket::OnCharacterChangeRequest(INDEX iClient, CNetworkMessage &nmMessage)
 {
   // Read character data
   INDEX iPlayer;
@@ -240,7 +240,7 @@ static void ReceiveActionsForPlayer(CPlayerBuffer &plb, CNetworkMessage *pnm, IN
 };
 
 // Client sending player actions
-BOOL OnPlayerAction(INDEX iClient, CNetworkMessage &nmMessage)
+BOOL IProcessPacket::OnPlayerAction(INDEX iClient, CNetworkMessage &nmMessage)
 {
   CServer &srv = _pNetwork->ga_srvServer;
   CSessionSocket &sso = srv.srv_assoSessions[iClient];
@@ -286,7 +286,7 @@ BOOL OnPlayerAction(INDEX iClient, CNetworkMessage &nmMessage)
 };
 
 // Client sending a chat message
-BOOL OnChatInRequest(INDEX iClient, CNetworkMessage &nmMessage)
+BOOL IProcessPacket::OnChatInRequest(INDEX iClient, CNetworkMessage &nmMessage)
 {
   // Skip messages blocked by the anti-flood system
   if (IAntiFlood::HandleChatMessage(iClient)) {

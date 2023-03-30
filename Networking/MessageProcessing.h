@@ -20,22 +20,26 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #pragma once
 #endif
 
-// Client confirming the disconnection
-BOOL OnClientDisconnect(INDEX iClient, CNetworkMessage &nmMessage);
+// Interface with custom message processing methods
+class IProcessPacket {
+  public:
+    // Client confirming the disconnection
+    static BOOL OnClientDisconnect(INDEX iClient, CNetworkMessage &nmMessage);
 
-// Client requesting the session state
-BOOL OnConnectRemoteSessionStateRequest(INDEX iClient, CNetworkMessage &nmMessage);
+    // Client requesting the session state
+    static BOOL OnConnectRemoteSessionStateRequest(INDEX iClient, CNetworkMessage &nmMessage);
 
-// Client requesting the connection to the server
-BOOL OnPlayerConnectRequest(INDEX iClient, CNetworkMessage &nmMessage);
+    // Client requesting the connection to the server
+    static BOOL OnPlayerConnectRequest(INDEX iClient, CNetworkMessage &nmMessage);
 
-// Client changing the character
-BOOL OnCharacterChangeRequest(INDEX iClient, CNetworkMessage &nmMessage);
+    // Client changing the character
+    static BOOL OnCharacterChangeRequest(INDEX iClient, CNetworkMessage &nmMessage);
 
-// Client sending player actions
-BOOL OnPlayerAction(INDEX iClient, CNetworkMessage &nmMessage);
+    // Client sending player actions
+    static BOOL OnPlayerAction(INDEX iClient, CNetworkMessage &nmMessage);
 
-// Client sending a chat message
-BOOL OnChatInRequest(INDEX iClient, CNetworkMessage &nmMessage);
+    // Client sending a chat message
+    static BOOL OnChatInRequest(INDEX iClient, CNetworkMessage &nmMessage);
+};
 
 #endif

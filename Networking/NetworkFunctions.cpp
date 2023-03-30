@@ -47,27 +47,27 @@ BOOL INetwork::ServerHandle(CMessageDispatcher *pmd, INDEX iClient, CNetworkMess
   switch (nmMessage.GetType()) {
     // Client confirming the disconnection
     case PCK_REP_DISCONNECTED:
-      return OnClientDisconnect(iClient, nmMessage);
+      return IProcessPacket::OnClientDisconnect(iClient, nmMessage);
 
     // Client requesting the session state
     case MSG_REQ_CONNECTREMOTESESSIONSTATE:
-      return OnConnectRemoteSessionStateRequest(iClient, nmMessage);
+      return IProcessPacket::OnConnectRemoteSessionStateRequest(iClient, nmMessage);
 
     // Client requesting the connection to the server
     case MSG_REQ_CONNECTPLAYER:
-      return OnPlayerConnectRequest(iClient, nmMessage);
+      return IProcessPacket::OnPlayerConnectRequest(iClient, nmMessage);
 
     // Client changing the character
     case MSG_REQ_CHARACTERCHANGE:
-      return OnCharacterChangeRequest(iClient, nmMessage);
+      return IProcessPacket::OnCharacterChangeRequest(iClient, nmMessage);
 
     // Client sending player actions
     case MSG_ACTION:
-      return OnPlayerAction(iClient, nmMessage);
+      return IProcessPacket::OnPlayerAction(iClient, nmMessage);
 
     // Client sending a chat message
     case MSG_CHAT_IN:
-      return OnChatInRequest(iClient, nmMessage);
+      return IProcessPacket::OnChatInRequest(iClient, nmMessage);
   }
 
   // Let CServer::Handle process packets of other types
