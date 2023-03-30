@@ -63,6 +63,10 @@ BOOL INetwork::ServerHandle(CMessageDispatcher *pmd, INDEX iClient, CNetworkMess
     case MSG_REQ_CHARACTERCHANGE:
       return OnCharacterChangeRequest(iClient, nmMessage);
 
+    // Client sending player actions
+    case MSG_ACTION:
+      return OnPlayerAction(iClient, nmMessage);
+
     // Client sending a chat message
     case MSG_CHAT_IN:
       return OnChatInRequest(iClient, nmMessage);

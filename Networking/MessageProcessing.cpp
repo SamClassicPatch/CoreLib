@@ -170,8 +170,6 @@ BOOL OnCharacterChangeRequest(INDEX iClient, CNetworkMessage &nmMessage)
   CPlayerCharacter pcCharacter;
   nmMessage >> iPlayer >> pcCharacter;
 
-  nmMessage.Rewind();
-
   // Get client identity
   CClientIdentity *pci = IClientLogging::GetIdentity(iClient);
 
@@ -183,7 +181,108 @@ BOOL OnCharacterChangeRequest(INDEX iClient, CNetworkMessage &nmMessage)
     return FALSE;
   }
 
-  return TRUE;
+  CServer &srv = _pNetwork->ga_srvServer;
+
+  // Invalid player
+  if (iPlayer < 0 || iPlayer > srv.srv_aplbPlayers.Count() ) {
+    return FALSE;
+  }
+
+  CPlayerBuffer &plb = srv.srv_aplbPlayers[iPlayer];
+
+  // Wrong client or character
+  if (plb.plb_iClient != iClient || !(plb.plb_pcCharacter == pcCharacter)) {
+    return FALSE;
+  }
+
+  // Remember the character
+  plb.plb_pcCharacter = pcCharacter;
+
+  // Send character change to all clients
+  CNetStreamBlock nsbChangeChar(MSG_SEQ_CHARACTERCHANGE, ++srv.srv_iLastProcessedSequence);
+  nsbChangeChar << iPlayer;
+  nsbChangeChar << pcCharacter;
+
+  INetwork::AddBlockToAllSessions(nsbChangeChar);
+
+  return FALSE;
+};
+
+// Receive action packet from one player of a client
+static void ReceiveActionsForPlayer(CPlayerBuffer &plb, CNetworkMessage *pnm, INDEX iMaxBuffer) {
+  ASSERT(plb.plb_Active);
+
+  // Receive new action
+  CPlayerAction pa;
+  *pnm >> pa;
+
+  // Buffer it
+  plb.plb_abReceived.AddAction(pa);
+
+  INDEX iSendBehind = 0;
+  pnm->ReadBits(&iSendBehind, 2);
+
+  // Add resent actions
+  for (INDEX i = 0; i < iSendBehind; i++) {
+    CPlayerAction paOld;
+    *pnm >> paOld;
+
+    if (paOld.pa_llCreated > plb.plb_paLastAction.pa_llCreated) {
+      plb.plb_abReceived.AddAction(paOld);
+    }
+  }
+
+  // If there are too many actions buffered
+  while (plb.plb_abReceived.GetCount() > iMaxBuffer) {
+    // Purge the oldest one
+    plb.plb_abReceived.RemoveOldest();
+  }
+};
+
+// Client sending player actions
+BOOL OnPlayerAction(INDEX iClient, CNetworkMessage &nmMessage)
+{
+  CServer &srv = _pNetwork->ga_srvServer;
+  CSessionSocket &sso = srv.srv_assoSessions[iClient];
+
+  // For each possible player on that client
+  for (INDEX i = 0; i < NET_MAXLOCALPLAYERS; i++) {
+    // See if saved in the message
+    BOOL bSaved = 0;
+    nmMessage.ReadBits(&bSaved, 1);
+
+    if (!bSaved) continue;
+
+    // Read client index
+    INDEX iPlayer = 0;
+    nmMessage.ReadBits(&iPlayer, 4);
+
+    CPlayerBuffer &plb = srv.srv_aplbPlayers[iPlayer];
+
+    // If there is no player on that client
+    if (plb.plb_iClient != iClient) {
+      // Consider the entire message invalid
+      CPrintF("Wrong Client!\n");
+      break;
+    }
+
+    // Read ping
+    plb.plb_iPing = 0;
+    nmMessage.ReadBits(&plb.plb_iPing, 10);
+
+    // Let the corresponding client buffer receive the message
+    INDEX iMaxBuffer = sso.sso_sspParams.ssp_iBufferActions;
+
+    static CSymbolPtr symptr("cli_bPredictIfServer");
+
+    if (iClient == 0 && !symptr.GetIndex()) {
+      iMaxBuffer = 1;
+    }
+
+    ReceiveActionsForPlayer(plb, &nmMessage, iMaxBuffer);
+  }
+
+  return FALSE;
 };
 
 // Client sending a chat message

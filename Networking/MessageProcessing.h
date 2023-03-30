@@ -32,6 +32,9 @@ BOOL OnPlayerConnectRequest(INDEX iClient, CNetworkMessage &nmMessage);
 // Client changing the character
 BOOL OnCharacterChangeRequest(INDEX iClient, CNetworkMessage &nmMessage);
 
+// Client sending player actions
+BOOL OnPlayerAction(INDEX iClient, CNetworkMessage &nmMessage);
+
 // Client sending a chat message
 BOOL OnChatInRequest(INDEX iClient, CNetworkMessage &nmMessage);
 
