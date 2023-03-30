@@ -78,6 +78,52 @@ class IWorld {
       return NULL;
     };
 
+    // Find existing entity property by its ID
+    static inline CEntityProperty *PropertyForId(LibClassHolder lch, ULONG ulID) {
+      CDLLEntityClass *pdec = lch;
+
+      while (pdec != NULL) {
+        // For each property
+        for (INDEX iProp = 0; iProp < pdec->dec_ctProperties; iProp++) {
+          CEntityProperty &ep = pdec->dec_aepProperties[iProp];
+
+          // Matching ID
+          if (ep.ep_ulID == ulID) {
+            return &ep;
+          }
+        }
+
+        // Next class in the hierarchy
+        pdec = pdec->dec_pdecBase;
+      }
+
+      return NULL;
+    };
+
+    // Find existing entity property by its name hash
+    static inline CEntityProperty *PropertyForHash(LibClassHolder lch, ULONG ulNameHash) {
+      CDLLEntityClass *pdec = lch;
+
+      while (pdec != NULL) {
+        // For each property
+        for (INDEX iProp = 0; iProp < pdec->dec_ctProperties; iProp++) {
+          CEntityProperty &ep = pdec->dec_aepProperties[iProp];
+
+          // Matching name hash
+          ULONG ulCheckHash = CTString(ep.ep_strName).GetHash();
+
+          if (ulCheckHash == ulNameHash) {
+            return &ep;
+          }
+        }
+
+        // Next class in the hierarchy
+        pdec = pdec->dec_pdecBase;
+      }
+
+      return NULL;
+    };
+
     // Find entity property by its ID or offset of a specific type
     static inline CEntityProperty *PropertyForIdOrOffset(LibClassHolder lch, ULONG ulType, ULONG ulID, SLONG slOffset) {
       CDLLEntityClass *pdec = lch;

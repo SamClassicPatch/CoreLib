@@ -104,7 +104,7 @@ CNetworkMessage &operator>>(CNetworkMessage &nm, CPlayerAction &pa) {
   // Find number of zero bits for flags
   INDEX iZeros = 0;
 
-  for(; iZeros < 6; iZeros++) {
+  for (; iZeros < 6; iZeros++) {
     UBYTE ub = 0;
     nm.ReadBits(&ub, 1);
 
