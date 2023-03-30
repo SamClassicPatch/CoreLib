@@ -13,8 +13,8 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#ifndef CECIL_INCL_NETWORKPACKETS_H
-#define CECIL_INCL_NETWORKPACKETS_H
+#ifndef CECIL_INCL_NETWORKFUNCTIONS_H
+#define CECIL_INCL_NETWORKFUNCTIONS_H
 
 #ifdef PRAGMA_ONCE
   #pragma once
@@ -28,6 +28,9 @@ class CORE_API INetwork {
   public:
     // New network packet types
     enum ENetPackets {
+      // Backported MSG_REP_DISCONNECTED from 1.07
+      PCK_REP_DISCONNECTED = 48,
+
       // Start with 49 to continue the MESSAGETYPE / NetworkMessageType list
       PCK_DUMMY_NETWORK_PACKET = 49,
 
@@ -37,15 +40,10 @@ class CORE_API INetwork {
       PCK_EXTENSION = 63,
     };
 
-    // Create network message packet of a custom type
-    #define NETWORK_PACKET(Variable, PacketType) \
-      MESSAGETYPE Variable##_##PacketType = MESSAGETYPE(PacketType); \
-      CNetworkMessage Variable(Variable##_##PacketType)
-
   public:
     // Create packet to send to a server
     static inline CNetworkMessage CreateClientPacket(const ULONG ulType) {
-      NETWORK_PACKET(nmClient, PCK_EXTENSION);
+      CNetworkMessage nmClient((MESSAGETYPE)PCK_EXTENSION);
       nmClient << ulType; // Packet type
 
       return nmClient;
