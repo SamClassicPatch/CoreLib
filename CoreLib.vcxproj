@@ -54,6 +54,7 @@
     <ClInclude Include="Interfaces\WorldFunctions.h" />
     <ClInclude Include="Modules\PluginModule.h" />
     <ClInclude Include="Modules\PluginStock.h" />
+    <ClInclude Include="Networking\MessageCompression.h" />
     <ClInclude Include="Networking\CommInterface.h" />
     <ClInclude Include="Networking\MessageProcessing.h" />
     <ClInclude Include="Networking\Modules\ActiveClients.h" />
