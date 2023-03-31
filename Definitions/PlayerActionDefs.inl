@@ -22,6 +22,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #pragma once
 #endif
 
+#include <CoreLib/Networking/MessageCompression.h>
+
 // Write player action into a network packet
 CNetworkMessage &operator<<(CNetworkMessage &nm, const CPlayerAction &pa) {
   nm.Write(&pa.pa_llCreated, sizeof(pa.pa_llCreated));
@@ -43,42 +45,7 @@ CNetworkMessage &operator<<(CNetworkMessage &nm, const CPlayerAction &pa) {
     pul++;
   }
 
-  ULONG ulFlags = pa.pa_ulButtons;
-
-  if (ulFlags == 0) {
-    UBYTE ub = 1;
-    nm.WriteBits(&ub, 1);
-
-  } else if (ulFlags == 1) {
-    UBYTE ub = 2;
-    nm.WriteBits(&ub, 2);
-
-  } else if (ulFlags <= 3) {
-    UBYTE ub = 4;
-    nm.WriteBits(&ub, 3);
-    nm.WriteBits(&ulFlags, 1);
-
-  } else if (ulFlags <= 15) {
-    UBYTE ub = 8;
-    nm.WriteBits(&ub, 4);
-    nm.WriteBits(&ulFlags, 4);
-
-  } else if (ulFlags <= 255) {
-    UBYTE ub = 16;
-    nm.WriteBits(&ub, 5);
-    nm.WriteBits(&ulFlags, 8);
-
-  } else if (ulFlags <= 65535) {
-    UBYTE ub = 32;
-    nm.WriteBits(&ub, 6);
-    nm.WriteBits(&ulFlags, 16);
-
-  } else {
-    UBYTE ub = 0;
-    nm.WriteBits(&ub, 6);
-    nm.WriteBits(&ulFlags, 32);
-  }
-
+  INetCompress::Integer(nm, pa.pa_ulButtons);
   return nm;
 };
 
@@ -101,58 +68,7 @@ CNetworkMessage &operator>>(CNetworkMessage &nm, CPlayerAction &pa) {
     pul++;
   }
 
-  // Find number of zero bits for flags
-  INDEX iZeros = 0;
-
-  for (; iZeros < 6; iZeros++) {
-    UBYTE ub = 0;
-    nm.ReadBits(&ub, 1);
-
-    if (ub != 0) {
-      break;
-    }
-  }
-
-  ULONG ulFlags = 0;
-
-  // Now read flags according to the number of bits
-  switch (iZeros) {
-    case 0: {
-      ulFlags = 0;
-    } break;
-
-    case 1: {
-      ulFlags = 1;
-    } break;
-
-    case 2: {
-      ulFlags = 0;
-      nm.ReadBits(&ulFlags, 1);
-      ulFlags |= 2;
-    } break;
-
-    case 3: {
-      ulFlags = 0;
-      nm.ReadBits(&ulFlags, 4);
-    } break;
-
-    case 4: {
-      ulFlags = 0;
-      nm.ReadBits(&ulFlags, 8);
-    } break;
-
-    case 5: {
-      ulFlags = 0;
-      nm.ReadBits(&ulFlags, 16);
-    } break;
-
-    default: {
-      ulFlags = 0;
-      nm.ReadBits(&ulFlags, 32);
-    } break;
-  }
-
-  pa.pa_ulButtons = ulFlags;
+  INetDecompress::Integer(nm, pa.pa_ulButtons);
   return nm;
 };
 

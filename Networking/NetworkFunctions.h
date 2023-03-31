@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "CommInterface.h"
 #include "StreamBlock.h"
+#include "MessageCompression.h"
 
 // Interface of network methods
 class CORE_API INetwork {
@@ -44,7 +45,7 @@ class CORE_API INetwork {
     // Create packet to send to a server
     static inline CNetworkMessage CreateClientPacket(const ULONG ulType) {
       CNetworkMessage nmClient((MESSAGETYPE)PCK_EXTENSION);
-      nmClient << ulType; // Packet type
+      INetCompress::Integer(nmClient, ulType); // Packet type
 
       return nmClient;
     };
@@ -54,7 +55,7 @@ class CORE_API INetwork {
       CServer &srv = _pNetwork->ga_srvServer;
 
       CNetStreamBlock nsbServer(PCK_EXTENSION, ++srv.srv_iLastProcessedSequence);
-      nsbServer << ulType; // Packet type
+      INetCompress::Integer(nsbServer, ulType); // Packet type
 
       return nsbServer;
     };

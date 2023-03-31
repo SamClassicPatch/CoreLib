@@ -43,8 +43,13 @@ void INetwork::Initialize(void) {
 
 // Handle packets coming from a client (CServer::Handle alternative)
 BOOL INetwork::ServerHandle(CMessageDispatcher *pmd, INDEX iClient, CNetworkMessage &nmMessage) {
+  CSessionSocket &sso = _pNetwork->ga_srvServer.srv_assoSessions[iClient];
+  sso.sso_tvMessageReceived = _pTimer->GetHighPrecisionTimer();
+
+  MESSAGETYPE ePacket = nmMessage.GetType();
+
   // Process some default packets
-  switch (nmMessage.GetType()) {
+  switch (ePacket) {
     // Client confirming the disconnection
     case PCK_REP_DISCONNECTED:
       return IProcessPacket::OnClientDisconnect(iClient, nmMessage);
@@ -71,11 +76,11 @@ BOOL INetwork::ServerHandle(CMessageDispatcher *pmd, INDEX iClient, CNetworkMess
   }
 
   // Let CServer::Handle process packets of other types
-  if (nmMessage.GetType() != PCK_EXTENSION) return TRUE;
+  if (ePacket != PCK_EXTENSION) return TRUE;
 
   // Handle specific packet types
   ULONG ulType;
-  nmMessage >> ulType;
+  INetDecompress::Integer(nmMessage, ulType);
 
   // Let plugins handle packets
   FOREACHPLUGINHANDLER(GetPluginAPI()->cNetworkEvents, INetworkEvents, pEvents) {
@@ -110,7 +115,7 @@ BOOL INetwork::ClientHandle(CSessionState *pses, CNetworkMessage &nmMessage) {
 
   // Handle specific packet types
   ULONG ulType;
-  nmMessage >> ulType;
+  INetDecompress::Integer(nmMessage, ulType);
 
   // Let plugins handle packets
   FOREACHPLUGINHANDLER(GetPluginAPI()->cNetworkEvents, INetworkEvents, pEvents) {
