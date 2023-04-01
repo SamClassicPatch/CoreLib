@@ -228,6 +228,9 @@
     <ClInclude Include="Networking\Modules\StockCommands.h">
       <Filter>Header Files\Networking headers\Modules headers</Filter>
     </ClInclude>
+    <ClInclude Include="Compatibility\VanillaEvents.h">
+      <Filter>Header Files\Compatibility headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="StdH.cpp">

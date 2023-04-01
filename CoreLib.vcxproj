@@ -28,6 +28,7 @@
     <ClInclude Include="Base\CoreTimerHandler.h" />
     <ClInclude Include="Base\Unzip.h" />
     <ClInclude Include="Compatibility\Game.h" />
+    <ClInclude Include="Compatibility\VanillaEvents.h" />
     <ClInclude Include="Compatibility\PlayerSettings.h" />
     <ClInclude Include="Compatibility\SymbolPtr.h" />
     <ClInclude Include="Core.h" />
