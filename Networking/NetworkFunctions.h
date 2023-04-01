@@ -60,20 +60,22 @@ class CORE_API INetwork {
       return nsbServer;
     };
 
-    // Add block to streams for all sessions
-    static inline void AddBlockToAllSessions(CNetStreamBlock &nsb) {
+    // Add stream block to one session
+    static inline void AddBlockToSession(CNetStreamBlock &nsb, INDEX iSession) {
       CServer &srv = _pNetwork->ga_srvServer;
+      CSessionSocket &sso = srv.srv_assoSessions[iSession];
 
-      // For each active session
-      for (INDEX iSession = 0; iSession < srv.srv_assoSessions.Count(); iSession++) {
-        CSessionSocket &sso = srv.srv_assoSessions[iSession];
-
-        if (iSession > 0 && !sso.sso_bActive) {
-          continue;
-        }
-
-        // Add the block to the buffer
+      // Add block to the buffer if client is active (server client always is)
+      if (iSession == 0 || sso.sso_bActive) {
         ((CNetStream &)sso.sso_nsBuffer).AddBlock(nsb);
+      }
+    };
+
+    // Add stream block to all sessions
+    static inline void AddBlockToAllSessions(CNetStreamBlock &nsb) {
+      // For each active session
+      for (INDEX i = 0; i < _pNetwork->ga_srvServer.srv_assoSessions.Count(); i++) {
+        AddBlockToSession(nsb, i);
       }
     };
 
