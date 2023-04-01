@@ -129,3 +129,17 @@ void CNetStream::AddBlock(CNetStreamBlock &nsbBlock) {
   // Add it to the list
   AddAllocatedBlock(pnsbCopy);
 };
+
+// Remove all blocks with older sequence number
+void CNetStream::RemoveOlderBlocksBySequence(INDEX iLastSequenceToKeep) {
+  // Remove from the tail as long as it's not too old
+  while (!ns_lhBlocks.IsEmpty()) {
+    CNetworkStreamBlock *pnsb = LIST_TAIL(ns_lhBlocks, CNetworkStreamBlock, nsb_lnInStream);
+
+    if (pnsb->nsb_iSequenceNumber >= iLastSequenceToKeep) {
+      break;
+    }
+
+    delete pnsb;
+  }
+};

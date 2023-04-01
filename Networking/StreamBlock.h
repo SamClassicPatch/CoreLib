@@ -70,6 +70,9 @@ class CORE_API CNetStream {
 
     // Add block to the stream (makes a copy of it)
     void AddBlock(CNetStreamBlock &nsbBlock);
+
+    // Remove all blocks with older sequence number
+    void RemoveOlderBlocksBySequence(INDEX iLastSequenceToKeep);
 };
 
 #endif
