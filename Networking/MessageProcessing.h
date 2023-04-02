@@ -21,18 +21,26 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 
 // Interface with custom message processing methods
-class IProcessPacket {
+class CORE_API IProcessPacket {
   public:
+    // Arrays of sync checks per client
     typedef CStaticArray<CSyncCheck> CSyncCheckArray;
+    static CStaticArray<CSyncCheckArray> _aClientChecks;
+
+    // Which client sent last packet to the server
+    static INDEX _iHandlingClient;
 
   // Helper functions
   public:
 
+    // Clear arrays with sync checks
+    static void ClearSyncChecks(void);
+
     // Buffer sync check for the server
-    static void AddSyncCheck(const CSyncCheck &sc);
+    static void AddSyncCheck(const INDEX iClient, const CSyncCheck &sc);
 
     // Find buffered sync check for a given tick
-    static INDEX FindSyncCheck(TIME tmTick, CSyncCheck &sc);
+    static INDEX FindSyncCheck(const INDEX iClient, TIME tmTick, CSyncCheck &sc);
 
   // Message processors
   public:

@@ -22,10 +22,24 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "Interfaces/DataFunctions.h"
 #include "Query/QueryManager.h"
 
-// Buffer sync check for the server
-void IProcessPacket::AddSyncCheck(const CSyncCheck &sc)
+// Arrays of sync checks per client
+CStaticArray<IProcessPacket::CSyncCheckArray> IProcessPacket::_aClientChecks;
+
+// Which client sent last packet to the server
+INDEX IProcessPacket::_iHandlingClient = -1;
+
+// Clear arrays with sync checks
+void IProcessPacket::ClearSyncChecks(void)
 {
-  CSyncCheckArray &aChecks = _pNetwork->ga_srvServer.srv_ascChecks;
+  FOREACHINSTATICARRAY(IProcessPacket::_aClientChecks, IProcessPacket::CSyncCheckArray, itar) {
+    itar->Clear();
+  }
+};
+
+// Buffer sync check for the server
+void IProcessPacket::AddSyncCheck(const INDEX iClient, const CSyncCheck &sc)
+{
+  CSyncCheckArray &aChecks = _aClientChecks[iClient];
 
   // Recreate the buffer if the size differs
   static CSymbolPtr symptr("ser_iSyncCheckBuffer");
@@ -52,9 +66,9 @@ void IProcessPacket::AddSyncCheck(const CSyncCheck &sc)
 };
 
 // Find buffered sync check for a given tick
-INDEX IProcessPacket::FindSyncCheck(TIME tmTick, CSyncCheck &sc)
+INDEX IProcessPacket::FindSyncCheck(const INDEX iClient, TIME tmTick, CSyncCheck &sc)
 {
-  CSyncCheckArray &aChecks = _pNetwork->ga_srvServer.srv_ascChecks;
+  CSyncCheckArray &aChecks = _aClientChecks[iClient];
 
   BOOL bHasEarlier = FALSE;
   BOOL bHasLater = FALSE;
@@ -370,7 +384,7 @@ BOOL IProcessPacket::OnSyncCheck(INDEX iClient, CNetworkMessage &nmMessage) {
 
   // Try to find it in the buffer
   CSyncCheck scLocal;
-  INDEX iFound = FindSyncCheck(tmTick, scLocal);
+  INDEX iFound = FindSyncCheck(iClient, tmTick, scLocal);
 
   CSessionSocket &sso = srv.srv_assoSessions[iClient];
   TIME &tmLastSync = sso.sso_tmLastSyncReceived;

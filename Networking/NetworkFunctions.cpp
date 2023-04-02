@@ -39,6 +39,8 @@ void INetwork::Initialize(void) {
   IChatCommands::RegisterDefaultCommands();
 
   _aActiveClients.New(SERVER_CLIENTS);
+
+  IProcessPacket::_aClientChecks.New(NET_MAXGAMEPLAYERS);
 };
 
 // Handle packets coming from a client (CServer::Handle alternative)
