@@ -231,6 +231,9 @@
     <ClInclude Include="Compatibility\VanillaEvents.h">
       <Filter>Header Files\Compatibility headers</Filter>
     </ClInclude>
+    <ClInclude Include="Networking\ExtPackets.h">
+      <Filter>Header Files\Networking headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="StdH.cpp">
@@ -328,6 +331,9 @@
     </ClCompile>
     <ClCompile Include="Networking\Modules\ClientRestrictions.cpp">
       <Filter>Source Files\Networking\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="Networking\ExtPackets.cpp">
+      <Filter>Source Files\Networking</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

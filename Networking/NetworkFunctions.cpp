@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "NetworkFunctions.h"
 #include "MessageProcessing.h"
 #include "Modules.h"
+#include "ExtPackets.h"
 
 // Initialize networking
 void INetwork::Initialize(void) {
@@ -34,6 +35,9 @@ void INetwork::Initialize(void) {
   // Initialize query manager
   extern void InitQuery(void);
   InitQuery();
+
+  // Register extension packets
+  CExtPacket::RegisterExtPackets();
 
   // Register default chat commands
   IChatCommands::RegisterDefaultCommands();
@@ -99,18 +103,22 @@ BOOL INetwork::ServerHandle(CMessageDispatcher *pmd, INDEX iClient, CNetworkMess
     }
   }
 
-  switch (ulType)
-  {
-    case 0: // [Cecil] TEMP
+  CExtPacket *pPacket = CExtPacket::CreatePacket((CExtPacket::EType)ulType, FALSE);
 
-    // Invalid packets
-    default: {
-      CPrintF(TRANS("Server received PCK_EXTENSION of an invalid (%u) type!\n"), ulType);
-      ASSERT(FALSE);
-    }
+  // No built-in packet under this index
+  if (pPacket == NULL) {
+    CPrintF(TRANS("Server received PCK_EXTENSION of an invalid (%u) type!\n"), ulType);
+    ASSERT(FALSE);
+
+    return FALSE;
   }
 
+  // Read and process the packet
+  pPacket->Read(nmMessage);
+  pPacket->Process();
+
   // No extra processing needed
+  delete pPacket;
   return FALSE;
 };
 
@@ -134,18 +142,22 @@ BOOL INetwork::ClientHandle(CSessionState *pses, CNetworkMessage &nmMessage) {
     }
   }
 
-  switch (ulType)
-  {
-    case 0: // [Cecil] TEMP
+  CExtPacket *pPacket = CExtPacket::CreatePacket((CExtPacket::EType)ulType, TRUE);
 
-    // Invalid packets
-    default: {
-      CPrintF(TRANS("Client received PCK_EXTENSION of an invalid (%u) type!\n"), ulType);
-      ASSERT(FALSE);
-    }
+  // No built-in packet under this index
+  if (pPacket == NULL) {
+    CPrintF(TRANS("Client received PCK_EXTENSION of an invalid (%u) type!\n"), ulType);
+    ASSERT(FALSE);
+
+    return FALSE;
   }
 
+  // Read and process the packet
+  pPacket->Read(nmMessage);
+  pPacket->Process();
+
   // No extra processing needed
+  delete pPacket;
   return FALSE;
 };
 
