@@ -28,6 +28,9 @@ CStaticArray<IProcessPacket::CSyncCheckArray> IProcessPacket::_aClientChecks;
 // Which client sent last packet to the server
 INDEX IProcessPacket::_iHandlingClient = -1;
 
+// Should mask player GUIDs or not
+BOOL IProcessPacket::_bMaskGUIDs = TRUE;
+
 // Clear arrays with sync checks
 void IProcessPacket::ClearSyncChecks(void)
 {
@@ -39,7 +42,8 @@ void IProcessPacket::ClearSyncChecks(void)
 // Buffer sync check for the server
 void IProcessPacket::AddSyncCheck(const INDEX iClient, const CSyncCheck &sc)
 {
-  CSyncCheckArray &aChecks = _aClientChecks[iClient];
+  // Use the first array if not masking
+  CSyncCheckArray &aChecks = _aClientChecks[_bMaskGUIDs ? iClient : 0];
 
   // Recreate the buffer if the size differs
   static CSymbolPtr symptr("ser_iSyncCheckBuffer");
@@ -68,7 +72,8 @@ void IProcessPacket::AddSyncCheck(const INDEX iClient, const CSyncCheck &sc)
 // Find buffered sync check for a given tick
 INDEX IProcessPacket::FindSyncCheck(const INDEX iClient, TIME tmTick, CSyncCheck &sc)
 {
-  CSyncCheckArray &aChecks = _aClientChecks[iClient];
+  // Use the first array if not masking
+  CSyncCheckArray &aChecks = _aClientChecks[_bMaskGUIDs ? iClient : 0];
 
   BOOL bHasEarlier = FALSE;
   BOOL bHasLater = FALSE;
@@ -100,6 +105,16 @@ INDEX IProcessPacket::FindSyncCheck(const INDEX iClient, TIME tmTick, CSyncCheck
   // Cannot have earlier, later and not found all at once
   ASSERT(FALSE);
   return +1;
+};
+
+// Mask player GUID using data from the player buffer
+void IProcessPacket::MaskGUID(UBYTE *aubGUID, CPlayerBuffer &plb) {
+  // Clear GUID
+  memset(aubGUID, 0, 16);
+
+  // Use client and buffer indices for uniqueness
+  aubGUID[0] = plb.plb_iClient;
+  aubGUID[1] = plb.plb_Index;
 };
 
 // Client confirming the disconnection
@@ -204,12 +219,43 @@ BOOL IProcessPacket::OnPlayerConnectRequest(INDEX iClient, CNetworkMessage &nmMe
     // Remember the character
     pplbNew->plb_pcCharacter = pcCharacter;
 
-    // Send message to all clients about adding a new player
-    CNetStreamBlock nsbAddClientData(MSG_SEQ_ADDPLAYER, ++srv.srv_iLastProcessedSequence);
+    const INDEX iLastSequence = ++srv.srv_iLastProcessedSequence;
+
+    if (_bMaskGUIDs) {
+      // Send message back to this client about adding a new player
+      if (iClient == 0 || sso.sso_bActive) {
+        CNetStreamBlock nsbClientPlayer(MSG_SEQ_ADDPLAYER, iLastSequence);
+        nsbClientPlayer << iNewPlayer;
+        nsbClientPlayer << pcCharacter;
+
+        INetwork::AddBlockToSession(nsbClientPlayer, iClient);
+      }
+
+      // Mask player GUID for other clients
+      MaskGUID(pcCharacter.pc_aubGUID, *pplbNew);
+    }
+
+    // Send message to other clients about adding a new player
+    CNetStreamBlock nsbAddClientData(MSG_SEQ_ADDPLAYER, iLastSequence);
     nsbAddClientData << iNewPlayer;
     nsbAddClientData << pcCharacter;
 
-    INetwork::AddBlockToAllSessions(nsbAddClientData);
+    // Send to other clients
+    if (_bMaskGUIDs) {
+      for (INDEX iSession = 0; iSession < srv.srv_assoSessions.Count(); iSession++) {
+        CSessionSocket &ssoBlock = srv.srv_assoSessions[iSession];
+
+        if (iSession == iClient || (iSession > 0 && !ssoBlock.sso_bActive)) {
+          continue;
+        }
+
+        INetwork::AddBlockToSession(nsbAddClientData, iSession);
+      }
+
+    // Send to everyone
+    } else {
+      INetwork::AddBlockToAllSessions(nsbAddClientData);
+    }
 
     // Don't wait for any more players
     _pShell->Execute("ser_bWaitFirstPlayer = 0;");
@@ -278,12 +324,43 @@ BOOL IProcessPacket::OnCharacterChangeRequest(INDEX iClient, CNetworkMessage &nm
   // Remember the character
   plb.plb_pcCharacter = pcCharacter;
 
-  // Send character change to all clients
-  CNetStreamBlock nsbChangeChar(MSG_SEQ_CHARACTERCHANGE, ++srv.srv_iLastProcessedSequence);
+  const INDEX iLastSequence = ++srv.srv_iLastProcessedSequence;
+
+  if (_bMaskGUIDs) {
+    // Send character change back to this client
+    if (iClient == 0 || srv.srv_assoSessions[iClient].sso_bActive) {
+      CNetStreamBlock nsbClientChar(MSG_SEQ_CHARACTERCHANGE, iLastSequence);
+      nsbClientChar << iPlayer;
+      nsbClientChar << pcCharacter;
+
+      INetwork::AddBlockToSession(nsbClientChar, iClient);
+    }
+
+    // Mask player GUID for other clients
+    MaskGUID(pcCharacter.pc_aubGUID, plb);
+  }
+
+  // Send character change to other clients
+  CNetStreamBlock nsbChangeChar(MSG_SEQ_CHARACTERCHANGE, iLastSequence);
   nsbChangeChar << iPlayer;
   nsbChangeChar << pcCharacter;
 
-  INetwork::AddBlockToAllSessions(nsbChangeChar);
+  // Send to other clients
+  if (_bMaskGUIDs) {
+    for (INDEX iSession = 0; iSession < srv.srv_assoSessions.Count(); iSession++) {
+      CSessionSocket &ssoBlock = srv.srv_assoSessions[iSession];
+
+      if (iSession == iClient || (iSession > 0 && !ssoBlock.sso_bActive)) {
+        continue;
+      }
+
+      INetwork::AddBlockToSession(nsbChangeChar, iSession);
+    }
+
+  // Send to everyone
+  } else {
+    INetwork::AddBlockToAllSessions(nsbChangeChar);
+  }
 
   return FALSE;
 };

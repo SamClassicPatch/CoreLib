@@ -30,6 +30,9 @@ class CORE_API IProcessPacket {
     // Which client sent last packet to the server
     static INDEX _iHandlingClient;
 
+    // Should mask player GUIDs or not
+    static BOOL _bMaskGUIDs;
+
   // Helper functions
   public:
 
@@ -41,6 +44,9 @@ class CORE_API IProcessPacket {
 
     // Find buffered sync check for a given tick
     static INDEX FindSyncCheck(const INDEX iClient, TIME tmTick, CSyncCheck &sc);
+
+    // Mask player GUID using data from the player buffer
+    static void MaskGUID(UBYTE *aubGUID, CPlayerBuffer &plb);
 
   // Message processors
   public:
