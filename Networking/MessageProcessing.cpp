@@ -22,6 +22,72 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "Interfaces/DataFunctions.h"
 #include "Query/QueryManager.h"
 
+// Buffer sync check for the server
+void IProcessPacket::AddSyncCheck(const CSyncCheck &sc)
+{
+  CSyncCheckArray &aChecks = _pNetwork->ga_srvServer.srv_ascChecks;
+
+  // Recreate the buffer if the size differs
+  static CSymbolPtr symptr("ser_iSyncCheckBuffer");
+  INDEX &iBuffer = symptr.GetIndex();
+
+  iBuffer = ClampDn(iBuffer, (INDEX)1);
+
+  if (aChecks.Count() != iBuffer) {
+    aChecks.Clear();
+    aChecks.New(iBuffer);
+  }
+
+  // Find the oldest one
+  INDEX iOldest = 0;
+
+  for (INDEX i = 1; i < aChecks.Count(); i++) {
+    if (aChecks[i].sc_tmTick < aChecks[iOldest].sc_tmTick) {
+      iOldest = i;
+    }
+  }
+
+  // Overwrite it
+  aChecks[iOldest] = sc;
+};
+
+// Find buffered sync check for a given tick
+INDEX IProcessPacket::FindSyncCheck(TIME tmTick, CSyncCheck &sc)
+{
+  CSyncCheckArray &aChecks = _pNetwork->ga_srvServer.srv_ascChecks;
+
+  BOOL bHasEarlier = FALSE;
+  BOOL bHasLater = FALSE;
+
+  for (INDEX i = 0; i < aChecks.Count(); i++) {
+    TIME tmInTable = aChecks[i].sc_tmTick;
+
+    if (tmInTable == tmTick) {
+      sc = aChecks[i];
+      return 0;
+
+    } else if (tmInTable < tmTick) {
+      bHasEarlier = TRUE;
+
+    } else if (tmInTable > tmTick) {
+      bHasLater = TRUE;
+    }
+  }
+
+  if (!bHasEarlier) {
+    ASSERT(bHasLater);
+    return -1;
+
+  } else if (!bHasLater) {
+    ASSERT(bHasEarlier);
+    return +1;
+  }
+
+  // Cannot have earlier, later and not found all at once
+  ASSERT(FALSE);
+  return +1;
+};
+
 // Client confirming the disconnection
 BOOL IProcessPacket::OnClientDisconnect(INDEX iClient, CNetworkMessage &nmMessage) {
   CSessionSocket &sso = _pNetwork->ga_srvServer.srv_assoSessions[iClient];
@@ -280,6 +346,91 @@ BOOL IProcessPacket::OnPlayerAction(INDEX iClient, CNetworkMessage &nmMessage)
     }
 
     ReceiveActionsForPlayer(plb, &nmMessage, iMaxBuffer);
+  }
+
+  return FALSE;
+};
+
+// Client sends a CRC check
+BOOL IProcessPacket::OnSyncCheck(INDEX iClient, CNetworkMessage &nmMessage) {
+  static CSymbolPtr pbReportSyncOK("ser_bReportSyncOK");
+  static CSymbolPtr pbReportSyncBad("ser_bReportSyncBad");
+  static CSymbolPtr pbReportSyncLate("ser_bReportSyncLate");
+  static CSymbolPtr pbReportSyncEarly("ser_bReportSyncEarly");
+  static CSymbolPtr pbPauseOnSyncBad("ser_bPauseOnSyncBad");
+  static CSymbolPtr piKickOnSyncBad("ser_iKickOnSyncBad");
+
+  CServer &srv = _pNetwork->ga_srvServer;
+
+  // Read sync check from the packet
+  CSyncCheck scRemote;
+  nmMessage.Read(&scRemote, sizeof(scRemote));
+
+  const TIME tmTick = scRemote.sc_tmTick;
+
+  // Try to find it in the buffer
+  CSyncCheck scLocal;
+  INDEX iFound = FindSyncCheck(tmTick, scLocal);
+
+  CSessionSocket &sso = srv.srv_assoSessions[iClient];
+  TIME &tmLastSync = sso.sso_tmLastSyncReceived;
+
+  // Sync on time
+  if (iFound == 0) {
+    // Flush stream buffer up to that sequence
+    ((CNetStream &)sso.sso_nsBuffer).RemoveOlderBlocksBySequence(scRemote.sc_iSequence);
+
+    // Disconnect if the level has changed
+    if (scLocal.sc_iLevel != scRemote.sc_iLevel) {
+      INetwork::SendDisconnectMessage(iClient, TRANS("Level change in progress. Please retry."), FALSE);
+
+    // Wrong CRC
+    } else if (scLocal.sc_ulCRC != scRemote.sc_ulCRC) {
+      sso.sso_ctBadSyncs++;
+
+      if (pbReportSyncBad.GetIndex()) {
+        CPrintF(TRANS("SYNCBAD: Client '%s', Sequence %d Tick %.2f - bad %d\n"), 
+          GetComm().Server_GetClientName(iClient), scRemote.sc_iSequence, tmTick, sso.sso_ctBadSyncs);
+      }
+
+      // Kick from too many bad sync
+      if (piKickOnSyncBad.GetIndex() > 0) {
+        if (sso.sso_ctBadSyncs >= piKickOnSyncBad.GetIndex()) {
+          INetwork::SendDisconnectMessage(iClient, TRANS("Too many bad syncs"), FALSE);
+        }
+
+      // Pause on any bad sync
+      } else if (pbPauseOnSyncBad.GetIndex()) {
+        _pNetwork->ga_sesSessionState.ses_bWantPause = TRUE;
+      }
+
+    // Clear bad syncs
+    } else {
+      sso.sso_ctBadSyncs = 0;
+
+      if (pbReportSyncOK.GetIndex()) {
+        CPrintF(TRANS("SYNCOK: Client '%s', Tick %.2f\n"), GetComm().Server_GetClientName(iClient), tmTick);
+      }
+    }
+
+    // Remember that this sync is for this tick
+    if (tmLastSync < tmTick) tmLastSync = tmTick;
+
+  // Too old
+  } else if (iFound < 0) {
+    // Only report if syncs are okay (to avoid late syncs on level change)
+    if (pbReportSyncLate.GetIndex() && tmLastSync > 0) {
+      CPrintF(TRANS("SYNCLATE: Client '%s', Tick %.2f\n"), GetComm().Server_GetClientName(iClient), tmTick);
+    }
+
+  // Too new
+  } else {
+    if (pbReportSyncEarly.GetIndex()) {
+      CPrintF(TRANS("SYNCEARLY: Client '%s', Tick %.2f\n"), GetComm().Server_GetClientName(iClient), tmTick);
+    }
+
+    // Remember that this sync was ahead of time
+    if (tmLastSync < tmTick) tmLastSync = tmTick;
   }
 
   return FALSE;

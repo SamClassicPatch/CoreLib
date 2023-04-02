@@ -23,6 +23,20 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Interface with custom message processing methods
 class IProcessPacket {
   public:
+    typedef CStaticArray<CSyncCheck> CSyncCheckArray;
+
+  // Helper functions
+  public:
+
+    // Buffer sync check for the server
+    static void AddSyncCheck(const CSyncCheck &sc);
+
+    // Find buffered sync check for a given tick
+    static INDEX FindSyncCheck(TIME tmTick, CSyncCheck &sc);
+
+  // Message processors
+  public:
+
     // Client confirming the disconnection
     static BOOL OnClientDisconnect(INDEX iClient, CNetworkMessage &nmMessage);
 
@@ -37,6 +51,9 @@ class IProcessPacket {
 
     // Client sending player actions
     static BOOL OnPlayerAction(INDEX iClient, CNetworkMessage &nmMessage);
+
+    // Client sends a CRC check
+    static BOOL OnSyncCheck(INDEX iClient, CNetworkMessage &nmMessage);
 
     // Client sending a chat message
     static BOOL OnChatInRequest(INDEX iClient, CNetworkMessage &nmMessage);

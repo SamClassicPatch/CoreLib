@@ -70,6 +70,10 @@ BOOL INetwork::ServerHandle(CMessageDispatcher *pmd, INDEX iClient, CNetworkMess
     case MSG_ACTION:
       return IProcessPacket::OnPlayerAction(iClient, nmMessage);
 
+    // Client sending a CRC check
+    case MSG_SYNCCHECK:
+      return IProcessPacket::OnSyncCheck(iClient, nmMessage);
+
     // Client sending a chat message
     case MSG_CHAT_IN:
       return IProcessPacket::OnChatInRequest(iClient, nmMessage);
