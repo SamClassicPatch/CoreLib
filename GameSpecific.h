@@ -57,6 +57,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #define ADDR_UNZIP_GETFILEATINDEX   (CHOOSE_FOR_GAME(0x600E18D0, 0x600B1960, 0x600EDC40)) // UNZIPGetFileAtIndex()
   #define ADDR_UNZIP_ISFILEATINDEXMOD (CHOOSE_FOR_GAME(0x600E18F0, 0x600B1980, 0x600EDC60)) // UNZIPIsFileAtIndexMod()
 
+  // CPlayerEntity::Write_t()
+  #define ADDR_PLAYER_WRITE (CHOOSE_FOR_GAME(0x601FBC10, 0x601CBBF0, 0x60226460))
+
+  // CPlayerEntity::ChecksumForSync()
+  #define ADDR_PLAYER_CHECKSUM (CHOOSE_FOR_GAME(0x601FBCA0, 0x601CBC80, 0x602264F0))
+
 // Debug addresses
 #elif SE1_VER == SE1_107
   // InitStreams()
@@ -82,6 +88,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #define ADDR_UNZIP_GETFILECOUNT     (0x10001456) // UNZIPGetFileCount()
   #define ADDR_UNZIP_GETFILEATINDEX   (0x10005268) // UNZIPGetFileAtIndex()
   #define ADDR_UNZIP_ISFILEATINDEXMOD (0x1000A45C) // UNZIPIsFileAtIndexMod()
+
+  // CPlayerEntity::Write_t()
+  #define ADDR_PLAYER_WRITE (0x10005731)
+
+  // CPlayerEntity::ChecksumForSync()
+  #define ADDR_PLAYER_CHECKSUM (0x1000279D)
 #endif
 
 #endif
