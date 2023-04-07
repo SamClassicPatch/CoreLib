@@ -60,6 +60,22 @@ class IWorld {
       return &_pNetwork->ga_World;
     };
 
+    // Gather entities of the same class
+    static inline void GetEntitiesOfClass(CWorld *pwo, CEntities &cenOutput, LibClassHolder lchClass) {
+      FOREACHINDYNAMICCONTAINER(GetWorld()->wo_cenEntities, CEntity, iten) {
+        CEntity *pen = &*iten;
+
+        if (pen->GetFlags() & ENF_DELETED) {
+          continue;
+        }
+
+        // Same class
+        if (pen->en_pecClass->ec_pdecDLLClass == lchClass.pdec) {
+          cenOutput.Add(pen);
+        }
+      }
+    };
+
     // Find entity in a world by its ID
     static inline CEntity *FindEntityByID(CWorld *pwo, const ULONG ulEntityID) {
       FOREACHINDYNAMICCONTAINER(GetWorld()->wo_cenEntities, CEntity, iten) {
