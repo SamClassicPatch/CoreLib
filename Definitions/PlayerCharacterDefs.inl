@@ -22,6 +22,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #pragma once
 #endif
 
+#if CLASSICSPATCH_FUNC_DEFINITIONS
+
 // Write player character into a network packet
 CNetworkMessage &operator<<(CNetworkMessage &nm, CPlayerCharacter &pc) {
   nm << pc.pc_strName;
@@ -43,5 +45,7 @@ CNetworkMessage &operator>>(CNetworkMessage &nm, CPlayerCharacter &pc) {
 
   return nm;
 };
+
+#endif // CLASSICSPATCH_FUNC_DEFINITIONS
 
 #endif

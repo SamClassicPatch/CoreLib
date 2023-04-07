@@ -24,6 +24,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <CoreLib/Networking/MessageCompression.h>
 
+#if CLASSICSPATCH_FUNC_DEFINITIONS
+
 // Write player action into a network packet
 CNetworkMessage &operator<<(CNetworkMessage &nm, const CPlayerAction &pa) {
   nm.Write(&pa.pa_llCreated, sizeof(pa.pa_llCreated));
@@ -83,5 +85,7 @@ CTStream &operator>>(CTStream &strm, CPlayerAction &pa) {
   strm.Read_t(&pa, sizeof(pa));
   return strm;
 };
+
+#endif // CLASSICSPATCH_FUNC_DEFINITIONS
 
 #endif

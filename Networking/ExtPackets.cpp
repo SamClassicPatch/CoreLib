@@ -18,6 +18,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "ExtPackets.h"
 #include "NetworkFunctions.h"
 
+#if CLASSICSPATCH_EXT_PACKETS
+
 void CExtPacket::SendPacket(void) {
   CNetStreamBlock nsbExt = INetwork::CreateServerPacket(GetType());
   Write(nsbExt);
@@ -43,3 +45,5 @@ CExtPacket *CExtPacket::CreatePacket(EType ePacket, BOOL bClient) {
 void CExtPacket::RegisterExtPackets(void)
 {
 };
+
+#endif // CLASSICSPATCH_EXT_PACKETS

@@ -22,6 +22,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #pragma once
 #endif
 
+#if CLASSICSPATCH_CLASS_DEFINITIONS
+
 class CSentEvent {
   public:
     CEntityPointer se_penEntity;
@@ -40,5 +42,7 @@ class CActiveSector {
     // Dummy method for CStaticStackArray
     void Clear(void) {};
 };
+
+#endif // CLASSICSPATCH_CLASS_DEFINITIONS
 
 #endif

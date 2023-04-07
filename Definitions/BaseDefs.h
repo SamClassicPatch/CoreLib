@@ -24,6 +24,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <Engine/Base/ListIterator.inl>
 
+#if CLASSICSPATCH_CLASS_DEFINITIONS
+
 // One animation of CAnimObject
 class COneAnim {
   public:
@@ -121,5 +123,7 @@ class CCRCEntry {
       return ce_fnmFile;
     };
 };
+
+#endif // CLASSICSPATCH_CLASS_DEFINITIONS
 
 #endif

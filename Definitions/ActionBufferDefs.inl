@@ -22,6 +22,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #pragma once
 #endif
 
+#if CLASSICSPATCH_FUNC_DEFINITIONS
+
 class CActionEntry {
   public:
     CListNode ae_ln;
@@ -136,5 +138,7 @@ CPlayerAction *CActionBuffer::GetLastOlderThan(__int64 llTime) {
 
   return ppa;
 };
+
+#endif // CLASSICSPATCH_FUNC_DEFINITIONS
 
 #endif

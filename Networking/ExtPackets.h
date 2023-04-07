@@ -23,6 +23,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "MessageCompression.h"
 #include <CoreLib/Interfaces/WorldFunctions.h>
 
+#if CLASSICSPATCH_EXT_PACKETS
+
 // Base class for each extension packet
 class CExtPacket {
   public:
@@ -69,5 +71,7 @@ inline void ExtServerReport(const char *strFormat, ...) {
   CPutString(str);
   va_end(arg);
 };
+
+#endif // CLASSICSPATCH_EXT_PACKETS
 
 #endif

@@ -24,6 +24,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <Engine/Graphics/TextureEffects.h>
 
+#if CLASSICSPATCH_FUNC_DEFINITIONS
+
 // Initialize the texture effect source
 void CTextureEffectSource::Initialize(CTextureEffectGlobal *ptegGlobalEffect, ULONG ulEffectSourceType,
                                       PIX pixU0, PIX pixV0, PIX pixU1, PIX pixV1)
@@ -70,5 +72,7 @@ BOOL CTextureEffectGlobal::IsWater(void) {
   // [Cecil] NOTE: 0-3 animation types in standard Serious Engine are all water
   return teg_ulEffectType < 4;
 };
+
+#endif // CLASSICSPATCH_FUNC_DEFINITIONS
 
 #endif

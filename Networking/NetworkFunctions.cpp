@@ -36,15 +36,19 @@ void INetwork::Initialize(void) {
   extern void InitQuery(void);
   InitQuery();
 
+#if CLASSICSPATCH_EXT_PACKETS
   // Register extension packets
   CExtPacket::RegisterExtPackets();
+#endif
 
   // Register default chat commands
   IChatCommands::RegisterDefaultCommands();
 
   _aActiveClients.New(SERVER_CLIENTS);
 
+#if CLASSICSPATCH_GUID_MASKING
   IProcessPacket::_aClientChecks.New(NET_MAXGAMEPLAYERS);
+#endif
 };
 
 // Handle packets coming from a client (CServer::Handle alternative)
@@ -85,6 +89,8 @@ BOOL INetwork::ServerHandle(CMessageDispatcher *pmd, INDEX iClient, CNetworkMess
       return IProcessPacket::OnChatInRequest(iClient, nmMessage);
   }
 
+#if CLASSICSPATCH_EXT_PACKETS
+
   // Let CServer::Handle process packets of other types
   if (ePacket != PCK_EXTENSION) return TRUE;
 
@@ -120,10 +126,19 @@ BOOL INetwork::ServerHandle(CMessageDispatcher *pmd, INDEX iClient, CNetworkMess
   // No extra processing needed
   delete pPacket;
   return FALSE;
+
+#else
+
+  // Let CServer::Handle process packets of other types
+  return TRUE;
+
+#endif // CLASSICSPATCH_EXT_PACKETS
 };
 
 // Handle packets coming from a server
 BOOL INetwork::ClientHandle(CSessionState *pses, CNetworkMessage &nmMessage) {
+#if CLASSICSPATCH_EXT_PACKETS
+
   // Let default methods handle packets of other types
   if (nmMessage.GetType() != PCK_EXTENSION) return TRUE;
 
@@ -159,6 +174,13 @@ BOOL INetwork::ClientHandle(CSessionState *pses, CNetworkMessage &nmMessage) {
   // No extra processing needed
   delete pPacket;
   return FALSE;
+
+#else
+
+  // Let CSessionState::ProcessGameStreamBlock process packets of other types
+  return TRUE;
+
+#endif // CLASSICSPATCH_EXT_PACKETS
 };
 
 // Send disconnect message to a client (CServer::SendDisconnectMessage reimplementation)

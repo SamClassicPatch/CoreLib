@@ -22,6 +22,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #pragma once
 #endif
 
+#if CLASSICSPATCH_FUNC_DEFINITIONS
+
 // Retrive memory offset of a specified mipmap or size of all mipmaps in pixels
 PIX GetMipmapOffset(INDEX iMipLevel, PIX pixWidth, PIX pixHeight)
 {
@@ -100,5 +102,7 @@ void RemoveAlphaChannel(ULONG *pulSrcBitmap, UBYTE *pubDstBitmap, PIX pixSize)
     pubDstBitmap[i * 3 + 2] = ubB;
   }
 };
+
+#endif // CLASSICSPATCH_FUNC_DEFINITIONS
 
 #endif

@@ -23,21 +23,29 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Interface with custom message processing methods
 class CORE_API IProcessPacket {
   public:
-    // Arrays of sync checks per client
     typedef CStaticArray<CSyncCheck> CSyncCheckArray;
-    static CStaticArray<CSyncCheckArray> _aClientChecks;
 
+  public:
     // Which client sent last packet to the server
     static INDEX _iHandlingClient;
+
+  #if CLASSICSPATCH_GUID_MASKING
+
+    // Arrays of sync checks per client
+    static CStaticArray<CSyncCheckArray> _aClientChecks;
 
     // Should mask player GUIDs or not
     static BOOL _bMaskGUIDs;
 
+  #endif // CLASSICSPATCH_GUID_MASKING
+
   // Helper functions
   public:
 
+  #if CLASSICSPATCH_GUID_MASKING
     // Clear arrays with sync checks
     static void ClearSyncChecks(void);
+  #endif
 
     // Buffer sync check for the server
     static void AddSyncCheck(const INDEX iClient, const CSyncCheck &sc);

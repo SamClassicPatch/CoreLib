@@ -22,11 +22,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "Interfaces/DataFunctions.h"
 #include "Query/QueryManager.h"
 
-// Arrays of sync checks per client
-CStaticArray<IProcessPacket::CSyncCheckArray> IProcessPacket::_aClientChecks;
-
 // Which client sent last packet to the server
 INDEX IProcessPacket::_iHandlingClient = -1;
+
+#if CLASSICSPATCH_GUID_MASKING
+
+// Arrays of sync checks per client
+CStaticArray<IProcessPacket::CSyncCheckArray> IProcessPacket::_aClientChecks;
 
 // Should mask player GUIDs or not
 BOOL IProcessPacket::_bMaskGUIDs = TRUE;
@@ -39,11 +41,17 @@ void IProcessPacket::ClearSyncChecks(void)
   }
 };
 
+#endif // CLASSICSPATCH_GUID_MASKING
+
 // Buffer sync check for the server
 void IProcessPacket::AddSyncCheck(const INDEX iClient, const CSyncCheck &sc)
 {
+#if CLASSICSPATCH_GUID_MASKING
   // Use the first array if not masking
   CSyncCheckArray &aChecks = _aClientChecks[_bMaskGUIDs ? iClient : 0];
+#else
+  CSyncCheckArray &aChecks = _pNetwork->ga_srvServer.srv_ascChecks;
+#endif
 
   // Recreate the buffer if the size differs
   static CSymbolPtr symptr("ser_iSyncCheckBuffer");
@@ -72,8 +80,12 @@ void IProcessPacket::AddSyncCheck(const INDEX iClient, const CSyncCheck &sc)
 // Find buffered sync check for a given tick
 INDEX IProcessPacket::FindSyncCheck(const INDEX iClient, TIME tmTick, CSyncCheck &sc)
 {
+#if CLASSICSPATCH_GUID_MASKING
   // Use the first array if not masking
   CSyncCheckArray &aChecks = _aClientChecks[_bMaskGUIDs ? iClient : 0];
+#else
+  CSyncCheckArray &aChecks = _pNetwork->ga_srvServer.srv_ascChecks;
+#endif
 
   BOOL bHasEarlier = FALSE;
   BOOL bHasLater = FALSE;
@@ -221,6 +233,7 @@ BOOL IProcessPacket::OnPlayerConnectRequest(INDEX iClient, CNetworkMessage &nmMe
 
     const INDEX iLastSequence = ++srv.srv_iLastProcessedSequence;
 
+  #if CLASSICSPATCH_GUID_MASKING
     if (_bMaskGUIDs) {
       // Send message back to this client about adding a new player
       if (iClient == 0 || sso.sso_bActive) {
@@ -234,12 +247,14 @@ BOOL IProcessPacket::OnPlayerConnectRequest(INDEX iClient, CNetworkMessage &nmMe
       // Mask player GUID for other clients
       MaskGUID(pcCharacter.pc_aubGUID, *pplbNew);
     }
+  #endif // CLASSICSPATCH_GUID_MASKING
 
     // Send message to other clients about adding a new player
     CNetStreamBlock nsbAddClientData(MSG_SEQ_ADDPLAYER, iLastSequence);
     nsbAddClientData << iNewPlayer;
     nsbAddClientData << pcCharacter;
 
+  #if CLASSICSPATCH_GUID_MASKING
     // Send to other clients
     if (_bMaskGUIDs) {
       for (INDEX iSession = 0; iSession < srv.srv_assoSessions.Count(); iSession++) {
@@ -252,8 +267,10 @@ BOOL IProcessPacket::OnPlayerConnectRequest(INDEX iClient, CNetworkMessage &nmMe
         INetwork::AddBlockToSession(nsbAddClientData, iSession);
       }
 
-    // Send to everyone
-    } else {
+    } else
+  #endif // CLASSICSPATCH_GUID_MASKING
+    {
+      // Send to everyone
       INetwork::AddBlockToAllSessions(nsbAddClientData);
     }
 
@@ -326,6 +343,7 @@ BOOL IProcessPacket::OnCharacterChangeRequest(INDEX iClient, CNetworkMessage &nm
 
   const INDEX iLastSequence = ++srv.srv_iLastProcessedSequence;
 
+#if CLASSICSPATCH_GUID_MASKING
   if (_bMaskGUIDs) {
     // Send character change back to this client
     if (iClient == 0 || srv.srv_assoSessions[iClient].sso_bActive) {
@@ -339,12 +357,14 @@ BOOL IProcessPacket::OnCharacterChangeRequest(INDEX iClient, CNetworkMessage &nm
     // Mask player GUID for other clients
     MaskGUID(pcCharacter.pc_aubGUID, plb);
   }
+#endif // CLASSICSPATCH_GUID_MASKING
 
   // Send character change to other clients
   CNetStreamBlock nsbChangeChar(MSG_SEQ_CHARACTERCHANGE, iLastSequence);
   nsbChangeChar << iPlayer;
   nsbChangeChar << pcCharacter;
 
+#if CLASSICSPATCH_GUID_MASKING
   // Send to other clients
   if (_bMaskGUIDs) {
     for (INDEX iSession = 0; iSession < srv.srv_assoSessions.Count(); iSession++) {
@@ -357,8 +377,10 @@ BOOL IProcessPacket::OnCharacterChangeRequest(INDEX iClient, CNetworkMessage &nm
       INetwork::AddBlockToSession(nsbChangeChar, iSession);
     }
 
-  // Send to everyone
-  } else {
+  } else
+#endif // CLASSICSPATCH_GUID_MASKING
+  {
+    // Send to everyone
     INetwork::AddBlockToAllSessions(nsbChangeChar);
   }
 

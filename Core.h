@@ -17,6 +17,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <Engine/Engine.h>
 #include <Engine/CurrentVersion.h>
 
+// Classics Patch configuration
+#include "Config.h"
+
 // Components for compatibility
 #include "Compatibility/Game.h"
 #include "Compatibility/SymbolPtr.h"

@@ -22,6 +22,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #pragma once
 #endif
 
+#if CLASSICSPATCH_FUNC_DEFINITIONS
+
 #include "PlayerActionDefs.inl"
 
 // Constructor
@@ -246,5 +248,7 @@ void CPlayerTarget::ApplyPredictedAction(INDEX iAction, FLOAT fFactor) {
   // Apply a prediction action packet to the entity's predictor
   ((CPlayerEntity *)penPredictor)->ApplyAction(pa, 0.0f);
 };
+
+#endif // CLASSICSPATCH_FUNC_DEFINITIONS
 
 #endif
