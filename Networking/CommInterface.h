@@ -37,4 +37,13 @@ __forceinline CCommunicationInterface &GetComm(void) {
   #endif
 };
 
+// Check if communication interface has been initialized
+__forceinline BOOL IsCommInitialized(void) {
+  #if SE1_VER <= SE1_105
+    return TRUE;
+  #else
+    return GetComm().cci_bClientInitialized;
+  #endif
+};
+
 #endif
