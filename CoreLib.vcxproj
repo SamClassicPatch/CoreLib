@@ -57,6 +57,7 @@
     <ClInclude Include="Modules\PluginModule.h" />
     <ClInclude Include="Modules\PluginStock.h" />
     <ClInclude Include="Networking\ExtPackets.h" />
+    <ClInclude Include="Networking\HttpRequests.h" />
     <ClInclude Include="Networking\MessageCompression.h" />
     <ClInclude Include="Networking\CommInterface.h" />
     <ClInclude Include="Networking\MessageProcessing.h" />
@@ -94,6 +95,7 @@
     <ClCompile Include="Modules\PluginModule.cpp" />
     <ClCompile Include="Modules\PluginStock.cpp" />
     <ClCompile Include="Networking\ExtPackets.cpp" />
+    <ClCompile Include="Networking\HttpRequests.cpp" />
     <ClCompile Include="Networking\MessageProcessing.cpp" />
     <ClCompile Include="Networking\Modules\ActiveClients.cpp" />
     <ClCompile Include="Networking\Modules\AntiFlood.cpp" />

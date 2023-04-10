@@ -113,7 +113,7 @@ class CORE_API CCoreAPI {
       const UBYTE ubPatch   = (ulVersionNumber >>  0) & 0xFF;
 
       CTString strVersion;
-      strVersion.PrintF("%u.%u.%u", ubRelease, ubUpdate, ubPatch);
+      strVersion.PrintF((ubPatch > 0) ? "%u.%u.%u" : "%u.%u", ubRelease, ubUpdate, ubPatch);
 
       return strVersion;
     };

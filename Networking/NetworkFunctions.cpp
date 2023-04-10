@@ -49,6 +49,9 @@ void INetwork::Initialize(void) {
 #if CLASSICSPATCH_GUID_MASKING
   IProcessPacket::_aClientChecks.New(NET_MAXGAMEPLAYERS);
 #endif
+
+  extern void InitHttp(void);
+  InitHttp();
 };
 
 // Handle packets coming from a client (CServer::Handle alternative)
