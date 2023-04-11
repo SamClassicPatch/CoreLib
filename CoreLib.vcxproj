@@ -95,6 +95,13 @@
     <ClCompile Include="Modules\PluginModule.cpp" />
     <ClCompile Include="Modules\PluginStock.cpp" />
     <ClCompile Include="Networking\ExtPackets.cpp" />
+    <ClCompile Include="Networking\ExtPackets\ExtEntityCopy.cpp" />
+    <ClCompile Include="Networking\ExtPackets\ExtEntityCreate.cpp" />
+    <ClCompile Include="Networking\ExtPackets\ExtEntityDelete.cpp" />
+    <ClCompile Include="Networking\ExtPackets\ExtEntityInit.cpp" />
+    <ClCompile Include="Networking\ExtPackets\ExtEntityParent.cpp" />
+    <ClCompile Include="Networking\ExtPackets\ExtEntityProp.cpp" />
+    <ClCompile Include="Networking\ExtPackets\ExtEntityTeleport.cpp" />
     <ClCompile Include="Networking\HttpRequests.cpp" />
     <ClCompile Include="Networking\MessageProcessing.cpp" />
     <ClCompile Include="Networking\Modules\ActiveClients.cpp" />

@@ -76,6 +76,9 @@
     <Filter Include="Source Files\Networking\Modules">
       <UniqueIdentifier>{6bbf8899-5c0a-4664-8f0f-20e8df2cda71}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Networking\ExtPackets">
+      <UniqueIdentifier>{d5fe430c-2d78-400f-8e35-e9d0ac760a57}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StdH.h">
@@ -343,6 +346,27 @@
     </ClCompile>
     <ClCompile Include="Networking\HttpRequests.cpp">
       <Filter>Source Files\Networking</Filter>
+    </ClCompile>
+    <ClCompile Include="Networking\ExtPackets\ExtEntityInit.cpp">
+      <Filter>Source Files\Networking\ExtPackets</Filter>
+    </ClCompile>
+    <ClCompile Include="Networking\ExtPackets\ExtEntityParent.cpp">
+      <Filter>Source Files\Networking\ExtPackets</Filter>
+    </ClCompile>
+    <ClCompile Include="Networking\ExtPackets\ExtEntityProp.cpp">
+      <Filter>Source Files\Networking\ExtPackets</Filter>
+    </ClCompile>
+    <ClCompile Include="Networking\ExtPackets\ExtEntityTeleport.cpp">
+      <Filter>Source Files\Networking\ExtPackets</Filter>
+    </ClCompile>
+    <ClCompile Include="Networking\ExtPackets\ExtEntityCopy.cpp">
+      <Filter>Source Files\Networking\ExtPackets</Filter>
+    </ClCompile>
+    <ClCompile Include="Networking\ExtPackets\ExtEntityCreate.cpp">
+      <Filter>Source Files\Networking\ExtPackets</Filter>
+    </ClCompile>
+    <ClCompile Include="Networking\ExtPackets\ExtEntityDelete.cpp">
+      <Filter>Source Files\Networking\ExtPackets</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
