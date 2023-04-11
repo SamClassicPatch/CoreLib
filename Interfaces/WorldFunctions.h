@@ -303,6 +303,22 @@ class IWorld {
         cOutput.Add(plt.plt_penPlayerEntity);
       }
     };
+
+    // Get viewpoint of a player entity
+    static inline CPlacement3D GetViewpoint(CPlayerEntity *pen, BOOL bLerped) {
+      CPlacement3D plView;
+
+      if (bLerped) {
+        plView.Lerp(pen->en_plLastViewpoint, pen->en_plViewpoint, _pTimer->GetLerpFactor());
+        plView.RelativeToAbsoluteSmooth(pen->GetLerpedPlacement());
+
+      } else {
+        plView = pen->en_plViewpoint;
+        plView.RelativeToAbsoluteSmooth(pen->GetPlacement());
+      }
+
+      return plView;
+    };
 };
 
 #endif
