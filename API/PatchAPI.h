@@ -28,7 +28,7 @@ struct SFuncPatch {
   CTString strName; // Patch name
   ULONG ulHash; // Name hash
   CPatch *pPatch; // Pointer to the patch
-  
+
   // Default constructor
   SFuncPatch() {
     Clear();
@@ -53,8 +53,9 @@ struct SFuncPatch {
 // API for handling function patches
 class CORE_API CPatchAPI {
   public:
+    static HINSTANCE hEngine; // Engine library handle
     CDynamicStackArray<SFuncPatch> aPatches; // Function patch storage
-    
+
   public:
     // Constructor
     CPatchAPI();
@@ -73,6 +74,11 @@ class CORE_API CPatchAPI {
 
     // Find function patch by its name or patch pointer
     virtual SFuncPatch *FindFuncPatch(const CTString &strName, CPatch *pPatch);
+
+  public:
+
+    // Retrieve address from the engine by a symbol name
+    virtual void *GetSymbol(const char *strSymbol);
 };
 
 #endif

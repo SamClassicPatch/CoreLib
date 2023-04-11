@@ -15,6 +15,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "StdH.h"
 
+// Engine library handle
+HINSTANCE CPatchAPI::hEngine = NULL;
+
 // List available function patches
 static void ListFuncPatches(void) {
   const INDEX ctPatches = GetPatchAPI()->aPatches.Count();
@@ -74,6 +77,9 @@ static INDEX GetFuncPatch(const CTString &strName) {
 
 // Constructor
 CPatchAPI::CPatchAPI() {
+  // Hook up the engine
+  hEngine = LoadLibraryA("Engine.dll");
+
   // Commands for manually toggling function patches
   _pShell->DeclareSymbol("void ListPatches(void);",   &ListFuncPatches);
   _pShell->DeclareSymbol("void EnablePatch(INDEX);",  &EnableFuncPatch);
@@ -136,4 +142,9 @@ SFuncPatch *CPatchAPI::FindFuncPatch(const CTString &strName, CPatch *pPatch) {
 
   // Not found
   return NULL;
+};
+
+// Retrieve address from the engine by a symbol name
+void *CPatchAPI::GetSymbol(const char *strSymbolName) {
+  return GetProcAddress(hEngine, strSymbolName);
 };
