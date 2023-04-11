@@ -114,6 +114,16 @@ class INetCompress {
         nm.WriteBits(&uwAngle, 15);
       }
     };
+
+    // Compress placement
+    static inline void Placement(CNetworkMessage &nm, const CPlacement3D &pl) {
+      Float(nm, pl.pl_PositionVector(1));
+      Float(nm, pl.pl_PositionVector(2));
+      Float(nm, pl.pl_PositionVector(3));
+      Angle(nm, pl.pl_OrientationAngle(1));
+      Angle(nm, pl.pl_OrientationAngle(2));
+      Angle(nm, pl.pl_OrientationAngle(3));
+    };
 };
 
 // Interface with methods for decompressing data from network packets
@@ -179,6 +189,16 @@ class INetDecompress {
         // Decompress angle from a 15-bit integer
         f = (DOUBLE)uwAngle * (360.0 / 32767.0);
       }
+    };
+
+    // Deompress placement
+    static inline void Placement(CNetworkMessage &nm, CPlacement3D &pl) {
+      Float(nm, pl.pl_PositionVector(1));
+      Float(nm, pl.pl_PositionVector(2));
+      Float(nm, pl.pl_PositionVector(3));
+      Angle(nm, pl.pl_OrientationAngle(1));
+      Angle(nm, pl.pl_OrientationAngle(2));
+      Angle(nm, pl.pl_OrientationAngle(3));
     };
 };
 
