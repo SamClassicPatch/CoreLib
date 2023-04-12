@@ -48,7 +48,7 @@ void CExtEntityDelete::Process(void) {
 
     const INDEX ctEntities = cenDestroy.Count();
 
-    ExtServerReport(TRANS("Deleted %d \"%s\" entities\n"), ctEntities, pen->en_pecClass->ec_pdecDLLClass);
+    ExtServerReport(TRANS("Deleted %d \"%s\" entities\n"), ctEntities, pen->en_pecClass->ec_pdecDLLClass->dec_strName);
 
     FOREACHINDYNAMICCONTAINER(cenDestroy, CEntity, itenDestroy) {
       itenDestroy->Destroy();

@@ -234,21 +234,41 @@ class CExtEntityParent : public CExtEntityPacket {
 
 class CExtEntityProp : public CExtEntityPacket {
   private:
-    ULONG ulPropHash; // Property name hash
-
-  public:
     BOOL bName; // Using a name
-    CTString strProp; // Property name
-    ULONG ulPropID; // Property ID
+    ULONG ulProp; // Property ID or name hash
 
     BOOL bString; // Using a string value
     CTString strValue;
-    FLOAT fValue;
+    DOUBLE fValue;
 
   public:
     CExtEntityProp() : CExtEntityPacket(),
-      ulPropHash(0), bName(FALSE), ulPropID(0), bString(FALSE), fValue(0.0f)
+      bName(FALSE), ulProp(0), bString(FALSE), fValue(0.0)
     {
+    };
+
+    // Set property name
+    inline void SetProperty(const CTString &strName) {
+      bName = TRUE;
+      ulProp = strName.GetHash();
+    };
+
+    // Set property ID
+    inline void SetProperty(ULONG ulID) {
+      bName = FALSE;
+      ulProp = ulID;
+    };
+
+    // Set string value
+    inline void SetValue(const CTString &str) {
+      bString = TRUE;
+      strValue = str;
+    };
+
+    // Set number value
+    inline void SetValue(DOUBLE f) {
+      bString = FALSE;
+      fValue = f;
     };
 
   public:

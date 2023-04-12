@@ -97,6 +97,19 @@ class INetCompress {
       }
     };
 
+    // Compress double value
+    static inline void Double(CNetworkMessage &nm, DOUBLE f) {
+      if (f > -0.00001 && f < 0.00001) {
+        UBYTE ub = 0;
+        nm.WriteBits(&ub, 1);
+
+      } else {
+        UBYTE ub = 1;
+        nm.WriteBits(&ub, 1);
+        nm.WriteBits(&f, 64);
+      }
+    };
+
     // Compress angle in the 0-360 range
     static inline void Angle(CNetworkMessage &nm, ANGLE f) {
       f = WrapAngle(f);
@@ -172,6 +185,18 @@ class INetDecompress {
 
       if (ub == 1) {
         nm.ReadBits(&f, 32);
+      }
+    };
+
+    // Decompress double value
+    static inline void Double(CNetworkMessage &nm, DOUBLE &f) {
+      UBYTE ub = 0;
+      nm.ReadBits(&ub, 1);
+
+      f = 0.0;
+
+      if (ub == 1) {
+        nm.ReadBits(&f, 64);
       }
     };
 

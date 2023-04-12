@@ -26,11 +26,10 @@ void CExtEntityProp::Write(CNetworkMessage &nm) {
   nm.WriteBits(&bName, 1);
 
   if (bName) {
-    ulPropHash = strProp.GetHash();
-    nm << ulPropHash;
+    nm << ulProp;
 
   } else {
-    INetCompress::Integer(nm, ulPropID);
+    INetCompress::Integer(nm, ulProp);
   }
 
   nm.WriteBits(&bString, 1);
@@ -38,7 +37,7 @@ void CExtEntityProp::Write(CNetworkMessage &nm) {
   if (bString) {
     nm << strValue;
   } else {
-    INetCompress::Float(nm, fValue);
+    INetCompress::Double(nm, fValue);
   }
 };
 
@@ -49,10 +48,10 @@ void CExtEntityProp::Read(CNetworkMessage &nm) {
   nm.ReadBits(&bName, 1);
 
   if (bName) {
-    nm >> ulPropHash;
+    nm >> ulProp;
 
   } else {
-    INetDecompress::Integer(nm, ulPropID);
+    INetDecompress::Integer(nm, ulProp);
   }
 
   bString = FALSE;
@@ -61,23 +60,24 @@ void CExtEntityProp::Read(CNetworkMessage &nm) {
   if (bString) {
     nm >> strValue;
   } else {
-    INetDecompress::Float(nm, fValue);
+    INetDecompress::Double(nm, fValue);
   }
 };
 
 void CExtEntityProp::Process(void) {
   CEntity *pen = GetEntity();
+
+  if (pen == NULL) return;
+
   CEntityProperty *pep = NULL;
 
-  if (pen != NULL) {
-    if (bName) {
-      pep = IWorld::PropertyForHash(pen, ulPropHash);
-    } else {
-      pep = IWorld::PropertyForId(pen, ulPropID);
-    }
+  if (bName) {
+    pep = IWorld::PropertyForHash(pen, ulProp);
+  } else {
+    pep = IWorld::PropertyForId(pen, ulProp);
   }
 
-  if (pen == NULL || pep == NULL) return;
+  if (pep == NULL) return;
 
   INDEX iType = IProperties::ConvertType(pep->ep_eptType);
 
