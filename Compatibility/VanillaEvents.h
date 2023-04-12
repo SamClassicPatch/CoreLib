@@ -22,6 +22,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <Engine/Entities/EntityEvent.h>
 
+// [Cecil] NOTE: Define 'VANILLA_EVENTS_ENTITY_ID' before including this file to use entity IDs instead of pointers
+#ifdef VANILLA_EVENTS_ENTITY_ID
+  typedef ULONG CVanillaEventEntity;
+#else
+  typedef CEntityPointer CVanillaEventEntity;
+#endif
+
 #define CLEAR_TO_DEFAULT(_EventClass) inline void ClearToDefault(_EventClass &e) { e = _EventClass(); }
 #define DEFINE_MAKE_COPY(_EventClass) CEntityEvent *MakeCopy(void) { return new _EventClass(*this); }
 
@@ -40,7 +47,7 @@ CLEAR_TO_DEFAULT(EStop);
 #define EVENTCODE_EStart 0x00000001
 class EStart : public CEntityEvent {
   public:
-    CEntityPointer penCaused;
+    CVanillaEventEntity penCaused;
 
     EStart() : CEntityEvent(EVENTCODE_EStart) {
       ClearToDefault(penCaused);
@@ -99,7 +106,7 @@ CLEAR_TO_DEFAULT(EEnd);
 #define EVENTCODE_ETrigger 0x00000007
 class ETrigger : public CEntityEvent {
   public:
-    CEntityPointer penCaused;
+    CVanillaEventEntity penCaused;
 
     ETrigger() : CEntityEvent(EVENTCODE_ETrigger) {
       ClearToDefault(penCaused);
@@ -294,7 +301,7 @@ CLEAR_TO_DEFAULT(EWeaponChanged);
 #define EVENTCODE_EAirShockwave 0x015d0000
 class EAirShockwave : public CEntityEvent {
   public:
-    CEntityPointer penLauncher;
+    CVanillaEventEntity penLauncher;
     FLOAT fHeight;
     FLOAT fEndWidth;
     FLOAT fDuration;
@@ -314,7 +321,7 @@ CLEAR_TO_DEFAULT(EAirShockwave);
 #define EVENTCODE_EAirWave 0x01fe0000
 class EAirWave : public CEntityEvent {
   public:
-    CEntityPointer penLauncher;
+    CVanillaEventEntity penLauncher;
 
     EAirWave() : CEntityEvent(EVENTCODE_EAirWave) {
       ClearToDefault(penLauncher);
@@ -354,7 +361,7 @@ class ESpawnSpray : public CEntityEvent {
     FLOAT fDamagePower;
     FLOAT fSizeMultiplier;
     FLOAT3D vDirection;
-    CEntityPointer penOwner;
+    CVanillaEventEntity penOwner;
     COLOR colCentralColor;
     FLOAT fLaunchPower;
     COLOR colBurnColor;
@@ -378,7 +385,7 @@ CLEAR_TO_DEFAULT(ESpawnSpray);
 #define EVENTCODE_EBulletInit 0x01f60000
 class EBulletInit : public CEntityEvent {
   public:
-    CEntityPointer penOwner;
+    CVanillaEventEntity penOwner;
     FLOAT fDamage;
 
     EBulletInit() : CEntityEvent(EVENTCODE_EBulletInit) {
@@ -394,7 +401,7 @@ CLEAR_TO_DEFAULT(EBulletInit);
 #define EVENTCODE_ELaunchCannonBall 0x01fa0000
 class ELaunchCannonBall : public CEntityEvent {
   public:
-    CEntityPointer penLauncher;
+    CVanillaEventEntity penLauncher;
     INDEX cbtType; // CannonBallType enum
     FLOAT fLaunchPower;
     FLOAT fSize;
@@ -446,7 +453,7 @@ class ESpawnDebris : public CEntityEvent {
     BOOL bImmaterialASAP;
     FLOAT fDustStretch;
     FLOAT3D vStretch;
-    CEntityPointer penFallFXPapa;
+    CVanillaEventEntity penFallFXPapa;
 
     ESpawnDebris() : CEntityEvent(EVENTCODE_ESpawnDebris) {
       ClearToDefault(Eeibt);
@@ -478,8 +485,8 @@ CLEAR_TO_DEFAULT(ESpawnDebris);
 #define EVENTCODE_EDevilProjectile 0x01ff0000
 class EDevilProjectile : public CEntityEvent {
   public:
-    CEntityPointer penLauncher;
-    CEntityPointer penTarget;
+    CVanillaEventEntity penLauncher;
+    CVanillaEventEntity penTarget;
 
     EDevilProjectile() : CEntityEvent(EVENTCODE_EDevilProjectile) {
       ClearToDefault(penLauncher);
@@ -500,8 +507,8 @@ class ESpawnEffector : public CEntityEvent {
     FLOAT tmLifeTime;
     FLOAT fSize;
     INDEX ctCount;
-    CEntityPointer penModel;
-    CEntityPointer penModel2;
+    CVanillaEventEntity penModel;
+    CVanillaEventEntity penModel2;
 
     ESpawnEffector() : CEntityEvent(EVENTCODE_ESpawnEffector) {
       ClearToDefault(eetType);
@@ -522,8 +529,8 @@ CLEAR_TO_DEFAULT(ESpawnEffector);
 #define EVENTCODE_EFlame 0x01f80000
 class EFlame : public CEntityEvent {
   public:
-    CEntityPointer penOwner;
-    CEntityPointer penAttach;
+    CVanillaEventEntity penOwner;
+    CVanillaEventEntity penAttach;
 
     EFlame() : CEntityEvent(EVENTCODE_EFlame) {
       ClearToDefault(penOwner);
@@ -538,7 +545,7 @@ CLEAR_TO_DEFAULT(EFlame);
 #define EVENTCODE_ELaunchLarvaOffspring 0x01610000
 class ELaunchLarvaOffspring : public CEntityEvent {
   public:
-    CEntityPointer penLauncher;
+    CVanillaEventEntity penLauncher;
 
     ELaunchLarvaOffspring() : CEntityEvent(EVENTCODE_ELaunchLarvaOffspring) {
       ClearToDefault(penLauncher);
@@ -552,7 +559,7 @@ CLEAR_TO_DEFAULT(ELaunchLarvaOffspring);
 #define EVENTCODE_EAnimatorInit 0x01960000
 class EAnimatorInit : public CEntityEvent {
   public:
-    CEntityPointer penPlayer;
+    CVanillaEventEntity penPlayer;
 
     EAnimatorInit() : CEntityEvent(EVENTCODE_EAnimatorInit) {
       ClearToDefault(penPlayer);
@@ -566,8 +573,8 @@ CLEAR_TO_DEFAULT(EAnimatorInit);
 #define EVENTCODE_EViewInit 0x01930000
 class EViewInit : public CEntityEvent {
   public:
-    CEntityPointer penOwner;
-    CEntityPointer penCamera;
+    CVanillaEventEntity penOwner;
+    CVanillaEventEntity penCamera;
     INDEX vtView; // ViewType enum
     BOOL bDeathFixed;
 
@@ -586,7 +593,7 @@ CLEAR_TO_DEFAULT(EViewInit);
 #define EVENTCODE_EWeaponsInit 0x01920000
 class EWeaponsInit : public CEntityEvent {
   public:
-    CEntityPointer penOwner;
+    CVanillaEventEntity penOwner;
 
     EWeaponsInit() : CEntityEvent(EVENTCODE_EWeaponsInit) {
       ClearToDefault(penOwner);
@@ -600,7 +607,7 @@ CLEAR_TO_DEFAULT(EWeaponsInit);
 #define EVENTCODE_EWeaponEffectInit 0x01950000
 class EWeaponEffectInit : public CEntityEvent {
   public:
-    CEntityPointer penOwner;
+    CVanillaEventEntity penOwner;
     INDEX EwetEffect; // WeaponEffectType enum
 
     EWeaponEffectInit() : CEntityEvent(EVENTCODE_EWeaponEffectInit) {
@@ -616,7 +623,7 @@ CLEAR_TO_DEFAULT(EWeaponEffectInit);
 #define EVENTCODE_ELaunchProjectile 0x01f50000
 class ELaunchProjectile : public CEntityEvent {
   public:
-    CEntityPointer penLauncher;
+    CVanillaEventEntity penLauncher;
     INDEX prtType; // ProjectileType enum
     FLOAT fSpeed;
     FLOAT fStretch;
@@ -636,7 +643,7 @@ CLEAR_TO_DEFAULT(ELaunchProjectile);
 #define EVENTCODE_EReminderInit 0x02bf0000
 class EReminderInit : public CEntityEvent {
   public:
-    CEntityPointer penOwner;
+    CVanillaEventEntity penOwner;
     FLOAT fWaitTime;
     INDEX iValue;
 
@@ -654,7 +661,7 @@ CLEAR_TO_DEFAULT(EReminderInit);
 #define EVENTCODE_ESeriousBomb 0x01620000
 class ESeriousBomb : public CEntityEvent {
   public:
-    CEntityPointer penOwner;
+    CVanillaEventEntity penOwner;
 
     ESeriousBomb() : CEntityEvent(EVENTCODE_ESeriousBomb) {
       ClearToDefault(penOwner);
@@ -668,8 +675,8 @@ CLEAR_TO_DEFAULT(ESeriousBomb);
 #define EVENTCODE_ESpawnerProjectile 0x01fb0000
 class ESpawnerProjectile : public CEntityEvent {
   public:
-    CEntityPointer penOwner;
-    CEntityPointer penTemplate;
+    CVanillaEventEntity penOwner;
+    CVanillaEventEntity penTemplate;
 
     ESpawnerProjectile() : CEntityEvent(EVENTCODE_ESpawnerProjectile) {
       ClearToDefault(penOwner);
@@ -684,8 +691,8 @@ CLEAR_TO_DEFAULT(ESpawnerProjectile);
 #define EVENTCODE_ESpinnerInit 0x015c0000
 class ESpinnerInit : public CEntityEvent {
   public:
-    CEntityPointer penParent;
-    CEntityPointer penTwister;
+    CVanillaEventEntity penParent;
+    CVanillaEventEntity penTwister;
     FLOAT3D vRotationAngle;
     FLOAT tmSpinTime;
     FLOAT fUpSpeed;
@@ -710,7 +717,7 @@ CLEAR_TO_DEFAULT(ESpinnerInit);
 #define EVENTCODE_ETwister 0x01fb0000
 class ETwister : public CEntityEvent {
   public:
-    CEntityPointer penOwner;
+    CVanillaEventEntity penOwner;
     FLOAT fSize;
     FLOAT fDuration;
     INDEX sgnSpinDir;
@@ -734,7 +741,7 @@ CLEAR_TO_DEFAULT(ETwister);
 #define EVENTCODE_EWatcherInit 0x02bc0000
 class EWatcherInit : public CEntityEvent {
   public:
-    CEntityPointer penOwner;
+    CVanillaEventEntity penOwner;
 
     EWatcherInit() : CEntityEvent(EVENTCODE_EWatcherInit) {
       ClearToDefault(penOwner);
@@ -748,7 +755,7 @@ CLEAR_TO_DEFAULT(EWatcherInit);
 #define EVENTCODE_EWater 0x01fc0000
 class EWater : public CEntityEvent {
   public:
-    CEntityPointer penLauncher;
+    CVanillaEventEntity penLauncher;
     INDEX EwsSize; // WaterSize enum
 
     EWater() : CEntityEvent(EVENTCODE_EWater) {
