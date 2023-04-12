@@ -78,7 +78,11 @@ static INDEX GetFuncPatch(const CTString &strName) {
 // Constructor
 CPatchAPI::CPatchAPI() {
   // Hook up the engine
-  hEngine = LoadLibraryA("Engine.dll");
+  #ifdef NDEBUG
+    hEngine = LoadLibraryA("Engine.dll");
+  #else
+    hEngine = LoadLibraryA("EngineD.dll");
+  #endif
 
   // Commands for manually toggling function patches
   _pShell->DeclareSymbol("void ListPatches(void);",   &ListFuncPatches);
