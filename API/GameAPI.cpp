@@ -77,6 +77,33 @@ void CGameAPI::HookFields(void) {
   SetHooked(TRUE);
 };
 
+// Start new game
+BOOL CGameAPI::NewGame(const CTString &strSession, const CTFileName &fnmWorld, CSessionProperties &sp) {
+  // Stop last game for Core
+  if (IsGameOn()) {
+    GetAPI()->OnGameStop();
+  }
+
+  BOOL bResult = _pGame->NewGame(strSession, fnmWorld, sp);
+
+  if (bResult) {
+    // Start game for Core
+    GetAPI()->OnGameStart();
+  }
+
+  return bResult;
+};
+
+// Stop current game
+void CGameAPI::StopGame(void) {
+  // Stop game for Core
+  if (IsGameOn()) {
+    GetAPI()->OnGameStop();
+  }
+
+  _pGame->StopGame();
+};
+
 // Get name of a specific gamemode
 CTString CGameAPI::GetGameTypeNameSS(INDEX iGameMode)
 {
