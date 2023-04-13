@@ -61,8 +61,8 @@ class IWorld {
     };
 
     // Gather entities of the same class
-    static inline void GetEntitiesOfClass(CWorld *pwo, CEntities &cenOutput, LibClassHolder lchClass) {
-      FOREACHINDYNAMICCONTAINER(GetWorld()->wo_cenEntities, CEntity, iten) {
+    static inline void GetEntitiesOfClass(CEntities &cInput, CEntities &cOutput, LibClassHolder lchClass) {
+      FOREACHINDYNAMICCONTAINER(cInput, CEntity, iten) {
         CEntity *pen = &*iten;
 
         if (pen->GetFlags() & ENF_DELETED) {
@@ -71,7 +71,7 @@ class IWorld {
 
         // Same class
         if (pen->en_pecClass->ec_pdecDLLClass == lchClass.pdec) {
-          cenOutput.Add(pen);
+          cOutput.Add(pen);
         }
       }
     };

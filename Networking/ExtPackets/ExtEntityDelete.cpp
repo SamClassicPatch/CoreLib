@@ -43,12 +43,14 @@ void CExtEntityDelete::Process(void) {
 
   // Delete all entities of the same class
   if (bSameClass) {
+    const char *strClass = pen->en_pecClass->ec_pdecDLLClass->dec_strName;
+    
     CEntities cenDestroy;
-    IWorld::GetEntitiesOfClass(IWorld::GetWorld(), cenDestroy, pen);
+    IWorld::FindClasses(IWorld::GetWorld()->wo_cenEntities, cenDestroy, strClass);
 
     const INDEX ctEntities = cenDestroy.Count();
 
-    ExtServerReport(TRANS("Deleted %d \"%s\" entities\n"), ctEntities, pen->en_pecClass->ec_pdecDLLClass->dec_strName);
+    ExtServerReport(TRANS("Deleted %d \"%s\" entities\n"), ctEntities, strClass);
 
     FOREACHINDYNAMICCONTAINER(cenDestroy, CEntity, itenDestroy) {
       itenDestroy->Destroy();
