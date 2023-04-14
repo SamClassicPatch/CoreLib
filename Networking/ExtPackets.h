@@ -37,6 +37,7 @@ class CExtPacket {
       EXT_ENTITY_CREATE,   // Create new entity
       EXT_ENTITY_DELETE,   // Delete an entity
       EXT_ENTITY_COPY,     // Copy an entity
+      EXT_ENTITY_EVENT,    // Send event to an entity
       EXT_ENTITY_INIT,     // (Re)initialize an entity
       EXT_ENTITY_TELEPORT, // Teleport an entity
       EXT_ENTITY_POSITION, // Set position or rotation of an entity
@@ -102,6 +103,7 @@ class CExtEntityCreate : public CExtPacket {
     virtual void Process(void);
 };
 
+// Base for entity manipulation packets
 class CExtEntityPacket : public CExtPacket {
   public:
     ULONG ulEntity; // Entity ID in the world (31 bits)
@@ -113,6 +115,7 @@ class CExtEntityPacket : public CExtPacket {
 
     // Write entity ID
     void WriteEntity(CNetworkMessage &nm) {
+      ulEntity = ClampUp(ulEntity, 0x7FFFFFFFUL);
       nm.WriteBits(&ulEntity, 31);
     };
 
@@ -130,6 +133,55 @@ class CExtEntityPacket : public CExtPacket {
 
     // Make sure to return some entity from the ID
     CEntity *GetEntity(void);
+};
+
+// Holder for event fields
+class EExtEntityEvent : public CEntityEvent {
+  public:
+    // Accommodate for multiple fields of varying data
+    ULONG aulFields[64];
+
+  public:
+    EExtEntityEvent() : CEntityEvent(EVENTCODE_EVoid) {
+      Reset();
+    };
+
+    CEntityEvent *MakeCopy(void) {
+      return new EExtEntityEvent(*this);
+    };
+
+  public:
+    // Reset event fields
+    inline void Reset(void) {
+      ee_slEvent = EVENTCODE_EVoid;
+
+      // Fill fields with NULL, FALSE, 0, 0.0f etc.
+      memset(aulFields, 0, sizeof(aulFields));
+    };
+
+    // Convert entity ID into a pointer
+    inline ULONG EntityFromID(INDEX i) {
+      return (ULONG)IWorld::FindEntityByID(IWorld::GetWorld(), aulFields[i]);
+    };
+
+    // Convert entity ID into a pointer, if possible
+    inline ULONG MaybeEntity(INDEX i) {
+      // Return entity if found any
+      ULONG ulPtr = EntityFromID(i);
+      if (ulPtr != NULL) return ulPtr;
+
+      // Return value as is
+      return aulFields[i];
+    };
+
+    // Write event into a network packet
+    void Write(CNetworkMessage &nm, ULONG ctFields);
+
+    // Read event from a network packet
+    ULONG Read(CNetworkMessage &nm);
+
+    // Convert fields according to the event type
+    void ConvertTypes(void);
 };
 
 class CExtEntityDelete : public CExtEntityPacket {
@@ -170,17 +222,33 @@ class CExtEntityCopy : public CExtEntityPacket {
     virtual void Process(void);
 };
 
-class CExtEntityInit : public CExtEntityPacket {
-  public:
-    ULONG aulEventValues[16];
+class CExtEntityEvent : public CExtEntityPacket {
+  protected:
+    EExtEntityEvent eEvent; // Data holder
+    ULONG ctFields; // Amount of used fields
 
   public:
-    CExtEntityInit() : CExtEntityPacket()
+    CExtEntityEvent() : CExtEntityPacket(), ctFields(0)
     {
-      // Invalid/empty values
-      for (INDEX i = 0; i < 16; i++) {
-        aulEventValues[i] = (ULONG)-1;
-      }
+    };
+
+    // Copy event bytes (iEventSize = sizeof(ee))
+    void SetEvent(CEntityEvent &ee, size_t iEventSize);
+
+  public:
+    virtual EType GetType(void) const {
+      return EXT_ENTITY_EVENT;
+    };
+
+    virtual void Write(CNetworkMessage &nm);
+    virtual void Read(CNetworkMessage &nm);
+    virtual void Process(void);
+};
+
+class CExtEntityInit : public CExtEntityEvent {
+  public:
+    CExtEntityInit() : CExtEntityEvent()
+    {
     };
 
   public:
@@ -188,8 +256,6 @@ class CExtEntityInit : public CExtEntityPacket {
       return EXT_ENTITY_INIT;
     };
 
-    virtual void Write(CNetworkMessage &nm);
-    virtual void Read(CNetworkMessage &nm);
     virtual void Process(void);
 };
 

@@ -371,6 +371,9 @@
     <ClCompile Include="Networking\ExtPackets\ExtEntityPosition.cpp">
       <Filter>Source Files\Networking\ExtPackets</Filter>
     </ClCompile>
+    <ClCompile Include="Networking\ExtPackets\ExtEntityEvent.cpp">
+      <Filter>Source Files\Networking\ExtPackets</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Definitions\TextureEffectsDefs.inl">
