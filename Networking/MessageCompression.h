@@ -122,8 +122,8 @@ class INetCompress {
         UBYTE ub = 1;
         nm.WriteBits(&ub, 1);
 
-        // Compress angle into a 15-bit integer
-        UWORD uwAngle = Clamp((DOUBLE)f * (32767.0 / 360.0), 0.0, 32767.0);
+        // Compress angle into a 15-bit integer (32768 is written as 0)
+        UWORD uwAngle = Clamp((DOUBLE)f * (32768.0 / 360.0), 0.0, 32768.0);
         nm.WriteBits(&uwAngle, 15);
       }
     };
@@ -212,7 +212,7 @@ class INetDecompress {
         nm.ReadBits(&uwAngle, 15);
 
         // Decompress angle from a 15-bit integer
-        f = (DOUBLE)uwAngle * (360.0 / 32767.0);
+        f = (DOUBLE)uwAngle * (360.0 / 32768.0);
       }
     };
 
