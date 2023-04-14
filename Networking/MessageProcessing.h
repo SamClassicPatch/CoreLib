@@ -26,6 +26,12 @@ class CORE_API IProcessPacket {
     typedef CStaticArray<CSyncCheck> CSyncCheckArray;
 
   public:
+    // Special values for handling client index (never use positive integers!)
+    enum {
+      CLT_NONE = -1, // No client
+      CLT_SAVE = -2, // In the process of saving the game
+    };
+
     // Which client sent last packet to the server
     static INDEX _iHandlingClient;
 
