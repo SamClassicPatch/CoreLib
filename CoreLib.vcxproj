@@ -100,6 +100,7 @@
     <ClCompile Include="Networking\ExtPackets\ExtEntityDelete.cpp" />
     <ClCompile Include="Networking\ExtPackets\ExtEntityInit.cpp" />
     <ClCompile Include="Networking\ExtPackets\ExtEntityParent.cpp" />
+    <ClCompile Include="Networking\ExtPackets\ExtEntityPosition.cpp" />
     <ClCompile Include="Networking\ExtPackets\ExtEntityProp.cpp" />
     <ClCompile Include="Networking\ExtPackets\ExtEntityTeleport.cpp" />
     <ClCompile Include="Networking\HttpRequests.cpp" />

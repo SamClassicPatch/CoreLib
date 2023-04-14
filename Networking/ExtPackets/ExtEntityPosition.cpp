@@ -19,31 +19,67 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #if CLASSICSPATCH_EXT_PACKETS
 
-void CExtEntityTeleport::Write(CNetworkMessage &nm) {
+void CExtEntityPosition::Write(CNetworkMessage &nm) {
   WriteEntity(nm);
-  INetCompress::Placement(nm, plSet);
+  nm.WriteBits(&bRotation, 1);
+
+  if (bRotation) {
+    INetCompress::Angle(nm, vSet(1));
+    INetCompress::Angle(nm, vSet(2));
+    INetCompress::Angle(nm, vSet(3));
+
+  } else {
+    INetCompress::Float(nm, vSet(1));
+    INetCompress::Float(nm, vSet(2));
+    INetCompress::Float(nm, vSet(3));
+  }
 
   nm.WriteBits(&bRelative, 1);
 };
 
-void CExtEntityTeleport::Read(CNetworkMessage &nm) {
+void CExtEntityPosition::Read(CNetworkMessage &nm) {
   ReadEntity(nm);
-  INetDecompress::Placement(nm, plSet);
+
+  bRotation = FALSE;
+  nm.ReadBits(&bRotation, 1);
+
+  if (bRotation) {
+    INetDecompress::Angle(nm, vSet(1));
+    INetDecompress::Angle(nm, vSet(2));
+    INetDecompress::Angle(nm, vSet(3));
+
+  } else {
+    INetDecompress::Float(nm, vSet(1));
+    INetDecompress::Float(nm, vSet(2));
+    INetDecompress::Float(nm, vSet(3));
+  }
 
   bRelative = FALSE;
   nm.ReadBits(&bRelative, 1);
 };
 
-void CExtEntityTeleport::Process(void) {
+void CExtEntityPosition::Process(void) {
   CEntity *pen = GetEntity();
 
   if (pen == NULL) return;
 
-  CPlacement3D pl = plSet;
+  CPlacement3D pl = pen->GetPlacement();
 
-  // Relative to current position and orientation
+  // Relative to absolute axes
   if (bRelative) {
-    pl.RelativeToAbsoluteSmooth(pen->GetPlacement());
+    if (bRotation) {
+      pl.pl_OrientationAngle += vSet;
+    } else {
+      pl.pl_PositionVector += vSet;
+    }
+
+  // Absolute position or rotation
+  } else {
+    if (bRotation) {
+      pl.pl_OrientationAngle = vSet;
+    } else {
+      pl.pl_PositionVector = vSet;
+    }
   }
 
   pen->Teleport(pl, FALSE);

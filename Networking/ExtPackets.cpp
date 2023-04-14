@@ -63,6 +63,7 @@ CExtPacket *CExtPacket::CreatePacket(EType ePacket, BOOL bClient) {
       case EXT_ENTITY_COPY:     return new CExtEntityCopy();
       case EXT_ENTITY_INIT:     return new CExtEntityInit();
       case EXT_ENTITY_TELEPORT: return new CExtEntityTeleport();
+      case EXT_ENTITY_POSITION: return new CExtEntityPosition();
       case EXT_ENTITY_PARENT:   return new CExtEntityParent();
       case EXT_ENTITY_PROP:     return new CExtEntityProp();
     }

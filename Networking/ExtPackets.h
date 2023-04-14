@@ -39,6 +39,7 @@ class CExtPacket {
       EXT_ENTITY_COPY,     // Copy an entity
       EXT_ENTITY_INIT,     // (Re)initialize an entity
       EXT_ENTITY_TELEPORT, // Teleport an entity
+      EXT_ENTITY_POSITION, // Set position or rotation of an entity
       EXT_ENTITY_PARENT,   // Set entity's parent
       EXT_ENTITY_PROP,     // Change property value of an entity
 
@@ -194,18 +195,40 @@ class CExtEntityInit : public CExtEntityPacket {
 
 class CExtEntityTeleport : public CExtEntityPacket {
   public:
-    CPlacement3D plPos;
-    BOOL bRelative;
+    CPlacement3D plSet; // Placement to set
+    BOOL bRelative; // Relative to the current placement (oriented)
 
   public:
     CExtEntityTeleport() : CExtEntityPacket(),
-      plPos(FLOAT3D(0, 0, 0), ANGLE3D(0, 0, 0)), bRelative(FALSE)
+      plSet(FLOAT3D(0, 0, 0), ANGLE3D(0, 0, 0)), bRelative(FALSE)
     {
     };
 
   public:
     virtual EType GetType(void) const {
       return EXT_ENTITY_TELEPORT;
+    };
+
+    virtual void Write(CNetworkMessage &nm);
+    virtual void Read(CNetworkMessage &nm);
+    virtual void Process(void);
+};
+
+class CExtEntityPosition : public CExtEntityPacket {
+  public:
+    FLOAT3D vSet; // Position or rotation to set
+    BOOL bRotation; // Set rotation instead of position
+    BOOL bRelative; // Relative to the current placement (axis-aligned)
+
+  public:
+    CExtEntityPosition() : CExtEntityPacket(), vSet(0, 0, 0),
+      bRotation(FALSE), bRelative(FALSE)
+    {
+    };
+
+  public:
+    virtual EType GetType(void) const {
+      return EXT_ENTITY_POSITION;
     };
 
     virtual void Write(CNetworkMessage &nm);
