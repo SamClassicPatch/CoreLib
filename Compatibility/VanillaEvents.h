@@ -35,7 +35,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Global events
 
 // Stop event
-#define EVENTCODE_EStop 0x00000000
+static const SLONG EVENTCODE_EStop = 0x00000000;
 class EStop : public CEntityEvent {
   public:
     EStop() : CEntityEvent(EVENTCODE_EStop) {};
@@ -44,7 +44,7 @@ class EStop : public CEntityEvent {
 CLEAR_TO_DEFAULT(EStop);
 
 // Start event
-#define EVENTCODE_EStart 0x00000001
+static const SLONG EVENTCODE_EStart = 0x00000001;
 class EStart : public CEntityEvent {
   public:
     CVanillaEventEntity penCaused;
@@ -58,7 +58,7 @@ class EStart : public CEntityEvent {
 CLEAR_TO_DEFAULT(EStart);
 
 // Activate event
-#define EVENTCODE_EActivate 0x00000002
+static const SLONG EVENTCODE_EActivate = 0x00000002;
 class EActivate : public CEntityEvent {
   public:
     EActivate() : CEntityEvent(EVENTCODE_EActivate) {};
@@ -67,7 +67,7 @@ class EActivate : public CEntityEvent {
 CLEAR_TO_DEFAULT(EActivate);
 
 // Deactivate event
-#define EVENTCODE_EDeactivate 0x00000003
+static const SLONG EVENTCODE_EDeactivate = 0x00000003;
 class EDeactivate : public CEntityEvent {
   public:
     EDeactivate() : CEntityEvent(EVENTCODE_EDeactivate) {};
@@ -76,7 +76,7 @@ class EDeactivate : public CEntityEvent {
 CLEAR_TO_DEFAULT(EDeactivate);
 
 // Environment Start event
-#define EVENTCODE_EEnvironmentStart 0x00000004
+static const SLONG EVENTCODE_EEnvironmentStart = 0x00000004;
 class EEnvironmentStart : public CEntityEvent {
   public:
     EEnvironmentStart() : CEntityEvent(EVENTCODE_EEnvironmentStart) {};
@@ -85,7 +85,7 @@ class EEnvironmentStart : public CEntityEvent {
 CLEAR_TO_DEFAULT(EEnvironmentStart);
 
 // Environment Stop event
-#define EVENTCODE_EEnvironmentStop 0x00000005
+static const SLONG EVENTCODE_EEnvironmentStop = 0x00000005;
 class EEnvironmentStop : public CEntityEvent {
   public:
     EEnvironmentStop() : CEntityEvent(EVENTCODE_EEnvironmentStop) {};
@@ -94,7 +94,7 @@ class EEnvironmentStop : public CEntityEvent {
 CLEAR_TO_DEFAULT(EEnvironmentStop);
 
 // End event
-#define EVENTCODE_EEnd 0x00000006
+static const SLONG EVENTCODE_EEnd = 0x00000006;
 class EEnd : public CEntityEvent {
   public:
     EEnd() : CEntityEvent(EVENTCODE_EEnd) {};
@@ -103,7 +103,7 @@ class EEnd : public CEntityEvent {
 CLEAR_TO_DEFAULT(EEnd);
 
 // Trigger event
-#define EVENTCODE_ETrigger 0x00000007
+static const SLONG EVENTCODE_ETrigger = 0x00000007;
 class ETrigger : public CEntityEvent {
   public:
     CVanillaEventEntity penCaused;
@@ -117,7 +117,7 @@ class ETrigger : public CEntityEvent {
 CLEAR_TO_DEFAULT(ETrigger);
 
 // Teleport Moving Brush event
-#define EVENTCODE_ETeleportMovingBrush 0x00000008
+static const SLONG EVENTCODE_ETeleportMovingBrush = 0x00000008;
 class ETeleportMovingBrush : public CEntityEvent {
   public:
     ETeleportMovingBrush() : CEntityEvent(EVENTCODE_ETeleportMovingBrush) {};
@@ -126,7 +126,7 @@ class ETeleportMovingBrush : public CEntityEvent {
 CLEAR_TO_DEFAULT(ETeleportMovingBrush);
 
 // Reminder event
-#define EVENTCODE_EReminder 0x00000009
+static const SLONG EVENTCODE_EReminder = 0x00000009;
 class EReminder : public CEntityEvent {
   public:
     INDEX iValue;
@@ -140,7 +140,7 @@ class EReminder : public CEntityEvent {
 CLEAR_TO_DEFAULT(EReminder);
 
 // Start Attack event
-#define EVENTCODE_EStartAttack 0x0000000a
+static const SLONG EVENTCODE_EStartAttack = 0x0000000a;
 class EStartAttack : public CEntityEvent {
   public:
     EStartAttack() : CEntityEvent(EVENTCODE_EStartAttack) {};
@@ -149,7 +149,7 @@ class EStartAttack : public CEntityEvent {
 CLEAR_TO_DEFAULT(EStartAttack);
 
 // Stop Attack event
-#define EVENTCODE_EStopAttack 0x0000000b
+static const SLONG EVENTCODE_EStopAttack = 0x0000000b;
 class EStopAttack : public CEntityEvent {
   public:
     EStopAttack() : CEntityEvent(EVENTCODE_EStopAttack) {};
@@ -158,7 +158,7 @@ class EStopAttack : public CEntityEvent {
 CLEAR_TO_DEFAULT(EStopAttack);
 
 // Stop Blindness event
-#define EVENTCODE_EStopBlindness 0x0000000c
+static const SLONG EVENTCODE_EStopBlindness = 0x0000000c;
 class EStopBlindness : public CEntityEvent {
   public:
     EStopBlindness() : CEntityEvent(EVENTCODE_EStopBlindness) {};
@@ -167,7 +167,7 @@ class EStopBlindness : public CEntityEvent {
 CLEAR_TO_DEFAULT(EStopBlindness);
 
 // Stop Deafness event
-#define EVENTCODE_EStopDeafness 0x0000000d
+static const SLONG EVENTCODE_EStopDeafness = 0x0000000d;
 class EStopDeafness : public CEntityEvent {
   public:
     EStopDeafness() : CEntityEvent(EVENTCODE_EStopDeafness) {};
@@ -176,7 +176,7 @@ class EStopDeafness : public CEntityEvent {
 CLEAR_TO_DEFAULT(EStopDeafness);
 
 // Receive Score event
-#define EVENTCODE_EReceiveScore 0x0000000e
+static const SLONG EVENTCODE_EReceiveScore = 0x0000000e;
 class EReceiveScore : public CEntityEvent {
   public:
     INDEX iPoints;
@@ -190,7 +190,7 @@ class EReceiveScore : public CEntityEvent {
 CLEAR_TO_DEFAULT(EReceiveScore);
 
 // Killed Enemy event
-#define EVENTCODE_EKilledEnemy 0x0000000f
+static const SLONG EVENTCODE_EKilledEnemy = 0x0000000f;
 class EKilledEnemy : public CEntityEvent {
   public:
     EKilledEnemy() : CEntityEvent(EVENTCODE_EKilledEnemy) {};
@@ -199,7 +199,7 @@ class EKilledEnemy : public CEntityEvent {
 CLEAR_TO_DEFAULT(EKilledEnemy);
 
 // Secret Found event
-#define EVENTCODE_ESecretFound 0x00000010
+static const SLONG EVENTCODE_ESecretFound = 0x00000010;
 class ESecretFound : public CEntityEvent {
   public:
     ESecretFound() : CEntityEvent(EVENTCODE_ESecretFound) {};
@@ -210,7 +210,7 @@ CLEAR_TO_DEFAULT(ESecretFound);
 // Specific entity events
 
 // EnemyBase: Restart attack
-#define EVENTCODE_ERestartAttack 0x01360000
+static const SLONG EVENTCODE_ERestartAttack = 0x01360000;
 class ERestartAttack : public CEntityEvent {
   public:
     ERestartAttack() : CEntityEvent(EVENTCODE_ERestartAttack) {};
@@ -219,7 +219,7 @@ class ERestartAttack : public CEntityEvent {
 CLEAR_TO_DEFAULT(ERestartAttack);
 
 // EnemyBase: Reconsider behavior
-#define EVENTCODE_EReconsiderBehavior 0x01360001
+static const SLONG EVENTCODE_EReconsiderBehavior = 0x01360001;
 class EReconsiderBehavior : public CEntityEvent {
   public:
     EReconsiderBehavior() : CEntityEvent(EVENTCODE_EReconsiderBehavior) {};
@@ -228,7 +228,7 @@ class EReconsiderBehavior : public CEntityEvent {
 CLEAR_TO_DEFAULT(EReconsiderBehavior);
 
 // EnemyBase: Force wound animation
-#define EVENTCODE_EForceWound 0x01360002
+static const SLONG EVENTCODE_EForceWound = 0x01360002;
 class EForceWound : public CEntityEvent {
   public:
     EForceWound() : CEntityEvent(EVENTCODE_EForceWound) {};
@@ -237,7 +237,7 @@ class EForceWound : public CEntityEvent {
 CLEAR_TO_DEFAULT(EForceWound);
 
 // PlayerWeapons: Select new weapon
-#define EVENTCODE_ESelectWeapon 0x01920001
+static const SLONG EVENTCODE_ESelectWeapon = 0x01920001;
 class ESelectWeapon : public CEntityEvent {
   public:
     INDEX iWeapon;
@@ -251,7 +251,7 @@ class ESelectWeapon : public CEntityEvent {
 CLEAR_TO_DEFAULT(ESelectWeapon);
 
 // PlayerWeapons: Play boring animation
-#define EVENTCODE_EBoringWeapon 0x01920002
+static const SLONG EVENTCODE_EBoringWeapon = 0x01920002;
 class EBoringWeapon : public CEntityEvent {
   public:
     EBoringWeapon() : CEntityEvent(EVENTCODE_EBoringWeapon) {};
@@ -260,7 +260,7 @@ class EBoringWeapon : public CEntityEvent {
 CLEAR_TO_DEFAULT(EBoringWeapon);
 
 // PlayerWeapons: Start firing current weapon
-#define EVENTCODE_EFireWeapon 0x01920003
+static const SLONG EVENTCODE_EFireWeapon = 0x01920003;
 class EFireWeapon : public CEntityEvent {
   public:
     EFireWeapon() : CEntityEvent(EVENTCODE_EFireWeapon) {};
@@ -269,7 +269,7 @@ class EFireWeapon : public CEntityEvent {
 CLEAR_TO_DEFAULT(EFireWeapon);
 
 // PlayerWeapons: Stop firing current weapon
-#define EVENTCODE_EReleaseWeapon 0x01920004
+static const SLONG EVENTCODE_EReleaseWeapon = 0x01920004;
 class EReleaseWeapon : public CEntityEvent {
   public:
     EReleaseWeapon() : CEntityEvent(EVENTCODE_EReleaseWeapon) {};
@@ -278,7 +278,7 @@ class EReleaseWeapon : public CEntityEvent {
 CLEAR_TO_DEFAULT(EReleaseWeapon);
 
 // PlayerWeapons: Reload current weapon
-#define EVENTCODE_EReloadWeapon 0x01920005
+static const SLONG EVENTCODE_EReloadWeapon = 0x01920005;
 class EReloadWeapon : public CEntityEvent {
   public:
     EReloadWeapon() : CEntityEvent(EVENTCODE_EReloadWeapon) {};
@@ -287,7 +287,7 @@ class EReloadWeapon : public CEntityEvent {
 CLEAR_TO_DEFAULT(EReloadWeapon);
 
 // PlayerWeapons: When the weapon has been changed
-#define EVENTCODE_EWeaponChanged 0x01920006
+static const SLONG EVENTCODE_EWeaponChanged = 0x01920006;
 class EWeaponChanged : public CEntityEvent {
   public:
     EWeaponChanged() : CEntityEvent(EVENTCODE_EWeaponChanged) {};
@@ -298,7 +298,7 @@ CLEAR_TO_DEFAULT(EWeaponChanged);
 // Specific initialization events
 
 // AirShockwave
-#define EVENTCODE_EAirShockwave 0x015d0000
+static const SLONG EVENTCODE_EAirShockwave = 0x015d0000;
 class EAirShockwave : public CEntityEvent {
   public:
     CVanillaEventEntity penLauncher;
@@ -318,7 +318,7 @@ class EAirShockwave : public CEntityEvent {
 CLEAR_TO_DEFAULT(EAirShockwave);
 
 // AirWave
-#define EVENTCODE_EAirWave 0x01fe0000
+static const SLONG EVENTCODE_EAirWave = 0x01fe0000;
 class EAirWave : public CEntityEvent {
   public:
     CVanillaEventEntity penLauncher;
@@ -332,7 +332,7 @@ class EAirWave : public CEntityEvent {
 CLEAR_TO_DEFAULT(EAirWave);
 
 // BasicEffect
-#define EVENTCODE_ESpawnEffect 0x02590000
+static const SLONG EVENTCODE_ESpawnEffect = 0x02590000;
 class ESpawnEffect : public CEntityEvent {
   public:
     INDEX betType; // BasicEffectType enum
@@ -354,7 +354,7 @@ class ESpawnEffect : public CEntityEvent {
 CLEAR_TO_DEFAULT(ESpawnEffect);
 
 // BloodSpray
-#define EVENTCODE_ESpawnSpray 0x025b0000
+static const SLONG EVENTCODE_ESpawnSpray = 0x025b0000;
 class ESpawnSpray : public CEntityEvent {
   public:
     INDEX sptType; // SprayParticlesType enum
@@ -382,7 +382,7 @@ class ESpawnSpray : public CEntityEvent {
 CLEAR_TO_DEFAULT(ESpawnSpray);
 
 // Bullet
-#define EVENTCODE_EBulletInit 0x01f60000
+static const SLONG EVENTCODE_EBulletInit = 0x01f60000;
 class EBulletInit : public CEntityEvent {
   public:
     CVanillaEventEntity penOwner;
@@ -398,7 +398,7 @@ class EBulletInit : public CEntityEvent {
 CLEAR_TO_DEFAULT(EBulletInit);
 
 // CannonBall
-#define EVENTCODE_ELaunchCannonBall 0x01fa0000
+static const SLONG EVENTCODE_ELaunchCannonBall = 0x01fa0000;
 class ELaunchCannonBall : public CEntityEvent {
   public:
     CVanillaEventEntity penLauncher;
@@ -418,7 +418,7 @@ class ELaunchCannonBall : public CEntityEvent {
 CLEAR_TO_DEFAULT(ELaunchCannonBall);
 
 // CyborgBike
-#define EVENTCODE_ECyborgBike 0x014b0000
+static const SLONG EVENTCODE_ECyborgBike = 0x014b0000;
 class ECyborgBike : public CEntityEvent {
   public:
     FLOAT fSpeed;
@@ -432,7 +432,7 @@ class ECyborgBike : public CEntityEvent {
 CLEAR_TO_DEFAULT(ECyborgBike);
 
 // Debris
-#define EVENTCODE_ESpawnDebris 0x025a0000
+static const SLONG EVENTCODE_ESpawnDebris = 0x025a0000;
 class ESpawnDebris : public CEntityEvent {
   public:
     INDEX Eeibt; // EntityInfoBodyType enum
@@ -482,7 +482,7 @@ class ESpawnDebris : public CEntityEvent {
 CLEAR_TO_DEFAULT(ESpawnDebris);
 
 // DevilProjectile
-#define EVENTCODE_EDevilProjectile 0x01ff0000
+static const SLONG EVENTCODE_EDevilProjectile = 0x01ff0000;
 class EDevilProjectile : public CEntityEvent {
   public:
     CVanillaEventEntity penLauncher;
@@ -498,7 +498,7 @@ class EDevilProjectile : public CEntityEvent {
 CLEAR_TO_DEFAULT(EDevilProjectile);
 
 // Effector
-#define EVENTCODE_ESpawnEffector 0x02600000
+static const SLONG EVENTCODE_ESpawnEffector = 0x02600000;
 class ESpawnEffector : public CEntityEvent {
   public:
     INDEX eetType; // EffectorEffectType enum
@@ -526,7 +526,7 @@ class ESpawnEffector : public CEntityEvent {
 CLEAR_TO_DEFAULT(ESpawnEffector);
 
 // Flame
-#define EVENTCODE_EFlame 0x01f80000
+static const SLONG EVENTCODE_EFlame = 0x01f80000;
 class EFlame : public CEntityEvent {
   public:
     CVanillaEventEntity penOwner;
@@ -542,7 +542,7 @@ class EFlame : public CEntityEvent {
 CLEAR_TO_DEFAULT(EFlame);
 
 // LarvaOffspring
-#define EVENTCODE_ELaunchLarvaOffspring 0x01610000
+static const SLONG EVENTCODE_ELaunchLarvaOffspring = 0x01610000;
 class ELaunchLarvaOffspring : public CEntityEvent {
   public:
     CVanillaEventEntity penLauncher;
@@ -556,7 +556,7 @@ class ELaunchLarvaOffspring : public CEntityEvent {
 CLEAR_TO_DEFAULT(ELaunchLarvaOffspring);
 
 // PlayerAnimator
-#define EVENTCODE_EAnimatorInit 0x01960000
+static const SLONG EVENTCODE_EAnimatorInit = 0x01960000;
 class EAnimatorInit : public CEntityEvent {
   public:
     CVanillaEventEntity penPlayer;
@@ -570,7 +570,7 @@ class EAnimatorInit : public CEntityEvent {
 CLEAR_TO_DEFAULT(EAnimatorInit);
 
 // PlayerView
-#define EVENTCODE_EViewInit 0x01930000
+static const SLONG EVENTCODE_EViewInit = 0x01930000;
 class EViewInit : public CEntityEvent {
   public:
     CVanillaEventEntity penOwner;
@@ -590,7 +590,7 @@ class EViewInit : public CEntityEvent {
 CLEAR_TO_DEFAULT(EViewInit);
 
 // PlayerWeapons
-#define EVENTCODE_EWeaponsInit 0x01920000
+static const SLONG EVENTCODE_EWeaponsInit = 0x01920000;
 class EWeaponsInit : public CEntityEvent {
   public:
     CVanillaEventEntity penOwner;
@@ -604,7 +604,7 @@ class EWeaponsInit : public CEntityEvent {
 CLEAR_TO_DEFAULT(EWeaponsInit);
 
 // PlayerWeaponsEffects
-#define EVENTCODE_EWeaponEffectInit 0x01950000
+static const SLONG EVENTCODE_EWeaponEffectInit = 0x01950000;
 class EWeaponEffectInit : public CEntityEvent {
   public:
     CVanillaEventEntity penOwner;
@@ -620,7 +620,7 @@ class EWeaponEffectInit : public CEntityEvent {
 CLEAR_TO_DEFAULT(EWeaponEffectInit);
 
 // Projectile
-#define EVENTCODE_ELaunchProjectile 0x01f50000
+static const SLONG EVENTCODE_ELaunchProjectile = 0x01f50000;
 class ELaunchProjectile : public CEntityEvent {
   public:
     CVanillaEventEntity penLauncher;
@@ -640,7 +640,7 @@ class ELaunchProjectile : public CEntityEvent {
 CLEAR_TO_DEFAULT(ELaunchProjectile);
 
 // Reminder
-#define EVENTCODE_EReminderInit 0x02bf0000
+static const SLONG EVENTCODE_EReminderInit = 0x02bf0000;
 class EReminderInit : public CEntityEvent {
   public:
     CVanillaEventEntity penOwner;
@@ -658,7 +658,7 @@ class EReminderInit : public CEntityEvent {
 CLEAR_TO_DEFAULT(EReminderInit);
 
 // SeriousBomb
-#define EVENTCODE_ESeriousBomb 0x01620000
+static const SLONG EVENTCODE_ESeriousBomb = 0x01620000;
 class ESeriousBomb : public CEntityEvent {
   public:
     CVanillaEventEntity penOwner;
@@ -672,7 +672,7 @@ class ESeriousBomb : public CEntityEvent {
 CLEAR_TO_DEFAULT(ESeriousBomb);
 
 // SpawnerProjectile
-#define EVENTCODE_ESpawnerProjectile 0x01fb0000
+static const SLONG EVENTCODE_ESpawnerProjectile = 0x01fb0000;
 class ESpawnerProjectile : public CEntityEvent {
   public:
     CVanillaEventEntity penOwner;
@@ -688,7 +688,7 @@ class ESpawnerProjectile : public CEntityEvent {
 CLEAR_TO_DEFAULT(ESpawnerProjectile);
 
 // Spinner
-#define EVENTCODE_ESpinnerInit 0x015c0000
+static const SLONG EVENTCODE_ESpinnerInit = 0x015c0000;
 class ESpinnerInit : public CEntityEvent {
   public:
     CVanillaEventEntity penParent;
@@ -714,7 +714,7 @@ class ESpinnerInit : public CEntityEvent {
 CLEAR_TO_DEFAULT(ESpinnerInit);
 
 // Twister
-#define EVENTCODE_ETwister 0x01fb0000
+static const SLONG EVENTCODE_ETwister = 0x01fb0000;
 class ETwister : public CEntityEvent {
   public:
     CVanillaEventEntity penOwner;
@@ -738,7 +738,7 @@ class ETwister : public CEntityEvent {
 CLEAR_TO_DEFAULT(ETwister);
 
 // Watcher
-#define EVENTCODE_EWatcherInit 0x02bc0000
+static const SLONG EVENTCODE_EWatcherInit = 0x02bc0000;
 class EWatcherInit : public CEntityEvent {
   public:
     CVanillaEventEntity penOwner;
@@ -752,7 +752,7 @@ class EWatcherInit : public CEntityEvent {
 CLEAR_TO_DEFAULT(EWatcherInit);
 
 // Water
-#define EVENTCODE_EWater 0x01fc0000
+static const SLONG EVENTCODE_EWater = 0x01fc0000;
 class EWater : public CEntityEvent {
   public:
     CVanillaEventEntity penLauncher;
