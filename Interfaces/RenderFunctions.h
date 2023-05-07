@@ -24,34 +24,35 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define HEIGHT_SCALING(DrawPort) ((FLOAT)DrawPort->GetHeight() / 480.0f)
 
 // Interface of methods for rendering
-class IRender {
-  public:
-    // Calculate horizontal FOV according to the aspect ratio
-    // Can be cancelled using one of the following:
-    //   AdjustVFOV( FLOAT2D( 4, 3 ), fHFOV )
-    //   AdjustHFOV( FLOAT2D( 1, 1 ), fHFOV )
-    static inline void AdjustHFOV(const FLOAT2D &vScreen, FLOAT &fHFOV) {
-      // Get square ratio based off 4:3 resolution (4:3 = 1.0 ratio; 16:9 = 1.333 etc.)
-      FLOAT fSquareRatio = (vScreen(1) / vScreen(2)) * (3.0f / 4.0f);
+namespace IRender {
 
-      // Take current FOV angle and apply square ratio to it
-      FLOAT fVerticalAngle = Tan(fHFOV * 0.5f) * fSquareRatio;
+// Calculate horizontal FOV according to the aspect ratio
+// Can be cancelled using one of the following:
+//   AdjustVFOV( FLOAT2D( 4, 3 ), fHFOV )
+//   AdjustHFOV( FLOAT2D( 1, 1 ), fHFOV )
+inline void AdjustHFOV(const FLOAT2D &vScreen, FLOAT &fHFOV) {
+  // Get square ratio based off 4:3 resolution (4:3 = 1.0 ratio; 16:9 = 1.333 etc.)
+  FLOAT fSquareRatio = (vScreen(1) / vScreen(2)) * (3.0f / 4.0f);
 
-      // 90 FOV on 16:9 resolution will become 106.26...
-      fHFOV = 2.0f * ATan(fVerticalAngle);
-    };
+  // Take current FOV angle and apply square ratio to it
+  FLOAT fVerticalAngle = Tan(fHFOV * 0.5f) * fSquareRatio;
 
-    // Calculate vertical FOV from horizontal FOV according to the aspect ratio
-    // Can be cancelled using one of the following:
-    //   AdjustVFOV( FLOAT2D( vScreen(2), vScreen(1) ), fHFOV )
-    //   AdjustHFOV( FLOAT2D( vScreen(1), vScreen(2) * 0.75f ), fHFOV )
-    static inline void AdjustVFOV(const FLOAT2D &vScreen, FLOAT &fHFOV) {
-      // Take current FOV angle and apply inverted aspect ratio to it
-      FLOAT fVerticalAngle = Tan(fHFOV * 0.5f) * (vScreen(2) / vScreen(1));
-
-      // 90 FOV on 4:3 or 106.26 FOV on 16:9 will become 73.74...
-      fHFOV = 2.0f * ATan(fVerticalAngle);
-    };
+  // 90 FOV on 16:9 resolution will become 106.26...
+  fHFOV = 2.0f * ATan(fVerticalAngle);
 };
+
+// Calculate vertical FOV from horizontal FOV according to the aspect ratio
+// Can be cancelled using one of the following:
+//   AdjustVFOV( FLOAT2D( vScreen(2), vScreen(1) ), fHFOV )
+//   AdjustHFOV( FLOAT2D( vScreen(1), vScreen(2) * 0.75f ), fHFOV )
+inline void AdjustVFOV(const FLOAT2D &vScreen, FLOAT &fHFOV) {
+  // Take current FOV angle and apply inverted aspect ratio to it
+  FLOAT fVerticalAngle = Tan(fHFOV * 0.5f) * (vScreen(2) / vScreen(1));
+
+  // 90 FOV on 4:3 or 106.26 FOV on 16:9 will become 73.74...
+  fHFOV = 2.0f * ATan(fVerticalAngle);
+};
+
+}; // namespace
 
 #endif
