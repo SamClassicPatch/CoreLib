@@ -32,28 +32,10 @@ static void ClientParsePacket(INDEX iLength) {
     const char *pServers = strData + 1;
 
     // As long as there's enough data for an address
-    while (iLength - (pServers - strData) >= iAddrLength) {
-      // Get address at the current position
+    while (iLength >= iAddrLength) {
+      // Add server request from the address at the current position
       IQuery::Address addr = *(IQuery::Address *)pServers;
-
-      // Make an address string
-      CTString strIP;
-      addr.Print(strIP);
-
-      // Socket address for the server
-      sockaddr_in sinServer;
-      sinServer.sin_family = AF_INET;
-      sinServer.sin_addr.s_addr = inet_addr(strIP);
-      sinServer.sin_port = htons(addr.uwPort + 1);
-
-      // Add a new server status request
-      SServerRequest::AddRequest(sinServer);
-
-      // send packet to server
-      IQuery::SendPacketTo(&sinServer, "\x02", 1);
-
-      // Get next address
-      pServers += iAddrLength;
+      addr.AddServerRequest(&pServers, iLength, htons(addr.uwPort + 1), "\x02");
     }
     return;
   }

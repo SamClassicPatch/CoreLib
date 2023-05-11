@@ -71,6 +71,34 @@ extern void InitQuery(void) {
   _pstrLocalHost.Find("net_strLocalHost");
 };
 
+// Add new server request from a received address
+void IQuery::Address::AddServerRequest(const char **ppBuffer, INDEX &iLength, const UWORD uwSetPort, const char *strPacket, SOCKET iSocketUDP) {
+  const INDEX iAddrLength = 6; // IQuery::Address struct size
+
+  // If valid port and at least one valid address byte
+  if (uwPort != 0 && ulIP != 0xFFFFFFFF) {
+    // Make an address string
+    CTString strIP;
+    strIP.PrintF("%u.%u.%u.%u", aIP[0], aIP[1], aIP[2], aIP[3]);
+
+    // Socket address for the server
+    sockaddr_in sinServer;
+    sinServer.sin_family = AF_INET;
+    sinServer.sin_addr.s_addr = inet_addr(strIP);
+    sinServer.sin_port = uwSetPort;
+
+    // Add a new server status request
+    SServerRequest::AddRequest(sinServer);
+
+    // Send packet to the server
+    IQuery::SendPacketTo(&sinServer, strPacket, strlen(strPacket), iSocketUDP);
+  }
+
+  // Get next address
+  *ppBuffer += iAddrLength;
+  iLength -= iAddrLength;
+};
+
 // Initialize the socket
 void IQuery::InitWinsock(void) {
   // Already initialized
@@ -196,9 +224,12 @@ void IQuery::SendPacket(const char *pBuffer, int iLength) {
   SendPacketTo(_sin, pBuffer, iLength);
 };
 
-// Send data packet through a specific socket
-void IQuery::SendPacketTo(sockaddr_in *psin, const char *pBuffer, int iLength) {
-  sendto(_socket, pBuffer, iLength, 0, (sockaddr *)psin, sizeof(sockaddr_in));
+// Send data packet to a specific socket address
+void IQuery::SendPacketTo(sockaddr_in *psin, const char *pBuffer, int iLength, SOCKET iSocket) {
+  // Default to static one
+  if (iSocket == NULL) iSocket = _socket;
+
+  sendto(iSocket, pBuffer, iLength, 0, (sockaddr *)psin, sizeof(sockaddr_in));
 };
 
 // Send reply packet with a message

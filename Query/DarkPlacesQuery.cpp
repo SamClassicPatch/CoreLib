@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 static const INDEX _iProtocolVersion = 3;
 
 // Parse server list data from the master server
-static void ParseServerList(const UBYTE *pData, INDEX iLength, BOOL bExtended) {
+static void ParseServerList(const char *pData, INDEX iLength, BOOL bExtended) {
   if (ms_bDebugOutput) {
     CPrintF("Data length: %d\n", iLength);
   }
@@ -34,31 +34,12 @@ static void ParseServerList(const UBYTE *pData, INDEX iLength, BOOL bExtended) {
   {
     // Retrieve IPv4 address
     if (pData[0] == '\\') {
-      // Get address with the port
-      const IQuery::Address addr = *(IQuery::Address *)(pData + 1);
+      pData++;
+      iLength++;
 
-      // If valid port and at least one valid address byte
-      if (addr.uwPort != 0 && addr.ulIP != 0xFFFFFFFF) {
-        // Make an address string
-        CTString strIP;
-        addr.Print(strIP);
-
-        // Socket address for the server
-        sockaddr_in sinServer;
-        sinServer.sin_family = AF_INET;
-        sinServer.sin_addr.s_addr = inet_addr(strIP);
-        sinServer.sin_port = htons(addr.uwPort);
-
-        // Add a new server status request
-        SServerRequest::AddRequest(sinServer);
-
-        // Send packet to the server
-        CTString strRequest = "\xFF\xFF\xFF\xFFgetstatus";
-        IQuery::SendPacketTo(&sinServer, strRequest, strRequest.Length());
-      }
-
-      pData += 7;
-      iLength -= 7;
+      // Add server request from the address at the current position
+      IQuery::Address addr = *(IQuery::Address *)pData;
+      addr.AddServerRequest(&pData, iLength, htons(addr.uwPort), "\xFF\xFF\xFF\xFFgetstatus");
       continue;
     }
 
@@ -96,7 +77,7 @@ static void ClientParsePacket(INDEX iLength) {
       CPutString("Received 'getserversResponse'!\n");
     }
 
-    ParseServerList((UBYTE *)(strData + 18), iLength - 18, FALSE);
+    ParseServerList(strData + 18, iLength - 18, FALSE);
     return;
   }
 
@@ -107,7 +88,7 @@ static void ClientParsePacket(INDEX iLength) {
       CPutString("Received 'getserversExtResponse'!\n");
     }
 
-    ParseServerList((UBYTE *)(strData + 21), iLength - 21, TRUE);
+    ParseServerList(strData + 21, iLength - 21, TRUE);
     return;
   }
 

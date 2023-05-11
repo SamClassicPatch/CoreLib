@@ -631,33 +631,14 @@ static DWORD WINAPI MasterServerThread(LPVOID lpParam) {
       break;
     }
 
-    // Get address at the current position
+    // Add server request from the address at the current position
     IQuery::Address addr = *(IQuery::Address *)pServers;
-
-    // Make an address string
-    CTString strIP;
-    addr.Print(strIP);
-
-    // Socket address for the server
-    sockaddr_in sinServer;
-    sinServer.sin_family = AF_INET;
-    sinServer.sin_addr.s_addr = inet_addr(strIP);
-    sinServer.sin_port = addr.uwPort;
-
-    // Add a new server status request
-    SServerRequest::AddRequest(sinServer);
-
-    // Send packet to the server
-    sendto(iSocketUDP, "\\status\\", 8, 0, (sockaddr *)&sinServer, sizeof(sinServer));
+    addr.AddServerRequest(&pServers, _ctOnlineBuffer, addr.uwPort, "\\status\\", iSocketUDP);
 
     // Receive server data for enumeration
     if (ReceiveServerData(iSocketUDP, FALSE)) {
       return -1;
     }
-
-    // Get next address
-    pServers += iAddrLength;
-    _ctOnlineBuffer -= iAddrLength;
   }
 
   // Delete buffer
@@ -705,13 +686,15 @@ static DWORD WINAPI LocalNetworkThread(LPVOID lpParam) {
   const INDEX iAddrLength = 6;
   const char *pServers = _pLocalAddressBuffer;
 
-  sockaddr_in saddr;
-  saddr.sin_family = AF_INET;
-  saddr.sin_addr.s_addr = 0xFFFFFFFF;
+  {
+    sockaddr_in saddr;
+    saddr.sin_family = AF_INET;
+    saddr.sin_addr.s_addr = 0xFFFFFFFF;
 
-  for (INDEX i = 25601 ; i <= 25621; i++) {
-    saddr.sin_port = htons(i);
-    sendto(iSocketUDP, "\\status\\", 8, 0, (sockaddr *)&saddr, sizeof(saddr));
+    for (INDEX i = 25601 ; i <= 25621; i++) {
+      saddr.sin_port = htons(i);
+      IQuery::SendPacketTo(&saddr, "\\status\\", 8, iSocketUDP);
+    }
   }
 
   while (_ctLocalBuffer >= iAddrLength) {
@@ -720,33 +703,14 @@ static DWORD WINAPI LocalNetworkThread(LPVOID lpParam) {
       break;
     }
 
-    // Get address at the current position
+    // Add server request from the address at the current position
     IQuery::Address addr = *(IQuery::Address *)pServers;
-
-    // Make a reverse address string
-    CTString strIP;
-    addr.Print(strIP);
-
-    // Socket address for the server
-    sockaddr_in sinServer;
-    sinServer.sin_family = AF_INET;
-    sinServer.sin_addr.s_addr = inet_addr(strIP);
-    sinServer.sin_port = addr.uwPort;
-
-    // Add a new server status request
-    SServerRequest::AddRequest(sinServer);
-
-    // Send packet to the server
-    sendto(iSocketUDP, "\\status\\", 8, 0, (sockaddr *)&sinServer, sizeof(sinServer));
+    addr.AddServerRequest(&pServers, _ctLocalBuffer, addr.uwPort, "\\status\\", iSocketUDP);
 
     // Receive server data for enumeration
     if (ReceiveServerData(iSocketUDP, TRUE)) {
       return -1;
     }
-
-    // Get next address
-    pServers += iAddrLength;
-    _ctLocalBuffer -= iAddrLength;
   }
 
   // Delete local buffer

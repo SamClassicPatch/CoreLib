@@ -51,10 +51,8 @@ class IQuery {
       };
       UWORD uwPort; // Port
 
-      // Print IP address
-      __forceinline void Print(CTString &str) const {
-        str.PrintF("%u.%u.%u.%u", aIP[0], aIP[1], aIP[2], aIP[3]);
-      };
+      // Add new server request from a received address
+      void AddServerRequest(const char **ppBuffer, INDEX &iLength, const UWORD uwSetPort, const char *strPacket, SOCKET iSocketUDP = NULL);
     };
   #pragma pack(pop)
 
@@ -80,8 +78,8 @@ class IQuery {
     // Send data packet
     static void SendPacket(const char *pBuffer, int iLength = -1);
 
-    // Send data packet through a specific socket
-    static void SendPacketTo(sockaddr_in *psin, const char *pBuffer, int iLength);
+    // Send data packet to a specific socket address
+    static void SendPacketTo(sockaddr_in *psin, const char *pBuffer, int iLength, SOCKET iSocket = NULL);
 
     // Send reply packet with a message
     static void SendReply(const CTString &strMessage);
