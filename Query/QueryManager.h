@@ -40,83 +40,81 @@ extern CSymbolPtr _piNetPort;
 extern CSymbolPtr _pstrLocalHost;
 
 // Internal query functionality
-class IQuery {
-  public:
-  #pragma pack(push, 1)
-    // Structure housing an IP address with a port
-    struct Address {
-      union {
-        UBYTE aIP[4]; // IP address byte by byte
-        ULONG ulIP; // Full IP address
-      };
-      UWORD uwPort; // Port
+namespace IQuery {
 
-      // Add new server request from a received address
-      void AddServerRequest(const char **ppBuffer, INDEX &iLength, const UWORD uwSetPort, const char *strPacket, SOCKET iSocketUDP = NULL);
-    };
-  #pragma pack(pop)
+#pragma pack(push, 1)
 
-  public:
-    static sockaddr_in sinFrom;
-    static char *pBuffer;
+// Structure housing an IP address with a port
+struct Address {
+  union {
+    UBYTE aIP[4]; // IP address byte by byte
+    ULONG ulIP; // Full IP address
+  };
+  UWORD uwPort; // Port
 
-    static BOOL bServer;
-    static BOOL bInitialized;
-
-    static CDynamicStackArray<SServerRequest> aRequests;
-
-  public:
-    // Initialize the socket
-    static void InitWinsock(void);
-
-    // Close the socket
-    static void CloseWinsock();
-
-    // Check if the socket is usable
-    static BOOL IsSocketUsable(void);
-
-    // Send data packet
-    static void SendPacket(const char *pBuffer, int iLength = -1);
-
-    // Send data packet to a specific socket address
-    static void SendPacketTo(sockaddr_in *psin, const char *pBuffer, int iLength, SOCKET iSocket = NULL);
-
-    // Send reply packet with a message
-    static void SendReply(const CTString &strMessage);
-
-    // Receive some packet
-    static int ReceivePacket(void);
-
-    // Set enumeration status
-    static void SetStatus(const CTString &strStatus);
+  // Add new server request from a received address
+  void AddServerRequest(const char **ppBuffer, INDEX &iLength, const UWORD uwSetPort, const char *strPacket, SOCKET iSocketUDP = NULL);
 };
 
+#pragma pack(pop)
+
+extern sockaddr_in sinFrom;
+extern char *pBuffer;
+
+extern BOOL bServer;
+extern BOOL bInitialized;
+
+extern CDynamicStackArray<SServerRequest> aRequests;
+
+// Initialize the socket
+void InitWinsock(void);
+
+// Close the socket
+void CloseWinsock();
+
+// Check if the socket is usable
+BOOL IsSocketUsable(void);
+
+// Send data packet
+void SendPacket(const char *pBuffer, int iLength = -1);
+
+// Send data packet to a specific socket address
+void SendPacketTo(sockaddr_in *psin, const char *pBuffer, int iLength, SOCKET iSocket = NULL);
+
+// Send reply packet with a message
+void SendReply(const CTString &strMessage);
+
+// Receive some packet
+int ReceivePacket(void);
+
+// Set enumeration status
+void SetStatus(const CTString &strStatus);
+
 // GameAgent protocol
-class CGameAgentQuery {
-  public:
-    static void BuildHearthbeatPacket(CTString &strPacket, INDEX iChallenge);
-    static void EnumTrigger(BOOL bInternet);
-    static void EnumUpdate(void);
-    static void ServerParsePacket(INDEX iLength);
+namespace GameAgent {
+  void BuildHearthbeatPacket(CTString &strPacket, INDEX iChallenge);
+  void EnumTrigger(BOOL bInternet);
+  void EnumUpdate(void);
+  void ServerParsePacket(INDEX iLength);
 };
 
 // Legacy protocol
-class CLegacyQuery {
-  public:
-    static void BuildHearthbeatPacket(CTString &strPacket);
-    static void EnumTrigger(BOOL bInternet);
-    static void EnumUpdate(void);
-    static void ServerParsePacket(INDEX iLength);
+namespace Legacy {
+  void BuildHearthbeatPacket(CTString &strPacket);
+  void EnumTrigger(BOOL bInternet);
+  void EnumUpdate(void);
+  void ServerParsePacket(INDEX iLength);
 };
 
 // DarkPlaces protocol
-class CDarkPlacesQuery {
-  public:
-    static void BuildHearthbeatPacket(CTString &strPacket);
-    static void EnumTrigger(BOOL bInternet);
-    static void EnumUpdate(void);
-    static void ServerParsePacket(INDEX iLength);
+namespace DarkPlaces {
+  void BuildHearthbeatPacket(CTString &strPacket);
+  void EnumTrigger(BOOL bInternet);
+  void EnumUpdate(void);
+  void ServerParsePacket(INDEX iLength);
 };
+
+}; // namespace
 
 // Game key and game name for the master server
 #define SAM_MS_KEY "AKbna4\0"

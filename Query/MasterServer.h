@@ -21,39 +21,38 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 
 // Master server functionality
-class CORE_API IMasterServer {
-  public:
-    // Get current master server protocol
-    static INDEX GetProtocol(void);
+namespace IMasterServer {
 
-  public:
-    // Start the server
-    static void OnServerStart(void);
+// Get current master server protocol
+CORE_API INDEX GetProtocol(void);
 
-    // Stop the server
-    static void OnServerEnd(void);
+// Start the server
+CORE_API void OnServerStart(void);
 
-    // Server update step
-    static void OnServerUpdate(void);
+// Stop the server
+CORE_API void OnServerEnd(void);
 
-    // Server state has changed
-    static void OnServerStateChanged(void);
+// Server update step
+CORE_API void OnServerUpdate(void);
 
-  public:
-    // Send heartbeat to the master server
-    static void SendHeartbeat(INDEX iChallenge);
+// Server state has changed
+CORE_API void OnServerStateChanged(void);
 
-    // Request server list enumeration
-    static void EnumTrigger(BOOL bInternet);
+// Send heartbeat to the master server
+CORE_API void SendHeartbeat(INDEX iChallenge);
 
-    // Replacement for CNetworkLibrary::EnumSessions()
-    static void EnumSessions(BOOL bInternet);
+// Request server list enumeration
+CORE_API void EnumTrigger(BOOL bInternet);
 
-    // Update enumerations from the server
-    static void EnumUpdate(void);
+// Replacement for CNetworkLibrary::EnumSessions()
+CORE_API void EnumSessions(BOOL bInternet);
 
-    // Cancel master server enumeration
-    static void EnumCancel(void);
+// Update enumerations from the server
+CORE_API void EnumUpdate(void);
+
+// Cancel master server enumeration
+CORE_API void EnumCancel(void);
+
 };
 
 #endif

@@ -732,7 +732,10 @@ static DWORD WINAPI LocalNetworkThread(LPVOID lpParam) {
   return 0;
 };
 
-void CLegacyQuery::EnumTrigger(BOOL bInternet)
+namespace IQuery {
+namespace Legacy {
+
+void EnumTrigger(BOOL bInternet)
 {
   if (bInternet) {
     StartInternetSearch();
@@ -741,7 +744,7 @@ void CLegacyQuery::EnumTrigger(BOOL bInternet)
   }
 };
 
-void CLegacyQuery::EnumUpdate(void) {
+void EnumUpdate(void) {
   DWORD dwThreadId;
 
   // Start master server thread
@@ -766,3 +769,6 @@ void CLegacyQuery::EnumUpdate(void) {
     _bActivatedLocal = FALSE;
   }
 };
+
+}; // namespace
+}; // namespace

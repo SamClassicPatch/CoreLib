@@ -22,10 +22,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // When the last heartbeat has been sent
 static TIME _tmLastHeartbeat = -1.0f;
 
-// Get current master server protocol
-INDEX IMasterServer::GetProtocol(void) {
-  extern INDEX ms_iProtocol;
+extern INDEX ms_iProtocol;
 
+namespace IMasterServer {
+
+// Get current master server protocol
+INDEX GetProtocol(void) {
   if (ms_iProtocol < E_MS_LEGACY || ms_iProtocol >= E_MS_MAX) {
     return E_MS_LEGACY;
   }
@@ -34,7 +36,7 @@ INDEX IMasterServer::GetProtocol(void) {
 };
 
 // Start the server
-void IMasterServer::OnServerStart(void) {
+void OnServerStart(void) {
   if (ms_bDebugOutput) {
     CPutString("  IMasterServer::OnServerStart()\n");
   }
@@ -66,7 +68,7 @@ void IMasterServer::OnServerStart(void) {
 };
 
 // Stop the server
-void IMasterServer::OnServerEnd(void) {
+void OnServerEnd(void) {
   // Not initialized
   if (!IQuery::bInitialized) {
     return;
@@ -100,7 +102,7 @@ void IMasterServer::OnServerEnd(void) {
 };
 
 // Server update step
-void IMasterServer::OnServerUpdate(void) {
+void OnServerUpdate(void) {
   // Not usable
   if (!IQuery::IsSocketUsable()) {
     return;
@@ -118,9 +120,9 @@ void IMasterServer::OnServerUpdate(void) {
 
     // Parse received packet
     static void (*apParsePacket[E_MS_MAX])(INDEX) = {
-      &CLegacyQuery::ServerParsePacket,
-      &CDarkPlacesQuery::ServerParsePacket,
-      &CGameAgentQuery::ServerParsePacket,
+      &IQuery::Legacy::ServerParsePacket,
+      &IQuery::DarkPlaces::ServerParsePacket,
+      &IQuery::GameAgent::ServerParsePacket,
     };
 
     (*apParsePacket[GetProtocol()])(iLength);
@@ -133,7 +135,7 @@ void IMasterServer::OnServerUpdate(void) {
 };
 
 // Server state has changed
-void IMasterServer::OnServerStateChanged(void) {
+void OnServerStateChanged(void) {
   // Not initialized
   if (!IQuery::bInitialized) {
     return;
@@ -167,21 +169,21 @@ void IMasterServer::OnServerStateChanged(void) {
 };
 
 // Send heartbeat to the master server
-void IMasterServer::SendHeartbeat(INDEX iChallenge) {
+void SendHeartbeat(INDEX iChallenge) {
   CTString strPacket;
 
   // Build heartbeat packet for a specific master server
   switch (GetProtocol()) {
     case E_MS_LEGACY:
-      CLegacyQuery::BuildHearthbeatPacket(strPacket);
+      IQuery::Legacy::BuildHearthbeatPacket(strPacket);
       break;
 
     case E_MS_DARKPLACES:
-      CDarkPlacesQuery::BuildHearthbeatPacket(strPacket);
+      IQuery::DarkPlaces::BuildHearthbeatPacket(strPacket);
       break;
 
     case E_MS_GAMEAGENT:
-      CGameAgentQuery::BuildHearthbeatPacket(strPacket, iChallenge);
+      IQuery::GameAgent::BuildHearthbeatPacket(strPacket, iChallenge);
       break;
   }
 
@@ -195,7 +197,7 @@ void IMasterServer::SendHeartbeat(INDEX iChallenge) {
 };
 
 // Request server list enumeration
-void IMasterServer::EnumTrigger(BOOL bInternet) {
+void EnumTrigger(BOOL bInternet) {
   // The list has changed
   if (_pNetwork->ga_bEnumerationChange) {
     return;
@@ -203,16 +205,16 @@ void IMasterServer::EnumTrigger(BOOL bInternet) {
 
   // Request for a specific master server
   static void (*apEnumTrigger[E_MS_MAX])(BOOL) = {
-    &CLegacyQuery::EnumTrigger,
-    &CDarkPlacesQuery::EnumTrigger,
-    &CGameAgentQuery::EnumTrigger,
+    &IQuery::Legacy::EnumTrigger,
+    &IQuery::DarkPlaces::EnumTrigger,
+    &IQuery::GameAgent::EnumTrigger,
   };
 
   (*apEnumTrigger[GetProtocol()])(bInternet);
 };
 
 // Replacement for CNetworkLibrary::EnumSessions()
-void IMasterServer::EnumSessions(BOOL bInternet) {
+void EnumSessions(BOOL bInternet) {
   // Clear old sessions
   FORDELETELIST(CNetworkSession, ns_lnNode, _pNetwork->ga_lhEnumeratedSessions, itns) {
     delete &*itns;
@@ -228,7 +230,7 @@ void IMasterServer::EnumSessions(BOOL bInternet) {
 };
 
 // Update enumerations from the server
-void IMasterServer::EnumUpdate(void) {
+void EnumUpdate(void) {
   // Not usable
   if (!IQuery::IsSocketUsable()) {
     return;
@@ -236,16 +238,16 @@ void IMasterServer::EnumUpdate(void) {
 
   // Call update method for a specific master server
   static void (*apEnumUpdate[E_MS_MAX])(void) = {
-    &CLegacyQuery::EnumUpdate,
-    &CDarkPlacesQuery::EnumUpdate,
-    &CGameAgentQuery::EnumUpdate,
+    &IQuery::Legacy::EnumUpdate,
+    &IQuery::DarkPlaces::EnumUpdate,
+    &IQuery::GameAgent::EnumUpdate,
   };
 
   (*apEnumUpdate[GetProtocol()])();
 };
 
 // Cancel master server enumeration
-void IMasterServer::EnumCancel(void) {
+void EnumCancel(void) {
   // Not initialized
   if (!IQuery::bInitialized) {
     return;
@@ -255,3 +257,5 @@ void IMasterServer::EnumCancel(void) {
   IQuery::aRequests.Clear();
   IQuery::CloseWinsock();
 };
+
+}; // namespace

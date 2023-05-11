@@ -260,11 +260,14 @@ static void ComposeStatusPacket(CTString &strPacket, const char *strChallenge, B
   }
 };
 
-void CDarkPlacesQuery::BuildHearthbeatPacket(CTString &strPacket) {
+namespace IQuery {
+namespace DarkPlaces {
+
+void BuildHearthbeatPacket(CTString &strPacket) {
   strPacket.PrintF("\xFF\xFF\xFF\xFFheartbeat DarkPlaces\x0A");
 };
 
-void CDarkPlacesQuery::EnumTrigger(BOOL bInternet) {
+void EnumTrigger(BOOL bInternet) {
   // Reset requests
   IQuery::aRequests.Clear();
 
@@ -280,7 +283,7 @@ void CDarkPlacesQuery::EnumTrigger(BOOL bInternet) {
   IQuery::SetStatus(".");
 };
 
-void CDarkPlacesQuery::EnumUpdate(void) {
+void EnumUpdate(void) {
   int iLength = IQuery::ReceivePacket();
 
   if (iLength == -1) {
@@ -290,7 +293,7 @@ void CDarkPlacesQuery::EnumUpdate(void) {
   ClientParsePacket(iLength);
 };
 
-void CDarkPlacesQuery::ServerParsePacket(INDEX iLength) {
+void ServerParsePacket(INDEX iLength) {
   // String of data
   const char *strData = IQuery::pBuffer;
 
@@ -359,3 +362,6 @@ void CDarkPlacesQuery::ServerParsePacket(INDEX iLength) {
     CPrintF("Data (%d bytes): %s\n", iLength, strData);
   }
 };
+
+}; // namespace
+}; // namespace

@@ -19,15 +19,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma comment(lib, "wsock32.lib")
 
-// Internal query fields
-sockaddr_in IQuery::sinFrom;
-char *IQuery::pBuffer = NULL;
-
-BOOL IQuery::bServer = FALSE;
-BOOL IQuery::bInitialized = FALSE;
-
-CDynamicStackArray<SServerRequest> IQuery::aRequests;
-
 static WSADATA *_wsaData = NULL;
 static sockaddr_in *_sin = NULL;
 static sockaddr_in *_sinLocal = NULL;
@@ -71,8 +62,18 @@ extern void InitQuery(void) {
   _pstrLocalHost.Find("net_strLocalHost");
 };
 
+namespace IQuery {
+
+sockaddr_in sinFrom;
+char *pBuffer = NULL;
+
+BOOL bServer = FALSE;
+BOOL bInitialized = FALSE;
+
+CDynamicStackArray<SServerRequest> aRequests;
+
 // Add new server request from a received address
-void IQuery::Address::AddServerRequest(const char **ppBuffer, INDEX &iLength, const UWORD uwSetPort, const char *strPacket, SOCKET iSocketUDP) {
+void Address::AddServerRequest(const char **ppBuffer, INDEX &iLength, const UWORD uwSetPort, const char *strPacket, SOCKET iSocketUDP) {
   const INDEX iAddrLength = 6; // IQuery::Address struct size
 
   // If valid port and at least one valid address byte
@@ -91,7 +92,7 @@ void IQuery::Address::AddServerRequest(const char **ppBuffer, INDEX &iLength, co
     SServerRequest::AddRequest(sinServer);
 
     // Send packet to the server
-    IQuery::SendPacketTo(&sinServer, strPacket, strlen(strPacket), iSocketUDP);
+    SendPacketTo(&sinServer, strPacket, strlen(strPacket), iSocketUDP);
   }
 
   // Get next address
@@ -100,7 +101,7 @@ void IQuery::Address::AddServerRequest(const char **ppBuffer, INDEX &iLength, co
 };
 
 // Initialize the socket
-void IQuery::InitWinsock(void) {
+void InitWinsock(void) {
   // Already initialized
   if (_wsaData != NULL && _socket != NULL) {
     return;
@@ -111,10 +112,10 @@ void IQuery::InitWinsock(void) {
   _socket = NULL;
 
   // Create a buffer for packets
-  if (IQuery::pBuffer != NULL) {
-    delete[] IQuery::pBuffer;
+  if (pBuffer != NULL) {
+    delete[] pBuffer;
   }
-  IQuery::pBuffer = new char[2050];
+  pBuffer = new char[2050];
 
   // Start socket address
   if (WSAStartup(MAKEWORD(2, 2), _wsaData) != 0) {
@@ -161,7 +162,7 @@ void IQuery::InitWinsock(void) {
   _socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 
   // If it's a server
-  if (IQuery::bServer) {
+  if (bServer) {
     // Create local socket source address
     _sinLocal = new sockaddr_in;
     _sinLocal->sin_family = AF_INET;
@@ -191,7 +192,7 @@ void IQuery::InitWinsock(void) {
 };
 
 // Close the socket
-void IQuery::CloseWinsock(void) {
+void CloseWinsock(void) {
   // If socket address exists
   if (_wsaData != NULL) {
     // Close the socket
@@ -207,12 +208,12 @@ void IQuery::CloseWinsock(void) {
 };
 
 // Check if the socket is usable
-BOOL IQuery::IsSocketUsable(void) {
+BOOL IsSocketUsable(void) {
   return (_socket != NULL && bInitialized);
 };
 
 // Send packet with data from a buffer
-void IQuery::SendPacket(const char *pBuffer, int iLength) {
+void SendPacket(const char *pBuffer, int iLength) {
   // Initialize the socket in case it's not
   InitWinsock();
 
@@ -225,7 +226,7 @@ void IQuery::SendPacket(const char *pBuffer, int iLength) {
 };
 
 // Send data packet to a specific socket address
-void IQuery::SendPacketTo(sockaddr_in *psin, const char *pBuffer, int iLength, SOCKET iSocket) {
+void SendPacketTo(sockaddr_in *psin, const char *pBuffer, int iLength, SOCKET iSocket) {
   // Default to static one
   if (iSocket == NULL) iSocket = _socket;
 
@@ -233,18 +234,20 @@ void IQuery::SendPacketTo(sockaddr_in *psin, const char *pBuffer, int iLength, S
 };
 
 // Send reply packet with a message
-void IQuery::SendReply(const CTString &strMessage) {
-  SendPacketTo(&IQuery::sinFrom, strMessage.str_String, strMessage.Length());
+void SendReply(const CTString &strMessage) {
+  SendPacketTo(&sinFrom, strMessage.str_String, strMessage.Length());
 };
 
 // Receive some packet
-int IQuery::ReceivePacket(void) {
-  int ctFrom = sizeof(IQuery::sinFrom);
-  return recvfrom(_socket, IQuery::pBuffer, 2048, 0, (sockaddr *)&IQuery::sinFrom, &ctFrom);
+int ReceivePacket(void) {
+  int ctFrom = sizeof(sinFrom);
+  return recvfrom(_socket, pBuffer, 2048, 0, (sockaddr *)&sinFrom, &ctFrom);
 };
 
 // Set enumeration status
-void IQuery::SetStatus(const CTString &strStatus) {
+void SetStatus(const CTString &strStatus) {
   _pNetwork->ga_bEnumerationChange = TRUE;
   _pNetwork->ga_strEnumerationStatus = strStatus;
 };
+
+}; // namespace
