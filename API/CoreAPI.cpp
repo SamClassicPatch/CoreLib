@@ -273,6 +273,21 @@ void CCoreAPI::OnGameLoad(const CTFileName &fnmSave)
 
     pEvents->OnGameLoad(fnmSave);
   }
+
+  // Fix broken shadows and lights by updating them
+  FOREACHINDYNAMICCONTAINER(IWorld::GetWorld()->wo_cenEntities, CEntity, iten) {
+    if (!IsDerivedFromClass(iten, "Light")) continue;
+
+    // Update shadow layers for each light
+    CLightSource *pls = iten->GetLightSource();
+
+    if (pls != NULL) {
+      pls->FindShadowLayers(FALSE);
+    }
+  }
+
+  // Update shadows from the sun and such
+  IWorld::GetWorld()->CalculateDirectionalShadows();
 };
 
 // Called after finishing reading the world file
