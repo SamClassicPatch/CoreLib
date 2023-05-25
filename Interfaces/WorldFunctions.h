@@ -46,7 +46,7 @@ struct LibClassHolder {
   LibClassHolder(CEntityClass *pecSet) : pdec(pecSet->ec_pdecDLLClass) {};
 
   // Constructor from an entity
-  LibClassHolder(CEntity *penSet) : pdec(penSet->en_pecClass->ec_pdecDLLClass) {};
+  LibClassHolder(CEntity *penSet) : pdec(penSet->GetClass()->ec_pdecDLLClass) {};
 
   // Implicit converters into the library entity class
   inline CDLLEntityClass *operator->(void) const { return pdec; };
@@ -69,7 +69,7 @@ inline void GetEntitiesOfClass(CEntities &cInput, CEntities &cOutput, LibClassHo
     }
 
     // Same class
-    if (pen->en_pecClass->ec_pdecDLLClass == lchClass.pdec) {
+    if (pen->GetClass()->ec_pdecDLLClass == lchClass.pdec) {
       cOutput.Add(pen);
     }
   }
@@ -253,8 +253,9 @@ inline BOOL IsLiveEntity(CEntity *pen) {
   CDLLEntityClass *pdecClass = pen->GetClass()->ec_pdecDLLClass;
 
   for (; pdecClass != NULL; pdecClass = pdecClass->dec_pdecBase) {
-    // Same ID as CLiveEntity_DLLClass
-    if (pdecClass->dec_iID == 32001) {
+    // [Cecil] NOTE: Same ID as CLiveEntity_DLLClass or CRationalEntity_DLLClass because they don't have further pointers to classes that
+    // they derive from, i.e. an entity derived from CRationalEntity won't be detected as CLiveEntity because it's not in this hierarchy.
+    if (pdecClass->dec_iID == 32001 || pdecClass->dec_iID == 32002) {
       return TRUE;
     }
   }
