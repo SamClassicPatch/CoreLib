@@ -217,7 +217,7 @@ inline void Angle(CNetworkMessage &nm, ANGLE &f) {
   }
 };
 
-// Deompress placement
+// Decompress placement
 inline void Placement(CNetworkMessage &nm, CPlacement3D &pl) {
   Float(nm, pl.pl_PositionVector(1));
   Float(nm, pl.pl_PositionVector(2));

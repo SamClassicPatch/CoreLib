@@ -70,6 +70,10 @@ CExtPacket *CExtPacket::CreatePacket(EType ePacket, BOOL bClient) {
       case EXT_ENTITY_POSITION: return new CExtEntityPosition();
       case EXT_ENTITY_PARENT:   return new CExtEntityParent();
       case EXT_ENTITY_PROP:     return new CExtEntityProp();
+      case EXT_ENTITY_HEALTH:   return new CExtEntityHealth();
+      case EXT_ENTITY_FLAGS:    return new CExtEntityFlags();
+      case EXT_ENTITY_MOVE:     return new CExtEntityMove();
+      case EXT_ENTITY_ROTATE:   return new CExtEntityRotate();
     }
   }
 

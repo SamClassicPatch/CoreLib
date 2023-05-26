@@ -257,7 +257,7 @@ void CExtEntityCreate::Process(void) {
 
   try {
     penLast = IWorld::GetWorld()->CreateEntity_t(plPos, fnmClass);
-    ExtServerReport(TRANS("Created '%s' entity (%u)\n"), penLast->en_pecClass->ec_pdecDLLClass->dec_strName, penLast->en_ulID);
+    ExtServerReport(TRANS("Created '%s' entity (%u)\n"), penLast->GetClass()->ec_pdecDLLClass->dec_strName, penLast->en_ulID);
 
   } catch (char *strError) {
     ExtServerReport(TRANS("Cannot create entity: %s\n"), strError);

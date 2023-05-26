@@ -99,7 +99,10 @@
     <ClCompile Include="Networking\ExtPackets\ExtEntityCreate.cpp" />
     <ClCompile Include="Networking\ExtPackets\ExtEntityDelete.cpp" />
     <ClCompile Include="Networking\ExtPackets\ExtEntityEvent.cpp" />
+    <ClCompile Include="Networking\ExtPackets\ExtEntityFlags.cpp" />
+    <ClCompile Include="Networking\ExtPackets\ExtEntityHealth.cpp" />
     <ClCompile Include="Networking\ExtPackets\ExtEntityInit.cpp" />
+    <ClCompile Include="Networking\ExtPackets\ExtEntityMoveRotate.cpp" />
     <ClCompile Include="Networking\ExtPackets\ExtEntityParent.cpp" />
     <ClCompile Include="Networking\ExtPackets\ExtEntityPosition.cpp" />
     <ClCompile Include="Networking\ExtPackets\ExtEntityProp.cpp" />

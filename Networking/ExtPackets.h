@@ -43,6 +43,10 @@ class CExtPacket {
       EXT_ENTITY_POSITION, // Set position or rotation of an entity
       EXT_ENTITY_PARENT,   // Set entity's parent
       EXT_ENTITY_PROP,     // Change property value of an entity
+      EXT_ENTITY_HEALTH,   // Set entity health
+      EXT_ENTITY_FLAGS,    // Change various entity flags
+      EXT_ENTITY_MOVE,     // Set absolute movement speed of an entity
+      EXT_ENTITY_ROTATE,   // Set absolute rotation speed of an entity
 
       // Maximum amount of built-in packets
       EXT_MAX_PACKETS,
@@ -367,6 +371,95 @@ class CExtEntityProp : public CExtEntityPacket {
 
     virtual void Write(CNetworkMessage &nm);
     virtual void Read(CNetworkMessage &nm);
+    virtual void Process(void);
+};
+
+class CExtEntityHealth : public CExtEntityPacket {
+  public:
+    FLOAT fHealth; // Health to set
+
+  public:
+    CExtEntityHealth() : CExtEntityPacket(), fHealth(0.0f)
+    {
+    };
+
+  public:
+    virtual EType GetType(void) const {
+      return EXT_ENTITY_HEALTH;
+    };
+
+    virtual void Write(CNetworkMessage &nm);
+    virtual void Read(CNetworkMessage &nm);
+    virtual void Process(void);
+};
+
+class CExtEntityFlags : public CExtEntityPacket {
+  protected:
+    ULONG ulFlags; // Flags to apply
+    UBYTE ubType; // Type of flags
+    BOOL bRemove; // Disable flags instead of enabling
+
+  public:
+    CExtEntityFlags() : CExtEntityPacket(), ulFlags(0), ubType(0), bRemove(FALSE)
+    {
+    };
+
+    // Set normal flags
+    inline void EntityFlags(ULONG ul, BOOL bRemoveFlags) {
+      ulFlags = ul;
+      ubType = 0;
+      bRemove = bRemoveFlags;
+    };
+
+    // Set physical flags
+    inline void PhysicalFlags(ULONG ul, BOOL bRemoveFlags) {
+      ulFlags = ul;
+      ubType = 1;
+      bRemove = bRemoveFlags;
+    };
+
+    // Set collision flags
+    inline void CollisionFlags(ULONG ul, BOOL bRemoveFlags) {
+      ulFlags = ul;
+      ubType = 2;
+      bRemove = bRemoveFlags;
+    };
+
+  public:
+    virtual EType GetType(void) const {
+      return EXT_ENTITY_FLAGS;
+    };
+
+    virtual void Write(CNetworkMessage &nm);
+    virtual void Read(CNetworkMessage &nm);
+    virtual void Process(void);
+};
+
+class CExtEntityMove : public CExtEntityPacket {
+  public:
+    FLOAT3D vSpeed; // Desired speed
+
+  public:
+    CExtEntityMove() : CExtEntityPacket(), vSpeed(0.0f, 0.0f, 0.0f)
+    {
+    };
+
+  public:
+    virtual EType GetType(void) const {
+      return EXT_ENTITY_MOVE;
+    };
+
+    virtual void Write(CNetworkMessage &nm);
+    virtual void Read(CNetworkMessage &nm);
+    virtual void Process(void);
+};
+
+class CExtEntityRotate : public CExtEntityMove {
+  public:
+    virtual EType GetType(void) const {
+      return EXT_ENTITY_ROTATE;
+    };
+
     virtual void Process(void);
 };
 

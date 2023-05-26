@@ -43,7 +43,7 @@ void CExtEntityDelete::Process(void) {
 
   // Delete all entities of the same class
   if (bSameClass) {
-    const char *strClass = pen->en_pecClass->ec_pdecDLLClass->dec_strName;
+    const char *strClass = pen->GetClass()->ec_pdecDLLClass->dec_strName;
     
     CEntities cenDestroy;
     IWorld::FindClasses(IWorld::GetWorld()->wo_cenEntities, cenDestroy, strClass);
