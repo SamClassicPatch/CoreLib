@@ -37,8 +37,21 @@ void CExtEntityEvent::SetEvent(CEntityEvent &ee, size_t iEventSize) {
   // Count 4-byte fields
   ctFields = ceilf(FLOAT(iEventSize) * 0.25f);
 
+  // [Cecil] NOTE: If some event has CEntityPointer fields, they need to contain entity IDs as 4-byte integers
+  // instead of pointers to entities directly. When setting entity IDs for CEntityPointer fields, do it like this:
+  //   (ULONG &)ee.pen = iEntityID;
+  // DO NOT FORGET to do this at the end of the function to avoid crashes upon calling the pointer destructor:
+  //   (ULONG &)ee.pen = NULL;
   void *pEventData = ((UBYTE *)&ee) + iSkip;
   memcpy(eEvent.aulFields, pEventData, iEventSize);
+};
+
+// Copy event data from another event
+void CExtEntityEvent::Copy(const EExtEntityEvent &eeOther, ULONG ctSetFields) {
+  eEvent.ee_slEvent = eeOther.ee_slEvent;
+  memcpy(eEvent.aulFields, eeOther.aulFields, sizeof(eEvent.aulFields));
+
+  ctFields = ctSetFields;
 };
 
 void CExtEntityEvent::Write(CNetworkMessage &nm) {

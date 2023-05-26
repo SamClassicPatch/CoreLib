@@ -239,6 +239,9 @@ class CExtEntityEvent : public CExtEntityPacket {
     // Copy event bytes (iEventSize = sizeof(ee))
     void SetEvent(CEntityEvent &ee, size_t iEventSize);
 
+    // Copy event data from another event
+    void Copy(const EExtEntityEvent &eeOther, ULONG ctSetFields);
+
   public:
     virtual EType GetType(void) const {
       return EXT_ENTITY_EVENT;
