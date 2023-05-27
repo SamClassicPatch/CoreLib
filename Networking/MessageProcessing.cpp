@@ -495,21 +495,21 @@ BOOL IProcessPacket::OnSyncCheck(INDEX iClient, CNetworkMessage &nmMessage) {
 
     // Disconnect if the level has changed
     if (scLocal.sc_iLevel != scRemote.sc_iLevel) {
-      INetwork::SendDisconnectMessage(iClient, TRANS("Level change in progress. Please retry."), FALSE);
+      INetwork::SendDisconnectMessage(iClient, LOCALIZE("Level change in progress. Please retry."), FALSE);
 
     // Wrong CRC
     } else if (scLocal.sc_ulCRC != scRemote.sc_ulCRC) {
       sso.sso_ctBadSyncs++;
 
       if (pbReportSyncBad.GetIndex()) {
-        CPrintF(TRANS("SYNCBAD: Client '%s', Sequence %d Tick %.2f - bad %d\n"), 
+        CPrintF(LOCALIZE("SYNCBAD: Client '%s', Sequence %d Tick %.2f - bad %d\n"), 
           GetComm().Server_GetClientName(iClient), scRemote.sc_iSequence, tmTick, sso.sso_ctBadSyncs);
       }
 
       // Kick from too many bad sync
       if (piKickOnSyncBad.GetIndex() > 0) {
         if (sso.sso_ctBadSyncs >= piKickOnSyncBad.GetIndex()) {
-          INetwork::SendDisconnectMessage(iClient, TRANS("Too many bad syncs"), FALSE);
+          INetwork::SendDisconnectMessage(iClient, LOCALIZE("Too many bad syncs"), FALSE);
         }
 
       // Pause on any bad sync
@@ -522,7 +522,7 @@ BOOL IProcessPacket::OnSyncCheck(INDEX iClient, CNetworkMessage &nmMessage) {
       sso.sso_ctBadSyncs = 0;
 
       if (pbReportSyncOK.GetIndex()) {
-        CPrintF(TRANS("SYNCOK: Client '%s', Tick %.2f\n"), GetComm().Server_GetClientName(iClient), tmTick);
+        CPrintF(LOCALIZE("SYNCOK: Client '%s', Tick %.2f\n"), GetComm().Server_GetClientName(iClient), tmTick);
       }
     }
 
@@ -533,13 +533,13 @@ BOOL IProcessPacket::OnSyncCheck(INDEX iClient, CNetworkMessage &nmMessage) {
   } else if (iFound < 0) {
     // Only report if syncs are okay (to avoid late syncs on level change)
     if (pbReportSyncLate.GetIndex() && tmLastSync > 0) {
-      CPrintF(TRANS("SYNCLATE: Client '%s', Tick %.2f\n"), GetComm().Server_GetClientName(iClient), tmTick);
+      CPrintF(LOCALIZE("SYNCLATE: Client '%s', Tick %.2f\n"), GetComm().Server_GetClientName(iClient), tmTick);
     }
 
   // Too new
   } else {
     if (pbReportSyncEarly.GetIndex()) {
-      CPrintF(TRANS("SYNCEARLY: Client '%s', Tick %.2f\n"), GetComm().Server_GetClientName(iClient), tmTick);
+      CPrintF(LOCALIZE("SYNCEARLY: Client '%s', Tick %.2f\n"), GetComm().Server_GetClientName(iClient), tmTick);
     }
 
     // Remember that this sync was ahead of time
