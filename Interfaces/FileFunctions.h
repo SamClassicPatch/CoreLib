@@ -208,6 +208,9 @@ inline INDEX MatchesList(const CFileList &afnm, const CTString &strPattern)
   for (INDEX i = 0; i < afnm.Count(); i++) {
     const CTFileName &fnmCheck = afnm[i];
 
+    // Skip empty lines
+    if (fnmCheck == "") continue;
+
     // Starts with the pattern or matches the wildcards
     if (strPattern.HasPrefix(fnmCheck) || strPattern.Matches(fnmCheck)) {
       return i;
