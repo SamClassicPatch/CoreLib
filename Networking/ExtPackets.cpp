@@ -17,6 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "ExtPackets.h"
 #include "NetworkFunctions.h"
+#include "Modules/PacketCommands.h"
 
 #define VANILLA_EVENTS_ENTITY_ID
 #include "Compatibility/VanillaEvents.h"
@@ -85,6 +86,94 @@ CExtPacket *CExtPacket::CreatePacket(EType ePacket, BOOL bClient) {
 void CExtPacket::RegisterExtPackets(void)
 {
   _pShell->DeclareSymbol("persistent user INDEX ser_bReportExtPacketLogic;", &ser_bReportExtPacketLogic);
+
+  // Vanilla event types
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EStop;",                 (void *)&EVENTCODE_EStop);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EStart;",                (void *)&EVENTCODE_EStart);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EActivate;",             (void *)&EVENTCODE_EActivate);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EDeactivate;",           (void *)&EVENTCODE_EDeactivate);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EEnvironmentStart;",     (void *)&EVENTCODE_EEnvironmentStart);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EEnvironmentStop;",      (void *)&EVENTCODE_EEnvironmentStop);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EEnd;",                  (void *)&EVENTCODE_EEnd);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_ETrigger;",              (void *)&EVENTCODE_ETrigger);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_ETeleportMovingBrush;",  (void *)&EVENTCODE_ETeleportMovingBrush);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EReminder;",             (void *)&EVENTCODE_EReminder);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EStartAttack;",          (void *)&EVENTCODE_EStartAttack);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EStopAttack;",           (void *)&EVENTCODE_EStopAttack);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EStopBlindness;",        (void *)&EVENTCODE_EStopBlindness);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EStopDeafness;",         (void *)&EVENTCODE_EStopDeafness);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EReceiveScore;",         (void *)&EVENTCODE_EReceiveScore);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EKilledEnemy;",          (void *)&EVENTCODE_EKilledEnemy);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_ESecretFound;",          (void *)&EVENTCODE_ESecretFound);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_ERestartAttack;",        (void *)&EVENTCODE_ERestartAttack);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EReconsiderBehavior;",   (void *)&EVENTCODE_EReconsiderBehavior);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EForceWound;",           (void *)&EVENTCODE_EForceWound);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_ESelectWeapon;",         (void *)&EVENTCODE_ESelectWeapon);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EBoringWeapon;",         (void *)&EVENTCODE_EBoringWeapon);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EFireWeapon;",           (void *)&EVENTCODE_EFireWeapon);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EReleaseWeapon;",        (void *)&EVENTCODE_EReleaseWeapon);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EReloadWeapon;",         (void *)&EVENTCODE_EReloadWeapon);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EWeaponChanged;",        (void *)&EVENTCODE_EWeaponChanged);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EAirShockwave;",         (void *)&EVENTCODE_EAirShockwave);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EAirWave;",              (void *)&EVENTCODE_EAirWave);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_ESpawnEffect;",          (void *)&EVENTCODE_ESpawnEffect);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_ESpawnSpray;",           (void *)&EVENTCODE_ESpawnSpray);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EBulletInit;",           (void *)&EVENTCODE_EBulletInit);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_ELaunchCannonBall;",     (void *)&EVENTCODE_ELaunchCannonBall);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_ECyborgBike;",           (void *)&EVENTCODE_ECyborgBike);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_ESpawnDebris;",          (void *)&EVENTCODE_ESpawnDebris);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EDevilProjectile;",      (void *)&EVENTCODE_EDevilProjectile);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_ESpawnEffector;",        (void *)&EVENTCODE_ESpawnEffector);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EFlame;",                (void *)&EVENTCODE_EFlame);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_ELaunchLarvaOffspring;", (void *)&EVENTCODE_ELaunchLarvaOffspring);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EAnimatorInit;",         (void *)&EVENTCODE_EAnimatorInit);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EViewInit;",             (void *)&EVENTCODE_EViewInit);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EWeaponsInit;",          (void *)&EVENTCODE_EWeaponsInit);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EWeaponEffectInit;",     (void *)&EVENTCODE_EWeaponEffectInit);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_ELaunchProjectile;",     (void *)&EVENTCODE_ELaunchProjectile);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EReminderInit;",         (void *)&EVENTCODE_EReminderInit);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_ESeriousBomb;",          (void *)&EVENTCODE_ESeriousBomb);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_ESpawnerProjectile;",    (void *)&EVENTCODE_ESpawnerProjectile);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_ESpinnerInit;",          (void *)&EVENTCODE_ESpinnerInit);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_ETwister;",              (void *)&EVENTCODE_ETwister);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EWatcherInit;",          (void *)&EVENTCODE_EWatcherInit);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EWater;",                (void *)&EVENTCODE_EWater);
+
+  // Event setup
+  _pShell->DeclareSymbol("user void pck_SetupEvent(INDEX);", &IPacketCommands::SetupEvent);
+  _pShell->DeclareSymbol("user void pck_EventFieldIndex(INDEX, INDEX);", &IPacketCommands::EventFieldIndex);
+  _pShell->DeclareSymbol("user void pck_EventFieldFloat(INDEX, FLOAT);", &IPacketCommands::EventFieldFloat);
+  _pShell->DeclareSymbol("user void pck_EventFieldVector(INDEX, FLOAT, FLOAT, FLOAT);", &IPacketCommands::EventFieldVector);
+
+  // Entity instantiation
+  _pShell->DeclareSymbol("user void pck_EntityCreate(CTString);", &IPacketCommands::EntityCreate);
+  _pShell->DeclareSymbol("user void pck_EntityDelete(INDEX, INDEX);", &IPacketCommands::EntityDelete);
+  _pShell->DeclareSymbol("user void pck_EntityCopy(INDEX, INDEX);", &IPacketCommands::EntityCopy);
+
+  // Entity logic
+  _pShell->DeclareSymbol("user void pck_EntityEvent(INDEX, INDEX);", &IPacketCommands::EntityEvent);
+  _pShell->DeclareSymbol("user void pck_EntityInit(INDEX);", &IPacketCommands::EntityInit);
+  _pShell->DeclareSymbol("user void pck_EntityInitEvent(INDEX);", &IPacketCommands::EntityInitEvent);
+
+  // Entity placement
+  _pShell->DeclareSymbol("user void pck_EntitySetPos(INDEX, FLOAT, FLOAT, FLOAT, INDEX);", &IPacketCommands::EntitySetPos);
+  _pShell->DeclareSymbol("user void pck_EntitySetRot(INDEX, FLOAT, FLOAT, FLOAT, INDEX);", &IPacketCommands::EntitySetRot);
+  _pShell->DeclareSymbol("user void pck_EntityTeleport(INDEX, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, INDEX);", &IPacketCommands::EntityTeleport);
+
+  // Entity properties
+  _pShell->DeclareSymbol("user void pck_EntityParent(INDEX, INDEX);", &IPacketCommands::EntityParent);
+  _pShell->DeclareSymbol("user void pck_EntityNumberProp(INDEX, CTString, INDEX, FLOAT);", &IPacketCommands::EntityNumberProp);
+  _pShell->DeclareSymbol("user void pck_EntityStringProp(INDEX, CTString, INDEX, CTString);", &IPacketCommands::EntityStringProp);
+  _pShell->DeclareSymbol("user void pck_EntityHealth(INDEX, FLOAT);", &IPacketCommands::EntityHealth);
+
+  // Entity flags
+  _pShell->DeclareSymbol("user void pck_EntityFlags(INDEX, INDEX, INDEX);", &IPacketCommands::EntityFlags);
+  _pShell->DeclareSymbol("user void pck_EntityPhysicalFlags(INDEX, INDEX, INDEX);", &IPacketCommands::EntityPhysicalFlags);
+  _pShell->DeclareSymbol("user void pck_EntityCollisionFlags(INDEX, INDEX, INDEX);", &IPacketCommands::EntityCollisionFlags);
+
+  // Entity movement
+  _pShell->DeclareSymbol("user void pck_EntityMove(INDEX, FLOAT, FLOAT, FLOAT);", &IPacketCommands::EntityMove);
+  _pShell->DeclareSymbol("user void pck_EntityRotate(INDEX, FLOAT, FLOAT, FLOAT);", &IPacketCommands::EntityRotate);
 };
 
 // Write event into a network packet

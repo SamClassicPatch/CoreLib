@@ -243,6 +243,9 @@
     <ClInclude Include="Networking\HttpRequests.h">
       <Filter>Header Files\Networking headers</Filter>
     </ClInclude>
+    <ClInclude Include="Networking\Modules\PacketCommands.h">
+      <Filter>Header Files\Networking headers\Modules headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="StdH.cpp">
@@ -373,6 +376,9 @@
     </ClCompile>
     <ClCompile Include="Networking\ExtPackets\ExtEntityEvent.cpp">
       <Filter>Source Files\Networking\ExtPackets</Filter>
+    </ClCompile>
+    <ClCompile Include="Networking\Modules\PacketCommands.cpp">
+      <Filter>Source Files\Networking\Modules</Filter>
     </ClCompile>
     <ClCompile Include="Networking\ExtPackets\ExtEntityFlags.cpp">
       <Filter>Source Files\Networking\ExtPackets</Filter>

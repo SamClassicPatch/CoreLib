@@ -67,6 +67,7 @@
     <ClInclude Include="Networking\Modules\ClientIdentity.h" />
     <ClInclude Include="Networking\Modules\ClientLogging.h" />
     <ClInclude Include="Networking\Modules\ClientRestrictions.h" />
+    <ClInclude Include="Networking\Modules\PacketCommands.h" />
     <ClInclude Include="Networking\Modules\SplitScreenClients.h" />
     <ClInclude Include="Networking\Modules\StockCommands.h" />
     <ClInclude Include="Networking\NetworkFunctions.h" />
@@ -115,6 +116,7 @@
     <ClCompile Include="Networking\Modules\ClientIdentity.cpp" />
     <ClCompile Include="Networking\Modules\ClientLogging.cpp" />
     <ClCompile Include="Networking\Modules\ClientRestrictions.cpp" />
+    <ClCompile Include="Networking\Modules\PacketCommands.cpp" />
     <ClCompile Include="Networking\Modules\SplitScreenClients.cpp" />
     <ClCompile Include="Networking\Modules\StockCommands.cpp" />
     <ClCompile Include="Networking\NetworkFunctions.cpp" />
