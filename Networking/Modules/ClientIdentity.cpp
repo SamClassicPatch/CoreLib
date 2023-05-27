@@ -68,3 +68,45 @@ BOOL CClientIdentity::AddNewCharacter(const CPlayerCharacter &pc) {
   // Character already exists
   return FALSE;
 };
+
+// Write client identity data
+void CClientIdentity::Write(CTStream *strm) {
+  INDEX i, ct;
+
+  // Addresses
+  ct = aAddresses.Count();
+  *strm << ct;
+
+  for (i = 0; i < ct; i++) {
+    aAddresses[i].Write(strm);
+  }
+
+  // Characters
+  ct = aCharacters.Count();
+  *strm << ct;
+
+  for (i = 0; i < ct; i++) {
+    *strm << aCharacters[i];
+  }
+};
+
+// Read client identity data
+void CClientIdentity::Read(CTStream *strm) {
+  INDEX i, ct;
+
+  // Addresses
+  *strm >> ct;
+
+  for (i = 0; i < ct; i++) {
+    SClientAddress &addr = aAddresses.Push();
+    addr.Read(strm);
+  }
+
+  // Characters
+  *strm >> ct;
+
+  for (i = 0; i < ct; i++) {
+    CPlayerCharacter &pc = aCharacters.Push();
+    *strm >> pc;
+  }
+};

@@ -18,6 +18,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "ClientLogging.h"
 #include "Networking/CommInterface.h"
 
+#include <direct.h>
+
 // Get client's address by the client ID on the server
 void IClientLogging::GetAddress(SClientAddress &addr, INDEX iClient) {
   const BOOL bServer = GetComm().Server_IsClientLocal(iClient);
@@ -102,4 +104,61 @@ INDEX IClientLogging::FindByCharacter(INDEX &iClient, const CPlayerCharacter &pc
   // No client with this character
   iClient = -1;
   return -1;
+};
+
+// Client log file
+static const CTFileName _fnmClientLog = CTString("Data\\ClassicsPatch\\ClientLog.dat");
+
+// Save client log
+void IClientLogging::SaveLog(void) {
+  // Make sure the directory exists
+  _mkdir((_fnmApplicationPath + "Data\\ClassicsPatch\\").str_String);
+
+  try {
+    CTFileStream strm;
+    strm.Create_t(_fnmClientLog);
+
+    strm.WriteID_t("CLLG"); // CLient LoG
+
+    // Write clients
+    const INDEX ctClients = _aClientIdentities.Count();
+    strm << ctClients;
+
+    for (INDEX i = 0; i < ctClients; i++) {
+      CClientIdentity &ci = _aClientIdentities[i];
+      ci.Write(&strm);
+    }
+
+    strm.Close();
+
+  } catch (char *strError) {
+    CPrintF(TRANS("Cannot save client log file: %s\n"), strError);
+  }
+};
+
+// Load client log
+void IClientLogging::LoadLog(void) {
+  // No log file
+  if (!FileExists(_fnmClientLog)) return;
+
+  try {
+    CTFileStream strm;
+    strm.Open_t(_fnmClientLog);
+
+    strm.ExpectID_t("CLLG"); // CLient LoG
+
+    // Read clients
+    INDEX ctClients;
+    strm >> ctClients;
+
+    for (INDEX i = 0; i < ctClients; i++) {
+      CClientIdentity &ci = _aClientIdentities.Push();
+      ci.Read(&strm);
+    }
+
+    strm.Close();
+
+  } catch (char *strError) {
+    CPrintF(TRANS("Cannot load client log file: %s\n"), strError);
+  }
 };

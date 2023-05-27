@@ -18,6 +18,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <Engine/Base/Console_internal.h>
 #include "Interfaces/FileFunctions.h"
 
+#include "Networking/Modules/ClientLogging.h"
+
 // Define external core API
 CCoreAPI *_pCoreAPI = NULL;
 
@@ -251,6 +253,9 @@ void CCoreAPI::OnGameStop(void)
 
     pEvents->OnGameStop();
   }
+
+  // Save client log by the end of the game
+  IClientLogging::SaveLog();
 };
 
 // Called after saving the game

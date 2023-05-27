@@ -40,6 +40,13 @@ class CORE_API CClientIdentity {
 
     // Add a new character to the client
     BOOL AddNewCharacter(const CPlayerCharacter &pc);
+
+  public:
+    // Write client identity data
+    void Write(CTStream *strm);
+
+    // Read client identity data
+    void Read(CTStream *strm);
 };
 
 // Identities of every logged client

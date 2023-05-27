@@ -19,6 +19,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "Interfaces/FileFunctions.h"
 #include "Networking/NetworkFunctions.h"
 
+#include "Networking/Modules/ClientLogging.h"
+
 // Pointer to the Game module
 CGame *_pGame = NULL;
 
@@ -84,6 +86,9 @@ void CECIL_InitCore(void) {
   // Create timer handler for constant functionatily
   _pTimerHandler = new CCoreTimerHandler;
   _pTimer->AddHandler(_pTimerHandler);
+
+  // Load client log
+  IClientLogging::LoadLog();
 
   // Load Core plugins
   GetAPI()->LoadPlugins(CPluginAPI::PF_ENGINE);

@@ -82,6 +82,18 @@ struct CORE_API SClientAddress {
 
       return *this;
     };
+
+    // Write address
+    inline void Write(CTStream *strm) {
+      *strm << ulIP;
+      *strm << strHost;
+    };
+
+    // Read address
+    inline void Read(CTStream *strm) {
+      *strm >> ulIP;
+      *strm >> strHost;
+    };
 };
 
 // Interface with methods for client logging
@@ -99,6 +111,13 @@ class CORE_API IClientLogging {
 
     // Find client index in the list from a character and return character index
     static INDEX FindByCharacter(INDEX &iClient, const CPlayerCharacter &pc);
+
+  public:
+    // Save client log
+    static void SaveLog(void);
+
+    // Load client log
+    static void LoadLog(void);
 };
 
 // Declare all elements of client logging system
