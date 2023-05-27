@@ -82,10 +82,25 @@ CExtPacket *CExtPacket::CreatePacket(EType ePacket, BOOL bClient) {
   return NULL;
 };
 
+// [Cecil] TEMP: Get entity of a specific class under a certain index
+static INDEX GetEntity(const CTString &strClass, INDEX iEntity) {
+  CEntities cen;
+  IWorld::FindClasses(IWorld::GetWorld()->wo_cenEntities, cen, strClass);
+
+  if (iEntity < cen.Count()) {
+    return cen[iEntity].en_ulID;
+  }
+
+  return -1;
+};
+
 // Register the module
 void CExtPacket::RegisterExtPackets(void)
 {
   _pShell->DeclareSymbol("persistent user INDEX ser_bReportExtPacketLogic;", &ser_bReportExtPacketLogic);
+
+  // [Cecil] TEMP: Get entity of a specific class under a certain index
+  _pShell->DeclareSymbol("user INDEX GetEntity(CTString, INDEX);", &GetEntity);
 
   // Vanilla event types
   _pShell->DeclareSymbol("const INDEX EVENTCODE_EStop;",                 (void *)&EVENTCODE_EStop);
