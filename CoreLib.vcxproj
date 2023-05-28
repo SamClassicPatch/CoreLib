@@ -48,6 +48,7 @@
       <FileType>Document</FileType>
     </ClInclude>
     <ClInclude Include="GameSpecific.h" />
+    <ClInclude Include="Interfaces\ConfigFunctions.h" />
     <ClInclude Include="Interfaces\DataFunctions.h" />
     <ClInclude Include="Interfaces\FileFunctions.h" />
     <ClInclude Include="Interfaces\GfxFunctions.h" />
