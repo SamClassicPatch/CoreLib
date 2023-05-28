@@ -25,8 +25,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <io.h>
 
-typedef CDynamicStackArray<CTFileName> CFileList;
-
 // Interface of useful methods for file manipulation
 namespace IFiles {
 
@@ -67,7 +65,7 @@ inline INDEX GetSlashPos(const char *strString) {
 inline void SetAbsolutePath(CTFileName &fnm) {
   // Collect path parts
   CTString strRemaining(fnm);
-  CStaticStackArray<CTString> astrParts;
+  CStringStack astrParts;
 
   INDEX iSlashPos = GetSlashPos(strRemaining);
 
@@ -102,18 +100,18 @@ inline void SetAbsolutePath(CTFileName &fnm) {
     if (iPart == 0) return;
 
     // Remove ordered
-    CStaticStackArray<CTString> astrShrinked;
-    astrShrinked.Push(astrParts.Count() - 2);
-    astrShrinked.PopAll();
+    CStringStack astrShrunk;
+    astrShrunk.Push(astrParts.Count() - 2);
+    astrShrunk.PopAll();
 
     for (INDEX iCopiedPart = 0; iCopiedPart < astrParts.Count(); iCopiedPart++)
     {
       if ((iCopiedPart != iPart - 1) && (iCopiedPart != iPart)) {
-        astrShrinked.Push() = astrParts[iCopiedPart];
+        astrShrunk.Push() = astrParts[iCopiedPart];
       }
     }
 
-    astrParts.MoveArray(astrShrinked);
+    astrParts.MoveArray(astrShrunk);
     iPart -= 2;
   }
 

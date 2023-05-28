@@ -20,8 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #pragma once
 #endif
 
-// Declare certain classes | Which files to include to define classes
-class CPatch; // #include <CoreLib/Patcher/patcher.h>
+#include <CoreLib/Patcher/FuncPatching.h>
 
 // Pointer to a function patch under a hashed name
 struct SFuncPatch {

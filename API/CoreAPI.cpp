@@ -183,7 +183,7 @@ void CCoreAPI::ReinitConsole(INDEX ctCharsPerLine, INDEX ctLines) {
   ctCharsPerLine = Clamp(ctCharsPerLine, (INDEX)90, (INDEX)256);
 
   // Save last console log
-  CStaticStackArray<CTString> aLastLines;
+  CStringStack aLastLines;
   INDEX ctLastLines = con.con_ctLines;
 
   while (--ctLastLines >= 0) {

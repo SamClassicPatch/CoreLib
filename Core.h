@@ -51,12 +51,8 @@ CORE_API extern CTString sam_strIntroLevel;
 CORE_API extern CTString sam_strGameName;
 CORE_API extern CTString sam_strVersion;
 
-// Game-specific definitions
-#include "GameSpecific.h"
-
 // Common components
 #include "API/CoreAPI.h"
-#include "Patcher/FuncPatching.h"
 #include "Modules/PluginStock.h"
 
 #include "Interfaces/RenderFunctions.h"

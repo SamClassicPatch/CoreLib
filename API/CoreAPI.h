@@ -23,6 +23,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Include Serious Engine
 #include <Engine/Engine.h>
 
+// Classics Patch configuration and game-specific definitions
+#include <CoreLib/Config.h>
+#include <CoreLib/GameSpecific.h>
+
+// Useful types
+typedef CStaticStackArray<CTString> CStringStack; // Expandable array of strings
+typedef CDynamicStackArray<CTFileName> CFileList; // Listed files/paths
+
 // Define empty API if not utilizing Core directly
 #ifndef CORE_API
   #define CORE_API
