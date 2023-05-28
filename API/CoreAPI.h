@@ -43,6 +43,9 @@ typedef CDynamicStackArray<CTFileName> CFileList; // Listed files/paths
 // Current API version
 #define CORE_API_VERSION 4
 
+// Current Classics Patch version
+#define CORE_PATCH_VERSION CCoreAPI::MakeVersion(1, 5, 1)
+
 // Declare API submodules
 class CPatchAPI;
 class CGameAPI;
