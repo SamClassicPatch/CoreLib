@@ -31,6 +31,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 typedef CStaticStackArray<CTString> CStringStack; // Expandable array of strings
 typedef CDynamicStackArray<CTFileName> CFileList; // Listed files/paths
 
+// Next argument in the symbol function call
+#define NEXT_ARG(Type) (*((Type *&)pArgs)++)
+
+// Translate a string that has already been translated in vanilla localizations
+#define LOCALIZE(ConstString) ((char *)TranslateConst(ConstString, 0))
+
 // Define empty API if not utilizing Core directly
 #ifndef CORE_API
   #define CORE_API
@@ -271,11 +277,5 @@ inline CPluginAPI *GetPluginAPI(void) {
 #include "PatchAPI.h"
 #include "GameAPI.h"
 #include "PluginAPI.h"
-
-// Next argument in the symbol function call
-#define NEXT_ARG(Type) (*((Type *&)pArgs)++)
-
-// Translate a string that has already been translated in vanilla localizations
-#define LOCALIZE(ConstString) ((char *)TranslateConst(ConstString, 0))
 
 #endif

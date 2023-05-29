@@ -172,6 +172,16 @@ void CPluginModule::Load_t(const CTFileName &fnmDLL)
   // Remember filename
   ser_FileName = fnmDLL;
 
+  // Load plugin's configuration file
+  const CTString strConfig = "Bin\\Plugins\\" + fnmDLL.FileName() + ".ini";
+
+  try {
+    IConfig::ReadConfig_t(GetInfo().aProperties, strConfig);
+
+  } catch (char *strError) {
+    CPrintF(TRANS("Cannot load config file '%s':\n%s\n"), strConfig.str_String, strError);
+  }
+
   // Load library from file
   CTFileName fnmExpanded;
   ExpandFilePath(EFP_READ | EFP_NOZIPS, fnmDLL, fnmExpanded);

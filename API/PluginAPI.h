@@ -20,6 +20,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #pragma once
 #endif
 
+#include <CoreLib/Interfaces/ConfigFunctions.h>
+
 // Define plugin symbols
 #include "Plugins/PluginSymbols.h"
 
@@ -55,6 +57,9 @@ class CORE_API CPluginAPI {
       ULONG    ulVersion;      // Plugin version
       CTString strDescription; // Brief plugin description
 
+      // Read-only data
+      IConfig::CProperties aProperties; // Loaded plugin properties
+
       // Constructor
       PluginInfo() : apiVer(0), ulFlags(0), ulVersion(0),
         strAuthor("Unknown"), strName("No name"), strDescription("None")
@@ -65,6 +70,22 @@ class CORE_API CPluginAPI {
       inline void SetUtility(ULONG ulSetFlags) {
         apiVer = CORE_API_VERSION;
         ulFlags = ulSetFlags;
+      };
+
+      // Get value from some plugin property
+      inline CTString GetValue(const CTString &strProperty) {
+        const INDEX ct = aProperties.Count();
+
+        for (INDEX i = 0; i < ct; i++) {
+          const CTString &strKey = aProperties[i].strKey;
+
+          if (strKey == strProperty) {
+            return aProperties[i].strVal;
+          }
+        }
+
+        ASSERTALWAYS("Cannot find property in the plugin's config!");
+        return "";
       };
     };
 

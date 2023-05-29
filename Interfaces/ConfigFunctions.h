@@ -34,7 +34,7 @@ struct SConfigPair {
 // List of config properties
 typedef CStaticStackArray<SConfigPair> CProperties;
 
-inline BOOL ReadConfig(CProperties &aProps, const CTString &strFile) {
+inline BOOL ReadConfig_t(CProperties &aProps, const CTString &strFile) {
   // Opened and read at least one property
   BOOL bRead = FALSE;
 
@@ -64,7 +64,7 @@ inline BOOL ReadConfig(CProperties &aProps, const CTString &strFile) {
       // Try to read property with a string value
       if (strLine.ScanF("%1024[^=]=%1024s", strProp, strValue) != 2) {
         // Invalid line
-        ThrowF_t(TRANS("Invalid key-value pair on line %d"), iLine);
+        throw iLine;
       }
 
       // Add new property
@@ -75,8 +75,13 @@ inline BOOL ReadConfig(CProperties &aProps, const CTString &strFile) {
       bRead = TRUE;
     }
 
+  // Ignore reading errors
   } catch (char *strError) {
-    CPrintF(TRANS("Cannot read config file:\n%s\n"), strError);
+    (void)strError;
+
+  // Throw line error as a string
+  } catch (INDEX iError) {
+    ThrowF_t(TRANS("Cannot read config file '%s':\nInvalid key-value pair on line %d"), strFile, iError);
   }
 
   return bRead;
