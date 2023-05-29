@@ -40,6 +40,7 @@ enum EFileListFlags {
   FLF_ONLYCD      = (1 << 3),      // List exclusively from the CD directory
   FLF_ONLYMOD     = (1 << 4),      // List exclusively from the mod directory
   FLF_IGNORELISTS = (1 << 5),      // Ignore include/exclude lists if playing a mod
+  FLF_IGNOREGRO   = (1 << 6),      // Ignore contents of loaded GRO packages
 };
 
 // Include/exclude lists for base directory writing/reading
@@ -332,37 +333,49 @@ inline void ListGameFiles(CFileList &afnmFiles, const CTString &strDir, const CT
     }
   }
 
-  // For each file in the archives
-  INDEX ctFilesInZips = IUnzip::GetFileCount();
+  // Search for files in the archives
+  if (!(ulFlags & FLF_IGNOREGRO)) {
+    INDEX ctFilesInZips = IUnzip::GetFileCount();
 
-  for (INDEX iFileInZip = 0; iFileInZip < ctFilesInZips; iFileInZip++) {
-    const CTFileName &fnm = IUnzip::GetFileAtIndex(iFileInZip);
+    for (INDEX iFileInZip = 0; iFileInZip < ctFilesInZips; iFileInZip++) {
+      const CTFileName &fnm = IUnzip::GetFileAtIndex(iFileInZip);
 
-    // Skip if not under this directory
-    if (bRecursive) {
-      if (!fnm.HasPrefix(strDir)) {
+      // Skip if not under this directory
+      if (bRecursive) {
+        if (!fnm.HasPrefix(strDir)) continue;
+
+      // Skip if not the same directory
+      } else if (fnm.FileDir() != strDir) {
         continue;
       }
 
-    } else if (fnm.FileDir() != strDir) {
-      continue;
-    }
+      // Doesn't match the pattern
+      if (strPattern != "" && !fnm.Matches(strPattern)) continue;
 
-    // Doesn't match the pattern
-    if (strPattern != "" && !fnm.Matches(strPattern)) {
-      continue;
-    }
+      BOOL bFileFromMod = IUnzip::IsFileAtIndexMod(iFileInZip);
 
-    // If a mod is active and the file is not in a mod
-    if (_fnmMod != "" && !IUnzip::IsFileAtIndexMod(iFileInZip)) {
-      // Skip if it doesn't match the browse paths
-      if (MatchesList(aBaseBrowseInc, fnm) == -1 || MatchesList(aBaseBrowseExc, fnm) != -1) {
-        continue;
+      // List files exclusively from the mod
+      if (ulFlags & FLF_ONLYMOD) {
+        if (bMod && bFileFromMod) {
+          afnmTemp.Push() = fnm;
+        }
+
+      // List files from the game
+      } else if (!bFileFromMod) {
+        // Not a mod or shouldn't match mod's browse paths
+        if (!bLists) {
+          afnmTemp.Push() = fnm;
+
+        // Matches mod's browse paths
+        } else if (MatchesList(aBaseBrowseInc, fnm) != -1 && MatchesList(aBaseBrowseExc, fnm) == -1) {
+          afnmTemp.Push() = fnm;
+        }
+
+      // List extras from the mod
+      } else if (ulFlags & FLF_SEARCHMOD && bMod) {
+        afnmTemp.Push() = fnm;
       }
     }
-
-    // Add the file
-    afnmTemp.Push() = fnm;
   }
 
   const INDEX ctFiles = afnmTemp.Count();
