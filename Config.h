@@ -40,6 +40,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #define CLASSICSPATCH_CONVERT_MAPS  1 // Implement functionality for converting loaded worlds
 
   // Patch modules
+  #define CLASSICSPATCH_EXTEND_ENTITIES   1 // Extend entities functionality by patching their methods
   #define CLASSICSPATCH_EXTEND_FILESYSTEM 1 // Extend file system functionality by patching its methods
   #define CLASSICSPATCH_EXTEND_NETWORK    1 // Extend networking functionality by patching its methods
   #define CLASSICSPATCH_FIX_RENDERING     1 // Fix FOV and other rendering issues by patching methods

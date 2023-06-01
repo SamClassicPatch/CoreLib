@@ -153,6 +153,24 @@ class IWorldEvents : public IAbstractEvents {
     virtual void OnWorldLoad(CWorld *pwo, const CTFileName &fnmWorld);
 };
 
+// Listener events
+class IListenerEvents : public IAbstractEvents {
+  public:
+    // Return handlers container
+    virtual CPluginInterfaces *GetContainer(void) {
+      return &GetPluginAPI()->cListenerEvents;
+    };
+
+    // Upon sending any event via entity logic
+    virtual void OnSendEvent(CEntity *pen, const CEntityEvent &ee);
+
+    // Upon any player receiving some item
+    virtual void OnReceiveItem(CEntity *penPlayer, const CEntityEvent &ee, BOOL bPickedUp);
+
+    // Upon calling an internal subautomation within entity logic
+    virtual void OnCallProcedure(CEntity *pen, const CEntityEvent &ee);
+};
+
 // Iteration through specific plugin event handlers
 #define FOREACHPLUGINHANDLER(_Container, _HandlerType, _Iter) \
   CDynamicContainer<_HandlerType> &cont_##_HandlerType = (CDynamicContainer<_HandlerType> &)_Container; \

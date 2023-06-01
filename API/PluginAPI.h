@@ -101,6 +101,7 @@ class CORE_API CPluginAPI {
     CPluginInterfaces cNetworkEvents;
     CPluginInterfaces cGameEvents;
     CPluginInterfaces cWorldEvents;
+    CPluginInterfaces cListenerEvents;
 
   public:
     // Constructor
