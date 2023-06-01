@@ -32,7 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define CLEAR_TO_DEFAULT(_EventClass) inline void ClearToDefault(_EventClass &e) { e = _EventClass(); }
 #define DEFINE_MAKE_COPY(_EventClass) CEntityEvent *MakeCopy(void) { return new _EventClass(*this); }
 
-// Global events
+// Trigger events
 
 // Stop event
 static const SLONG EVENTCODE_EStop = 0x00000000;
@@ -207,7 +207,280 @@ class ESecretFound : public CEntityEvent {
 };
 CLEAR_TO_DEFAULT(ESecretFound);
 
+// Other global events
+
+// Notify about a sound from something
+static const SLONG EVENTCODE_ESound = 0x00000011;
+class ESound : public CEntityEvent {
+  public:
+    INDEX EsndtSound; // SoundType enum
+    CVanillaEventEntity penTarget;
+
+    ESound() : CEntityEvent(EVENTCODE_ESound) {
+      ClearToDefault(EsndtSound);
+      ClearToDefault(penTarget);
+    };
+
+    DEFINE_MAKE_COPY(ESound);
+};
+CLEAR_TO_DEFAULT(ESound);
+
+// Trigger ScrollHolder
+static const SLONG EVENTCODE_EScroll = 0x00000012;
+class EScroll : public CEntityEvent {
+  public:
+    BOOL bStart;
+    CVanillaEventEntity penSender;
+
+    EScroll() : CEntityEvent(EVENTCODE_EScroll) {
+      ClearToDefault(bStart);
+      ClearToDefault(penSender);
+    };
+
+    DEFINE_MAKE_COPY(EScroll);
+};
+CLEAR_TO_DEFAULT(EScroll);
+
+// Trigger TextFXHolder
+static const SLONG EVENTCODE_ETextFX = 0x00000013;
+class ETextFX : public CEntityEvent {
+  public:
+    BOOL bStart;
+    CVanillaEventEntity penSender;
+
+    ETextFX() : CEntityEvent(EVENTCODE_ETextFX) {
+      ClearToDefault(bStart);
+      ClearToDefault(penSender);
+    };
+
+    DEFINE_MAKE_COPY(ETextFX);
+};
+CLEAR_TO_DEFAULT(ETextFX);
+
+// Trigger HudPicHolder
+static const SLONG EVENTCODE_EHudPicFX = 0x00000014;
+class EHudPicFX : public CEntityEvent {
+  public:
+    BOOL bStart;
+    CVanillaEventEntity penSender;
+
+    EHudPicFX() : CEntityEvent(EVENTCODE_EHudPicFX) {
+      ClearToDefault(bStart);
+      ClearToDefault(penSender);
+    };
+
+    DEFINE_MAKE_COPY(EHudPicFX);
+};
+CLEAR_TO_DEFAULT(EHudPicFX);
+
+// Trigger CreditsHolder
+static const SLONG EVENTCODE_ECredits = 0x00000015;
+class ECredits : public CEntityEvent {
+  public:
+    BOOL bStart;
+    CVanillaEventEntity penSender;
+
+    ECredits() : CEntityEvent(EVENTCODE_ECredits) {
+      ClearToDefault(bStart);
+      ClearToDefault(penSender);
+    };
+
+    DEFINE_MAKE_COPY(ECredits);
+};
+CLEAR_TO_DEFAULT(ECredits);
+
+// Display center message
+static const SLONG EVENTCODE_ECenterMessage = 0x00000016;
+class ECenterMessage : public CEntityEvent {
+  public:
+    CTString strMessage;
+    TIME tmLength;
+    INDEX mssSound; // MessageSound enum
+
+    ECenterMessage() : CEntityEvent(EVENTCODE_ECenterMessage) {
+      ClearToDefault(strMessage);
+      ClearToDefault(tmLength);
+      ClearToDefault(mssSound);
+    };
+
+    DEFINE_MAKE_COPY(ECenterMessage);
+};
+CLEAR_TO_DEFAULT(ECenterMessage);
+
+// Receive computer message
+static const SLONG EVENTCODE_EComputerMessage = 0x00000017;
+class EComputerMessage : public CEntityEvent {
+  public:
+    CTFileName fnmMessage;
+
+    EComputerMessage() : CEntityEvent(EVENTCODE_EComputerMessage) {
+      ClearToDefault(fnmMessage);
+    };
+
+    DEFINE_MAKE_COPY(EComputerMessage);
+};
+CLEAR_TO_DEFAULT(EComputerMessage);
+
+// Play voice message
+static const SLONG EVENTCODE_EVoiceMessage = 0x00000018;
+class EVoiceMessage : public CEntityEvent {
+  public:
+    CTFileName fnmMessage;
+
+    EVoiceMessage() : CEntityEvent(EVENTCODE_EVoiceMessage) {
+      ClearToDefault(fnmMessage);
+    };
+
+    DEFINE_MAKE_COPY(EVoiceMessage);
+};
+CLEAR_TO_DEFAULT(EVoiceMessage);
+
+// Get hit by the spaceship's beam
+static const SLONG EVENTCODE_EHitBySpaceShipBeam = 0x00000019;
+class EHitBySpaceShipBeam : public CEntityEvent {
+  public:
+    EHitBySpaceShipBeam() : CEntityEvent(EVENTCODE_EHitBySpaceShipBeam) {};
+    DEFINE_MAKE_COPY(EHitBySpaceShipBeam);
+};
+CLEAR_TO_DEFAULT(EHitBySpaceShipBeam);
+
 // Specific entity events
+
+// AmmoItem: Receive ammo
+static const SLONG EVENTCODE_EAmmoItem = 0x03230000;
+class EAmmoItem : public CEntityEvent {
+  public:
+    INDEX EaitType; // AmmoItemType enum
+    INDEX iQuantity;
+
+    EAmmoItem() : CEntityEvent(EVENTCODE_EAmmoItem) {
+      ClearToDefault(EaitType);
+      ClearToDefault(iQuantity);
+    };
+
+    DEFINE_MAKE_COPY(EAmmoItem);
+};
+CLEAR_TO_DEFAULT(EAmmoItem);
+
+// AmmoPack: Receive ammo pack
+static const SLONG EVENTCODE_EAmmoPackItem = 0x03260000;
+class EAmmoPackItem : public CEntityEvent {
+  public:
+    INDEX iShells;
+    INDEX iBullets;
+    INDEX iRockets;
+    INDEX iGrenades;
+    INDEX iNapalm;
+    INDEX iElectricity;
+    INDEX iIronBalls;
+    INDEX iSniperBullets;
+
+    EAmmoPackItem() : CEntityEvent(EVENTCODE_EAmmoPackItem) {
+      ClearToDefault(iShells);
+      ClearToDefault(iBullets);
+      ClearToDefault(iRockets);
+      ClearToDefault(iGrenades);
+      ClearToDefault(iNapalm);
+      ClearToDefault(iElectricity);
+      ClearToDefault(iIronBalls);
+      ClearToDefault(iSniperBullets);
+    };
+
+    DEFINE_MAKE_COPY(EAmmoPackItem);
+};
+CLEAR_TO_DEFAULT(EAmmoPackItem);
+
+// ArmorItem: Receive armor
+static const SLONG EVENTCODE_EArmor = 0x03240000;
+class EArmor : public CEntityEvent {
+  public:
+    FLOAT fArmor;
+    BOOL bOverTopArmor;
+
+    EArmor() : CEntityEvent(EVENTCODE_EArmor) {
+      ClearToDefault(fArmor);
+      ClearToDefault(bOverTopArmor);
+    };
+
+    DEFINE_MAKE_COPY(EArmor);
+};
+CLEAR_TO_DEFAULT(EArmor);
+
+// HealthItem: Receive health
+static const SLONG EVENTCODE_EHealth = 0x03210000;
+class EHealth : public CEntityEvent {
+  public:
+    FLOAT fHealth;
+    BOOL bOverTopArmor;
+
+    EHealth() : CEntityEvent(EVENTCODE_EHealth) {
+      ClearToDefault(fHealth);
+      ClearToDefault(bOverTopArmor);
+    };
+
+    DEFINE_MAKE_COPY(EHealth);
+};
+CLEAR_TO_DEFAULT(EHealth);
+
+// KeyItem: Receive key
+static const SLONG EVENTCODE_EKey = 0x03250000;
+class EKey : public CEntityEvent {
+  public:
+    INDEX kitType; // KeyItemType enum
+
+    EKey() : CEntityEvent(EVENTCODE_EKey) {
+      ClearToDefault(kitType);
+    };
+
+    DEFINE_MAKE_COPY(EKey);
+};
+CLEAR_TO_DEFAULT(EKey);
+
+// MessageItem: Receive message
+static const SLONG EVENTCODE_EMessageItem = 0x03270000;
+class EMessageItem : public CEntityEvent {
+  public:
+    CTFileName fnmMessage;
+
+    EMessageItem() : CEntityEvent(EVENTCODE_EMessageItem) {
+      ClearToDefault(fnmMessage);
+    };
+
+    DEFINE_MAKE_COPY(EMessageItem);
+};
+CLEAR_TO_DEFAULT(EMessageItem);
+
+// PowerUpItem: Receive powerup
+static const SLONG EVENTCODE_EPowerUp = 0x03280000;
+class EPowerUp : public CEntityEvent {
+  public:
+    INDEX puitType; // PowerUpItemType enum
+
+    EPowerUp() : CEntityEvent(EVENTCODE_EPowerUp) {
+      ClearToDefault(puitType);
+    };
+
+    DEFINE_MAKE_COPY(EPowerUp);
+};
+CLEAR_TO_DEFAULT(EPowerUp);
+
+// WeaponItem: Receive weapon
+static const SLONG EVENTCODE_EWeaponItem = 0x03220000;
+class EWeaponItem : public CEntityEvent {
+  public:
+    INDEX iWeapon;
+    INDEX iAmmo;
+    BOOL bDropped;
+
+    EWeaponItem() : CEntityEvent(EVENTCODE_EWeaponItem) {
+      ClearToDefault(iWeapon);
+      ClearToDefault(iAmmo);
+      ClearToDefault(bDropped);
+    };
+
+    DEFINE_MAKE_COPY(EWeaponItem);
+};
+CLEAR_TO_DEFAULT(EWeaponItem);
 
 // EnemyBase: Restart attack
 static const SLONG EVENTCODE_ERestartAttack = 0x01360000;
