@@ -228,4 +228,12 @@ void EntityRotate(INDEX iEntity, FLOAT fH, FLOAT fP, FLOAT fB) {
   pck.SendPacket();
 };
 
+// Give impulse in an absolute direction
+void EntityImpulse(INDEX iEntity, FLOAT fX, FLOAT fY, FLOAT fZ) {
+  CExtEntityImpulse pck;
+  pck.ulEntity = iEntity;
+  pck.vSpeed = FLOAT3D(fX, fY, fZ);
+  pck.SendPacket();
+};
+
 }; // namespace

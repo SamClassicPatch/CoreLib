@@ -58,6 +58,7 @@ void EntityCollisionFlags(INDEX iEntity, INDEX iFlags, INDEX iRemove);
 // Entity movement
 void EntityMove(INDEX iEntity, FLOAT fX, FLOAT fY, FLOAT fZ);
 void EntityRotate(INDEX iEntity, FLOAT fH, FLOAT fP, FLOAT fB);
+void EntityImpulse(INDEX iEntity, FLOAT fX, FLOAT fY, FLOAT fZ);
 
 }; // namespace
 

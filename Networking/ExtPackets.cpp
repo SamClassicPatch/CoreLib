@@ -75,6 +75,7 @@ CExtPacket *CExtPacket::CreatePacket(EType ePacket, BOOL bClient) {
       case EXT_ENTITY_FLAGS:    return new CExtEntityFlags();
       case EXT_ENTITY_MOVE:     return new CExtEntityMove();
       case EXT_ENTITY_ROTATE:   return new CExtEntityRotate();
+      case EXT_ENTITY_IMPULSE:  return new CExtEntityImpulse();
     }
   }
 
@@ -189,6 +190,7 @@ void CExtPacket::RegisterExtPackets(void)
   // Entity movement
   _pShell->DeclareSymbol("user void pck_EntityMove(INDEX, FLOAT, FLOAT, FLOAT);", &IPacketCommands::EntityMove);
   _pShell->DeclareSymbol("user void pck_EntityRotate(INDEX, FLOAT, FLOAT, FLOAT);", &IPacketCommands::EntityRotate);
+  _pShell->DeclareSymbol("user void pck_EntityImpulse(INDEX, FLOAT, FLOAT, FLOAT);", &IPacketCommands::EntityImpulse);
 };
 
 // Write event into a network packet

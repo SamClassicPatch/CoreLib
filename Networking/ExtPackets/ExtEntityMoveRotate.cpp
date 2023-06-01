@@ -33,6 +33,8 @@ void CExtEntityMove::Read(CNetworkMessage &nm) {
   INetDecompress::Float(nm, vSpeed(3));
 };
 
+#define REPORT_NOT_MOVABLE TRANS("not a movable entity")
+
 void CExtEntityMove::Process(void) {
   CEntity *pen = GetEntity();
 
@@ -43,7 +45,7 @@ void CExtEntityMove::Process(void) {
     ExtServerReport(TRANS("Changed movement speed of %u entity to [%.2f, %.2f, %.2f]\n"), pen->en_ulID, vSpeed(1), vSpeed(2), vSpeed(3));
 
   } else {
-    ExtServerReport(TRANS("Cannot change movement speed for %u entity: not a movable entity\n"), pen->en_ulID);
+    ExtServerReport(TRANS("Cannot change movement speed for %u entity: %s\n"), pen->en_ulID, REPORT_NOT_MOVABLE);
   }
 };
 
@@ -57,7 +59,21 @@ void CExtEntityRotate::Process(void) {
     ExtServerReport(TRANS("Changed rotation speed of %u entity to [%.2f, %.2f, %.2f]\n"), pen->en_ulID, vSpeed(1), vSpeed(2), vSpeed(3));
 
   } else {
-    ExtServerReport(TRANS("Cannot change rotation speed for %u entity: not a movable entity\n"), pen->en_ulID);
+    ExtServerReport(TRANS("Cannot change rotation speed for %u entity: %s\n"), pen->en_ulID, REPORT_NOT_MOVABLE);
+  }
+};
+
+void CExtEntityImpulse::Process(void) {
+  CEntity *pen = GetEntity();
+
+  if (pen == NULL) return;
+
+  if (IsDerivedFromClass(pen, "MovableEntity")) {
+    ((CMovableEntity *)pen)->GiveImpulseTranslationAbsolute(vSpeed);
+    ExtServerReport(TRANS("Gave [%.2f, %.2f, %.2f] impulse to %u entity\n"), vSpeed(1), vSpeed(2), vSpeed(3), pen->en_ulID);
+
+  } else {
+    ExtServerReport(TRANS("Cannot give impulse to %u entity: %s\n"), pen->en_ulID, REPORT_NOT_MOVABLE);
   }
 };
 

@@ -47,6 +47,7 @@ class CExtPacket {
       EXT_ENTITY_FLAGS,    // Change various entity flags
       EXT_ENTITY_MOVE,     // Set absolute movement speed of an entity
       EXT_ENTITY_ROTATE,   // Set absolute rotation speed of an entity
+      EXT_ENTITY_IMPULSE,  // Give impulse to some entity
 
       // Maximum amount of built-in packets
       EXT_MAX_PACKETS,
@@ -461,6 +462,15 @@ class CExtEntityRotate : public CExtEntityMove {
   public:
     virtual EType GetType(void) const {
       return EXT_ENTITY_ROTATE;
+    };
+
+    virtual void Process(void);
+};
+
+class CExtEntityImpulse : public CExtEntityMove {
+  public:
+    virtual EType GetType(void) const {
+      return EXT_ENTITY_IMPULSE;
     };
 
     virtual void Process(void);
