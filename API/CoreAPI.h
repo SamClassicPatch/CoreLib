@@ -224,6 +224,9 @@ extern CORE_POINTER_API CCoreAPI *_pCoreAPI;
 #ifndef CORE_EXPORTS
   // Hook API pointer through the shell symbol
   inline BOOL HookSymbolAPI(void) {
+    // Already hooked
+    if (_pCoreAPI != NULL) return TRUE;
+
     CShellSymbol *pssAPI = _pShell->GetSymbol("CoreAPI", TRUE);
 
     if (pssAPI != NULL) {
@@ -236,6 +239,9 @@ extern CORE_POINTER_API CCoreAPI *_pCoreAPI;
 
   // Hook API pointer through the library's module handle
   inline BOOL HookLibraryAPI(void) {
+    // Already hooked
+    if (_pCoreAPI != NULL) return TRUE;
+
     // Get instance of the Core library
     const CTFileName fnmLib = _fnmApplicationExe.FileDir() + "ClassicsCore.dll";
     HMODULE hLib = GetModuleHandleA(_fnmApplicationPath + fnmLib);
