@@ -34,7 +34,7 @@ void CExtEntityCopy::Read(CNetworkMessage &nm) {
 void CExtEntityCopy::Process(void) {
   CEntity *pen = GetEntity();
 
-  if (pen == NULL) return;
+  if (!EntityExists(pen)) return;
 
   ExtServerReport(TRANS("Copied %u entity: "), pen->en_ulID);
 

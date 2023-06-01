@@ -138,6 +138,11 @@ class CExtEntityPacket : public CExtPacket {
 
     // Make sure to return some entity from the ID
     CEntity *GetEntity(void);
+
+    // Check if some entity exists
+    static inline BOOL EntityExists(CEntity *pen) {
+      return (pen != NULL && !(pen->GetFlags() & ENF_DELETED));
+    };
 };
 
 // Holder for event fields

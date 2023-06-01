@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 void CExtEntityInit::Process(void) {
   CEntity *pen = GetEntity();
 
-  if (pen == NULL) return;
+  if (!EntityExists(pen)) return;
 
   // Use received event for initialization instead of sending
   if (pen->GetRenderType() == CEntity::RT_NONE) {

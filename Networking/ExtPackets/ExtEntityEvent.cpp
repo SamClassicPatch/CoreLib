@@ -72,7 +72,7 @@ void CExtEntityEvent::Read(CNetworkMessage &nm) {
 void CExtEntityEvent::Process(void) {
   CEntity *pen = GetEntity();
 
-  if (pen == NULL) return;
+  if (!EntityExists(pen)) return;
 
   pen->SendEvent(eEvent);
 };

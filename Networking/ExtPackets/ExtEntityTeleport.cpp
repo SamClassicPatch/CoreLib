@@ -37,7 +37,7 @@ void CExtEntityTeleport::Read(CNetworkMessage &nm) {
 void CExtEntityTeleport::Process(void) {
   CEntity *pen = GetEntity();
 
-  if (pen == NULL) return;
+  if (!EntityExists(pen)) return;
 
   CPlacement3D pl = plSet;
 

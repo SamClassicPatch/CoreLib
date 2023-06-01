@@ -67,7 +67,7 @@ void CExtEntityProp::Read(CNetworkMessage &nm) {
 void CExtEntityProp::Process(void) {
   CEntity *pen = GetEntity();
 
-  if (pen == NULL) return;
+  if (!EntityExists(pen)) return;
 
   CEntityProperty *pep = NULL;
 

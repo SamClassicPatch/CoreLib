@@ -41,7 +41,7 @@ void CExtEntityFlags::Read(CNetworkMessage &nm) {
 void CExtEntityFlags::Process(void) {
   CEntity *pen = GetEntity();
 
-  if (pen == NULL) return;
+  if (!EntityExists(pen)) return;
 
   ULONG *pulFlags = &pen->en_ulFlags;
   CTString strReport = TRANS("Changed flags of %u entity: 0x%08X -> 0x%08X\n");

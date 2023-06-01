@@ -38,7 +38,7 @@ void CExtEntityMove::Read(CNetworkMessage &nm) {
 void CExtEntityMove::Process(void) {
   CEntity *pen = GetEntity();
 
-  if (pen == NULL) return;
+  if (!EntityExists(pen)) return;
 
   if (IsDerivedFromClass(pen, "MovableEntity")) {
     ((CMovableEntity *)pen)->SetDesiredTranslation(vSpeed);
@@ -52,7 +52,7 @@ void CExtEntityMove::Process(void) {
 void CExtEntityRotate::Process(void) {
   CEntity *pen = GetEntity();
 
-  if (pen == NULL) return;
+  if (!EntityExists(pen)) return;
 
   if (IsDerivedFromClass(pen, "MovableEntity")) {
     ((CMovableEntity *)pen)->SetDesiredRotation(vSpeed);
@@ -66,7 +66,7 @@ void CExtEntityRotate::Process(void) {
 void CExtEntityImpulse::Process(void) {
   CEntity *pen = GetEntity();
 
-  if (pen == NULL) return;
+  if (!EntityExists(pen)) return;
 
   if (IsDerivedFromClass(pen, "MovableEntity")) {
     ((CMovableEntity *)pen)->GiveImpulseTranslationAbsolute(vSpeed);

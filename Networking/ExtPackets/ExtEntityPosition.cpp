@@ -61,7 +61,7 @@ void CExtEntityPosition::Read(CNetworkMessage &nm) {
 void CExtEntityPosition::Process(void) {
   CEntity *pen = GetEntity();
 
-  if (pen == NULL) return;
+  if (!EntityExists(pen)) return;
 
   CPlacement3D pl = pen->GetPlacement();
 

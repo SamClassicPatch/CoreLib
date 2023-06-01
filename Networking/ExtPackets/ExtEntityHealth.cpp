@@ -32,7 +32,7 @@ void CExtEntityHealth::Read(CNetworkMessage &nm) {
 void CExtEntityHealth::Process(void) {
   CEntity *pen = GetEntity();
 
-  if (pen == NULL) return;
+  if (!EntityExists(pen)) return;
 
   if (IWorld::IsLiveEntity(pen)) {
     ((CLiveEntity *)pen)->SetHealth(fHealth);

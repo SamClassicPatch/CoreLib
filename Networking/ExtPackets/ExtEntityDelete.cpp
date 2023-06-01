@@ -34,7 +34,7 @@ void CExtEntityDelete::Read(CNetworkMessage &nm) {
 void CExtEntityDelete::Process(void) {
   CEntity *pen = GetEntity();
 
-  if (pen == NULL) return;
+  if (!EntityExists(pen)) return;
 
   // Reset last entity
   if (CExtEntityCreate::penLast == pen) {

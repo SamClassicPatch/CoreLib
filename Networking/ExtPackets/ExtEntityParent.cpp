@@ -32,7 +32,7 @@ void CExtEntityParent::Read(CNetworkMessage &nm) {
 void CExtEntityParent::Process(void) {
   CEntity *pen = GetEntity();
 
-  if (pen == NULL) return;
+  if (!EntityExists(pen)) return;
 
   CEntity *penParent = FindExtEntity(ulParent);
   pen->SetParent(penParent);
