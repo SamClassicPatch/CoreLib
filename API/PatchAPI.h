@@ -53,6 +53,10 @@ struct SFuncPatch {
 class CORE_API CPatchAPI {
   public:
     static HINSTANCE hEngine; // Engine library handle
+
+    static CTFileName fnmEntities; // Entities library path
+    static HINSTANCE hEntities; // Entities library handle
+
     CDynamicStackArray<SFuncPatch> aPatches; // Function patch storage
 
   public:
@@ -77,7 +81,15 @@ class CORE_API CPatchAPI {
   public:
 
     // Retrieve address from the engine by a symbol name
-    virtual void *GetSymbol(const char *strSymbol);
+    virtual void *GetEngineSymbol(const char *strSymbol);
+
+    // Retrieve address from the entities by a symbol name
+    virtual void *GetEntitiesSymbol(const char *strSymbol);
+
+    // Get path to Entities library
+    virtual CTFileName GetEntitiesPath(void) {
+      return fnmEntities;
+    };
 };
 
 #endif

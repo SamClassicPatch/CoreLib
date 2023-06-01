@@ -18,6 +18,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Engine library handle
 HINSTANCE CPatchAPI::hEngine = NULL;
 
+// Entities library handle
+CTFileName CPatchAPI::fnmEntities;
+HINSTANCE CPatchAPI::hEntities = NULL;
+
 // List available function patches
 static void ListFuncPatches(void) {
   const INDEX ctPatches = GetPatchAPI()->aPatches.Count();
@@ -77,12 +81,21 @@ static INDEX GetFuncPatch(const CTString &strName) {
 
 // Constructor
 CPatchAPI::CPatchAPI() {
-  // Hook up the engine
+  // Hook up the libraries
   #ifdef NDEBUG
-    hEngine = LoadLibraryA("Engine.dll");
+    hEngine = GetModuleHandleA("Engine.dll");
   #else
-    hEngine = LoadLibraryA("EngineD.dll");
+    hEngine = GetModuleHandleA("EngineD.dll");
   #endif
+
+  CTString strEntitiesLib = "Bin\\Entities" + _strModExt
+  #ifndef NDEBUG
+    + "D"
+  #endif
+    + ".dll";
+
+  ExpandFilePath(EFP_READ, strEntitiesLib, fnmEntities);
+  hEntities = GetModuleHandleA(fnmEntities.str_String);
 
   // Commands for manually toggling function patches
   _pShell->DeclareSymbol("void ListPatches(void);",   &ListFuncPatches);
@@ -149,6 +162,11 @@ SFuncPatch *CPatchAPI::FindFuncPatch(const CTString &strName, CPatch *pPatch) {
 };
 
 // Retrieve address from the engine by a symbol name
-void *CPatchAPI::GetSymbol(const char *strSymbolName) {
+void *CPatchAPI::GetEngineSymbol(const char *strSymbolName) {
   return GetProcAddress(hEngine, strSymbolName);
+};
+
+// Retrieve address from the entities by a symbol name
+void *CPatchAPI::GetEntitiesSymbol(const char *strSymbolName) {
+  return GetProcAddress(hEntities, strSymbolName);
 };
