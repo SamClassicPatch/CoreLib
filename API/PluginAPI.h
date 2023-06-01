@@ -30,6 +30,9 @@ class CPluginModule;   // #include <CoreLib/Modules/PluginModule.h>
 class CPluginStock;    // #include <CoreLib/Modules/PluginStock.h>
 class IAbstractEvents; // Included at the end
 
+// Pointers to plugin interfaces
+typedef CDynamicContainer<IAbstractEvents> CPluginInterfaces;
+
 // API for handling plugin modules
 class CORE_API CPluginAPI {
   public:
@@ -92,12 +95,12 @@ class CORE_API CPluginAPI {
   public:
     CPluginStock *pPluginStock; // Stock of plugin modules
 
-    // Pointers to plugin interfaces
-    CDynamicContainer<IAbstractEvents> cProcessors;
-    CDynamicContainer<IAbstractEvents> cRenderers;
-    CDynamicContainer<IAbstractEvents> cNetworkEvents;
-    CDynamicContainer<IAbstractEvents> cGameEvents;
-    CDynamicContainer<IAbstractEvents> cWorldEvents;
+    // Containers of plugin handlers
+    CPluginInterfaces cProcessors;
+    CPluginInterfaces cRenderers;
+    CPluginInterfaces cNetworkEvents;
+    CPluginInterfaces cGameEvents;
+    CPluginInterfaces cWorldEvents;
 
   public:
     // Constructor
