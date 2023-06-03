@@ -13,8 +13,9 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#ifndef __GAME_H
-#define __GAME_H 1
+// [Cecil] Custom include guard
+#ifndef CORE_NO_GAME_HEADER
+#define CORE_NO_GAME_HEADER
 
 // [Cecil] Relative path
 #include "PlayerSettings.h"
@@ -316,4 +317,4 @@ public:
   virtual void MenuPostRenderMenu(const char *strMenuName);
 };
 
-#endif
+#endif // [Cecil] Include guard

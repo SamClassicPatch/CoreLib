@@ -43,7 +43,7 @@ typedef UBYTE CSesPropsContainer[NET_MAXSESSIONPROPERTIES];
 #endif
 
 // Pointer to the Game module
-CORE_API extern CGame *_pGame;
+CORE_API extern class CGame *_pGame;
 
 // Common game variables
 CORE_API extern CTString sam_strFirstLevel;
