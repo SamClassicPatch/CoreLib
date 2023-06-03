@@ -70,47 +70,130 @@ inline CTString ExtractSubstr(const char *str, ULONG ulFrom, ULONG ulChars) {
 };
 
 // Get position of a decorated character in a decorated string (doesn't count color tags)
-inline INDEX GetDecoratedChar(const CTString &str, INDEX iChar) {
-  // Start at the beginning of a string
-  const char *pchSrc = str.str_String;
-  INDEX ctTags = 0;
+inline INDEX GetDecoratedChar(const CTString &str, INDEX iChar)
+{
+  const INDEX ct = str.Length();
+  INDEX iNonTagChar = 0;
 
-  // Repeat until the desired character index
-  while (--iChar >= 0) {
-    // String end
-    if (pchSrc[0] == '\0') {
-      break;
+  for (INDEX iPos = 0; iPos < ct;) {
+    // Parse a tag
+    if (str[iPos] == '^') {
+      // Count tag characters
+      UBYTE *pubTag = (UBYTE *)str.str_String + iPos + 2;
+      INDEX ctTag = -1; // Non-tag character
+
+      switch (str[iPos + 1]) {
+        case 'c': ctTag = 2 + FindZero(pubTag, 6); break;
+        case 'a': ctTag = 2 + FindZero(pubTag, 2); break;
+        case 'f': ctTag = 2 + FindZero(pubTag, 1); break;
+
+        case 'b': case 'i': case 'r': case 'o':
+        case 'C': case 'A': case 'F': case 'B': case 'I':
+          ctTag = 2;
+          break;
+
+        case '^':
+          ctTag = 1;
+          break;
+      }
+
+      // Skip tag characters
+      if (ctTag != -1) {
+        iPos += ctTag;
+        continue;
+      }
     }
 
-    // If the source char is not escape char
-    if (pchSrc[0] != '^') {
-      // Count it normally
-      pchSrc++;
+    // Reached needed position of the non-tag character
+    if (iNonTagChar == iChar) return iPos;
+
+    // Next non-tag character
+    iPos++;
+    iNonTagChar++;
+  }
+
+  // End of the string
+  return ct;
+};
+
+// Optimized function for getting text width in pixels
+inline ULONG GetTextWidth(CDrawPort *pdp, const CTString &str) {
+  // Prepare scaling factors
+  CFontData *pfd = pdp->dp_FontData;
+  const PIX pixCellWidth = pfd->fd_pixCharWidth;
+  const SLONG fixTextScalingX = FloatToInt(pdp->dp_fTextScaling * pdp->dp_fTextAspect * 65536.0f);
+
+  // Calculate width of the entire text line
+  PIX pixStringWidth = 0;
+  PIX pixOldWidth = 0;
+
+  PIX pixCharStart = 0;
+  PIX pixCharEnd = pixCellWidth;
+
+  const ULONG ct = str.Length();
+
+  for (ULONG i = 0; i < ct; i++) {
+    UBYTE ch = str[i];
+
+    // Reset width if new line
+    if (ch == '\n') {
+      pixOldWidth = ClampDn(pixOldWidth, pixStringWidth);
+      pixStringWidth = 0;
       continue;
     }
 
-    // Skip however many tag characters there are
-    switch (pchSrc[1]) {
-      case 'c': pchSrc += 2 + FindZero((UBYTE *)pchSrc + 2, 6); break;
-      case 'a': pchSrc += 2 + FindZero((UBYTE *)pchSrc + 2, 2); break;
-      case 'f': pchSrc += 2 + FindZero((UBYTE *)pchSrc + 2, 1); break;
+    // Ignore tab
+    if (ch == '\t') continue;
 
-      case 'b': case 'i': case 'r': case 'o':
-      case 'C': case 'A': case 'F': case 'B': case 'I':
-        pchSrc += 2;
-        break;
+    // Decorative tag
+    if (ch == '^' && pdp->dp_iTextMode != -1) {
+      ch = str[++i];
+      UBYTE *pubTag = (UBYTE *)&str[i];
 
-      case '^':
-        pchSrc++;
-        break;
+      switch (ch) {
+        // Skip corresponding number of characters
+        case 'c': i += FindZero(pubTag, 6); continue;
+        case 'a': i += FindZero(pubTag, 2); continue;
+        case 'f': i += FindZero(pubTag, 1); continue;
+
+        case 'b': case 'i': case 'r': case 'o':
+        case 'C': case 'A': case 'F': case 'B': case 'I':
+          continue;
+
+        // Non-tag character
+        default: break;
+      }
     }
 
-    // Skipped one full tag
-    ctTags++;
+    // Add character width to the result
+    if (!pfd->fd_bFixedWidth) {
+      // Proportional font case
+      pixCharStart = pfd->fd_fcdFontCharData[ch].fcd_pixStart;
+      pixCharEnd = pfd->fd_fcdFontCharData[ch].fcd_pixEnd;
+    }
+
+    pixStringWidth += (((pixCharEnd - pixCharStart) * fixTextScalingX) >> 16) + pdp->dp_pixTextCharSpacing;
   }
 
-  // Difference between the string beginning and where it stopped
-  return INDEX(pchSrc - str.str_String) + ctTags;
+  // Determine largest width
+  return ClampDn(pixStringWidth, pixOldWidth);
+};
+
+// Return position of the last character that fits within some width in pixels
+inline INDEX TextFitsInWidth(CDrawPort *pdp, PIX pixMaxWidth, const CTString &str) {
+  // No width to fit in
+  if (pixMaxWidth <= 0) return 0;
+
+  // Go through characters themselves without decorations
+  CTString strCheck = str.Undecorated();
+  INDEX ctLastLength = strCheck.Length();
+
+  // Keep decreasing amount of characters in a string until it fits
+  while (GetTextWidth(pdp, strCheck) > pixMaxWidth) {
+    strCheck.TrimRight(--ctLastLength);
+  }
+
+  return GetDecoratedChar(str, ctLastLength);
 };
 
 // Fixed function for reading lines from a stream without a delimiter at the last line
