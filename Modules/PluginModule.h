@@ -78,19 +78,26 @@ class CORE_API CPluginModule : public CSerial {
     // Add new function patch
     virtual void AddPatch(CPatch *pPatch);
 
-    // Get specific symbol from the module (must be a pointer to the pointer variable)
-    template<class Type> void GetSymbol_t(Type *ppSymbol, const char *strSymbolName) {
+    // Get specific symbol from the module
+    virtual void *GetSymbol_t(const char *strSymbolName) {
       // No module
       if (GetHandle() == NULL) {
         ThrowF_t(TRANS("Plugin module has not been loaded yet!"));
       }
 
-      *ppSymbol = (Type)GetProcAddress(GetHandle(), strSymbolName);
+      void *pSymbol = GetProcAddress(GetHandle(), strSymbolName);
 
       // No symbol
-      if (*ppSymbol == NULL) {
+      if (pSymbol == NULL) {
         ThrowF_t(TRANS("Cannot find '%s' symbol in '%s'!"), strSymbolName, GetName());
       }
+
+      return pSymbol;
+    };
+
+    // Get specific symbol from the module (must be a pointer to the pointer variable)
+    template<class Type> void GetSymbol_t(Type *ppSymbol, const char *strSymbolName) {
+      *ppSymbol = (Type)GetSymbol_t(strSymbolName);
     };
 
   // Plugin methods
