@@ -176,10 +176,10 @@ void CPluginModule::Load_t(const CTFileName &fnmDLL)
   const CTString strConfig = "Bin\\Plugins\\" + fnmDLL.FileName() + ".ini";
 
   try {
-    IConfig::ReadConfig_t(GetInfo().aProperties, strConfig);
+    IConfig::ReadConfig_t(GetInfo().aProperties, strConfig, TRUE);
 
   } catch (char *strError) {
-    CPrintF(TRANS("Cannot load config file '%s':\n%s\n"), strConfig.str_String, strError);
+    (void)strError;
   }
 
   // Load library from file

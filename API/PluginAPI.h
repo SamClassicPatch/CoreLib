@@ -20,8 +20,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #pragma once
 #endif
 
-#include <CoreLib/Interfaces/ConfigFunctions.h>
-
 // Define plugin symbols
 #include "Plugins/PluginSymbols.h"
 

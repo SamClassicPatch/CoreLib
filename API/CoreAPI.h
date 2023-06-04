@@ -27,6 +27,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <CoreLib/Config.h>
 #include <CoreLib/GameSpecific.h>
 
+#include <CoreLib/Base/ConfigReader.h>
+
 // Useful types
 typedef CStaticStackArray<CTString> CStringStack; // Expandable array of strings
 typedef CDynamicStackArray<CTFileName> CFileList; // Listed files/paths
@@ -155,6 +157,9 @@ class CORE_API CCoreAPI {
 
       return strGameLib;
     };
+
+    // Get absolute path to the game directory
+    static const CTFileName &GetAppPath(void);
 
   public:
 

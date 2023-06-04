@@ -57,6 +57,30 @@ CCoreAPI::CCoreAPI() :
   }
 };
 
+// Get absolute path to the game directory
+const CTFileName &CCoreAPI::GetAppPath(void) {
+  // Copy application path
+  if (_fnmApplicationPath != "") {
+    return _fnmApplicationPath;
+  }
+
+  static CTFileName fnmLocalPath;
+
+  // Get application path locally
+  if (fnmLocalPath == "") {
+    char strPathBuffer[1024];
+    GetModuleFileNameA(NULL, strPathBuffer, sizeof(strPathBuffer));
+
+    // Cut off the library filename starting from the Bin directory
+    std::string strAppPath = strPathBuffer;
+    size_t iBinDir = strAppPath.rfind("Bin\\");
+
+    fnmLocalPath = CTString(strAppPath.substr(0, iBinDir).c_str());
+  }
+
+  return fnmLocalPath;
+};
+
 // Disable GameSpy usage
 void CCoreAPI::DisableGameSpy(void) {
   static BOOL bDisabled = FALSE;
