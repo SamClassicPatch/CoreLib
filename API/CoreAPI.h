@@ -166,6 +166,9 @@ class CORE_API CCoreAPI {
     // Disable GameSpy usage
     void DisableGameSpy(void);
 
+    // Create a series of directories within the game folder
+    virtual void CreateDir(const CTString &strPath);
+
     // Load Game library as a plugin
     void LoadGameLib(const CTString &strSettingsFile);
 

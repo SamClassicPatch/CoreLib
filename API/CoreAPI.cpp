@@ -20,6 +20,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "Networking/Modules/ClientLogging.h"
 
+#include <STLIncludesBegin.h>
+#include <string>
+#include <direct.h>
+#include <STLIncludesEnd.h>
+
 // Define external core API
 CCoreAPI *_pCoreAPI = NULL;
 
@@ -73,6 +78,23 @@ void CCoreAPI::DisableGameSpy(void) {
     pssGameSpy->ss_pvValue = &iDummyValue;
 
     bDisabled = TRUE;
+  }
+};
+
+// Create a series of directories within the game folder
+void CCoreAPI::CreateDir(const CTString &strPath) {
+  std::string strDirs = strPath;
+  const char *strAppPath = _fnmApplicationPath.str_String;
+
+  size_t iDir = 0;
+
+  // Get next directory from the last position
+  while ((iDir = strDirs.find_first_of('\\', iDir)) != std::string::npos) {
+    // Include the slash
+    iDir++;
+
+    // Create current subdirectory
+    _mkdir((strAppPath + strDirs.substr(0, iDir)).c_str());
   }
 };
 

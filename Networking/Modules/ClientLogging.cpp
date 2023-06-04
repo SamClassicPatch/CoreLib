@@ -18,8 +18,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "ClientLogging.h"
 #include "Networking/CommInterface.h"
 
-#include <direct.h>
-
 // Get client's address by the client ID on the server
 void IClientLogging::GetAddress(SClientAddress &addr, INDEX iClient) {
   const BOOL bServer = GetComm().Server_IsClientLocal(iClient);
@@ -107,16 +105,16 @@ INDEX IClientLogging::FindByCharacter(INDEX &iClient, const CPlayerCharacter &pc
 };
 
 // Client log file
-static const CTFileName _fnmClientLog = CTString("Data\\ClassicsPatch\\ClientLog.dat");
+static const CTString _strClientLogFile = "Data\\ClassicsPatch\\ClientLog.dat";
 
 // Save client log
 void IClientLogging::SaveLog(void) {
   // Make sure the directory exists
-  _mkdir((_fnmApplicationPath + "Data\\ClassicsPatch\\").str_String);
+  GetAPI()->CreateDir(_strClientLogFile);
 
   try {
     CTFileStream strm;
-    strm.Create_t(_fnmClientLog);
+    strm.Create_t(_strClientLogFile);
 
     strm.WriteID_t("CLLG"); // CLient LoG
 
@@ -139,11 +137,11 @@ void IClientLogging::SaveLog(void) {
 // Load client log
 void IClientLogging::LoadLog(void) {
   // No log file
-  if (!FileExists(_fnmClientLog)) return;
+  if (!FileExists(_strClientLogFile)) return;
 
   try {
     CTFileStream strm;
-    strm.Open_t(_fnmClientLog);
+    strm.Open_t(_strClientLogFile);
 
     strm.ExpectID_t("CLLG"); // CLient LoG
 
