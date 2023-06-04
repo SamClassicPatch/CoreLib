@@ -96,6 +96,27 @@ void CECIL_InitCore(void) {
 
 // Clean up Core module (always before Serious Engine!)
 void CECIL_EndCore(void) {
+  // Save configuration properties
+  GetAPI()->CreateDir(CORE_CONFIG_FILE);
+
+  try {
+    CTFileStream strmConfig;
+    strmConfig.Create_t(CORE_CONFIG_FILE);
+
+    // Write every key-value pair
+    const INDEX ct = GetAPI()->aProps.Count();
+
+    for (INDEX i = 0; i < ct; i++) {
+      IConfig::SConfigPair &pair = GetAPI()->aProps[i];
+      strmConfig.FPrintF_t("%s=%s\n", pair.strKey, pair.strVal);
+    }
+
+    strmConfig.Close();
+
+  } catch (char *strError) {
+    CPrintF(TRANS("Cannot save patch configuration file: %s\n"), strError);
+  }
+
   // Release all loaded plugins
   GetAPI()->ReleasePlugins(CPluginAPI::PF_UTILITY_ALL);
 

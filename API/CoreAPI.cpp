@@ -31,6 +31,9 @@ CCoreAPI *_pCoreAPI = NULL;
 // Define running application type
 CCoreAPI::EAppType CCoreAPI::eAppType = CCoreAPI::APP_UNKNOWN;
 
+// Define patch config
+IConfig::CProperties CCoreAPI::aProps;
+
 // Constructor
 CCoreAPI::CCoreAPI() :
   apiPatches(*new CPatchAPI), apiGame(*new CGameAPI), apiPlugins(*new CPluginAPI)
@@ -57,6 +60,20 @@ CCoreAPI::CCoreAPI() :
   }
 };
 
+// Setup the core before initializing it
+void CCoreAPI::Setup(EAppType eSetType) {
+  // Set application type
+  eAppType = eSetType;
+
+  // Load configuration file
+  try {
+    IConfig::ReadConfig_t(aProps, CORE_CONFIG_FILE, FALSE);
+
+  } catch (char *strError) {
+    (void)strError;
+  }
+};
+
 // Get absolute path to the game directory
 const CTFileName &CCoreAPI::GetAppPath(void) {
   // Copy application path
@@ -79,6 +96,22 @@ const CTFileName &CCoreAPI::GetAppPath(void) {
   }
 
   return fnmLocalPath;
+};
+
+// Get value from config property
+CTString CCoreAPI::GetPropValue(const CTString &strProperty) {
+  const INDEX ct = aProps.Count();
+
+  for (INDEX i = 0; i < ct; i++) {
+    const CTString &strKey = aProps[i].strKey;
+
+    if (strKey == strProperty) {
+      return aProps[i].strVal;
+    }
+  }
+
+  ASSERTALWAYS("Cannot find property in the patch configuration file!");
+  return "";
 };
 
 // Disable GameSpy usage

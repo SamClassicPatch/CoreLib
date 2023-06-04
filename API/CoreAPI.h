@@ -54,6 +54,9 @@ typedef CDynamicStackArray<CTFileName> CFileList; // Listed files/paths
 // Current Classics Patch version
 #define CORE_PATCH_VERSION CCoreAPI::MakeVersion(1, 5, 1)
 
+// Classics Patch configuration file
+#define CORE_CONFIG_FILE CTString("Data\\ClassicsPatch\\Config.ini")
+
 // Declare API submodules
 class CPatchAPI;
 class CGameAPI;
@@ -73,6 +76,8 @@ class CORE_API CCoreAPI {
 
   public:
     static EAppType eAppType; // Running application type
+    static IConfig::CProperties aProps; // Patch configuration
+
     ULONG ulVersion; // Release version
 
     // API submodules
@@ -95,10 +100,8 @@ class CORE_API CCoreAPI {
       return eAppType;
     };
 
-    // Set running application type before initializing the core
-    static inline void SetApplication(EAppType eSetType) {
-      eAppType = eSetType;
-    };
+    // Setup the core before initializing it
+    static void Setup(EAppType eSetType);
 
     // Check if running a game
     virtual BOOL IsGameApp(void) {
@@ -160,6 +163,9 @@ class CORE_API CCoreAPI {
 
     // Get absolute path to the game directory
     static const CTFileName &GetAppPath(void);
+
+    // Get value from config property
+    static CTString GetPropValue(const CTString &strProperty);
 
   public:
 
