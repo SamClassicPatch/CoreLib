@@ -65,12 +65,18 @@ void CCoreAPI::Setup(EAppType eSetType) {
   // Set application type
   eAppType = eSetType;
 
-  // Load configuration file
-  try {
-    IConfig::ReadConfig_t(aProps, CORE_CONFIG_FILE, FALSE);
+  // Load configuration file once
+  static BOOL bLoadConfig = TRUE;
 
-  } catch (char *strError) {
-    (void)strError;
+  if (bLoadConfig) {
+    bLoadConfig = FALSE;
+
+    try {
+      IConfig::ReadConfig_t(aProps, CORE_CONFIG_FILE, FALSE);
+
+    } catch (char *strError) {
+      (void)strError;
+    }
   }
 };
 
