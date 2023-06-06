@@ -121,6 +121,26 @@ void CExtPacket::RegisterExtPackets(void)
   _pShell->DeclareSymbol("const INDEX EVENTCODE_EReceiveScore;",         (void *)&EVENTCODE_EReceiveScore);
   _pShell->DeclareSymbol("const INDEX EVENTCODE_EKilledEnemy;",          (void *)&EVENTCODE_EKilledEnemy);
   _pShell->DeclareSymbol("const INDEX EVENTCODE_ESecretFound;",          (void *)&EVENTCODE_ESecretFound);
+
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_ESound;",                (void *)&EVENTCODE_ESound);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EScroll;",               (void *)&EVENTCODE_EScroll);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_ETextFX;",               (void *)&EVENTCODE_ETextFX);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EHudPicFX;",             (void *)&EVENTCODE_EHudPicFX);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_ECredits;",              (void *)&EVENTCODE_ECredits);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_ECenterMessage;",        (void *)&EVENTCODE_ECenterMessage);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EComputerMessage;",      (void *)&EVENTCODE_EComputerMessage);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EVoiceMessage;",         (void *)&EVENTCODE_EVoiceMessage);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EHitBySpaceShipBeam;",   (void *)&EVENTCODE_EHitBySpaceShipBeam);
+
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EAmmoItem;",             (void *)&EVENTCODE_EAmmoItem);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EAmmoPackItem;",         (void *)&EVENTCODE_EAmmoPackItem);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EArmor;",                (void *)&EVENTCODE_EArmor);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EHealth;",               (void *)&EVENTCODE_EHealth);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EKey;",                  (void *)&EVENTCODE_EKey);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EMessageItem;",          (void *)&EVENTCODE_EMessageItem);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EPowerUp;",              (void *)&EVENTCODE_EPowerUp);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EWeaponItem;",           (void *)&EVENTCODE_EWeaponItem);
+
   _pShell->DeclareSymbol("const INDEX EVENTCODE_ERestartAttack;",        (void *)&EVENTCODE_ERestartAttack);
   _pShell->DeclareSymbol("const INDEX EVENTCODE_EReconsiderBehavior;",   (void *)&EVENTCODE_EReconsiderBehavior);
   _pShell->DeclareSymbol("const INDEX EVENTCODE_EForceWound;",           (void *)&EVENTCODE_EForceWound);
@@ -130,6 +150,7 @@ void CExtPacket::RegisterExtPackets(void)
   _pShell->DeclareSymbol("const INDEX EVENTCODE_EReleaseWeapon;",        (void *)&EVENTCODE_EReleaseWeapon);
   _pShell->DeclareSymbol("const INDEX EVENTCODE_EReloadWeapon;",         (void *)&EVENTCODE_EReloadWeapon);
   _pShell->DeclareSymbol("const INDEX EVENTCODE_EWeaponChanged;",        (void *)&EVENTCODE_EWeaponChanged);
+
   _pShell->DeclareSymbol("const INDEX EVENTCODE_EAirShockwave;",         (void *)&EVENTCODE_EAirShockwave);
   _pShell->DeclareSymbol("const INDEX EVENTCODE_EAirWave;",              (void *)&EVENTCODE_EAirWave);
   _pShell->DeclareSymbol("const INDEX EVENTCODE_ESpawnEffect;",          (void *)&EVENTCODE_ESpawnEffect);
@@ -256,6 +277,16 @@ void EExtEntityEvent::ConvertTypes(void)
     case EVENTCODE_EWater: {
       EStart &ee = (EStart &)*this;
       ee.penCaused = EntityFromID(0);
+    } break;
+
+    // Second field is an entity
+    case EVENTCODE_ESound:
+    case EVENTCODE_EScroll:
+    case EVENTCODE_ETextFX:
+    case EVENTCODE_EHudPicFX:
+    case EVENTCODE_ECredits: {
+      ESound &ee = (ESound &)*this;
+      ee.penTarget = EntityFromID(1);
     } break;
 
     // Two first fields are entities

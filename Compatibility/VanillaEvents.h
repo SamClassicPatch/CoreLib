@@ -411,11 +411,11 @@ static const SLONG EVENTCODE_EHealth = 0x03210000;
 class EHealth : public CEntityEvent {
   public:
     FLOAT fHealth;
-    BOOL bOverTopArmor;
+    BOOL bOverTopHealth;
 
     EHealth() : CEntityEvent(EVENTCODE_EHealth) {
       ClearToDefault(fHealth);
-      ClearToDefault(bOverTopArmor);
+      ClearToDefault(bOverTopHealth);
     };
 
     DEFINE_MAKE_COPY(EHealth);
