@@ -35,9 +35,10 @@ void EntityDelete(INDEX iEntity, INDEX iSameClass);
 void EntityCopy(INDEX iEntity, INDEX iCopies);
 
 // Entity logic
-void EntityEvent(INDEX iEntity, INDEX iID);
+void EntityEvent(INDEX iEntity);
 void EntityInit(INDEX iEntity);
 void EntityInitEvent(INDEX iEntity);
+void EntityItem(INDEX iEntity);
 
 // Entity placement
 void EntityTeleport(INDEX iEntity, FLOAT fX, FLOAT fY, FLOAT fZ, FLOAT fH, FLOAT fP, FLOAT fB, INDEX iRelative);

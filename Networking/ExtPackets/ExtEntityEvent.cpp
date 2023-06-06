@@ -77,4 +77,12 @@ void CExtEntityEvent::Process(void) {
   pen->SendEvent(eEvent);
 };
 
+void CExtEntityItem::Process(void) {
+  CEntity *pen = GetEntity();
+
+  if (!EntityExists(pen)) return;
+
+  pen->ReceiveItem(eEvent);
+};
+
 #endif // CLASSICSPATCH_EXT_PACKETS

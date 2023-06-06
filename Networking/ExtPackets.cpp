@@ -66,6 +66,7 @@ CExtPacket *CExtPacket::CreatePacket(EType ePacket, BOOL bClient) {
       case EXT_ENTITY_DELETE:   return new CExtEntityDelete();
       case EXT_ENTITY_COPY:     return new CExtEntityCopy();
       case EXT_ENTITY_EVENT:    return new CExtEntityEvent();
+      case EXT_ENTITY_ITEM:     return new CExtEntityItem();
       case EXT_ENTITY_INIT:     return new CExtEntityInit();
       case EXT_ENTITY_TELEPORT: return new CExtEntityTeleport();
       case EXT_ENTITY_POSITION: return new CExtEntityPosition();
@@ -188,7 +189,8 @@ void CExtPacket::RegisterExtPackets(void)
   _pShell->DeclareSymbol("user void pck_EntityCopy(INDEX, INDEX);", &IPacketCommands::EntityCopy);
 
   // Entity logic
-  _pShell->DeclareSymbol("user void pck_EntityEvent(INDEX, INDEX);", &IPacketCommands::EntityEvent);
+  _pShell->DeclareSymbol("user void pck_EntityEvent(INDEX);", &IPacketCommands::EntityEvent);
+  _pShell->DeclareSymbol("user void pck_EntityItem(INDEX);", &IPacketCommands::EntityItem);
   _pShell->DeclareSymbol("user void pck_EntityInit(INDEX);", &IPacketCommands::EntityInit);
   _pShell->DeclareSymbol("user void pck_EntityInitEvent(INDEX);", &IPacketCommands::EntityInitEvent);
 

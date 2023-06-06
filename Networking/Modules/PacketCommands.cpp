@@ -90,8 +90,17 @@ void EntityCopy(INDEX iEntity, INDEX iCopies) {
   pck.SendPacket();
 };
 
-void EntityEvent(INDEX iEntity, INDEX iID) {
+// Send set up event to an entity
+void EntityEvent(INDEX iEntity) {
   CExtEntityEvent pck;
+  pck.ulEntity = iEntity;
+  pck.Copy(_eePacketEvent, _ctPacketEventFields);
+  pck.SendPacket();
+};
+
+// Receive item by an entity via a set up event
+void EntityItem(INDEX iEntity) {
+  CExtEntityItem pck;
   pck.ulEntity = iEntity;
   pck.Copy(_eePacketEvent, _ctPacketEventFields);
   pck.SendPacket();

@@ -38,6 +38,7 @@ class CExtPacket {
       EXT_ENTITY_DELETE,   // Delete an entity
       EXT_ENTITY_COPY,     // Copy an entity
       EXT_ENTITY_EVENT,    // Send event to an entity
+      EXT_ENTITY_ITEM,     // Receive item by an entity
       EXT_ENTITY_INIT,     // (Re)initialize an entity
       EXT_ENTITY_TELEPORT, // Teleport an entity
       EXT_ENTITY_POSITION, // Set position or rotation of an entity
@@ -258,6 +259,20 @@ class CExtEntityEvent : public CExtEntityPacket {
     virtual void Process(void);
 };
 
+class CExtEntityItem : public CExtEntityEvent {
+  public:
+    CExtEntityItem() : CExtEntityEvent()
+    {
+    };
+
+  public:
+    virtual EType GetType(void) const {
+      return EXT_ENTITY_ITEM;
+    };
+
+    virtual void Process(void);
+};
+
 class CExtEntityInit : public CExtEntityEvent {
   public:
     CExtEntityInit() : CExtEntityEvent()
@@ -465,6 +480,11 @@ class CExtEntityMove : public CExtEntityPacket {
 
 class CExtEntityRotate : public CExtEntityMove {
   public:
+    CExtEntityRotate() : CExtEntityMove()
+    {
+    };
+
+  public:
     virtual EType GetType(void) const {
       return EXT_ENTITY_ROTATE;
     };
@@ -473,6 +493,11 @@ class CExtEntityRotate : public CExtEntityMove {
 };
 
 class CExtEntityImpulse : public CExtEntityMove {
+  public:
+    CExtEntityImpulse() : CExtEntityMove()
+    {
+    };
+
   public:
     virtual EType GetType(void) const {
       return EXT_ENTITY_IMPULSE;
