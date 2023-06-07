@@ -53,6 +53,69 @@ inline void AdjustVFOV(const FLOAT2D &vScreen, FLOAT &fHFOV) {
   fHFOV = 2.0f * ATan(fVerticalAngle);
 };
 
+// Optimized function for getting text width in pixels
+inline ULONG GetTextWidth(CDrawPort *pdp, const CTString &str) {
+  // Prepare scaling factors
+  CFontData *pfd = pdp->dp_FontData;
+  const PIX pixCellWidth = pfd->fd_pixCharWidth;
+  const SLONG fixTextScalingX = FloatToInt(pdp->dp_fTextScaling * pdp->dp_fTextAspect * 65536.0f);
+
+  // Calculate width of the entire text line
+  PIX pixStringWidth = 0;
+  PIX pixOldWidth = 0;
+
+  PIX pixCharStart = 0;
+  PIX pixCharEnd = pixCellWidth;
+
+  const ULONG ct = str.Length();
+
+  for (ULONG i = 0; i < ct; i++) {
+    UBYTE ch = str[i];
+
+    // Reset width if new line
+    if (ch == '\n') {
+      pixOldWidth = ClampDn(pixOldWidth, pixStringWidth);
+      pixStringWidth = 0;
+      continue;
+    }
+
+    // Ignore tab
+    if (ch == '\t') continue;
+
+    // Decorative tag
+    if (ch == '^' && pdp->dp_iTextMode != -1) {
+      ch = str[++i];
+      UBYTE *pubTag = (UBYTE *)&str[i];
+
+      switch (ch) {
+        // Skip corresponding number of characters
+        case 'c': i += FindZero(pubTag, 6); continue;
+        case 'a': i += FindZero(pubTag, 2); continue;
+        case 'f': i += FindZero(pubTag, 1); continue;
+
+        case 'b': case 'i': case 'r': case 'o':
+        case 'C': case 'A': case 'F': case 'B': case 'I':
+          continue;
+
+        // Non-tag character
+        default: break;
+      }
+    }
+
+    // Add character width to the result
+    if (!pfd->fd_bFixedWidth) {
+      // Proportional font case
+      pixCharStart = pfd->fd_fcdFontCharData[ch].fcd_pixStart;
+      pixCharEnd = pfd->fd_fcdFontCharData[ch].fcd_pixEnd;
+    }
+
+    pixStringWidth += (((pixCharEnd - pixCharStart) * fixTextScalingX) >> 16) + pdp->dp_pixTextCharSpacing;
+  }
+
+  // Determine largest width
+  return ClampDn(pixStringWidth, pixOldWidth);
+};
+
 }; // namespace
 
 #endif
