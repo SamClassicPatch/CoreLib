@@ -32,7 +32,7 @@ CCoreAPI *_pCoreAPI = NULL;
 CCoreAPI::EAppType CCoreAPI::eAppType = CCoreAPI::APP_UNKNOWN;
 
 // Define patch config
-IConfig::CProperties CCoreAPI::aProps;
+CIniConfig CCoreAPI::iniConfig;
 
 // Constructor
 CCoreAPI::CCoreAPI() :
@@ -72,7 +72,7 @@ void CCoreAPI::Setup(EAppType eSetType) {
     bLoadConfig = FALSE;
 
     try {
-      IConfig::ReadConfig_t(aProps, CORE_CONFIG_FILE, FALSE);
+      iniConfig.Load_t(CORE_CONFIG_FILE, FALSE);
 
     } catch (char *strError) {
       (void)strError;
@@ -102,42 +102,6 @@ const CTFileName &CCoreAPI::GetAppPath(void) {
   }
 
   return fnmLocalPath;
-};
-
-// Set value to config property
-void CCoreAPI::SetPropValue(const CTString &strProperty, const CTString &strValue) {
-  INDEX ct = aProps.Count();
-
-  while (--ct >= 0) {
-    const CTString &strKey = aProps[ct].strKey;
-
-    // Change value and quit
-    if (strKey == strProperty) {
-      aProps[ct].strVal = strValue;
-      return;
-    }
-  }
-
-  // Set new property
-  IConfig::SConfigPair &pair = aProps.Push();
-  pair.strKey = strProperty;
-  pair.strVal = strValue;
-};
-
-// Get value from config property
-CTString CCoreAPI::GetPropValue(const CTString &strProperty) {
-  const INDEX ct = aProps.Count();
-
-  for (INDEX i = 0; i < ct; i++) {
-    const CTString &strKey = aProps[i].strKey;
-
-    if (strKey == strProperty) {
-      return aProps[i].strVal;
-    }
-  }
-
-  ASSERTALWAYS("Cannot find property in the patch configuration file!");
-  return "";
 };
 
 // Disable GameSpy usage

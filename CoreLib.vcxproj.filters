@@ -246,8 +246,8 @@
     <ClInclude Include="Networking\Modules\PacketCommands.h">
       <Filter>Header Files\Networking headers\Modules headers</Filter>
     </ClInclude>
-    <ClInclude Include="Base\ConfigReader.h">
-      <Filter>Header Files\Base headers</Filter>
+    <ClInclude Include="Interfaces\ConfigFunctions.h">
+      <Filter>Header Files\Interfaces headers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -391,9 +391,6 @@
     </ClCompile>
     <ClCompile Include="Networking\ExtPackets\ExtEntityMoveRotate.cpp">
       <Filter>Source Files\Networking\ExtPackets</Filter>
-    </ClCompile>
-    <ClCompile Include="Base\ConfigReader.cpp">
-      <Filter>Source Files\Base</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

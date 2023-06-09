@@ -25,7 +25,6 @@
     <ClInclude Include="API\PluginAPI.h" />
     <ClInclude Include="API\Plugins\PluginEvents.h" />
     <ClInclude Include="API\Plugins\PluginSymbols.h" />
-    <ClInclude Include="Base\ConfigReader.h" />
     <ClInclude Include="Base\CoreTimerHandler.h" />
     <ClInclude Include="Base\Unzip.h" />
     <ClInclude Include="Compatibility\Game.h" />
@@ -49,6 +48,7 @@
       <FileType>Document</FileType>
     </ClInclude>
     <ClInclude Include="GameSpecific.h" />
+    <ClInclude Include="Interfaces\ConfigFunctions.h" />
     <ClInclude Include="Interfaces\DataFunctions.h" />
     <ClInclude Include="Interfaces\FileFunctions.h" />
     <ClInclude Include="Interfaces\GfxFunctions.h" />
@@ -89,7 +89,6 @@
     <ClCompile Include="API\CoreAPI.cpp" />
     <ClCompile Include="API\PatchAPI.cpp" />
     <ClCompile Include="API\PluginAPI.cpp" />
-    <ClCompile Include="Base\ConfigReader.cpp" />
     <ClCompile Include="Base\CoreTimerHandler.cpp" />
     <ClCompile Include="Base\Unzip.cpp" />
     <ClCompile Include="Core.cpp" />

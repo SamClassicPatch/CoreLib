@@ -176,7 +176,7 @@ void CPluginModule::Load_t(const CTFileName &fnmDLL)
   const CTString strConfig = "Bin\\Plugins\\" + fnmDLL.FileName() + ".ini";
 
   try {
-    IConfig::ReadConfig_t(GetInfo().aProperties, strConfig, TRUE);
+    GetInfo().iniConfig.Load_t(strConfig, TRUE);
 
   } catch (char *strError) {
     (void)strError;

@@ -100,18 +100,7 @@ void CECIL_EndCore(void) {
   GetAPI()->CreateDir(CORE_CONFIG_FILE);
 
   try {
-    CTFileStream strmConfig;
-    strmConfig.Create_t(CORE_CONFIG_FILE);
-
-    // Write every key-value pair
-    const INDEX ct = GetAPI()->aProps.Count();
-
-    for (INDEX i = 0; i < ct; i++) {
-      IConfig::SConfigPair &pair = GetAPI()->aProps[i];
-      strmConfig.FPrintF_t("%s=%s\n", pair.strKey, pair.strVal);
-    }
-
-    strmConfig.Close();
+    GetAPI()->iniConfig.Save_t(CORE_CONFIG_FILE);
 
   } catch (char *strError) {
     CPrintF(TRANS("Cannot save patch configuration file: %s\n"), strError);

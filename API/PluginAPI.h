@@ -20,6 +20,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #pragma once
 #endif
 
+// Plugin configuration files
+#include <CoreLib/Interfaces/ConfigFunctions.h>
+
 // Define plugin symbols
 #include "Plugins/PluginSymbols.h"
 
@@ -59,7 +62,7 @@ class CORE_API CPluginAPI {
       CTString strDescription; // Brief plugin description
 
       // Read-only data
-      IConfig::CProperties aProperties; // Loaded plugin properties
+      CIniConfig iniConfig; // Loaded plugin properties
 
       // Constructor
       PluginInfo() : apiVer(0), ulFlags(0), ulVersion(0),
@@ -73,20 +76,9 @@ class CORE_API CPluginAPI {
         ulFlags = ulSetFlags;
       };
 
-      // Get value from some plugin property
-      inline CTString GetValue(const CTString &strProperty) {
-        const INDEX ct = aProperties.Count();
-
-        for (INDEX i = 0; i < ct; i++) {
-          const CTString &strKey = aProperties[i].strKey;
-
-          if (strKey == strProperty) {
-            return aProperties[i].strVal;
-          }
-        }
-
-        ASSERTALWAYS("Cannot find property in the plugin's config!");
-        return "";
+      // Get value from global plugin property
+      inline CTString GetValue(const CTString &strKey, const CTString &strDefValue = "") const {
+        return iniConfig.GetValue("", strKey, strDefValue);
       };
     };
 

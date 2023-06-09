@@ -20,6 +20,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #pragma once
 #endif
 
+#include <CoreLib/Interfaces/RenderFunctions.h>
+
 // Interface of useful methods for data manipulation
 namespace IData {
 

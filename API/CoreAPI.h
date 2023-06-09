@@ -20,14 +20,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #pragma once
 #endif
 
+// Don't warn about identifier truncation
+#pragma warning(disable: 4786)
+
 // Include Serious Engine
 #include <Engine/Engine.h>
 
 // Classics Patch configuration and game-specific definitions
 #include <CoreLib/Config.h>
 #include <CoreLib/GameSpecific.h>
-
-#include <CoreLib/Base/ConfigReader.h>
 
 // Useful types
 typedef CStaticStackArray<CTString> CStringStack; // Expandable array of strings
@@ -76,7 +77,7 @@ class CORE_API CCoreAPI {
 
   public:
     static EAppType eAppType; // Running application type
-    static IConfig::CProperties aProps; // Patch configuration
+    static class CIniConfig iniConfig; // Patch configuration
 
     ULONG ulVersion; // Release version
 
@@ -163,12 +164,6 @@ class CORE_API CCoreAPI {
 
     // Get absolute path to the game directory
     static const CTFileName &GetAppPath(void);
-
-    // Set value to config property
-    static void SetPropValue(const CTString &strProperty, const CTString &strValue);
-
-    // Get value from config property
-    static CTString GetPropValue(const CTString &strProperty);
 
   public:
 

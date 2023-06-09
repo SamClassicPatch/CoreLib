@@ -13,6 +13,9 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
+// Don't warn about identifier truncation
+#pragma warning(disable: 4786)
+
 // Main engine components
 #include <Engine/Engine.h>
 #include <Engine/CurrentVersion.h>
@@ -55,6 +58,7 @@ CORE_API extern CTString sam_strVersion;
 #include "API/CoreAPI.h"
 #include "Modules/PluginStock.h"
 
+#include "Interfaces/ConfigFunctions.h"
 #include "Interfaces/RenderFunctions.h"
 #include "Interfaces/WorldFunctions.h"
 
