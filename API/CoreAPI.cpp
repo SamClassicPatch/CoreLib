@@ -32,7 +32,7 @@ CCoreAPI *_pCoreAPI = NULL;
 CCoreAPI::EAppType CCoreAPI::eAppType = CCoreAPI::APP_UNKNOWN;
 
 // Define patch config
-CIniConfig CCoreAPI::iniConfig;
+CIniConfig _iniConfig;
 
 // Constructor
 CCoreAPI::CCoreAPI() :
@@ -72,7 +72,7 @@ void CCoreAPI::Setup(EAppType eSetType) {
     bLoadConfig = FALSE;
 
     try {
-      iniConfig.Load_t(CORE_CONFIG_FILE, FALSE);
+      _iniConfig.Load_t(CORE_CONFIG_FILE, FALSE);
 
     } catch (char *strError) {
       (void)strError;
@@ -102,6 +102,16 @@ const CTFileName &CCoreAPI::GetAppPath(void) {
   }
 
   return fnmLocalPath;
+};
+
+// Set value to config property
+void CCoreAPI::SetPropValue(const CTString &strKey, const CTString &strValue) {
+  _iniConfig.SetValue("", strKey, strValue);
+};
+
+// Get value from config property
+CTString CCoreAPI::GetPropValue(const CTString &strKey, const CTString &strDefValue) {
+  return _iniConfig.GetValue("", strKey, strDefValue);
 };
 
 // Disable GameSpy usage

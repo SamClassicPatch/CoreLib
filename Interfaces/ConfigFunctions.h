@@ -48,6 +48,37 @@ class CIniConfig {
   public:
     CGroups aConfig;
 
+  protected:
+    // Parse config line and set key and value in a specific group, if it's not a group line
+    BOOL ParseLine(const std::string &strLine, CTString &strGroup) {
+      // Skip empty lines
+      size_t iFirst = strLine.find_first_not_of(" \r\n\t");
+
+      if (iFirst == std::string::npos) return FALSE;
+
+      // Parse a group name if it's enclosed in square brackets
+      if (strLine[iFirst] == '[') {
+        // Skip opening bracket and search for the closing one
+        iFirst++;
+        size_t iLast = strLine.find_last_not_of(" \r\n\t");
+
+        if (strLine[iLast] == ']') {
+          // Just change the group
+          strGroup = strLine.substr(iFirst, iLast - iFirst).c_str();
+          return FALSE;
+        }
+      }
+
+      // Get key and value separator
+      size_t iSeparator = strLine.find('=');
+      if (iSeparator == std::string::npos) return FALSE;
+
+      // Get key and value around the assignment operator
+      SetValue(strGroup, strLine.substr(0, iSeparator).c_str(), strLine.substr(iSeparator + 1).c_str());
+
+      return TRUE;
+    };
+
   public:
     // Set value to a property under some group
     void SetValue(const CTString &strGroup, const CTString &strKey, const CTString &strValue) {
@@ -56,14 +87,14 @@ class CIniConfig {
     };
 
     // Get value from a property under some group
-    CTString GetValue(const CTString &strGroup, const CTString &strKey, const CTString &strDefaultValue = "") const {
+    CTString GetValue(const CTString &strGroup, const CTString &strKey, const CTString &strDefValue = "") const {
       // Find group
       CGroups::const_iterator itGroup = aConfig.find(strGroup);
-      if (itGroup == aConfig.end()) return strDefaultValue;
+      if (itGroup == aConfig.end()) return strDefValue;
 
       // Find pair
       CPairs::const_iterator itPair = itGroup->second.find(strKey);
-      if (itPair == itGroup->second.end()) return strDefaultValue;
+      if (itPair == itGroup->second.end()) return strDefValue;
 
       return itPair->second;
     };
@@ -95,38 +126,6 @@ class CIniConfig {
       strmConfig.Close();
     };
 
-    // Parse config line into key and value
-    static inline BOOL ParseConfigLine(const std::string &strLine, CTString &strGroup, CTString &strKey, CTString &strValue) {
-      // Skip empty lines
-      size_t iFirst = strLine.find_first_not_of(" \r\n\t");
-
-      if (iFirst == std::string::npos) return FALSE;
-
-      // Parse a group name if it's enclosed in square brackets
-      if (strLine[iFirst] == '[') {
-        // Skip opening bracket and search for the closing one
-        iFirst++;
-        size_t iLast = strLine.find_last_not_of(" \r\n\t");
-
-        if (strLine[iLast] == ']') {
-          // Just change the group
-          strGroup = strLine.substr(iFirst, iLast - iFirst).c_str();
-          return FALSE;
-        }
-      }
-
-      size_t iAssign = strLine.find('=');
-
-      // No value
-      if (iAssign == std::string::npos) return FALSE;
-
-      // Get key and value around the assignment operator
-      strKey = strLine.substr(0, iAssign).c_str();
-      strValue = strLine.substr(iAssign + 1).c_str();
-
-      return TRUE;
-    };
-
     // Load config from a file
     void Load_t(const CTString &strFile, BOOL bEngineStreams) {
       // Current group and a key-value pair to add to it
@@ -144,10 +143,7 @@ class CIniConfig {
           char strBuffer[1024];
           IData::GetLineFromStream_t(strm, strBuffer, sizeof(strBuffer));
 
-          // Parse the line and add the pair
-          if (ParseConfigLine(strBuffer, strGroup, strKey, strValue)) {
-            SetValue(strGroup, strKey, strValue);
-          }
+          ParseLine(strBuffer, strGroup);
         }
 
         strm.Close();
@@ -163,10 +159,7 @@ class CIniConfig {
         std::string strLine;
 
         while (std::getline(strm, strLine)) {
-          // Parse the line and add the pair
-          if (ParseConfigLine(strLine, strGroup, strKey, strValue)) {
-            SetValue(strGroup, strKey, strValue);
-          }
+          ParseLine(strLine, strGroup);
         }
 
         strm.close();

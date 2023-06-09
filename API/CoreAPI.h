@@ -77,8 +77,6 @@ class CORE_API CCoreAPI {
 
   public:
     static EAppType eAppType; // Running application type
-    static class CIniConfig iniConfig; // Patch configuration
-
     ULONG ulVersion; // Release version
 
     // API submodules
@@ -164,6 +162,12 @@ class CORE_API CCoreAPI {
 
     // Get absolute path to the game directory
     static const CTFileName &GetAppPath(void);
+
+    // Set value to config property
+    static void SetPropValue(const CTString &strKey, const CTString &strValue);
+
+    // Get value from config property
+    static CTString GetPropValue(const CTString &strKey, const CTString &strDefValue = "");
 
   public:
 
