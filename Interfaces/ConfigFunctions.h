@@ -48,6 +48,31 @@ class CIniConfig {
   public:
     CGroups aConfig;
 
+  public:
+    // Clear the config
+    inline void Clear(void) {
+      aConfig.clear();
+    };
+
+    // Check if some group exists
+    inline BOOL GroupExists(const CTString &strGroup) {
+      return aConfig.find(strGroup) != aConfig.end();
+    };
+
+    // Delete some group
+    inline BOOL DeleteGroup(const CTString &strGroup) {
+      return aConfig.erase(strGroup) != 0;
+    };
+
+    // Delete key under some group
+    inline BOOL DeleteKey(const CTString &strGroup, const CTString &strKey) {
+      // Find group
+      CGroups::iterator it = aConfig.find(strGroup);
+      if (it == aConfig.end()) return FALSE;
+
+      return it->second.erase(strKey) != 0;
+    };
+
   protected:
     // Parse config line and set key and value in a specific group, if it's not a group line
     BOOL ParseLine(const std::string &strLine, CTString &strGroup) {
