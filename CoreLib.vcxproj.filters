@@ -249,6 +249,12 @@
     <ClInclude Include="Interfaces\ConfigFunctions.h">
       <Filter>Header Files\Interfaces headers</Filter>
     </ClInclude>
+    <ClInclude Include="Base\CommonCore.h">
+      <Filter>Header Files\Base headers</Filter>
+    </ClInclude>
+    <ClInclude Include="API\ApiConfig.h">
+      <Filter>Header Files\API headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="StdH.cpp">

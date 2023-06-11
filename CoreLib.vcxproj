@@ -19,12 +19,14 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="API\ApiConfig.h" />
     <ClInclude Include="API\GameAPI.h" />
     <ClInclude Include="API\CoreAPI.h" />
     <ClInclude Include="API\PatchAPI.h" />
     <ClInclude Include="API\PluginAPI.h" />
     <ClInclude Include="API\Plugins\PluginEvents.h" />
     <ClInclude Include="API\Plugins\PluginSymbols.h" />
+    <ClInclude Include="Base\CommonCore.h" />
     <ClInclude Include="Base\CoreTimerHandler.h" />
     <ClInclude Include="Base\Unzip.h" />
     <ClInclude Include="Compatibility\Game.h" />

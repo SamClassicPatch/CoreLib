@@ -20,43 +20,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #pragma once
 #endif
 
-// Don't warn about identifier truncation
-#pragma warning(disable: 4786)
-
-// Include Serious Engine
-#include <Engine/Engine.h>
-
-// Classics Patch configuration and game-specific definitions
-#include <CoreLib/Config.h>
-#include <CoreLib/GameSpecific.h>
-
-// Useful types
-typedef CStaticStackArray<CTString> CStringStack; // Expandable array of strings
-typedef CDynamicStackArray<CTFileName> CFileList; // Listed files/paths
-
-// Next argument in the symbol function call
-#define NEXT_ARG(Type) (*((Type *&)pArgs)++)
-
-// Translate a string that has already been translated in vanilla localizations
-#define LOCALIZE(ConstString) ((char *)TranslateConst(ConstString, 0))
-
-// Define empty API if not utilizing Core directly
-#ifndef CORE_API
-  #define CORE_API
-  #define CORE_POINTER_API
-
-#else
-  #define CORE_POINTER_API "C" CORE_API
-#endif
-
-// Current API version
-#define CORE_API_VERSION 4
-
-// Current Classics Patch version
-#define CORE_PATCH_VERSION CCoreAPI::MakeVersion(1, 5, 1)
-
-// Classics Patch configuration file
-#define CORE_CONFIG_FILE CTString("Data\\ClassicsPatch\\Config.ini")
+// Include Serious Engine and other common components
+#include <CoreLib/Base/CommonCore.h>
+#include <CoreLib/API/ApiConfig.h>
 
 // Declare API submodules
 class CPatchAPI;
@@ -173,7 +139,14 @@ class CORE_API CCoreAPI {
 
     // Retrieve version of the patch
     virtual CTString GetVersion(void) {
-      return MakeVersionString(ulVersion);
+      CTString strVer = MakeVersionString(ulVersion);
+
+      // Append a dev build tag
+      #if CORE_DEV_BUILD
+        strVer += "-dev";
+      #endif
+
+      return strVer;
     };
 
     // Disable GameSpy usage
@@ -232,8 +205,8 @@ class CORE_API CCoreAPI {
 };
 
 // This variable can be used to access API of the Classics patch.
-// It needs to be defined separately for outside projects. Visit for more info:
-// https://github.com/SamClassicPatch/SuperProject/wiki/User-plugins-&-modding#api-utilization
+// It needs to be defined separately for outside projects.
+// See documentation on plugins & modding for more info.
 extern CORE_POINTER_API CCoreAPI *_pCoreAPI;
 
 // These methods should only be used outside the Classics patch project

@@ -13,22 +13,8 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-// Don't warn about identifier truncation
-#pragma warning(disable: 4786)
-
-// Main engine components
-#include <Engine/Engine.h>
-#include <Engine/CurrentVersion.h>
-
-// Classics Patch configuration
-#include "Config.h"
-
-// Components for compatibility
-#include "Compatibility/Game.h"
-#include "Compatibility/SymbolPtr.h"
-
-// CSessionProperties byte container (replacement for CUniversalSessionProperties)
-typedef UBYTE CSesPropsContainer[NET_MAXSESSIONPROPERTIES];
+// Include Serious Engine and other common components
+#include <CoreLib/Base/CommonCore.h>
 
 // Import library for use
 #ifndef CORE_EXPORTS
@@ -45,7 +31,11 @@ typedef UBYTE CSesPropsContainer[NET_MAXSESSIONPROPERTIES];
   #pragma comment(lib, "zlib.lib")
 #endif
 
-// Pointer to the Game module
+// Compatibility with vanilla Game interface
+#ifndef CORE_NO_GAME_HEADER
+  #include <CoreLib/Compatibility/Game.h>
+#endif
+
 CORE_API extern class CGame *_pGame;
 
 // Common game variables
@@ -55,12 +45,12 @@ CORE_API extern CTString sam_strGameName;
 CORE_API extern CTString sam_strVersion;
 
 // Common components
-#include "API/CoreAPI.h"
-#include "Modules/PluginStock.h"
+#include <CoreLib/API/CoreAPI.h>
+#include <CoreLib/Modules/PluginStock.h>
 
-#include "Interfaces/ConfigFunctions.h"
-#include "Interfaces/RenderFunctions.h"
-#include "Interfaces/WorldFunctions.h"
+#include <CoreLib/Interfaces/ConfigFunctions.h>
+#include <CoreLib/Interfaces/RenderFunctions.h>
+#include <CoreLib/Interfaces/WorldFunctions.h>
 
 // Initialize Core module (always after 'SE_InitEngine'!)
 CORE_API void CECIL_InitCore(void);

@@ -20,8 +20,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // [Cecil] Relative path
 #include "PlayerSettings.h"
 
-// [Cecil] Declare the class just to avoid useless "SessionProperties.h" inclusion
+// [Cecil] Declare the class and its container just to avoid useless inclusion of "SessionProperties.h"
 class CSessionProperties;
+typedef UBYTE CSesPropsContainer[NET_MAXSESSIONPROPERTIES]; // Replacement for CUniversalSessionProperties
 
 #define GAME_SHELL_VER "V012"
 
