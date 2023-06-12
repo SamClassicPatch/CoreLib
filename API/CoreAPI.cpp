@@ -189,13 +189,15 @@ CPluginModule *CCoreAPI::LoadGamePlugin(void) {
   CPluginModule *pGameLib = GetPluginAPI()->LoadPlugin_t(GetGameLibPath());
   CPrintF(TRANS("Loading game library '%s'...\n"), pGameLib->GetName());
 
-  // Set metadata
+  // Set metadata for vanilla library
   CPluginAPI::PluginInfo &info = pGameLib->GetInfo();
 
-  info.strName = "Game library";
-  info.strAuthor = "Croteam";
-  info.ulVersion = MakeVersion(1, 0, _SE_BUILD_MINOR);
-  info.strDescription = "Main component that provides game logic.";
+  if (info.ulVersion == 0) {
+    info.strName = "Game library";
+    info.strAuthor = "Croteam";
+    info.strDescription = "Main component that provides game logic.";
+    info.ulVersion = MakeVersion(1, 0, _SE_BUILD_MINOR);
+  }
 
   return pGameLib;
 };
