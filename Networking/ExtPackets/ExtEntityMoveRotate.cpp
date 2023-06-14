@@ -70,7 +70,7 @@ void CExtEntityImpulse::Process(void) {
 
   if (IsDerivedFromClass(pen, "MovableEntity")) {
     ((CMovableEntity *)pen)->GiveImpulseTranslationAbsolute(vSpeed);
-    ExtServerReport(TRANS("Gave [%.2f, %.2f, %.2f] impulse to %u entity\n"), vSpeed(1), vSpeed(2), vSpeed(3), pen->en_ulID);
+    ExtServerReport(TRANS("Gave impulse to %u entity: [%.2f, %.2f, %.2f]\n"), vSpeed(1), vSpeed(2), vSpeed(3), pen->en_ulID);
 
   } else {
     ExtServerReport(TRANS("Cannot give impulse to %u entity: %s\n"), pen->en_ulID, REPORT_NOT_MOVABLE);
