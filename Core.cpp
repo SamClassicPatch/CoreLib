@@ -51,6 +51,13 @@ static void PatchInfo(void) {
   CPutString(strInfo);
 };
 
+// Helper method for loading scripts via string variables
+static void IncludeScript(const CTString &strScript) {
+  // Include command doesn't support variables, so the string needs to be inserted
+  CTString strLoad(0, "include \"%s\";", strScript.str_String);
+  _pShell->Execute(strLoad);
+};
+
 // Initialize Core module (always after Serious Engine!)
 void CECIL_InitCore(void) {
   // Create core API
@@ -79,6 +86,8 @@ void CECIL_InitCore(void) {
     _pShell->DeclareSymbol("persistent user CTString sam_strGameName;",   &sam_strGameName);
     _pShell->DeclareSymbol("           user CTString sam_strVersion;",    &sam_strVersion);
   }
+
+  _pShell->DeclareSymbol("user void IncludeScript(CTString);", &IncludeScript);
 
   // Initialize networking
   INetwork::Initialize();
