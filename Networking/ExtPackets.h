@@ -49,6 +49,9 @@ class CORE_API CExtPacket {
       EXT_ENTITY_MOVE,     // Set absolute movement speed of an entity
       EXT_ENTITY_ROTATE,   // Set absolute rotation speed of an entity
       EXT_ENTITY_IMPULSE,  // Give impulse to some entity
+      EXT_ENTITY_DIRDMG,   // Inflict damage to some entity
+      EXT_ENTITY_RADDMG,   // Inflict damage at some point
+      EXT_ENTITY_BOXDMG,   // Inflict damage in some area
 
       // Maximum amount of built-in packets
       EXT_MAX_PACKETS,
@@ -503,6 +506,82 @@ class CORE_API CExtEntityImpulse : public CExtEntityMove {
       return EXT_ENTITY_IMPULSE;
     };
 
+    virtual void Process(void);
+};
+
+// Abstract damage packet
+class CORE_API CExtEntityDamage : public CExtEntityPacket {
+  public:
+    ULONG eDamageType; // Damage type to use
+    FLOAT fDamage; // Damage to inflict
+
+  public:
+    CExtEntityDamage() : CExtEntityPacket(), eDamageType(DMT_NONE), fDamage(0.0f)
+    {
+    };
+
+    virtual void Write(CNetworkMessage &nm);
+    virtual void Read(CNetworkMessage &nm);
+};
+
+class CORE_API CExtEntityDirectDamage : public CExtEntityDamage {
+  public:
+    ULONG ulTarget; // Target entity for damaging
+    FLOAT3D vHitPoint; // Where exactly the damage occurred
+    FLOAT3D vDirection; // From which direction the damage came from
+
+  public:
+    CExtEntityDirectDamage() : CExtEntityDamage(), ulTarget(-1)
+    {
+    };
+
+  public:
+    virtual EType GetType(void) const {
+      return EXT_ENTITY_DIRDMG;
+    };
+
+    virtual void Write(CNetworkMessage &nm);
+    virtual void Read(CNetworkMessage &nm);
+    virtual void Process(void);
+};
+
+class CORE_API CExtEntityRangeDamage : public CExtEntityDamage {
+  public:
+    FLOAT3D vCenter; // Place to inflict damage from
+    FLOAT fFallOff; // Total damage radius
+    FLOAT fHotSpot; // Full damage radius
+
+  public:
+    CExtEntityRangeDamage() : CExtEntityDamage(), vCenter(0, 0, 0), fFallOff(0.0f), fHotSpot(0.0f)
+    {
+    };
+
+  public:
+    virtual EType GetType(void) const {
+      return EXT_ENTITY_RADDMG;
+    };
+
+    virtual void Write(CNetworkMessage &nm);
+    virtual void Read(CNetworkMessage &nm);
+    virtual void Process(void);
+};
+
+class CORE_API CExtEntityBoxDamage : public CExtEntityDamage {
+  public:
+    FLOATaabbox3D boxArea; // Area to inflict the damage in
+
+  public:
+    CExtEntityBoxDamage() : CExtEntityDamage(), boxArea(FLOAT3D(0, 0, 0), 0.0f)
+    {
+    };
+
+  public:
+    virtual EType GetType(void) const {
+      return EXT_ENTITY_BOXDMG;
+    };
+
+    virtual void Write(CNetworkMessage &nm);
+    virtual void Read(CNetworkMessage &nm);
     virtual void Process(void);
 };
 

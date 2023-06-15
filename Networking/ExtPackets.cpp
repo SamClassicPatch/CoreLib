@@ -77,6 +77,9 @@ CExtPacket *CExtPacket::CreatePacket(EType ePacket, BOOL bClient) {
       case EXT_ENTITY_MOVE:     return new CExtEntityMove();
       case EXT_ENTITY_ROTATE:   return new CExtEntityRotate();
       case EXT_ENTITY_IMPULSE:  return new CExtEntityImpulse();
+      case EXT_ENTITY_DIRDMG:   return new CExtEntityDirectDamage();
+      case EXT_ENTITY_RADDMG:   return new CExtEntityRangeDamage();
+      case EXT_ENTITY_BOXDMG:   return new CExtEntityBoxDamage();
     }
   }
 
@@ -214,6 +217,14 @@ void CExtPacket::RegisterExtPackets(void)
   _pShell->DeclareSymbol("user void pck_EntityMove(INDEX, FLOAT, FLOAT, FLOAT);", &IPacketCommands::EntityMove);
   _pShell->DeclareSymbol("user void pck_EntityRotate(INDEX, FLOAT, FLOAT, FLOAT);", &IPacketCommands::EntityRotate);
   _pShell->DeclareSymbol("user void pck_EntityImpulse(INDEX, FLOAT, FLOAT, FLOAT);", &IPacketCommands::EntityImpulse);
+
+  // Entity damage
+  _pShell->DeclareSymbol("user void pck_SetupDamage(INDEX, INDEX, FLOAT);", &IPacketCommands::SetupDamage);
+  _pShell->DeclareSymbol("user void pck_SetDirectDamage(INDEX, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT);", &IPacketCommands::SetDirectDamage);
+  _pShell->DeclareSymbol("user void pck_SetRangeDamage(FLOAT, FLOAT, FLOAT, FLOAT, FLOAT);", &IPacketCommands::SetRangeDamage);
+  _pShell->DeclareSymbol("user void pck_SetBoxDamage(FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT);", &IPacketCommands::SetBoxDamage);
+
+  _pShell->DeclareSymbol("user void pck_EntityDamage(void);", &IPacketCommands::EntityDamage);
 };
 
 // Write event into a network packet

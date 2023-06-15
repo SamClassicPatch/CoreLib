@@ -245,4 +245,87 @@ void EntityImpulse(INDEX iEntity, FLOAT fX, FLOAT fY, FLOAT fZ) {
   pck.SendPacket();
 };
 
+static INDEX _iDamageSetup = -1;
+
+static ULONG _ulDamageInflictor = -1;
+static ULONG _ulDamageTarget = -1;
+static ULONG _ulDamageType = DMT_NONE;
+static FLOAT _fDamageAmount = 0.0f;
+
+static FLOAT3D _vDamageVec1(0, 0, 0);
+static FLOAT3D _vDamageVec2(0, 0, 0);
+
+// Begin damage setup with an inflictor
+void SetupDamage(INDEX iInflictor, INDEX iType, FLOAT fDamage) {
+  _iDamageSetup = -1;
+
+  _ulDamageInflictor = iInflictor;
+  _ulDamageType = iType;
+  _fDamageAmount = fDamage;
+};
+
+// Setup direct damage (target, hit point, direction)
+void SetDirectDamage(INDEX iTarget, FLOAT fHitX, FLOAT fHitY, FLOAT fHitZ, FLOAT fDirX, FLOAT fDirY, FLOAT fDirZ) {
+  _iDamageSetup = 0;
+
+  _ulDamageTarget = iTarget;
+  _vDamageVec1 = FLOAT3D(fHitX, fHitY, fHitZ);
+  _vDamageVec2 = FLOAT3D(fDirX, fDirY, fDirZ);
+};
+
+// Setup range damage (hit center, fall off, hot spot)
+void SetRangeDamage(FLOAT fX, FLOAT fY, FLOAT fZ, FLOAT fFallOff, FLOAT fHotSpot) {
+  _iDamageSetup = 1;
+
+  _vDamageVec1 = FLOAT3D(fX, fY, fZ);
+  _vDamageVec2 = FLOAT3D(fFallOff, fHotSpot, 0.0f);
+};
+
+// Setup box damage (min corner, max corner)
+void SetBoxDamage(FLOAT fX1, FLOAT fY1, FLOAT fZ1, FLOAT fX2, FLOAT fY2, FLOAT fZ2) {
+  _iDamageSetup = 2;
+
+  _vDamageVec1 = FLOAT3D(fX1, fY1, fZ1);
+  _vDamageVec2 = FLOAT3D(fX2, fY2, fZ2);
+};
+
+// Inflict set up damage
+void EntityDamage(void) {
+  switch (_iDamageSetup) {
+    case 0: {
+      CExtEntityDirectDamage pck;
+      pck.ulEntity = _ulDamageInflictor;
+      pck.eDamageType = _ulDamageType;
+      pck.fDamage = _fDamageAmount;
+
+      pck.ulTarget = _ulDamageTarget;
+      pck.vHitPoint = _vDamageVec1;
+      pck.vDirection = _vDamageVec2;
+      pck.SendPacket();
+    } break;
+
+    case 1: {
+      CExtEntityRangeDamage pck;
+      pck.ulEntity = _ulDamageInflictor;
+      pck.eDamageType = _ulDamageType;
+      pck.fDamage = _fDamageAmount;
+
+      pck.vCenter = _vDamageVec1;
+      pck.fFallOff = _vDamageVec2(1);
+      pck.fHotSpot = _vDamageVec2(2);
+      pck.SendPacket();
+    } break;
+
+    case 2: {
+      CExtEntityBoxDamage pck;
+      pck.ulEntity = _ulDamageInflictor;
+      pck.eDamageType = _ulDamageType;
+      pck.fDamage = _fDamageAmount;
+
+      pck.boxArea = FLOATaabbox3D(_vDamageVec1, _vDamageVec2);
+      pck.SendPacket();
+    } break;
+  }
+};
+
 }; // namespace

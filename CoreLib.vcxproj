@@ -101,6 +101,7 @@
     <ClCompile Include="Networking\ExtPackets.cpp" />
     <ClCompile Include="Networking\ExtPackets\ExtEntityCopy.cpp" />
     <ClCompile Include="Networking\ExtPackets\ExtEntityCreate.cpp" />
+    <ClCompile Include="Networking\ExtPackets\ExtEntityDamage.cpp" />
     <ClCompile Include="Networking\ExtPackets\ExtEntityDelete.cpp" />
     <ClCompile Include="Networking\ExtPackets\ExtEntityEvent.cpp" />
     <ClCompile Include="Networking\ExtPackets\ExtEntityFlags.cpp" />

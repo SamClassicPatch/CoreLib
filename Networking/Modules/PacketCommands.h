@@ -61,6 +61,14 @@ void EntityMove(INDEX iEntity, FLOAT fX, FLOAT fY, FLOAT fZ);
 void EntityRotate(INDEX iEntity, FLOAT fH, FLOAT fP, FLOAT fB);
 void EntityImpulse(INDEX iEntity, FLOAT fX, FLOAT fY, FLOAT fZ);
 
+// Entity damage
+void SetupDamage(INDEX iInflictor, INDEX iType, FLOAT fDamage);
+void SetDirectDamage(INDEX iTarget, FLOAT fHitX, FLOAT fHitY, FLOAT fHitZ, FLOAT fDirX, FLOAT fDirY, FLOAT fDirZ);
+void SetRangeDamage(FLOAT fX, FLOAT fY, FLOAT fZ, FLOAT fFallOff, FLOAT fHotSpot);
+void SetBoxDamage(FLOAT fX1, FLOAT fY1, FLOAT fZ1, FLOAT fX2, FLOAT fY2, FLOAT fZ2);
+
+void EntityDamage(void);
+
 }; // namespace
 
 #endif
