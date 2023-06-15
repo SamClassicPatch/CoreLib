@@ -90,6 +90,7 @@ class CORE_API CPluginAPI {
     CPluginInterfaces cRenderers;
     CPluginInterfaces cNetworkEvents;
     CPluginInterfaces cGameEvents;
+    CPluginInterfaces cDemoEvents;
     CPluginInterfaces cWorldEvents;
     CPluginInterfaces cListenerEvents;
 

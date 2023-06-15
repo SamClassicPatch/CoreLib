@@ -185,6 +185,15 @@ class CORE_API CCoreAPI {
     // Called after loading a saved game
     virtual void OnGameLoad(const CTFileName &fnmSave);
 
+    // Called after starting demo playback
+    virtual void OnDemoPlay(const CTFileName &fnmDemo);
+
+    // Called after starting demo recording
+    virtual void OnDemoStart(const CTFileName &fnmDemo);
+
+    // Called after stopping demo recording
+    virtual void OnDemoStop(void);
+
     // Called after finishing reading the world file
     virtual void OnWorldLoad(CWorld *pwo, const CTFileName &fnmWorld);
 

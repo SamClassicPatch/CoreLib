@@ -141,6 +141,24 @@ class IGameEvents : public IAbstractEvents {
     virtual void OnGameLoad(const CTFileName &fnmSave);
 };
 
+// Demo events
+class IDemoEvents : public IAbstractEvents {
+  public:
+    // Return handlers container
+    virtual CPluginInterfaces *GetContainer(void) {
+      return &GetPluginAPI()->cDemoEvents;
+    };
+
+    // After starting demo playback
+    virtual void OnDemoPlay(const CTFileName &fnmDemo);
+
+    // After starting demo recording
+    virtual void OnDemoStart(const CTFileName &fnmDemo);
+
+    // After stopping demo recording
+    virtual void OnDemoStop(void);
+};
+
 // World events
 class IWorldEvents : public IAbstractEvents {
   public:

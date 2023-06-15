@@ -350,17 +350,9 @@ void CCoreAPI::OnGameSave(const CTFileName &fnmSave)
   }
 };
 
-// Called after loading a saved game
-void CCoreAPI::OnGameLoad(const CTFileName &fnmSave)
+// Fix broken shadows and lights by updating them
+static void UpdateShadows(void)
 {
-  // Call game load function for each plugin
-  FOREACHPLUGINHANDLER(GetPluginAPI()->cGameEvents, IGameEvents, pEvents) {
-    if ((IAbstractEvents *)pEvents == NULL) continue;
-
-    pEvents->OnGameLoad(fnmSave);
-  }
-
-  // Fix broken shadows and lights by updating them
   FOREACHINDYNAMICCONTAINER(IWorld::GetWorld()->wo_cenEntities, CEntity, iten) {
     if (!IsDerivedFromClass(iten, "Light")) continue;
 
@@ -374,6 +366,54 @@ void CCoreAPI::OnGameLoad(const CTFileName &fnmSave)
 
   // Update shadows from the sun and such
   IWorld::GetWorld()->CalculateDirectionalShadows();
+};
+
+// Called after loading a saved game
+void CCoreAPI::OnGameLoad(const CTFileName &fnmSave)
+{
+  // Call game load function for each plugin
+  FOREACHPLUGINHANDLER(GetPluginAPI()->cGameEvents, IGameEvents, pEvents) {
+    if ((IAbstractEvents *)pEvents == NULL) continue;
+
+    pEvents->OnGameLoad(fnmSave);
+  }
+
+  UpdateShadows();
+};
+
+// Called after starting demo playback
+void CCoreAPI::OnDemoPlay(const CTFileName &fnmDemo)
+{
+  // Call demo play function for each plugin
+  FOREACHPLUGINHANDLER(GetPluginAPI()->cDemoEvents, IDemoEvents, pEvents) {
+    if ((IAbstractEvents *)pEvents == NULL) continue;
+
+    pEvents->OnDemoPlay(fnmDemo);
+  }
+
+  UpdateShadows();
+};
+
+// Called after starting demo recording
+void CCoreAPI::OnDemoStart(const CTFileName &fnmDemo)
+{
+  // Call demo start function for each plugin
+  FOREACHPLUGINHANDLER(GetPluginAPI()->cDemoEvents, IDemoEvents, pEvents) {
+    if ((IAbstractEvents *)pEvents == NULL) continue;
+
+    pEvents->OnDemoStart(fnmDemo);
+  }
+};
+
+// Called after stopping demo recording
+void CCoreAPI::OnDemoStop(void)
+{
+  // Call demo stop function for each plugin
+  FOREACHPLUGINHANDLER(GetPluginAPI()->cDemoEvents, IDemoEvents, pEvents) {
+    if ((IAbstractEvents *)pEvents == NULL) continue;
+
+    pEvents->OnDemoStop();
+  }
 };
 
 // Called after finishing reading the world file
