@@ -29,7 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 extern INDEX ser_bReportExtPacketLogic;
 
 // Base class for each extension packet
-class CExtPacket {
+class CORE_API CExtPacket {
   public:
     // Built-in extension packets
     enum EType {
@@ -80,7 +80,7 @@ class CExtPacket {
 
 // Entity packets
 
-class CExtEntityCreate : public CExtPacket {
+class CORE_API CExtEntityCreate : public CExtPacket {
   private:
     // Dictionary of base class names, the index of which can be one byte
     static CTString aBaseClasses[255];
@@ -110,7 +110,7 @@ class CExtEntityCreate : public CExtPacket {
 };
 
 // Base for entity manipulation packets
-class CExtEntityPacket : public CExtPacket {
+class CORE_API CExtEntityPacket : public CExtPacket {
   public:
     ULONG ulEntity; // Entity ID in the world (31 bits)
 
@@ -147,7 +147,7 @@ class CExtEntityPacket : public CExtPacket {
 };
 
 // Holder for event fields
-class EExtEntityEvent : public CEntityEvent {
+class CORE_API EExtEntityEvent : public CEntityEvent {
   public:
     // Accommodate for multiple fields of varying data
     ULONG aulFields[64];
@@ -195,7 +195,7 @@ class EExtEntityEvent : public CEntityEvent {
     void ConvertTypes(void);
 };
 
-class CExtEntityDelete : public CExtEntityPacket {
+class CORE_API CExtEntityDelete : public CExtEntityPacket {
   public:
     BOOL bSameClass; // Delete all entities of the same class
 
@@ -214,7 +214,7 @@ class CExtEntityDelete : public CExtEntityPacket {
     virtual void Process(void);
 };
 
-class CExtEntityCopy : public CExtEntityPacket {
+class CORE_API CExtEntityCopy : public CExtEntityPacket {
   public:
     UBYTE ubCopies;
 
@@ -233,7 +233,7 @@ class CExtEntityCopy : public CExtEntityPacket {
     virtual void Process(void);
 };
 
-class CExtEntityEvent : public CExtEntityPacket {
+class CORE_API CExtEntityEvent : public CExtEntityPacket {
   protected:
     EExtEntityEvent eEvent; // Data holder
     ULONG ctFields; // Amount of used fields
@@ -259,7 +259,7 @@ class CExtEntityEvent : public CExtEntityPacket {
     virtual void Process(void);
 };
 
-class CExtEntityItem : public CExtEntityEvent {
+class CORE_API CExtEntityItem : public CExtEntityEvent {
   public:
     CExtEntityItem() : CExtEntityEvent()
     {
@@ -273,7 +273,7 @@ class CExtEntityItem : public CExtEntityEvent {
     virtual void Process(void);
 };
 
-class CExtEntityInit : public CExtEntityEvent {
+class CORE_API CExtEntityInit : public CExtEntityEvent {
   public:
     CExtEntityInit() : CExtEntityEvent()
     {
@@ -287,7 +287,7 @@ class CExtEntityInit : public CExtEntityEvent {
     virtual void Process(void);
 };
 
-class CExtEntityTeleport : public CExtEntityPacket {
+class CORE_API CExtEntityTeleport : public CExtEntityPacket {
   public:
     CPlacement3D plSet; // Placement to set
     BOOL bRelative; // Relative to the current placement (oriented)
@@ -308,7 +308,7 @@ class CExtEntityTeleport : public CExtEntityPacket {
     virtual void Process(void);
 };
 
-class CExtEntityPosition : public CExtEntityPacket {
+class CORE_API CExtEntityPosition : public CExtEntityPacket {
   public:
     FLOAT3D vSet; // Position or rotation to set
     BOOL bRotation; // Set rotation instead of position
@@ -330,7 +330,7 @@ class CExtEntityPosition : public CExtEntityPacket {
     virtual void Process(void);
 };
 
-class CExtEntityParent : public CExtEntityPacket {
+class CORE_API CExtEntityParent : public CExtEntityPacket {
   public:
     ULONG ulParent;
 
@@ -349,7 +349,7 @@ class CExtEntityParent : public CExtEntityPacket {
     virtual void Process(void);
 };
 
-class CExtEntityProp : public CExtEntityPacket {
+class CORE_API CExtEntityProp : public CExtEntityPacket {
   private:
     BOOL bName; // Using a name
     ULONG ulProp; // Property ID or name hash
@@ -398,7 +398,7 @@ class CExtEntityProp : public CExtEntityPacket {
     virtual void Process(void);
 };
 
-class CExtEntityHealth : public CExtEntityPacket {
+class CORE_API CExtEntityHealth : public CExtEntityPacket {
   public:
     FLOAT fHealth; // Health to set
 
@@ -417,7 +417,7 @@ class CExtEntityHealth : public CExtEntityPacket {
     virtual void Process(void);
 };
 
-class CExtEntityFlags : public CExtEntityPacket {
+class CORE_API CExtEntityFlags : public CExtEntityPacket {
   protected:
     ULONG ulFlags; // Flags to apply
     UBYTE ubType; // Type of flags
@@ -459,7 +459,7 @@ class CExtEntityFlags : public CExtEntityPacket {
     virtual void Process(void);
 };
 
-class CExtEntityMove : public CExtEntityPacket {
+class CORE_API CExtEntityMove : public CExtEntityPacket {
   public:
     FLOAT3D vSpeed; // Desired speed
 
@@ -478,7 +478,7 @@ class CExtEntityMove : public CExtEntityPacket {
     virtual void Process(void);
 };
 
-class CExtEntityRotate : public CExtEntityMove {
+class CORE_API CExtEntityRotate : public CExtEntityMove {
   public:
     CExtEntityRotate() : CExtEntityMove()
     {
@@ -492,7 +492,7 @@ class CExtEntityRotate : public CExtEntityMove {
     virtual void Process(void);
 };
 
-class CExtEntityImpulse : public CExtEntityMove {
+class CORE_API CExtEntityImpulse : public CExtEntityMove {
   public:
     CExtEntityImpulse() : CExtEntityMove()
     {
