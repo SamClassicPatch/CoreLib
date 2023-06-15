@@ -128,14 +128,24 @@ inline void Angle(CNetworkMessage &nm, ANGLE f) {
   }
 };
 
+// Compress position
+inline void Float3D(CNetworkMessage &nm, const FLOAT3D &v) {
+  Float(nm, v(1));
+  Float(nm, v(2));
+  Float(nm, v(3));
+};
+
+// Compress rotation
+inline void Angle3D(CNetworkMessage &nm, const ANGLE3D &a) {
+  Angle(nm, a(1));
+  Angle(nm, a(2));
+  Angle(nm, a(3));
+};
+
 // Compress placement
 inline void Placement(CNetworkMessage &nm, const CPlacement3D &pl) {
-  Float(nm, pl.pl_PositionVector(1));
-  Float(nm, pl.pl_PositionVector(2));
-  Float(nm, pl.pl_PositionVector(3));
-  Angle(nm, pl.pl_OrientationAngle(1));
-  Angle(nm, pl.pl_OrientationAngle(2));
-  Angle(nm, pl.pl_OrientationAngle(3));
+  Float3D(nm, pl.pl_PositionVector);
+  Angle3D(nm, pl.pl_OrientationAngle);
 };
 
 }; // namespace
@@ -217,14 +227,24 @@ inline void Angle(CNetworkMessage &nm, ANGLE &f) {
   }
 };
 
+// Decompress position
+inline void Float3D(CNetworkMessage &nm, FLOAT3D &v) {
+  Float(nm, v(1));
+  Float(nm, v(2));
+  Float(nm, v(3));
+};
+
+// Decompress rotation
+inline void Angle3D(CNetworkMessage &nm, ANGLE3D &a) {
+  Angle(nm, a(1));
+  Angle(nm, a(2));
+  Angle(nm, a(3));
+};
+
 // Decompress placement
 inline void Placement(CNetworkMessage &nm, CPlacement3D &pl) {
-  Float(nm, pl.pl_PositionVector(1));
-  Float(nm, pl.pl_PositionVector(2));
-  Float(nm, pl.pl_PositionVector(3));
-  Angle(nm, pl.pl_OrientationAngle(1));
-  Angle(nm, pl.pl_OrientationAngle(2));
-  Angle(nm, pl.pl_OrientationAngle(3));
+  Float3D(nm, pl.pl_PositionVector);
+  Angle3D(nm, pl.pl_OrientationAngle);
 };
 
 }; // namespace
