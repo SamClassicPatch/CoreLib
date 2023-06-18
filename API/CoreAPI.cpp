@@ -74,11 +74,6 @@ CCoreAPI::CCoreAPI() :
 
   // Update shadows in a current world
   _pShell->DeclareSymbol("user void UpdateShadows(void);", &UpdateShadows);
-
-  // Output patcher actions
-  if (FileExists(_fnmApplicationExe.FileDir() + "PatcherOutput")) {
-    CPatch::SetDebug(true);
-  }
 };
 
 // Setup the core before initializing it
@@ -98,6 +93,13 @@ void CCoreAPI::Setup(EAppType eSetType) {
     } catch (char *strError) {
       (void)strError;
     }
+  }
+
+  // Output patcher actions
+  const CTFileName fnmPatcherOutput = GetAppPath() + "Bin\\PatcherOutput";
+
+  if (IFiles::IsReadable(fnmPatcherOutput.str_String)) {
+    CPatch::SetDebug(true);
   }
 };
 
