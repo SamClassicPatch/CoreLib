@@ -42,7 +42,7 @@ BOOL IStockCommands::ClientLog(CTString &strResult, INDEX iClient, const CTStrin
     return TRUE;
   }
 
-  strResult = "--- Client log ---\n";
+  strResult = "--- Client log ---";
 
   // Go through every client identity
   const INDEX ctIdentities = _aClientIdentities.Count();
@@ -51,21 +51,21 @@ BOOL IStockCommands::ClientLog(CTString &strResult, INDEX iClient, const CTStrin
     CClientIdentity &ci = _aClientIdentities[iIdentity];
 
     // List addresses
-    strResult += CTString(0, "   ^c00ffffClient %d:^C\nAddresses:\n", iIdentity);
+    strResult += CTString(0, "\n   ^c00ffffClient %d:^C\nAddresses:", iIdentity);
 
     for (INDEX iAddr = 0; iAddr < ci.aAddresses.Count(); iAddr++) {
-      strResult += CTString(0, "%d. %s\n", iAddr + 1, ci.aAddresses[iAddr].GetHost());
+      strResult += CTString(0, "\n %d. %s", iAddr + 1, ci.aAddresses[iAddr].GetHost());
     }
 
     // List characters
-    strResult += "Characters:\n";
+    strResult += "\nCharacters:";
 
     for (INDEX iChar = 0; iChar < ci.aCharacters.Count(); iChar++) {
       const CPlayerCharacter &pc = ci.aCharacters[iChar];
       const UBYTE *pGUID = pc.pc_aubGUID;
 
       // GUID and name
-      strResult += CTString(0, "%d. %02X%02X%02X%02X %02X%02X%02X%02X %02X%02X%02X%02X %02X%02X%02X%02X : %s\n",
+      strResult += CTString(0, "\n %d. %02X%02X%02X%02X %02X%02X%02X%02X %02X%02X%02X%02X %02X%02X%02X%02X : %s",
         iChar + 1, pGUID[0], pGUID[1], pGUID[2], pGUID[3], pGUID[4], pGUID[5], pGUID[6], pGUID[7],
         pGUID[8], pGUID[9], pGUID[10], pGUID[11], pGUID[12], pGUID[13], pGUID[14], pGUID[15], pc.GetNameForPrinting());
     }
@@ -80,7 +80,7 @@ BOOL IStockCommands::ClientLog(CTString &strResult, INDEX iClient, const CTStrin
 
       FOREACHINDYNAMICCONTAINER(cClients, CActiveClient, itac) {
         CDynamicContainer<CPlayerBuffer> &aPlayers = itac->cPlayers;
-        strInfo += CTString(0, " ^cffff00Active %d: %s (%d players)\n",
+        strInfo += CTString(0, "\n ^cffff00Active %d: %s (%d players)",
                             itac.GetIndex(), itac->addr.GetHost(), aPlayers.Count());
 
         // List active characters
@@ -89,7 +89,7 @@ BOOL IStockCommands::ClientLog(CTString &strResult, INDEX iClient, const CTStrin
           const UBYTE *pGUID = pc.pc_aubGUID;
 
           // GUID and name
-          strInfo += CTString(0, "  %02X%02X%02X%02X %02X%02X%02X%02X %02X%02X%02X%02X %02X%02X%02X%02X : %s\n",
+          strInfo += CTString(0, "\n  %02X%02X%02X%02X %02X%02X%02X%02X %02X%02X%02X%02X %02X%02X%02X%02X : %s",
             pGUID[0], pGUID[1], pGUID[2], pGUID[3], pGUID[4], pGUID[5], pGUID[6], pGUID[7],
             pGUID[8], pGUID[9], pGUID[10], pGUID[11], pGUID[12], pGUID[13], pGUID[14], pGUID[15], pc.GetName().Undecorated());
         }
@@ -102,7 +102,7 @@ BOOL IStockCommands::ClientLog(CTString &strResult, INDEX iClient, const CTStrin
         CTString strTime;
         pcr->PrintBanTime(strTime);
 
-        strInfo += CTString(0, " ^cff0000BANNED for %s!\n", strTime);
+        strInfo += CTString(0, "\n ^cff0000BANNED for %s!", strTime);
       }
 
       // Check for a mute
@@ -112,18 +112,16 @@ BOOL IStockCommands::ClientLog(CTString &strResult, INDEX iClient, const CTStrin
         CTString strTime;
         pcr->PrintMuteTime(strTime);
 
-        strInfo += CTString(0, " ^c7f7f7fMUTED for %s!\n", strTime);
+        strInfo += CTString(0, "\n ^c7f7f7fMUTED for %s!", strTime);
       }
 
       // Display relevant information
       if (strInfo != "") {
-        strResult += "^caaaaaaRelevant information:^r\n" + strInfo;
+        strResult += "\n^caaaaaaRelevant information:^r" + strInfo;
       }
     }
   }
 
-  // Remove last line break
-  strResult.DeleteChar(strResult.Length() - 1);
   return TRUE;
 };
 
