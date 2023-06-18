@@ -35,6 +35,9 @@ class CORE_API IProcessPacket {
     // Which client sent last packet to the server
     static INDEX _iHandlingClient;
 
+    // Notify clients whenever they desync
+    static INDEX _bReportSyncBadToClients;
+
   #if CLASSICSPATCH_GUID_MASKING
 
     // Arrays of sync checks per client

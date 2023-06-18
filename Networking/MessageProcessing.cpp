@@ -25,6 +25,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Which client sent last packet to the server
 INDEX IProcessPacket::_iHandlingClient = IProcessPacket::CLT_NONE;
 
+// Notify clients whenever they desync
+INDEX IProcessPacket::_bReportSyncBadToClients = FALSE;
+
 #if CLASSICSPATCH_GUID_MASKING
 
 // Arrays of sync checks per client
@@ -503,8 +506,16 @@ BOOL IProcessPacket::OnSyncCheck(INDEX iClient, CNetworkMessage &nmMessage) {
       sso.sso_ctBadSyncs++;
 
       if (pbReportSyncBad.GetIndex()) {
-        CPrintF(LOCALIZE("SYNCBAD: Client '%s', Sequence %d Tick %.2f - bad %d\n"), 
+        CTString strSyncBad;
+        strSyncBad.PrintF(LOCALIZE("SYNCBAD: Client '%s', Sequence %d Tick %.2f - bad %d"), 
           GetComm().Server_GetClientName(iClient), scRemote.sc_iSequence, tmTick, sso.sso_ctBadSyncs);
+
+        CPutString(strSyncBad + "\n");
+
+        // [Cecil] Report bad syncs to the client
+        if (_bReportSyncBadToClients) {
+          INetwork::SendChatToClient(iClient, "Server", strSyncBad);
+        }
       }
 
       // Kick from too many bad sync

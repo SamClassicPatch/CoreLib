@@ -26,11 +26,12 @@ void INetwork::Initialize(void) {
   if (GetAPI()->IsModelerApp()) return;
 
   // Server commands
-  _pShell->DeclareSymbol("persistent user INDEX ser_bEnableAntiFlood;",      &ser_bEnableAntiFlood);
-  _pShell->DeclareSymbol("persistent user INDEX ser_iPacketFloodThreshold;", &ser_iPacketFloodThreshold);
-  _pShell->DeclareSymbol("persistent user INDEX ser_iMaxMessagesPerSecond;", &ser_iMaxMessagesPerSecond);
-  _pShell->DeclareSymbol("persistent user INDEX ser_iMaxPlayersPerClient;",  &ser_iMaxPlayersPerClient);
-  _pShell->DeclareSymbol("persistent user CTString ser_strCommandPrefix;",   &ser_strCommandPrefix);
+  _pShell->DeclareSymbol("persistent user INDEX ser_bEnableAntiFlood;",        &ser_bEnableAntiFlood);
+  _pShell->DeclareSymbol("persistent user INDEX ser_iPacketFloodThreshold;",   &ser_iPacketFloodThreshold);
+  _pShell->DeclareSymbol("persistent user INDEX ser_iMaxMessagesPerSecond;",   &ser_iMaxMessagesPerSecond);
+  _pShell->DeclareSymbol("persistent user INDEX ser_iMaxPlayersPerClient;",    &ser_iMaxPlayersPerClient);
+  _pShell->DeclareSymbol("persistent user INDEX ser_bReportSyncBadToClients;", &IProcessPacket::_bReportSyncBadToClients);
+  _pShell->DeclareSymbol("persistent user CTString ser_strCommandPrefix;",     &ser_strCommandPrefix);
 
   // Initialize query manager
   extern void InitQuery(void);
