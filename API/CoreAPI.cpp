@@ -34,6 +34,24 @@ CCoreAPI::EAppType CCoreAPI::eAppType = CCoreAPI::APP_UNKNOWN;
 // Define patch config
 CIniConfig _iniConfig;
 
+// Fix broken shadows and lights by updating them
+static void UpdateShadows(void)
+{
+  FOREACHINDYNAMICCONTAINER(IWorld::GetWorld()->wo_cenEntities, CEntity, iten) {
+    if (!IsDerivedFromClass(iten, "Light")) continue;
+
+    // Update shadow layers for each light
+    CLightSource *pls = iten->GetLightSource();
+
+    if (pls != NULL) {
+      pls->FindShadowLayers(FALSE);
+    }
+  }
+
+  // Update shadows from the sun and such
+  IWorld::GetWorld()->CalculateDirectionalShadows();
+};
+
 // Constructor
 CCoreAPI::CCoreAPI() :
   apiPatches(*new CPatchAPI), apiGame(*new CGameAPI), apiPlugins(*new CPluginAPI)
@@ -53,6 +71,9 @@ CCoreAPI::CCoreAPI() :
   ssNew.ss_pPostFunc = NULL; // Unused
 
   ulVersion = CORE_PATCH_VERSION;
+
+  // Update shadows in a current world
+  _pShell->DeclareSymbol("user void UpdateShadows(void);", &UpdateShadows);
 
   // Output patcher actions
   if (FileExists(_fnmApplicationExe.FileDir() + "PatcherOutput")) {
@@ -350,24 +371,6 @@ void CCoreAPI::OnGameSave(const CTFileName &fnmSave)
   }
 };
 
-// Fix broken shadows and lights by updating them
-static void UpdateShadows(void)
-{
-  FOREACHINDYNAMICCONTAINER(IWorld::GetWorld()->wo_cenEntities, CEntity, iten) {
-    if (!IsDerivedFromClass(iten, "Light")) continue;
-
-    // Update shadow layers for each light
-    CLightSource *pls = iten->GetLightSource();
-
-    if (pls != NULL) {
-      pls->FindShadowLayers(FALSE);
-    }
-  }
-
-  // Update shadows from the sun and such
-  IWorld::GetWorld()->CalculateDirectionalShadows();
-};
-
 // Called after loading a saved game
 void CCoreAPI::OnGameLoad(const CTFileName &fnmSave)
 {
@@ -378,6 +381,7 @@ void CCoreAPI::OnGameLoad(const CTFileName &fnmSave)
     pEvents->OnGameLoad(fnmSave);
   }
 
+  // Update shadow maps
   UpdateShadows();
 };
 
@@ -391,6 +395,7 @@ void CCoreAPI::OnDemoPlay(const CTFileName &fnmDemo)
     pEvents->OnDemoPlay(fnmDemo);
   }
 
+  // Update shadow maps
   UpdateShadows();
 };
 
