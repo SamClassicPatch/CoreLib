@@ -144,9 +144,6 @@ class CORE_API CGameAPI {
     // Start new game
     BOOL NewGame(const CTString &strSession, const CTFileName &fnmWorld, class CSessionProperties &sp);
 
-    // Stop current game
-    void StopGame(void);
-
   // Shell symbol wrappers
   public:
 
