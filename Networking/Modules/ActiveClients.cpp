@@ -64,3 +64,18 @@ void CActiveClient::GetActiveClients(CActiveClient::List &cClients, CClientIdent
     }
   }
 };
+
+// Deactivate some client
+void CActiveClient::DeactivateClient(INDEX iClient) {
+  // Make sure the server client isn't being deactivated
+  ASSERT(!GetComm().Server_IsClientLocal(iClient));
+  _aActiveClients[iClient].Reset();
+};
+
+// Reset all clients to be inactive
+void CActiveClient::ResetAll(void)
+{
+  FOREACHINSTATICARRAY(_aActiveClients, CActiveClient, itac) {
+    itac->Reset();
+  }
+};

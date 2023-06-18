@@ -358,6 +358,9 @@ void CCoreAPI::OnGameStop(void)
     pEvents->OnGameStop();
   }
 
+  // Reset all clients
+  CActiveClient::ResetAll();
+
   // Save client log by the end of the game
   IClientLogging::SaveLog();
 };

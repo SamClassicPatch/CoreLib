@@ -135,8 +135,7 @@ BOOL IProcessPacket::OnClientDisconnect(INDEX iClient, CNetworkMessage &nmMessag
   sso.sso_iDisconnectedState = 2;
 
   // Make client inactive
-  ASSERT(!GetComm().Server_IsClientLocal(iClient));
-  _aActiveClients[iClient].Reset();
+  CActiveClient::DeactivateClient(iClient);
 
   return FALSE;
 };
@@ -211,9 +210,6 @@ BOOL IProcessPacket::OnPlayerConnectRequest(INDEX iClient, CNetworkMessage &nmMe
     return FALSE;
   }
 
-  // Find inactive player for the client
-  CPlayerBuffer *pplbNew = INetwork::FirstInactivePlayer();
-
   // If there's a used character already
   if (INetwork::IsCharacterUsed(pcCharacter)) {
     // Refuse connection
@@ -221,9 +217,14 @@ BOOL IProcessPacket::OnPlayerConnectRequest(INDEX iClient, CNetworkMessage &nmMe
     strMessage.PrintF(LOCALIZE("Player character '%s' already exists in this session."), pcCharacter.GetName());
 
     INetwork::SendDisconnectMessage(iClient, strMessage, FALSE);
+    return FALSE;
+  }
+
+  // Find inactive player for the client
+  CPlayerBuffer *pplbNew = INetwork::FirstInactivePlayer();
 
   // If able to add new players
-  } else if (pplbNew != NULL) {
+  if (pplbNew != NULL) {
     // Activate new player
     pplbNew->Activate(iClient);
     INDEX iNewPlayer = pplbNew->plb_Index;

@@ -64,8 +64,15 @@ class CORE_API CActiveClient {
     // Add a new player
     void AddPlayer(CPlayerBuffer *pplb);
 
+  public:
     // Get active clients with a specific identity
     static void GetActiveClients(CActiveClient::List &cClients, CClientIdentity *pci);
+
+    // Deactivate some client
+    static void DeactivateClient(INDEX iClient);
+
+    // Reset all clients to be inactive
+    static void ResetAll(void);
 };
 
 // Active clients by client IDs on the server

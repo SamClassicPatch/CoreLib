@@ -228,8 +228,7 @@ void INetwork::SendDisconnectMessage(INDEX iClient, const char *strExplanation, 
   }
 
   // Make client inactive
-  ASSERT(!GetComm().Server_IsClientLocal(iClient));
-  _aActiveClients[iClient].Reset();
+  CActiveClient::DeactivateClient(iClient);
 };
 
 // Send chat message to a client with custom name of a sender
