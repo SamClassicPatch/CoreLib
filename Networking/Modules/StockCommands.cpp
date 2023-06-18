@@ -32,8 +32,82 @@ BOOL IStockCommands::CurrentMap(CTString &strResult, INDEX, const CTString &) {
   return TRUE;
 };
 
+// Display information about a specific identity
+static void PrintIdentityInfo(CTString &strResult, INDEX iIdentity) {
+  CClientIdentity &ci = _aClientIdentities[iIdentity];
+
+  // List addresses
+  strResult += CTString(0, "\n   ^c00ffffClient %d:^C\nAddresses:", iIdentity);
+
+  for (INDEX iAddr = 0; iAddr < ci.aAddresses.Count(); iAddr++) {
+    strResult += CTString(0, "\n %d. %s", iAddr + 1, ci.aAddresses[iAddr].GetHost());
+  }
+
+  // List characters
+  strResult += "\nCharacters:";
+
+  for (INDEX iChar = 0; iChar < ci.aCharacters.Count(); iChar++) {
+    const CPlayerCharacter &pc = ci.aCharacters[iChar];
+    const UBYTE *pGUID = pc.pc_aubGUID;
+
+    // GUID and name
+    strResult += CTString(0, "\n %d. %02X%02X%02X%02X %02X%02X%02X%02X %02X%02X%02X%02X %02X%02X%02X%02X : %s",
+      iChar + 1, pGUID[0], pGUID[1], pGUID[2], pGUID[3], pGUID[4], pGUID[5], pGUID[6], pGUID[7],
+      pGUID[8], pGUID[9], pGUID[10], pGUID[11], pGUID[12], pGUID[13], pGUID[14], pGUID[15], pc.GetNameForPrinting());
+  }
+
+  // Print relevant information
+  CTString strInfo = "";
+
+  // Check current activity
+  CActiveClient::List cClients;
+  CActiveClient::GetActiveClients(cClients, &ci);
+
+  FOREACHINDYNAMICCONTAINER(cClients, CActiveClient, itac) {
+    CDynamicContainer<CPlayerBuffer> &aPlayers = itac->cPlayers;
+    strInfo += CTString(0, "\n ^cffff00Active %d: %s (%d players)",
+                        itac.GetIndex(), itac->addr.GetHost(), aPlayers.Count());
+
+    // List active characters
+    FOREACHINDYNAMICCONTAINER(aPlayers, CPlayerBuffer, itplb) {
+      const CPlayerCharacter &pc = itplb->plb_pcCharacter;
+      const UBYTE *pGUID = pc.pc_aubGUID;
+
+      // GUID and name
+      strInfo += CTString(0, "\n  %02X%02X%02X%02X %02X%02X%02X%02X %02X%02X%02X%02X %02X%02X%02X%02X : %s",
+        pGUID[0], pGUID[1], pGUID[2], pGUID[3], pGUID[4], pGUID[5], pGUID[6], pGUID[7],
+        pGUID[8], pGUID[9], pGUID[10], pGUID[11], pGUID[12], pGUID[13], pGUID[14], pGUID[15], pc.GetName().Undecorated());
+    }
+  }
+
+  // Check for a ban
+  CClientRestriction *pcr = CClientRestriction::IsBanned(&ci);
+
+  if (pcr != NULL) {
+    CTString strTime;
+    pcr->PrintBanTime(strTime);
+
+    strInfo += CTString(0, "\n ^cff0000BANNED for %s!", strTime);
+  }
+
+  // Check for a mute
+  pcr = CClientRestriction::IsMuted(&ci);
+
+  if (pcr != NULL) {
+    CTString strTime;
+    pcr->PrintMuteTime(strTime);
+
+    strInfo += CTString(0, "\n ^c7f7f7fMUTED for %s!", strTime);
+  }
+
+  // Display relevant information
+  if (strInfo != "") {
+    strResult += "\n^caaaaaaRelevant information:^r" + strInfo;
+  }
+};
+
 // Display log of all clients
-BOOL IStockCommands::ClientLog(CTString &strResult, INDEX iClient, const CTString &) {
+BOOL IStockCommands::ClientLog(CTString &strResult, INDEX iClient, const CTString &strArgs) {
   IGNORE_CLIENTS;
 
   // No clients
@@ -42,84 +116,25 @@ BOOL IStockCommands::ClientLog(CTString &strResult, INDEX iClient, const CTStrin
     return TRUE;
   }
 
-  strResult = "--- Client log ---";
-
-  // Go through every client identity
+  strResult = "";
   const INDEX ctIdentities = _aClientIdentities.Count();
 
+  // Display info about a specific identity
+  INDEX iSpecificIdentity;
+
+  if (const_cast<CTString &>(strArgs).ScanF("%d", &iSpecificIdentity) == 1) {
+    if (iSpecificIdentity < 0 || iSpecificIdentity >= ctIdentities) {
+      strResult = "Invalid client index!";
+      return TRUE;
+    }
+
+    PrintIdentityInfo(strResult, iSpecificIdentity);
+    return TRUE;
+  }
+
+  // Go through every client identity
   for (INDEX iIdentity = 0; iIdentity < ctIdentities; iIdentity++) {
-    CClientIdentity &ci = _aClientIdentities[iIdentity];
-
-    // List addresses
-    strResult += CTString(0, "\n   ^c00ffffClient %d:^C\nAddresses:", iIdentity);
-
-    for (INDEX iAddr = 0; iAddr < ci.aAddresses.Count(); iAddr++) {
-      strResult += CTString(0, "\n %d. %s", iAddr + 1, ci.aAddresses[iAddr].GetHost());
-    }
-
-    // List characters
-    strResult += "\nCharacters:";
-
-    for (INDEX iChar = 0; iChar < ci.aCharacters.Count(); iChar++) {
-      const CPlayerCharacter &pc = ci.aCharacters[iChar];
-      const UBYTE *pGUID = pc.pc_aubGUID;
-
-      // GUID and name
-      strResult += CTString(0, "\n %d. %02X%02X%02X%02X %02X%02X%02X%02X %02X%02X%02X%02X %02X%02X%02X%02X : %s",
-        iChar + 1, pGUID[0], pGUID[1], pGUID[2], pGUID[3], pGUID[4], pGUID[5], pGUID[6], pGUID[7],
-        pGUID[8], pGUID[9], pGUID[10], pGUID[11], pGUID[12], pGUID[13], pGUID[14], pGUID[15], pc.GetNameForPrinting());
-    }
-
-    // Print relevant information
-    {
-      CTString strInfo = "";
-
-      // Check current activity
-      CActiveClient::List cClients;
-      CActiveClient::GetActiveClients(cClients, &ci);
-
-      FOREACHINDYNAMICCONTAINER(cClients, CActiveClient, itac) {
-        CDynamicContainer<CPlayerBuffer> &aPlayers = itac->cPlayers;
-        strInfo += CTString(0, "\n ^cffff00Active %d: %s (%d players)",
-                            itac.GetIndex(), itac->addr.GetHost(), aPlayers.Count());
-
-        // List active characters
-        FOREACHINDYNAMICCONTAINER(aPlayers, CPlayerBuffer, itplb) {
-          const CPlayerCharacter &pc = itplb->plb_pcCharacter;
-          const UBYTE *pGUID = pc.pc_aubGUID;
-
-          // GUID and name
-          strInfo += CTString(0, "\n  %02X%02X%02X%02X %02X%02X%02X%02X %02X%02X%02X%02X %02X%02X%02X%02X : %s",
-            pGUID[0], pGUID[1], pGUID[2], pGUID[3], pGUID[4], pGUID[5], pGUID[6], pGUID[7],
-            pGUID[8], pGUID[9], pGUID[10], pGUID[11], pGUID[12], pGUID[13], pGUID[14], pGUID[15], pc.GetName().Undecorated());
-        }
-      }
-
-      // Check for a ban
-      CClientRestriction *pcr = CClientRestriction::IsBanned(&ci);
-
-      if (pcr != NULL) {
-        CTString strTime;
-        pcr->PrintBanTime(strTime);
-
-        strInfo += CTString(0, "\n ^cff0000BANNED for %s!", strTime);
-      }
-
-      // Check for a mute
-      pcr = CClientRestriction::IsMuted(&ci);
-
-      if (pcr != NULL) {
-        CTString strTime;
-        pcr->PrintMuteTime(strTime);
-
-        strInfo += CTString(0, "\n ^c7f7f7fMUTED for %s!", strTime);
-      }
-
-      // Display relevant information
-      if (strInfo != "") {
-        strResult += "\n^caaaaaaRelevant information:^r" + strInfo;
-      }
-    }
+    PrintIdentityInfo(strResult, iIdentity);
   }
 
   return TRUE;
