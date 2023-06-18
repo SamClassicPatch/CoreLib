@@ -174,43 +174,43 @@ class CORE_API CCoreAPI {
   public:
 
     // Called after starting world simulation
-    virtual void OnGameStart(void);
+    void OnGameStart(void);
 
     // Called before stopping world simulation
-    virtual void OnGameStop(void);
+    void OnGameStop(void);
 
     // Called after saving the game
-    virtual void OnGameSave(const CTFileName &fnmSave);
+    void OnGameSave(const CTFileName &fnmSave);
 
     // Called after loading a saved game
-    virtual void OnGameLoad(const CTFileName &fnmSave);
+    void OnGameLoad(const CTFileName &fnmSave);
 
     // Called after starting demo playback
-    virtual void OnDemoPlay(const CTFileName &fnmDemo);
+    void OnDemoPlay(const CTFileName &fnmDemo);
 
     // Called after starting demo recording
-    virtual void OnDemoStart(const CTFileName &fnmDemo);
+    void OnDemoStart(const CTFileName &fnmDemo);
 
     // Called after stopping demo recording
-    virtual void OnDemoStop(void);
+    void OnDemoStop(void);
 
     // Called after finishing reading the world file
-    virtual void OnWorldLoad(CWorld *pwo, const CTFileName &fnmWorld);
+    void OnWorldLoad(CWorld *pwo, const CTFileName &fnmWorld);
 
     // Called every simulation tick
-    virtual void OnTick(void);
+    void OnTick(void);
 
     // Called before redrawing game view
-    virtual void OnPreDraw(CDrawPort *pdp);
+    void OnPreDraw(CDrawPort *pdp);
 
     // Called after redrawing game view
-    virtual void OnPostDraw(CDrawPort *pdp);
+    void OnPostDraw(CDrawPort *pdp);
 
     // Called after rendering the world
-    virtual void OnRenderView(CWorld &wo, CEntity *penViewer, CAnyProjection3D &apr, CDrawPort *pdp);
+    void OnRenderView(CWorld &wo, CEntity *penViewer, CAnyProjection3D &apr, CDrawPort *pdp);
 
     // Called every render frame
-    virtual void OnFrame(CDrawPort *pdp);
+    void OnFrame(CDrawPort *pdp);
 };
 
 // This variable can be used to access API of the Classics patch.
