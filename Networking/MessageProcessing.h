@@ -65,6 +65,9 @@ class CORE_API IProcessPacket {
     // Mask player GUID using data from the player buffer
     static void MaskGUID(UBYTE *aubGUID, CPlayerBuffer &plb);
 
+    // Check if character can be changed for a specific player
+    static BOOL CanChangeCharacter(CPlayerEntity *pen);
+
   // Message processors
   public:
 

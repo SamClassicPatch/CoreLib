@@ -22,6 +22,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "Interfaces/DataFunctions.h"
 #include "Query/QueryManager.h"
 
+#include "Objects/PropertyPtr.h"
+
 // Which client sent last packet to the server
 INDEX IProcessPacket::_iHandlingClient = IProcessPacket::CLT_NONE;
 
@@ -130,6 +132,22 @@ void IProcessPacket::MaskGUID(UBYTE *aubGUID, CPlayerBuffer &plb) {
   // Use client and buffer indices for uniqueness
   aubGUID[0] = plb.plb_iClient;
   aubGUID[1] = plb.plb_Index;
+};
+
+// Check if character can be changed for a specific player
+BOOL IProcessPacket::CanChangeCharacter(CPlayerEntity *pen) {
+  // Retrieve CPlayer::m_penAnimator
+  static CPropertyPtr pptrAnimator(pen);
+
+  // Check if player has a player animator to handle the character change
+  if (pptrAnimator.ByIdOrOffset(CEntityProperty::EPT_ENTITYPTR, (0x191 << 8) + 17, 0x388))
+  {
+    CEntity *penAnimator = ENTITYPROPERTY(pen, pptrAnimator.Offset(), CEntityPointer);
+    return (penAnimator != NULL);
+  }
+
+  // Just proceed if cannot determine
+  return TRUE;
 };
 
 // Client confirming the disconnection
@@ -339,6 +357,14 @@ BOOL IProcessPacket::OnCharacterChangeRequest(INDEX iClient, CNetworkMessage &nm
 
   // Wrong client or character
   if (plb.plb_iClient != iClient || !(plb.plb_pcCharacter == pcCharacter)) {
+    return FALSE;
+  }
+
+  // [Cecil] Check if the entity is even capable of changing its appearance
+  CPlayerEntity *penPlayer = _pNetwork->ga_sesSessionState.ses_apltPlayers[iPlayer].plt_penPlayerEntity;
+
+  if (!CanChangeCharacter(penPlayer)) {
+    INetwork::SendChatToClient(iClient, "Server", TRANS("Please wait until you are fully connected to change your character."));
     return FALSE;
   }
 
