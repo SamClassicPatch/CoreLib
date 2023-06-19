@@ -34,6 +34,9 @@ CCoreAPI::EAppType CCoreAPI::eAppType = CCoreAPI::APP_UNKNOWN;
 // Define patch config
 CIniConfig _iniConfig;
 
+// Queue shadow updating for the next connection to a server
+static BOOL _bQueueShadowUpdate = TRUE;
+
 // Fix broken shadows and lights by updating them
 static void UpdateShadows(void)
 {
@@ -358,6 +361,9 @@ void CCoreAPI::OnGameStop(void)
     pEvents->OnGameStop();
   }
 
+  // Queue shadow updating again
+  _bQueueShadowUpdate = TRUE;
+
   // Reset all clients
   CActiveClient::ResetAll();
 
@@ -458,9 +464,14 @@ void CCoreAPI::OnAddPlayer(CPlayerTarget &plt, BOOL bLocal)
     pEvents->OnAddPlayer(plt, bLocal);
   }
 
-  // Update shadow maps for local players
-  if (bLocal) {
-    UpdateShadows();
+  // Update shadow maps for connecting players
+  if (bLocal && !_pNetwork->IsServer())
+  {
+    // Only if queued
+    if (_bQueueShadowUpdate) {
+      _bQueueShadowUpdate = FALSE;
+      UpdateShadows();
+    }
   }
 };
 
