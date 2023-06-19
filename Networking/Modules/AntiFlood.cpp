@@ -28,21 +28,6 @@ INDEX ser_iPacketFloodThreshold = 10;
 // Allowed messages from client per second
 INDEX ser_iMaxMessagesPerSecond = 2;
 
-// See if should check for packet flooding for this client
-static BOOL CheckForPacketFlood(INDEX iClient) {
-  // Don't use anti-flood system
-  if (!ser_bEnableAntiFlood) {
-    return FALSE;
-  }
-
-  // Ignore server clients
-  if (GetComm().Server_IsClientLocal(iClient)) {
-    return FALSE;
-  }
-
-  return TRUE;
-};
-
 // Detect potential packet flood and deal with it
 static BOOL DetectPacketFlood(INDEX iClient)
 {
@@ -70,7 +55,8 @@ static BOOL DetectPacketFlood(INDEX iClient)
 // Handle character changes from a client
 BOOL IAntiFlood::HandleCharacterChange(INDEX iClient)
 {
-  if (!CheckForPacketFlood(iClient)) {
+  // Not using anti-flood system or it's a server client
+  if (!ser_bEnableAntiFlood || GetComm().Server_IsClientLocal(iClient)) {
     return FALSE;
   }
 
@@ -89,7 +75,8 @@ BOOL IAntiFlood::HandleChatMessage(INDEX iClient)
   CClientIdentity *pci = IClientLogging::GetIdentity(iClient);
   CActiveClient &acClient = _aActiveClients[iClient];
 
-  if (!CheckForPacketFlood(iClient)) {
+  // Ignore server clients
+  if (GetComm().Server_IsClientLocal(iClient)) {
     return FALSE;
   }
 
@@ -97,15 +84,9 @@ BOOL IAntiFlood::HandleChatMessage(INDEX iClient)
   acClient.ctLastSecPackets++;
   acClient.ctLastSecMessages++;
 
-  // If detected packet flood
+  // Don't show the message if detected packet flood
   if (DetectPacketFlood(iClient)) {
-    // Don't show the message in chat
     return TRUE;
-  }
-
-  // Quit if no further message limit
-  if (ser_iMaxMessagesPerSecond < 0) {
-    return FALSE;
   }
 
   static CTString strKickWarning = TRANS("\n^cffffffFurther attempts may lead to a kick!");
@@ -128,6 +109,11 @@ BOOL IAntiFlood::HandleChatMessage(INDEX iClient)
 
     // Don't show the message in chat
     return TRUE;
+  }
+
+  // Quit if not using anti-flood system or no further message limit
+  if (!ser_bEnableAntiFlood || ser_iMaxMessagesPerSecond < 0) {
+    return FALSE;
   }
 
   // If client sent too many messages in the past second
