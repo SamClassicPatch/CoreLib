@@ -200,6 +200,12 @@ class CORE_API CCoreAPI {
     // Called every simulation tick
     void OnTick(void);
 
+    // Called every time a new player is added
+    void OnAddPlayer(CPlayerTarget &plt, BOOL bLocal);
+
+    // Called every time a player is removed
+    void OnRemovePlayer(CPlayerTarget &plt, BOOL bLocal);
+
     // Called before redrawing game view
     void OnPreDraw(CDrawPort *pdp);
 

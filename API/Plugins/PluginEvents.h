@@ -118,6 +118,12 @@ class INetworkEvents : public IAbstractEvents {
 
     // Upon receiving a packet as a client (returns TRUE if the packet was handled)
     virtual BOOL OnClientPacket(CNetworkMessage &nmMessage, const ULONG ulType);
+
+    // Upon adding a new player to the game
+    virtual void OnAddPlayer(CPlayerTarget &plt, BOOL bLocal);
+
+    // Upon removing a player from the game
+    virtual void OnRemovePlayer(CPlayerTarget &plt, BOOL bLocal);
 };
 
 // Game events

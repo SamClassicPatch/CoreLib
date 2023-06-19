@@ -448,6 +448,33 @@ void CCoreAPI::OnTick(void)
   }
 };
 
+// Called every time a new player is added
+void CCoreAPI::OnAddPlayer(CPlayerTarget &plt, BOOL bLocal)
+{
+  // Call player addition function for each plugin
+  FOREACHPLUGINHANDLER(GetPluginAPI()->cNetworkEvents, INetworkEvents, pEvents) {
+    if ((IAbstractEvents *)pEvents == NULL) continue;
+
+    pEvents->OnAddPlayer(plt, bLocal);
+  }
+
+  // Update shadow maps for local players
+  if (bLocal) {
+    UpdateShadows();
+  }
+};
+
+// Called every time a player is removed
+void CCoreAPI::OnRemovePlayer(CPlayerTarget &plt, BOOL bLocal)
+{
+  // Call player removal function for each plugin
+  FOREACHPLUGINHANDLER(GetPluginAPI()->cNetworkEvents, INetworkEvents, pEvents) {
+    if ((IAbstractEvents *)pEvents == NULL) continue;
+
+    pEvents->OnRemovePlayer(plt, bLocal);
+  }
+};
+
 // Called before redrawing game view
 void CCoreAPI::OnPreDraw(CDrawPort *pdp)
 {
