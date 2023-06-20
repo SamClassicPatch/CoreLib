@@ -16,6 +16,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "StdH.h"
 
 #include "ActiveClients.h"
+#include "Networking/CommInterface.h"
 
 // Active clients by client IDs on the server
 CStaticArray<CActiveClient> _aActiveClients;

@@ -518,6 +518,8 @@ BOOL IProcessPacket::OnSyncCheck(INDEX iClient, CNetworkMessage &nmMessage) {
   CSessionSocket &sso = srv.srv_assoSessions[iClient];
   TIME &tmLastSync = sso.sso_tmLastSyncReceived;
 
+  const CTString strClientName = GetComm().Server_GetClientName(iClient);
+
   // Sync on time
   if (iFound == 0) {
     // Flush stream buffer up to that sequence
@@ -533,13 +535,16 @@ BOOL IProcessPacket::OnSyncCheck(INDEX iClient, CNetworkMessage &nmMessage) {
 
       if (pbReportSyncBad.GetIndex()) {
         CTString strSyncBad;
-        strSyncBad.PrintF(LOCALIZE("SYNCBAD: Client '%s', Sequence %d Tick %.2f - bad %d"), 
-          GetComm().Server_GetClientName(iClient), scRemote.sc_iSequence, tmTick, sso.sso_ctBadSyncs);
+        strSyncBad.PrintF(LOCALIZE("SYNCBAD: Client '%s', Sequence %d Tick %.2f - bad %d\n"),
+          strClientName, scRemote.sc_iSequence, tmTick, sso.sso_ctBadSyncs);
 
-        CPutString(strSyncBad + "\n");
+        CPutString(strSyncBad);
 
         // [Cecil] Report bad syncs to the client
         if (_bReportSyncBadToClients) {
+          strSyncBad.PrintF(TRANS("SYNCBAD: Sequence %d Tick %.2f - bad %d"),
+            scRemote.sc_iSequence, tmTick, sso.sso_ctBadSyncs);
+
           INetwork::SendChatToClient(iClient, "Server", strSyncBad);
         }
       }
@@ -560,7 +565,7 @@ BOOL IProcessPacket::OnSyncCheck(INDEX iClient, CNetworkMessage &nmMessage) {
       sso.sso_ctBadSyncs = 0;
 
       if (pbReportSyncOK.GetIndex()) {
-        CPrintF(LOCALIZE("SYNCOK: Client '%s', Tick %.2f\n"), GetComm().Server_GetClientName(iClient), tmTick);
+        CPrintF(LOCALIZE("SYNCOK: Client '%s', Tick %.2f\n"), strClientName, tmTick);
       }
     }
 
@@ -571,13 +576,13 @@ BOOL IProcessPacket::OnSyncCheck(INDEX iClient, CNetworkMessage &nmMessage) {
   } else if (iFound < 0) {
     // Only report if syncs are okay (to avoid late syncs on level change)
     if (pbReportSyncLate.GetIndex() && tmLastSync > 0) {
-      CPrintF(LOCALIZE("SYNCLATE: Client '%s', Tick %.2f\n"), GetComm().Server_GetClientName(iClient), tmTick);
+      CPrintF(LOCALIZE("SYNCLATE: Client '%s', Tick %.2f\n"), strClientName, tmTick);
     }
 
   // Too new
   } else {
     if (pbReportSyncEarly.GetIndex()) {
-      CPrintF(LOCALIZE("SYNCEARLY: Client '%s', Tick %.2f\n"), GetComm().Server_GetClientName(iClient), tmTick);
+      CPrintF(LOCALIZE("SYNCEARLY: Client '%s', Tick %.2f\n"), strClientName, tmTick);
     }
 
     // Remember that this sync was ahead of time
