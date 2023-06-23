@@ -90,6 +90,11 @@ class CORE_API CPatchAPI {
     virtual CTFileName GetEntitiesPath(void) {
       return fnmEntities;
     };
+
+    // Check if Entities library is from a mod
+    virtual BOOL IsEntitiesModded(void) {
+      return GetEntitiesPath().HasPrefix(CCoreAPI::AppPath() + _fnmMod);
+    };
 };
 
 #endif
