@@ -353,7 +353,7 @@ static void ReadZIPDirectory_t(CTFileName *pfnmZip)
   }
 
   // Check if the zip is from a mod
-  BOOL bMod = pfnmZip->HasPrefix(_fnmApplicationPath + "Mods\\")
+  BOOL bMod = pfnmZip->HasPrefix(CCoreAPI::AppPath() + "Mods\\")
            || pfnmZip->HasPrefix(_fnmCDPath + "Mods\\");
 
   // Go to the beginning of the central dir
@@ -480,7 +480,7 @@ int qsort_ArchiveCTFileName_reverse(const void *pElement1, const void *pElement2
   const CTFileName &fnm2 = *(const CTFileName *)pElement2;
 
   // Calculate priorities based on the location of a GRO file
-  BOOL bMod1 = fnm1.HasPrefix(_fnmApplicationPath + "Mods\\");
+  BOOL bMod1 = fnm1.HasPrefix(CCoreAPI::AppPath() + "Mods\\");
   BOOL bCD1 = fnm1.HasPrefix(_fnmCDPath);
   BOOL bModCD1 = fnm1.HasPrefix(_fnmCDPath + "Mods\\");
 
@@ -496,7 +496,7 @@ int qsort_ArchiveCTFileName_reverse(const void *pElement1, const void *pElement2
     iPriority1 = 0;
   }
 
-  BOOL bMod2 = fnm2.HasPrefix(_fnmApplicationPath + "Mods\\");
+  BOOL bMod2 = fnm2.HasPrefix(CCoreAPI::AppPath() + "Mods\\");
   BOOL bCD2 = fnm2.HasPrefix(_fnmCDPath);
   BOOL bModCD2 = fnm2.HasPrefix(_fnmCDPath + "Mods\\");
 

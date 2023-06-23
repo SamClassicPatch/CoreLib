@@ -99,19 +99,48 @@ void CCoreAPI::Setup(EAppType eSetType) {
   }
 
   // Output patcher actions
-  const CTFileName fnmPatcherOutput = GetAppPath() + "Bin\\PatcherOutput";
+  const CTFileName fnmPatcherOutput = AppPath() + AppBin() + "PatcherOutput";
 
   if (IFiles::IsReadable(fnmPatcherOutput.str_String)) {
     CPatch::SetDebug(true);
   }
 };
 
-// Get absolute path to the game directory
-const CTFileName &CCoreAPI::GetAppPath(void) {
-  // Copy application path
-  if (_fnmApplicationPath != "") {
-    return _fnmApplicationPath;
+// Get cut-off position before the Bin directory
+static inline size_t BinDirPos(std::string strExePath) {
+  // Cut off module filename to end up with Bin (e.g. "C:\SeriousSam\Bin" and "\SeriousSam_Custom.exe")
+  strExePath = strExePath.substr(0, strExePath.rfind("\\"));
+
+  // Go up to the root directory (e.g. "C:\SeriousSam\" and "Bin\SeriousSam_Custom.exe")
+  return strExePath.rfind("\\") + 1;
+};
+
+// Get relative path to the game executable
+const CTFileName &CCoreAPI::AppExe(void) {
+  // Use existing path
+  if (_fnmApplicationExe != "") return _fnmApplicationExe;
+
+  static CTFileName fnmLocalPath;
+
+  // Get executable path locally
+  if (fnmLocalPath == "") {
+    char strPathBuffer[1024];
+    GetModuleFileNameA(NULL, strPathBuffer, sizeof(strPathBuffer));
+
+    const std::string strExePath = strPathBuffer;
+    size_t iBinDir = BinDirPos(strExePath);
+
+    // Copy relative path to the executable with the Bin directory
+    fnmLocalPath = CTString(strExePath.substr(iBinDir).c_str());
   }
+
+  return fnmLocalPath;
+};
+
+// Get absolute path to the game directory
+const CTFileName &CCoreAPI::AppPath(void) {
+  // Use existing path
+  if (_fnmApplicationPath != "") return _fnmApplicationPath;
 
   static CTFileName fnmLocalPath;
 
@@ -120,11 +149,10 @@ const CTFileName &CCoreAPI::GetAppPath(void) {
     char strPathBuffer[1024];
     GetModuleFileNameA(NULL, strPathBuffer, sizeof(strPathBuffer));
 
-    // Cut off the library filename starting from the Bin directory
-    std::string strAppPath = strPathBuffer;
-    size_t iBinDir = strAppPath.rfind("Bin\\");
+    const std::string strExePath = strPathBuffer;
+    size_t iBinDir = BinDirPos(strExePath);
 
-    fnmLocalPath = CTString(strAppPath.substr(0, iBinDir).c_str());
+    fnmLocalPath = CTString(strExePath.substr(0, iBinDir).c_str());
   }
 
   return fnmLocalPath;
@@ -167,7 +195,7 @@ void CCoreAPI::DisableGameSpy(void) {
 // Create a series of directories within the game folder
 void CCoreAPI::CreateDir(const CTString &strPath) {
   std::string strDirs = strPath;
-  const char *strAppPath = _fnmApplicationPath.str_String;
+  const char *strAppPath = AppPath().str_String;
 
   size_t iDir = 0;
 
@@ -232,7 +260,8 @@ CPluginModule *CCoreAPI::LoadGamePlugin(void) {
 void CCoreAPI::LoadPlugins(ULONG ulUtilityFlags) {
   // List all library files
   CFileList afnmDir;
-  IFiles::ListGameFiles(afnmDir, "Bin\\Plugins\\", "*.dll", IFiles::FLF_RECURSIVE | IFiles::FLF_SEARCHMOD | IFiles::FLF_IGNORELISTS);
+  IFiles::ListGameFiles(afnmDir, CCoreAPI::AppBin() + "Plugins\\", "*.dll",
+    IFiles::FLF_RECURSIVE | IFiles::FLF_SEARCHMOD | IFiles::FLF_IGNORELISTS);
 
   CPrintF("--- Loading user plugins (flags: 0x%X) ---\n", ulUtilityFlags);
 

@@ -88,7 +88,7 @@ CPatchAPI::CPatchAPI() {
     hEngine = GetModuleHandleA("EngineD.dll");
   #endif
 
-  CTString strEntitiesLib = "Bin\\Entities" + _strModExt
+  CTString strEntitiesLib = CCoreAPI::AppBin() + "Entities" + _strModExt
   #ifndef NDEBUG
     + "D"
   #endif

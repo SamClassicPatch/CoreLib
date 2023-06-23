@@ -173,7 +173,7 @@ void CPluginModule::Load_t(const CTFileName &fnmDLL)
   ser_FileName = fnmDLL;
 
   // Load plugin's configuration file
-  const CTString strConfig = "Bin\\Plugins\\" + fnmDLL.FileName() + ".ini";
+  const CTString strConfig = CCoreAPI::AppBin() + "Plugins\\" + fnmDLL.FileName() + ".ini";
 
   try {
     GetInfo().iniConfig.Load_t(strConfig, TRUE);

@@ -175,7 +175,7 @@ class CIniConfig {
 
       // Use STL streams (can be used before engine initialization)
       } else {
-        std::ifstream strm((CCoreAPI::GetAppPath() + strFile).str_String);
+        std::ifstream strm((CCoreAPI::AppPath() + strFile).str_String);
 
         if (strm.fail()) {
           ThrowF_t(LOCALIZE("Cannot open file `%s' (%s)"), strFile.str_String, strerror(errno));

@@ -146,7 +146,7 @@ inline void SetFullDirectory(CTFileName &fnmDir) {
   // If shorter than 2 characters or doesn't start with a drive directory
   if (iLength < 2 || fnmDir[1] != ':') {
     // Convert relative path into absolute path
-    fnmDir = _fnmApplicationPath + fnmDir;
+    fnmDir = CCoreAPI::AppPath() + fnmDir;
   }
 
   // Convert the rest of the path into absolute path
@@ -306,7 +306,7 @@ inline void ListGameFiles(CFileList &afnmFiles, const CTString &strDir, const CT
   // List files exclusively from the mod
   if (ulFlags & FLF_ONLYMOD) {
     if (bMod) {
-      ListInDir(_fnmApplicationPath + _fnmMod, afnmTemp, strDir, strPattern, bRecursive, NULL, NULL);
+      ListInDir(CCoreAPI::AppPath() + _fnmMod, afnmTemp, strDir, strPattern, bRecursive, NULL, NULL);
     }
 
   // List files exclusively from the CD
@@ -318,7 +318,7 @@ inline void ListGameFiles(CFileList &afnmFiles, const CTString &strDir, const CT
 
   } else {
     // List files from the game directory
-    ListInDir(_fnmApplicationPath, afnmTemp, strDir, strPattern, bRecursive,
+    ListInDir(CCoreAPI::AppPath(), afnmTemp, strDir, strPattern, bRecursive,
               bLists ? &aBaseBrowseInc : NULL, bLists ? &aBaseBrowseExc : NULL);
 
     // List extra files from the CD
@@ -329,7 +329,7 @@ inline void ListGameFiles(CFileList &afnmFiles, const CTString &strDir, const CT
 
     // List extra files from the mod directory
     if (ulFlags & FLF_SEARCHMOD && bMod) {
-      ListInDir(_fnmApplicationPath + _fnmMod, afnmTemp, strDir, strPattern, bRecursive, NULL, NULL);
+      ListInDir(CCoreAPI::AppPath() + _fnmMod, afnmTemp, strDir, strPattern, bRecursive, NULL, NULL);
     }
   }
 

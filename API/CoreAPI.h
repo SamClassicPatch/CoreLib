@@ -108,7 +108,7 @@ class CORE_API CCoreAPI {
     // Get path to the Game library
     static inline CTString GetGameLibPath(void) {
       // Construct Game library name for different games
-      CTString strGameLib = _fnmApplicationExe.FileDir() + "Game";
+      CTString strGameLib = CCoreAPI::AppBin() + "Game";
 
       // Append mod extension for TSE
       #if SE1_GAME != SS_TFE
@@ -126,8 +126,16 @@ class CORE_API CCoreAPI {
       return strGameLib;
     };
 
+    // Get relative path to the game executable
+    static const CTFileName &AppExe(void);
+
+    // Get relative path to the Bin directory (folder name)
+    static inline CTFileName AppBin(void) {
+      return AppExe().FileDir();
+    };
+
     // Get absolute path to the game directory
-    static const CTFileName &GetAppPath(void);
+    static const CTFileName &AppPath(void);
 
     // Set value to config property
     static void SetPropValue(const CTString &strKey, const CTString &strValue);
@@ -247,8 +255,8 @@ extern CORE_POINTER_API CCoreAPI *_pCoreAPI;
     if (_pCoreAPI != NULL) return TRUE;
 
     // Get instance of the Core library
-    const CTFileName fnmLib = _fnmApplicationExe.FileDir() + "ClassicsCore.dll";
-    HMODULE hLib = GetModuleHandleA(_fnmApplicationPath + fnmLib);
+    const CTFileName fnmLib = CCoreAPI::AppBin() + "ClassicsCore.dll";
+    HMODULE hLib = GetModuleHandleA((CCoreAPI::AppPath() + fnmLib).str_String);
 
     if (hLib != NULL) {
       // Get API pointer from the library module
