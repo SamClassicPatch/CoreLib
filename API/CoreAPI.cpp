@@ -302,20 +302,29 @@ CPluginModule *CCoreAPI::LoadGamePlugin(void) {
 // Load all user plugins of specific utility types
 void CCoreAPI::LoadPlugins(ULONG ulUtilityFlags) {
   // List all library files
-  CFileList afnmDir;
-  IFiles::ListGameFiles(afnmDir, CCoreAPI::AppBin() + "Plugins\\", "*.dll",
-    IFiles::FLF_RECURSIVE | IFiles::FLF_SEARCHMOD | IFiles::FLF_IGNORELISTS);
+  CFileList afnmGameDir;
+  CFileList afnmModDir;
+
+  #define LIST_PLUGINS_FLAGS IFiles::FLF_RECURSIVE | IFiles::FLF_IGNORELISTS | IFiles::FLF_IGNOREGRO
+
+  IFiles::ListGameFiles(afnmGameDir, CCoreAPI::AppBin()    + "Plugins\\", "*.dll", LIST_PLUGINS_FLAGS);
+  IFiles::ListGameFiles(afnmModDir,  CCoreAPI::AppModBin() + "Plugins\\", "*.dll", LIST_PLUGINS_FLAGS | IFiles::FLF_ONLYMOD);
+
+  // Move mod plugins in the same list
+  for (INDEX iMod = 0; iMod < afnmModDir.Count(); iMod++) {
+    afnmGameDir.Push() = afnmModDir[iMod];
+  }
 
   CPrintF("--- Loading user plugins (flags: 0x%X) ---\n", ulUtilityFlags);
 
   // Load every plugin
-  for (INDEX i = 0; i < afnmDir.Count(); i++)
+  for (INDEX i = 0; i < afnmGameDir.Count(); i++)
   {
-    CPrintF("  %d - %s\n", i + 1, afnmDir[i].str_String);
+    CPrintF("  %d - %s\n", i + 1, afnmGameDir[i].str_String);
 
     try {
       // Try to load the plugin
-      GetPluginAPI()->ObtainPlugin_t(afnmDir[i], ulUtilityFlags);
+      GetPluginAPI()->ObtainPlugin_t(afnmGameDir[i], ulUtilityFlags);
 
     } catch (char *strError) {
       // Plugin initialization failed

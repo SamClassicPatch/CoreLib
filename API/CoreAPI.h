@@ -126,6 +126,12 @@ class CORE_API CCoreAPI {
       return AppExe().FileDir();
     };
 
+    // Get relative path to the mod's Bin directory (folder name)
+    static inline CTFileName AppModBin(void) {
+      // Use game's or mod's Bin directory
+      return (_fnmMod == "") ? AppBin() : CTString("Bin\\");
+    };
+
     // Get absolute path to the game directory
     static const CTFileName &AppPath(void);
 
