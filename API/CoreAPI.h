@@ -105,26 +105,18 @@ class CORE_API CCoreAPI {
       return strVersion;
     };
 
-    // Get path to the Game library
-    static inline CTString GetGameLibPath(void) {
-      // Construct Game library name for different games
-      CTString strGameLib = CCoreAPI::AppBin() + "Game";
-
-      // Append mod extension for TSE
-      #if SE1_GAME != SS_TFE
-        strGameLib += _strModExt;
+    // Get filename of some library (e.g. "Game" + _strModExt for standard Game library)
+    static inline CTString GetLibFile(const CTString &strLibName, const CTString &strLibExt = ".dll") {
+      // Construct library filename
+      #ifdef NDEBUG
+        return strLibName + strLibExt; // Release library
+      #else
+        return "Debug\\" + strLibName + "D" + strLibExt; // Debug library
       #endif
-
-      // Debug library
-      #ifdef _DEBUG
-        strGameLib += "D";
-      #endif
-
-      // Library extension
-      strGameLib += ".dll";
-
-      return strGameLib;
     };
+
+    // Get full path relative to the game to some library (mod Bin -> patch Bin -> vanilla Bin)
+    static CTString FullLibPath(const CTString &strLibName, const CTString &strLibExt = ".dll");
 
     // Get relative path to the game executable
     static const CTFileName &AppExe(void);

@@ -96,7 +96,7 @@ class CORE_API CPatchAPI {
 
     // Check if Entities library is from a mod
     virtual BOOL IsEntitiesModded(void) {
-      return GetEntitiesPath().HasPrefix(CCoreAPI::AppPath() + _fnmMod);
+      return fnmEntities.HasPrefix(_fnmMod);
     };
 };
 

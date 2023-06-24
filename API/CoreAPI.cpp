@@ -106,10 +106,52 @@ void CCoreAPI::Setup(EAppType eSetType) {
   }
 };
 
+// Get full path relative to the game to some library (mod Bin -> patch Bin -> vanilla Bin)
+CTString CCoreAPI::FullLibPath(const CTString &strLibName, const CTString &strLibExt) {
+  // Check for existence of libraries in order:
+  // 1. Mods/<mod>/Bin/<lib> (e.g. Mods/ClassicsPatchMod/Bin/Debug/Game_CustomD.dll)
+  // 2. <patch bin>/<lib>    (e.g. Bin_ClassicsPatch/Debug/Game_CustomD.dll)
+  // 3. Bin/<lib>            (e.g. Bin/Debug/Game_CustomD.dll)
+  static const CTFileName &fnmRootDir = AppPath();
+  const CTString strLibFile = GetLibFile(strLibName, strLibExt);
+
+  // Check if library file exists on disk and return it
+  CTString strCheckFile;
+  #define CHECK_AND_RETURN_PATH { if (IFiles::IsReadable((fnmRootDir + strCheckFile).str_String)) return strCheckFile; }
+
+  // Check in the mod's Bin folder
+  if (_fnmMod != "") {
+    strCheckFile = _fnmMod + "Bin\\" + strLibFile;
+    CHECK_AND_RETURN_PATH;
+  }
+
+  // Check in the Bin folder of Classics Patch (from where it's currently running)
+  strCheckFile = AppBin() + strLibFile;
+  CHECK_AND_RETURN_PATH;
+
+  // Check in the vanilla Bin folder as the last resort
+  strCheckFile = "Bin\\" + strLibFile;
+  CHECK_AND_RETURN_PATH;
+
+  // No library found
+  ASSERT(FALSE);
+  return "";
+};
+
 // Get cut-off position before the Bin directory
 static inline size_t BinDirPos(std::string strExePath) {
   // Cut off module filename to end up with Bin (e.g. "C:\SeriousSam\Bin" and "\SeriousSam_Custom.exe")
-  strExePath = strExePath.substr(0, strExePath.rfind("\\"));
+  strExePath.erase(strExePath.rfind("\\"));
+
+  // Skip Debug directory
+  #ifdef _DEBUG
+    // If found Debug directory at the very end, cut it off
+    const size_t iDebug = strExePath.rfind("Debug");
+
+    if (iDebug == strExePath.length() - 5) {
+      strExePath.erase(iDebug);
+    }
+  #endif
 
   // Go up to the root directory (e.g. "C:\SeriousSam\" and "Bin\SeriousSam_Custom.exe")
   return strExePath.rfind("\\") + 1;
@@ -127,7 +169,7 @@ const CTFileName &CCoreAPI::AppExe(void) {
     char strPathBuffer[1024];
     GetModuleFileNameA(NULL, strPathBuffer, sizeof(strPathBuffer));
 
-    const std::string strExePath = strPathBuffer;
+    std::string strExePath = strPathBuffer;
     size_t iBinDir = BinDirPos(strExePath);
 
     // Copy relative path to the executable with the Bin directory
@@ -149,10 +191,11 @@ const CTFileName &CCoreAPI::AppPath(void) {
     char strPathBuffer[1024];
     GetModuleFileNameA(NULL, strPathBuffer, sizeof(strPathBuffer));
 
-    const std::string strExePath = strPathBuffer;
+    std::string strExePath = strPathBuffer;
     size_t iBinDir = BinDirPos(strExePath);
 
-    fnmLocalPath = CTString(strExePath.substr(0, iBinDir).c_str());
+    // Copy absolute path to the game directory
+    fnmLocalPath = CTString(strExePath.erase(iBinDir).c_str());
   }
 
   return fnmLocalPath;
@@ -240,20 +283,20 @@ void CCoreAPI::LoadGameLib(const CTString &strSettingsFile) {
 // Set metadata for the Game plugin
 CPluginModule *CCoreAPI::LoadGamePlugin(void) {
   // Obtain Game library
-  CPluginModule *pGameLib = GetPluginAPI()->LoadPlugin_t(GetGameLibPath());
-  CPrintF(TRANS("Loading game library '%s'...\n"), pGameLib->GetName());
+  CPluginModule *pLib = GetPluginAPI()->LoadPlugin_t(FullLibPath("Game" + _strModExt));
+  CPrintF(TRANS("Loading Game library '%s'...\n"), pLib->GetName());
 
   // Set metadata for vanilla library
-  CPluginAPI::PluginInfo &info = pGameLib->GetInfo();
+  CPluginAPI::PluginInfo &info = pLib->GetInfo();
 
   if (info.ulVersion == 0) {
-    info.strName = "Game library";
     info.strAuthor = "Croteam";
+    info.strName = "Game library";
     info.strDescription = "Main component that provides game logic.";
     info.ulVersion = MakeVersion(1, 0, _SE_BUILD_MINOR);
   }
 
-  return pGameLib;
+  return pLib;
 };
 
 // Load all user plugins of specific utility types

@@ -88,14 +88,8 @@ CPatchAPI::CPatchAPI() {
     hEngine = GetModuleHandleA("EngineD.dll");
   #endif
 
-  CTString strEntitiesLib = CCoreAPI::AppBin() + "Entities" + _strModExt
-  #ifndef NDEBUG
-    + "D"
-  #endif
-    + ".dll";
-
-  ExpandFilePath(EFP_READ, strEntitiesLib, fnmEntities);
-  hEntities = GetModuleHandleA(fnmEntities.str_String);
+  fnmEntities = CCoreAPI::FullLibPath("Entities" + _strModExt);
+  hEntities = LoadLibraryA((CCoreAPI::AppPath() + fnmEntities).str_String);
 
   // Commands for manually toggling function patches
   _pShell->DeclareSymbol("void ListPatches(void);",   &ListFuncPatches);
