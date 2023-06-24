@@ -80,6 +80,9 @@ class CORE_API CPatchAPI {
 
   public:
 
+    // Retrieve address from the engine by a symbol name (before Core initialization)
+    static void *GetEngineSymbolPortable(const char *strSymbol);
+
     // Retrieve address from the engine by a symbol name
     virtual void *GetEngineSymbol(const char *strSymbol);
 

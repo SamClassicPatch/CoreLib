@@ -161,12 +161,21 @@ SFuncPatch *CPatchAPI::FindFuncPatch(const CTString &strName, CPatch *pPatch) {
   return NULL;
 };
 
+// Retrieve address from the engine by a symbol name (before Core initialization)
+void *CPatchAPI::GetEngineSymbolPortable(const char *strSymbol) {
+  #ifdef NDEBUG
+    return GetProcAddress(GetModuleHandleA("Engine.dll"), strSymbol);
+  #else
+    return GetProcAddress(GetModuleHandleA("EngineD.dll"), strSymbol);
+  #endif
+};
+
 // Retrieve address from the engine by a symbol name
-void *CPatchAPI::GetEngineSymbol(const char *strSymbolName) {
-  return GetProcAddress(hEngine, strSymbolName);
+void *CPatchAPI::GetEngineSymbol(const char *strSymbol) {
+  return GetProcAddress(hEngine, strSymbol);
 };
 
 // Retrieve address from the entities by a symbol name
-void *CPatchAPI::GetEntitiesSymbol(const char *strSymbolName) {
-  return GetProcAddress(hEntities, strSymbolName);
+void *CPatchAPI::GetEntitiesSymbol(const char *strSymbol) {
+  return GetProcAddress(hEntities, strSymbol);
 };
