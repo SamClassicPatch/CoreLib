@@ -167,8 +167,14 @@ class CORE_API CCoreAPI {
     // Load Game library as a plugin
     void LoadGameLib(const CTString &strSettingsFile);
 
+    // Load GameGUI library and return pointer to GameGUI_interface
+    void *LoadGameGuiLib(const CTString &strSettingsFile);
+
     // Set metadata for the Game plugin
     class CPluginModule *LoadGamePlugin(void);
+
+    // Set metadata for the GameGUI plugin
+    class CPluginModule *LoadGameGuiPlugin(void);
 
     // Load all user plugins of specific utility types
     void LoadPlugins(ULONG ulUtilityFlags);

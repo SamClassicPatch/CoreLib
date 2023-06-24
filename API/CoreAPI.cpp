@@ -16,6 +16,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "StdH.h"
 
 #include <Engine/Base/Console_internal.h>
+#include <Engine/GameShell.h>
 #include "Interfaces/FileFunctions.h"
 
 #include "Networking/Modules/ClientLogging.h"
@@ -321,6 +322,32 @@ void CCoreAPI::LoadGameLib(const CTString &strSettingsFile) {
   }
 };
 
+// Load GameGUI library and return pointer to GameGUI_interface
+void *CCoreAPI::LoadGameGuiLib(const CTString &strSettingsFile) {
+  static GameGUI_interface *pGameGUI = NULL;
+
+  // Already loaded
+  if (pGameGUI != NULL) return pGameGUI;
+
+  try {
+    // Obtain GameGUI plugin
+    CPluginModule *pGameLib = LoadGameGuiPlugin();
+
+    // Create GameGUI class
+    GameGUI_interface *(*pGameGuiCreateFunc)(void) = NULL;
+    pGameLib->GetSymbol_t(&pGameGuiCreateFunc, "GAMEGUI_Create");
+
+    pGameGUI = pGameGuiCreateFunc();
+
+  } catch (char *strError) {
+    FatalError("%s", strError);
+  }
+
+  pGameGUI->Initialize(strSettingsFile);
+
+  return (void *)pGameGUI;
+};
+
 // Set metadata for the Game plugin
 CPluginModule *CCoreAPI::LoadGamePlugin(void) {
   // Obtain Game library
@@ -334,6 +361,25 @@ CPluginModule *CCoreAPI::LoadGamePlugin(void) {
     info.strAuthor = "Croteam";
     info.strName = "Game library";
     info.strDescription = "Main component that provides game logic.";
+    info.ulVersion = MakeVersion(1, 0, _SE_BUILD_MINOR);
+  }
+
+  return pLib;
+};
+
+// Set metadata for the GameGUI plugin
+CPluginModule *CCoreAPI::LoadGameGuiPlugin(void) {
+  // Obtain Game library
+  CPluginModule *pLib = GetPluginAPI()->LoadPlugin_t(FullLibPath("GameGUI" + _strModExt));
+  CPrintF(TRANS("Loading Game GUI library '%s'...\n"), pLib->GetName());
+
+  // Set metadata for vanilla library
+  CPluginAPI::PluginInfo &info = pLib->GetInfo();
+
+  if (info.ulVersion == 0) {
+    info.strAuthor = "Croteam";
+    info.strName = "Game GUI library";
+    info.strDescription = "Serious Editor component that provides custom game interfaces.";
     info.ulVersion = MakeVersion(1, 0, _SE_BUILD_MINOR);
   }
 
