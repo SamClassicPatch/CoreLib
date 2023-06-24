@@ -252,6 +252,47 @@ void CCoreAPI::CreateDir(const CTString &strPath) {
   }
 };
 
+// Load dynamic link library and throw exception upon any error
+HINSTANCE CCoreAPI::LoadLib(const char *strFileName) {
+  // Load plugin library
+  HINSTANCE hiDLL = ::LoadLibraryA(strFileName);
+
+  // Loaded properly
+  if (hiDLL != NULL) {
+    return hiDLL;
+  }
+
+  // Get the error code
+  DWORD dwMessageId = GetLastError();
+
+  // Format the Windows error message
+  LPVOID lpMsgBuf;
+  DWORD dwSuccess = FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+    NULL, dwMessageId, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
+    (LPSTR)&lpMsgBuf, 0, NULL);
+
+  CTString strWinError;
+
+  // If formatting succeeds
+  if (dwSuccess != 0) {
+    // Copy the result
+    strWinError = (char *)lpMsgBuf;
+
+    // Free the Windows message buffer
+    LocalFree(lpMsgBuf);
+
+  // Otherwise report failure
+  } else {
+    strWinError.PrintF(TRANS(
+      "Cannot format error message!\nOriginal error code: %d\nFormatting error code: %d\n"),
+      dwMessageId, GetLastError());
+  }
+
+  // Report error
+  ThrowF_t(TRANS("Cannot load module '%s':\n%s"), strFileName, strWinError);
+  return NULL;
+};
+
 // Load Game library as a plugin
 void CCoreAPI::LoadGameLib(const CTString &strSettingsFile) {
   // Already loaded

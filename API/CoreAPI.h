@@ -161,6 +161,9 @@ class CORE_API CCoreAPI {
     // Create a series of directories within the game folder
     virtual void CreateDir(const CTString &strPath);
 
+    // Load dynamic link library and throw exception upon any error
+    static HINSTANCE LoadLib(const char *strFileName);
+
     // Load Game library as a plugin
     void LoadGameLib(const CTString &strSettingsFile);
 

@@ -120,47 +120,6 @@ void CPluginModule::Clear(void) {
   CSerial::Clear();
 };
 
-// Load dynamic link library
-static HINSTANCE LoadLibrary_t(const char *strFileName) {
-  // Load plugin library
-  HINSTANCE hiDLL = ::LoadLibraryA(strFileName);
-
-  // Loaded properly
-  if (hiDLL != NULL) {
-    return hiDLL;
-  }
-
-  // Get the error code
-  DWORD dwMessageId = GetLastError();
-
-  // Format the Windows error message
-  LPVOID lpMsgBuf;
-  DWORD dwSuccess = FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-    NULL, dwMessageId, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
-    (LPSTR)&lpMsgBuf, 0, NULL);
-
-  CTString strWinError;
-
-  // If formatting succeeds
-  if (dwSuccess != 0) {
-    // Copy the result
-    strWinError = (char *)lpMsgBuf;
-
-    // Free the Windows message buffer
-    LocalFree(lpMsgBuf);
-
-  // Otherwise report failure
-  } else {
-    strWinError.PrintF(TRANS(
-      "Cannot format error message!\nOriginal error code: %d\nFormatting error code: %d\n"),
-      dwMessageId, GetLastError());
-  }
-
-  // Report error
-  ThrowF_t(TRANS("Cannot load module '%s':\n%s"), strFileName, strWinError);
-  return NULL;
-};
-
 // Load plugin module (override non-virtual CSerial::Load_t)
 void CPluginModule::Load_t(const CTFileName &fnmDLL)
 {
@@ -173,7 +132,7 @@ void CPluginModule::Load_t(const CTFileName &fnmDLL)
   ser_FileName = fnmDLL;
 
   // Load plugin's configuration file
-  const CTString strConfig = CCoreAPI::AppBin() + "Plugins\\" + fnmDLL.FileName() + ".ini";
+  const CTString strConfig = CCoreAPI::AppModBin() + "Plugins\\" + fnmDLL.FileName() + ".ini";
 
   try {
     GetInfo().iniConfig.Load_t(strConfig, TRUE);
@@ -187,7 +146,7 @@ void CPluginModule::Load_t(const CTFileName &fnmDLL)
   ExpandFilePath(EFP_READ | EFP_NOZIPS, fnmDLL, fnmExpanded);
 
   // Load dll
-  pm_hLibrary = LoadLibrary_t(fnmExpanded);
+  pm_hLibrary = CCoreAPI::LoadLib(fnmExpanded);
 
   // Main plugin methods
   pm_pOnStartupFunc  = (CVoidFunc)GetProcAddress(GetHandle(), "Module_Startup");
