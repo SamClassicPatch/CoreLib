@@ -34,49 +34,56 @@ class IAbstractEvents; // Included at the end
 // Pointers to plugin interfaces
 typedef CDynamicContainer<IAbstractEvents> CPluginInterfaces;
 
+// Various plugin flags
+enum EPluginFlags {
+  // Isn't loaded nor released by the plugin API
+  PLF_MANUAL = 0, // Manually managed libraries (e.g. Game, GameGUI)
+  PLF_UNSUITABLE = 0, // For aborting plugin loading by making it unsuitable
+
+  // Utility types
+  PLF_ENGINE = (1 << 0), // Internal functionality
+  PLF_GAME   = (1 << 1), // In-game functionality
+  PLF_SERVER = (1 << 2), // Server functionality
+  PLF_EDITOR = (1 << 3), // Addons for Serious Editor
+  PLF_TOOLS  = (1 << 4), // Addons for other tools
+
+  // Multiple utility types
+  PLF_GAMEPLAY_LOGIC = PLF_GAME | PLF_EDITOR, // Suitable for playing the game
+
+  PLF_ALL = (1 << 5) - 1, // Suitable for everything
+};
+
+// Structure for information exchange between plugins and the core
+class CPluginInfo {
+  public:
+    ULONG apiVer; // Version of the API used (always CORE_API_VERSION)
+    ULONG ulFlags; // Plugin flags
+
+    // Metadata
+    CTString strName;        // Plugin name
+    CTString strAuthor;      // Author name
+    ULONG    ulVersion;      // Plugin version
+    CTString strDescription; // Brief plugin description
+
+    // Read-only data
+    CIniConfig props; // Loaded plugin properties
+
+  public:
+    // Constructor
+    CPluginInfo() : apiVer(0), ulFlags(PLF_UNSUITABLE), ulVersion(0),
+      strAuthor("Unknown"), strName("No name"), strDescription("None")
+    {
+    };
+
+    // Set utility flags using EPluginFlags (for module's Module_GetInfo method)
+    inline void SetUtility(ULONG ulSetFlags) {
+      apiVer = CORE_API_VERSION;
+      ulFlags = ulSetFlags;
+    };
+};
+
 // API for handling plugin modules
 class CORE_API CPluginAPI {
-  public:
-    // Various plugin flags
-    enum EPluginFlags {
-      // Utility types
-      PF_ENGINE = (1 << 0), // Internal functionality
-      PF_GAME   = (1 << 1), // In-game functionality
-      PF_SERVER = (1 << 2), // Server functionality
-      PF_EDITOR = (1 << 3), // Addons for Serious Editor
-      PF_TOOLS  = (1 << 4), // Addons for other tools
-
-      // All utility types
-      PF_UTILITY_ALL = (1 << 5) - 1,
-    };
-
-    // Structure for information exchange between plugins and the core
-    struct PluginInfo {
-      ULONG apiVer; // Version of the API used (always CORE_API_VERSION)
-      ULONG ulFlags; // Plugin flags
-
-      // Metadata
-      CTString strName;        // Plugin name
-      CTString strAuthor;      // Author name
-      ULONG    ulVersion;      // Plugin version
-      CTString strDescription; // Brief plugin description
-
-      // Read-only data
-      CIniConfig props; // Loaded plugin properties
-
-      // Constructor
-      PluginInfo() : apiVer(0), ulFlags(0), ulVersion(0),
-        strAuthor("Unknown"), strName("No name"), strDescription("None")
-      {
-      };
-
-      // Set utility flags (for module's Module_GetInfo method)
-      inline void SetUtility(ULONG ulSetFlags) {
-        apiVer = CORE_API_VERSION;
-        ulFlags = ulSetFlags;
-      };
-    };
-
   public:
     CPluginStock *pPluginStock; // Stock of plugin modules
 

@@ -40,7 +40,7 @@ static void ListPlugins(void) {
     CPrintF("%*s%d - %s\n", ctIdent, "", iPlugin, pPlugin->GetName().str_String);
 
     // Print metadata
-    const CPluginAPI::PluginInfo &info = pPlugin->GetInfo();
+    const CPluginInfo &info = pPlugin->GetInfo();
 
     CPrintF(TRANS("  Name: %s\n"), info.strName);
     CPrintF(TRANS("  Author: %s\n"), info.strAuthor);
@@ -114,7 +114,7 @@ CPluginModule *CPluginAPI::ObtainPlugin_t(const CTFileName &fnmModule, ULONG ulU
 {
   // Obtain info from the plugin
   CPluginModule *pPlugin = pPluginStock->Obtain_t(fnmModule);
-  const CPluginAPI::PluginInfo &info = pPlugin->GetInfo();
+  const CPluginInfo &info = pPlugin->GetInfo();
 
   const CTString strFileName = fnmModule.FileName() + fnmModule.FileExt();
 

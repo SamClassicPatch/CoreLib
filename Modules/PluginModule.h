@@ -25,13 +25,13 @@ class CORE_API CPluginModule : public CSerial {
   public:
     // Plugin method types
     typedef void (*CVoidFunc)(void); // Simple method
-    typedef void (*CInfoFunc)(CPluginAPI::PluginInfo *pInfo); // Plugin info method
+    typedef void (*CInfoFunc)(CPluginInfo &info); // Plugin info method
 
   private:
     HINSTANCE pm_hLibrary; // Library handle
     BOOL pm_bInitialized; // Plugin has been initialized
 
-    CPluginAPI::PluginInfo pm_info; // Plugin information
+    CPluginInfo pm_info; // Plugin information
     CDynamicContainer<CPatch> pm_cPatches; // Custom patches
 
     // Hooked methods
@@ -57,12 +57,12 @@ class CORE_API CPluginModule : public CSerial {
     };
 
     // Get plugin information
-    inline CPluginAPI::PluginInfo &GetInfo(void) {
+    inline CPluginInfo &GetInfo(void) {
       return pm_info;
     };
 
     // Get plugin information (read-only)
-    inline const CPluginAPI::PluginInfo &GetInfo(void) const {
+    inline const CPluginInfo &GetInfo(void) const {
       return pm_info;
     };
 

@@ -350,7 +350,7 @@ CPluginModule *CCoreAPI::LoadGamePlugin(void) {
   CPrintF(TRANS("Loading Game library '%s'...\n"), pLib->GetName());
 
   // Set metadata for vanilla library
-  CPluginAPI::PluginInfo &info = pLib->GetInfo();
+  CPluginInfo &info = pLib->GetInfo();
 
   if (info.ulVersion == 0) {
     info.strAuthor = "Croteam";
@@ -369,7 +369,7 @@ CPluginModule *CCoreAPI::LoadGameGuiPlugin(void) {
   CPrintF(TRANS("Loading Game GUI library '%s'...\n"), pLib->GetName());
 
   // Set metadata for vanilla library
-  CPluginAPI::PluginInfo &info = pLib->GetInfo();
+  CPluginInfo &info = pLib->GetInfo();
 
   if (info.ulVersion == 0) {
     info.strAuthor = "Croteam";

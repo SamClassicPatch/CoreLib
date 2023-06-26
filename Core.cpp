@@ -100,7 +100,7 @@ void CECIL_InitCore(void) {
   IClientLogging::LoadLog();
 
   // Load Core plugins
-  GetAPI()->LoadPlugins(CPluginAPI::PF_ENGINE);
+  GetAPI()->LoadPlugins(PLF_ENGINE);
 };
 
 // Clean up Core module (always before Serious Engine!)
@@ -117,7 +117,7 @@ void CECIL_EndCore(void) {
   }
 
   // Release all loaded plugins
-  GetAPI()->ReleasePlugins(CPluginAPI::PF_UTILITY_ALL);
+  GetAPI()->ReleasePlugins(PLF_ALL);
 
   _pTimer->RemHandler(_pTimerHandler);
   delete _pTimerHandler;

@@ -155,6 +155,6 @@ void CPluginModule::Load_t(const CTFileName &fnmDLL)
 
   // Get information about the plugin, if possible
   if (pm_pGetInfoFunc != NULL) {
-    pm_pGetInfoFunc(&pm_info);
+    pm_pGetInfoFunc(pm_info);
   }
 };
