@@ -202,14 +202,9 @@ const CTFileName &CCoreAPI::AppPath(void) {
   return fnmLocalPath;
 };
 
-// Set value to config property
-void CCoreAPI::SetPropValue(const CTString &strKey, const CTString &strValue) {
-  _iniConfig.SetValue("", strKey, strValue);
-};
-
-// Get value from config property
-CTString CCoreAPI::GetPropValue(const CTString &strKey, const CTString &strDefValue) {
-  return _iniConfig.GetValue("", strKey, strDefValue);
+// Get config with global properties
+CIniConfig &CCoreAPI::Props(void) {
+  return _iniConfig;
 };
 
 // Disable GameSpy usage

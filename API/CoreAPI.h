@@ -135,11 +135,8 @@ class CORE_API CCoreAPI {
     // Get absolute path to the game directory
     static const CTFileName &AppPath(void);
 
-    // Set value to config property
-    static void SetPropValue(const CTString &strKey, const CTString &strValue);
-
-    // Get value from config property
-    static CTString GetPropValue(const CTString &strKey, const CTString &strDefValue = "");
+    // Get config with global properties
+    static class CIniConfig &Props(void);
 
   public:
 

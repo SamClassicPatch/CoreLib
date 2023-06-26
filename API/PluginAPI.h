@@ -62,7 +62,7 @@ class CORE_API CPluginAPI {
       CTString strDescription; // Brief plugin description
 
       // Read-only data
-      CIniConfig iniConfig; // Loaded plugin properties
+      CIniConfig props; // Loaded plugin properties
 
       // Constructor
       PluginInfo() : apiVer(0), ulFlags(0), ulVersion(0),
@@ -74,11 +74,6 @@ class CORE_API CPluginAPI {
       inline void SetUtility(ULONG ulSetFlags) {
         apiVer = CORE_API_VERSION;
         ulFlags = ulSetFlags;
-      };
-
-      // Get value from global plugin property
-      inline CTString GetValue(const CTString &strKey, const CTString &strDefValue = "") const {
-        return iniConfig.GetValue("", strKey, strDefValue);
       };
     };
 

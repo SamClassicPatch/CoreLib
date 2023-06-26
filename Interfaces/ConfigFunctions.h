@@ -21,174 +21,319 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 
 #include <CoreLib/Interfaces/DataFunctions.h>
+#include <CoreLib/Objects/MapStructure.h>
 
 #include <STLIncludesBegin.h>
 #include <string>
-#include <map>
 #include <fstream>
 #include <sstream>
 #include <STLIncludesEnd.h>
 
+// Uses STL internally for convenience but user input/output is CTString
+typedef std::string IniStr;
+
+typedef se1::map<IniStr, IniStr> IniKeys;
+typedef se1::map<IniStr, IniKeys> IniSections;
+
 // INI config structure
-class CIniConfig {
-  protected:
-    // STL-styled comparator of CTString classes for sorting
-    struct IniCompareCTString
-    {
-      __forceinline bool operator()(const CTString &lhs, const CTString &rhs) const {
-        return strcmp(lhs, rhs) < 0;
-      };
-    };
+class CIniConfig : protected IniSections {
+  private:
+    // Parse config line and set key and value in a specific section, if it isn't a section line
+    BOOL ParseLine(const IniStr &strLine, IniStr &strSection) {
+      #define FIND_SPACES " \t"
 
-  public:
-    // Property pairs (key, value) and groups (group name, pairs)
-    typedef std::map<CTString, CTString, IniCompareCTString> CPairs;
-    typedef std::map<CTString, CPairs, IniCompareCTString> CGroups;
-
-  public:
-    CGroups aConfig;
-
-  public:
-    // Clear the config
-    inline void Clear(void) {
-      aConfig.clear();
-    };
-
-    // Check if some group exists
-    inline BOOL GroupExists(const CTString &strGroup) {
-      return aConfig.find(strGroup) != aConfig.end();
-    };
-
-    // Delete some group
-    inline BOOL DeleteGroup(const CTString &strGroup) {
-      return aConfig.erase(strGroup) != 0;
-    };
-
-    // Delete key under some group
-    inline BOOL DeleteKey(const CTString &strGroup, const CTString &strKey) {
-      // Find group
-      CGroups::iterator it = aConfig.find(strGroup);
-      if (it == aConfig.end()) return FALSE;
-
-      return it->second.erase(strKey) != 0;
-    };
-
-  protected:
-    // Parse config line and set key and value in a specific group, if it's not a group line
-    BOOL ParseLine(const std::string &strLine, CTString &strGroup) {
       // Skip empty lines
-      size_t iFirst = strLine.find_first_not_of(" \r\n\t");
-
-      if (iFirst == std::string::npos) return FALSE;
+      size_t iBeg = strLine.find_first_not_of(FIND_SPACES);
+      if (iBeg == IniStr::npos) return FALSE;
 
       // Parse a group name if it's enclosed in square brackets
-      if (strLine[iFirst] == '[') {
+      if (strLine[iBeg] == '[') {
         // Skip opening bracket and search for the closing one
-        iFirst++;
-        size_t iLast = strLine.find_last_not_of(" \r\n\t");
+        size_t iEnd = strLine.find_last_not_of(FIND_SPACES);
 
-        if (strLine[iLast] == ']') {
+        if (strLine[iEnd] == ']') {
           // Just change the group
-          strGroup = strLine.substr(iFirst, iLast - iFirst).c_str();
+          strSection = strLine.substr(iBeg + 1, iEnd - iBeg - 1).c_str();
           return FALSE;
         }
       }
 
       // Get key and value separator
       size_t iSeparator = strLine.find('=');
-      if (iSeparator == std::string::npos) return FALSE;
+      if (iSeparator == IniStr::npos) return FALSE;
 
       // Get key and value around the assignment operator
-      SetValue(strGroup, strLine.substr(0, iSeparator).c_str(), strLine.substr(iSeparator + 1).c_str());
+      IniStr strKey = strLine.substr(0, iSeparator);
+      IniStr strVal = strLine.substr(iSeparator + 1);
 
+      {
+        // Trim spaces around the key
+        size_t iEnd = strKey.find_last_not_of(FIND_SPACES);
+        strKey = strKey.substr(iBeg, iEnd - iBeg + 1);
+
+        // Trim spaces around the value
+        iBeg = strVal.find_first_not_of(FIND_SPACES);
+        iEnd = strVal.find_last_not_of(FIND_SPACES);
+
+        // Remove surrounding quotes
+        if (iBeg != iEnd) {
+          if (strVal[iBeg] == '\"') iBeg++;
+          if (strVal[iEnd] == '\"') iEnd--;
+        }
+
+        strVal = strVal.substr(iBeg, iEnd - iBeg + 1);
+      }
+
+      SetValue(strSection.c_str(), strKey.c_str(), strVal.c_str());
       return TRUE;
     };
 
   public:
-    // Set value to a property under some group
-    void SetValue(const CTString &strGroup, const CTString &strKey, const CTString &strValue) {
-      // STL should create groups and keys that don't already exist
-      aConfig[strGroup][strKey] = strValue;
+    // Clear the config
+    inline void Clear(void) { clear(); };
+
+    // Check if config is empty
+    inline BOOL IsEmpty(void) const { return empty(); };
+
+    // Check if some section exists
+    BOOL SectionExists(const char *strSection) const {
+      return find(strSection) != end();
     };
 
-    // Get value from a property under some group
-    CTString GetValue(const CTString &strGroup, const CTString &strKey, const CTString &strDefValue = "") const {
-      // Find group
-      CGroups::const_iterator itGroup = aConfig.find(strGroup);
-      if (itGroup == aConfig.end()) return strDefValue;
+    // Check if some key exists under some section
+    BOOL KeyExists(const char *strSection, const char *strKey) const {
+      const_iterator it = find(strSection);
+      if (it == end()) return false;
 
-      // Find pair
-      CPairs::const_iterator itPair = itGroup->second.find(strKey);
-      if (itPair == itGroup->second.end()) return strDefValue;
-
-      return itPair->second;
+      IniKeys::const_iterator itPair = it->second.find(strKey);
+      return itPair != it->second.end();
     };
 
-    // Save config into a file
-    void Save_t(const CTString &strFile) {
-      CGroups::const_iterator itGroup;
-      CPairs::const_iterator itPair;
+    // Delete key under some section or the entire section (if strKey is NULL)
+    bool Delete(const char *strSection, const char *strKey = NULL) {
+      // No section
+      iterator it = find(strSection);
+      if (it == end()) return false;
 
-      // Create new file
-      CTFileStream strmConfig;
-      strmConfig.Create_t(strFile);
+      // Delete section
+      if (strKey == NULL) {
+        erase(it);
+        return true;
+      }
 
-      for (itGroup = aConfig.begin(); itGroup != aConfig.end(); itGroup++) {
-        // Write group
-        if (itGroup->first != "") {
-          strmConfig.FPrintF_t("[%s]\n", itGroup->first.str_String);
-        }
+      IniKeys &keys = it->second;
 
-        // Write every key-value pair from it
-        const CPairs &aProps = itGroup->second;
+      // No key
+      IniKeys::iterator itPair = keys.find(strKey);
+      if (itPair == keys.end()) return false;
 
-        for (itPair = aProps.begin(); itPair != aProps.end(); itPair++)
-        {
-          strmConfig.FPrintF_t("%s=%s\n", itPair->first.str_String, itPair->second.str_String);
+      // Delete key
+      keys.erase(itPair);
+      return true;
+    };
+
+  public:
+    // Set value to a key under some section
+    void SetValue(const char *strSection, const char *strKey, const char *strValue) {
+      // Create new section, if there isn't the one needed
+      iterator it = find(strSection);
+      if (it == end()) it = insert(value_type(strSection, IniKeys())).first;
+
+      IniKeys &pairs = it->second;
+      IniKeys::iterator itPair = pairs.find(strKey);
+
+      // Create a new key, if there isn't the one needed
+      if (itPair == pairs.end()) {
+        itPair = pairs.insert(IniKeys::value_type(strKey, "")).first;
+      }
+
+      itPair->second = strValue;
+    };
+
+    // Get value under a key or return a default value, if key or section doesn't exist
+    CTString GetValue(const char *strSection, const char *strKey, const char *strDefValue = "") const {
+      const_iterator it = find(strSection);
+      if (it == end()) return strDefValue;
+
+      const IniKeys &pairs = it->second;
+
+      IniKeys::const_iterator itPair = pairs.find(strKey);
+      if (itPair == pairs.end()) return strDefValue;
+
+      return itPair->second.c_str();
+    };
+
+    // Get boolean value under a key or return a default value, if key or section doesn't exist
+    BOOL GetBoolValue(const char *strSection, const char *strKey, BOOL bDefValue) const {
+      const_iterator it = find(strSection);
+      if (it == end()) return bDefValue;
+
+      const IniKeys &pairs = it->second;
+
+      IniKeys::const_iterator itPair = pairs.find(strKey);
+      if (itPair == pairs.end()) return bDefValue;
+
+      // Determine boolean value from the string
+      const IniStr &str = itPair->second;
+      char ch = toupper(str[0]);
+
+      switch (ch) {
+        // True values
+        case 'T': case 'Y': case '1': return TRUE;
+
+        // False values
+        case 'F': case 'N': case '0': return FALSE;
+
+        // On/Off
+        case 'O': {
+          // This is either '\0' or another character
+          ch = toupper(str[1]);
+
+          if (ch == 'N') return TRUE;
+          else
+          if (ch == 'F') return FALSE;
         }
       }
 
-      strmConfig.Close();
+      return bDefValue;
+    };
+
+    // Get integer value under a key or return a default value, if key or section doesn't exist
+    SLONG GetIntValue(const char *strSection, const char *strKey, SLONG iDefValue) const {
+      const_iterator it = find(strSection);
+      if (it == end()) return iDefValue;
+
+      const IniKeys &pairs = it->second;
+
+      IniKeys::const_iterator itPair = pairs.find(strKey);
+      if (itPair == pairs.end()) return iDefValue;
+
+      // Determine integer value from the string
+      SLONG iValue;
+      if (sscanf(itPair->second.c_str(), "%i", &iValue) == 1) return iValue;
+
+      return iDefValue;
+    };
+
+    // Get float value under a key or return a default value, if key or section doesn't exist
+    DOUBLE GetDoubleValue(const char *strSection, const char *strKey, DOUBLE dDefValue) const {
+      const_iterator it = find(strSection);
+      if (it == end()) return dDefValue;
+
+      const IniKeys &pairs = it->second;
+
+      IniKeys::const_iterator itPair = pairs.find(strKey);
+      if (itPair == pairs.end()) return dDefValue;
+
+      // Determine float value from the string
+      DOUBLE dValue;
+      if (sscanf(itPair->second.c_str(), "%lg", &dValue) == 1) return dValue;
+
+      return dDefValue;
+    };
+
+  public:
+    // Load config from a string
+    void LoadData(const IniStr &str) {
+      // Parse each line from the string
+      std::istringstream strm(str);
+      IniStr strLine, strSection;
+
+      while (std::getline(strm, strLine)) {
+        ParseLine(strLine, strSection);
+      }
     };
 
     // Load config from a file
-    void Load_t(const CTString &strFile, BOOL bEngineStreams) {
-      // Current group and a key-value pair to add to it
-      CTString strGroup = "";
-      CTString strKey = "";
-      CTString strValue = "";
-
+    void Load_t(const CTString &strFile, BOOL bEngineStreams)
+    {
       // Use Serious Engine streams (can load from GRO packages)
       if (bEngineStreams) {
         CTFileStream strm;
         strm.Open_t(strFile);
 
-        while (!strm.AtEOF()) {
-          // Read non-empty line
-          char strBuffer[1024];
-          IData::GetLineFromStream_t(strm, strBuffer, sizeof(strBuffer));
+        // Read all text from the file
+        const size_t iFileSize = strm.GetStreamSize() - strm.GetPos_t();
+        IniStr strContents(iFileSize, '\0');
 
-          ParseLine(strBuffer, strGroup);
+        if (iFileSize > 0) {
+          strm.Read_t(&strContents[0], iFileSize);
+
+          // Replace carriage returns with other line breaks
+          size_t iReturn = 0;
+          while ((iReturn = strContents.find('\r', iReturn)) != IniStr::npos) {
+            strContents[iReturn] = '\n';
+          }
         }
+
+        // Load data from a string
+        LoadData(strContents);
 
         strm.Close();
 
-      // Use STL streams (can be used before engine initialization)
+      // Use stock loader (can be used before engine initialization)
       } else {
         std::ifstream strm((CCoreAPI::AppPath() + strFile).str_String);
 
         if (strm.fail()) {
-          ThrowF_t(LOCALIZE("Cannot open file `%s' (%s)"), strFile.str_String, strerror(errno));
+          ThrowF_t(LOCALIZE("Cannot open file `%s' (%s)"), strFile, strerror(errno));
         }
 
-        std::string strLine;
+        // Parse each line from the file
+        IniStr strLine, strSection;
 
         while (std::getline(strm, strLine)) {
-          ParseLine(strLine, strGroup);
+          ParseLine(strLine, strSection);
         }
 
         strm.close();
       }
+    };
+
+    // Save config into a string
+    void SaveData(IniStr &str) const {
+      std::ostringstream strm;
+      const_iterator it = begin();
+
+      for (; it != end(); it++) {
+        // Non-empty section
+        if (it->first != "") {
+          strm << '[' << it->first << "]\n";
+        }
+
+        const IniKeys &pairs = it->second;
+        IniKeys::const_iterator itPair = pairs.begin();
+
+        // key = "value"
+        for (; itPair != pairs.end(); itPair++) {
+          const IniStr &str = itPair->second;
+
+          // Find spaces on either end
+          size_t iBegSpace = str.find_first_of(" \t");
+          size_t iEndSpace = str.find_last_of(" \t");
+
+          // Surround with quotes if there's a space on either end
+          if (iBegSpace == 0 || iEndSpace == str.length() - 1) {
+            strm << itPair->first << " = \"" << str << "\"\n";
+          } else {
+            strm << itPair->first << " = " << str << '\n';
+          }
+        }
+      }
+
+      str = strm.str();
+    };
+
+    // Save config into a file
+    void Save_t(const CTString &strFile) const {
+      CTFileStream strm;
+      strm.Create_t(strFile);
+
+      IniStr strSave;
+      SaveData(strSave);
+      strm.PutString_t(strSave.c_str());
+
+      strm.Close();
     };
 };
 

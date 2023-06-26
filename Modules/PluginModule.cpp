@@ -135,7 +135,7 @@ void CPluginModule::Load_t(const CTFileName &fnmDLL)
   const CTString strConfig = CCoreAPI::AppModBin() + "Plugins\\" + fnmDLL.FileName() + ".ini";
 
   try {
-    GetInfo().iniConfig.Load_t(strConfig, TRUE);
+    GetInfo().props.Load_t(strConfig, TRUE);
 
   } catch (char *strError) {
     (void)strError;
