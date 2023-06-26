@@ -295,7 +295,11 @@ inline void ListGameFiles(CFileList &afnmFiles, const CTString &strDir, const CT
   const BOOL bRecursive = ulFlags & FLF_RECURSIVE;
 
   // Don't allow multiple exclusive flags at once
-  ASSERTMSG(!(ulFlags & FLF_ONLYCD) == !(ulFlags & FLF_ONLYMOD), "Cannot have multiple exclusive flags in ListGameFiles()!");
+  #ifdef _DEBUG
+    BOOL bAssertOnlyCD = (ulFlags & FLF_ONLYCD) != 0;
+    BOOL bAssertOnlyMod = (ulFlags & FLF_ONLYMOD) != 0;
+    ASSERTMSG((!bAssertOnlyCD || !bAssertOnlyMod), "Cannot have multiple exclusive flags in ListGameFiles()!");
+  #endif
 
   // Make a temporary list
   CFileList afnmTemp;
