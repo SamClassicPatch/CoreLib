@@ -147,9 +147,9 @@ static inline size_t BinDirPos(std::string strExePath) {
   // Skip Debug directory
   #ifdef _DEBUG
     // If found Debug directory at the very end, cut it off
-    const size_t iDebug = strExePath.rfind("Debug");
+    const size_t iDebug = strExePath.rfind("\\Debug");
 
-    if (iDebug == strExePath.length() - 5) {
+    if (iDebug == strExePath.length() - 6) {
       strExePath.erase(iDebug);
     }
   #endif
