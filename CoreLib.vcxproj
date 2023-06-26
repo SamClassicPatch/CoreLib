@@ -76,6 +76,7 @@
     <ClInclude Include="Networking\NetworkFunctions.h" />
     <ClInclude Include="Networking\Modules.h" />
     <ClInclude Include="Networking\StreamBlock.h" />
+    <ClInclude Include="Objects\MapStructure.h" />
     <ClInclude Include="Objects\PropertyPtr.h" />
     <ClInclude Include="Objects\StructPtr.h" />
     <ClInclude Include="Patcher\FuncPatching.h" />

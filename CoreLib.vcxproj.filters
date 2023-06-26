@@ -255,6 +255,9 @@
     <ClInclude Include="API\ApiConfig.h">
       <Filter>Header Files\API headers</Filter>
     </ClInclude>
+    <ClInclude Include="Objects\MapStructure.h">
+      <Filter>Header Files\Objects headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="StdH.cpp">
