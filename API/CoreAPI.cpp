@@ -23,14 +23,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <STLIncludesBegin.h>
 #include <string>
+#include <fstream>
+#include <sstream>
 #include <direct.h>
 #include <STLIncludesEnd.h>
 
 // Define external core API
 CCoreAPI *_pCoreAPI = NULL;
 
-// Define running application type
+// Define static fields
 CCoreAPI::EAppType CCoreAPI::eAppType = CCoreAPI::APP_UNKNOWN;
+BOOL CCoreAPI::bCustomMod = FALSE;
+CTString CCoreAPI::strVanillaExt = "";
 
 // Define patch config
 static CIniConfig _iniConfig;
@@ -96,6 +100,17 @@ void CCoreAPI::Setup(EAppType eSetType) {
 
     } catch (char *strError) {
       (void)strError;
+    }
+  }
+
+  // Load vanilla extension
+  std::ifstream strm((CCoreAPI::AppPath() + "ModExt.txt").str_String);
+
+  if (!strm.fail()) {
+    std::string strReadExt;
+
+    if (std::getline(strm, strReadExt)) {
+      strVanillaExt = strReadExt.c_str();
     }
   }
 

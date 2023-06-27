@@ -43,6 +43,8 @@ class CORE_API CCoreAPI {
 
   public:
     static EAppType eAppType; // Running application type
+    static BOOL bCustomMod; // Using custom mod from the patch
+    static CTString strVanillaExt; // Library extension of the vanilla game
     ULONG ulVersion; // Release version
 
     // API submodules
@@ -63,6 +65,22 @@ class CORE_API CCoreAPI {
     // Get running application type before initializing the core
     static inline EAppType GetApplication(void) {
       return eAppType;
+    };
+
+    // Check if playing with a custom mod
+    static inline BOOL IsCustomModActive(void) {
+      return bCustomMod;
+    };
+
+    // Get vanilla library extension after initializing the core
+    // For modules that aren't utilizing Core library directly (e.g. plugins)
+    virtual CTString GetModExt(void) {
+      return strVanillaExt;
+    };
+
+    // Get vanilla library extension before initializing the core
+    static inline CTString GetVanillaExt(void) {
+      return strVanillaExt;
     };
 
     // Setup the core before initializing it

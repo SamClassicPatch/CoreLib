@@ -88,7 +88,11 @@ CPatchAPI::CPatchAPI() {
     hEngine = GetModuleHandleA("EngineD.dll");
   #endif
 
-  fnmEntities = CCoreAPI::FullLibPath("Entities" + _strModExt);
+  #if SE1_VER >= SE1_107
+    fnmEntities = CCoreAPI::FullLibPath("Entities" + _strModExt);
+  #else
+    fnmEntities = "Bin\\" + CCoreAPI::GetLibFile("Entities" + CCoreAPI::GetVanillaExt());
+  #endif
   hEntities = LoadLibraryA((CCoreAPI::AppPath() + fnmEntities).str_String);
 
   // Commands for manually toggling function patches
