@@ -35,10 +35,6 @@ template<class FuncType1, class FuncType2> inline
 CPatch *NewPatch(FuncType1 &funcOld, FuncType2 funcNew, const char *strName, BOOL bAddToRegistry = TRUE) {
   CPrintF("  %s\n", strName);
 
-  if (CPatch::GetDebug()) {
-    InfoMessage(strName);
-  }
-
   // Create new patch and hook the functions
   CPatch *pPatch = GetPatchAPI()->CreatePatch(FALSE);
 
@@ -65,10 +61,6 @@ CPatch *NewPatch(FuncType1 &funcOld, FuncType2 funcNew, const char *strName, BOO
 template<class FuncType1, class FuncType2> inline
 CPatch *NewRawPatch(FuncType1 &funcOld, FuncType2 funcNew, const char *strName) {
   CPrintF("  %s\n", strName);
-
-  if (CPatch::GetDebug()) {
-    InfoMessage(strName);
-  }
 
   // Create new patch and hook the functions
   CPatch *pPatch = new CPatch(FALSE);

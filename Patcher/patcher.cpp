@@ -14,10 +14,12 @@ bool CPatch::_bDebugOutput = false;
 CTString CPatch::_strPatcherLog = "";
 int CPatch::_iForceRewriteLen = -1;
 
+#define PATCHER_LOG_HEADER "- Parsing instructions -\n"
+
 // [Cecil] Append some text to the patcher log
 static inline void PushLog(const CTString &strOutput) {
-  if (CPatch::GetDebug()) {
-    CPatch::_strPatcherLog += strOutput;
+  if (CPatch::_bDebugOutput) {
+    CPatch::_strPatcherLog += strOutput + "\n";
   }
 };
 
@@ -27,8 +29,8 @@ bool CPatch::CanRewriteInstructionSet(long iAddress, int &iRewriteLen)
 {
   // [Cecil] Force rewrite
   if (_iForceRewriteLen != -1) {
-    if (GetDebug()) {
-      InfoMessage("Forced rewrite (%d bytes)", _iForceRewriteLen);
+    if (_bDebugOutput) {
+      CPrintF("Forced rewrite (%d bytes)\n", _iForceRewriteLen);
     }
 
     iRewriteLen = _iForceRewriteLen;
@@ -38,7 +40,7 @@ bool CPatch::CanRewriteInstructionSet(long iAddress, int &iRewriteLen)
   }
 
   // [Cecil] Reset output log (avoid ASSERT failure)
-  _strPatcherLog.str_String = StringDuplicate("");
+  _strPatcherLog.str_String = StringDuplicate(PATCHER_LOG_HEADER);
 
   bool bInstructionFound;
   int iReadLen = 0;
@@ -55,7 +57,7 @@ bool CPatch::CanRewriteInstructionSet(long iAddress, int &iRewriteLen)
 
     if (*pByte == (char)0xE9) // jmp XX XX XX XX
     {
-      PushLog("jmp XX XX XX XX\n");
+      PushLog("jmp XX XX XX XX");
       iInstructionLen = 5;
       m_iOldJump = 5 + iAddress + *reinterpret_cast<long *>(iAddress + 1);
 
@@ -63,13 +65,13 @@ bool CPatch::CanRewriteInstructionSet(long iAddress, int &iRewriteLen)
      ||        *pByte == (char)0xB8 // mov eax, XX XX XX XX
      || !memcmp(pByte, "\xB8\x1E", 2))
     {
-      PushLog("5 bytes\n");
+      PushLog("5 bytes");
       iInstructionLen = 5;
       bInstructionFound = true;
       
     } else if (!memcmp(pByte, "\x8B\x55", 2)) // mov edx, [ebp + arg_0]
     {
-      PushLog("mov edx, [ebp + arg0]\n");
+      PushLog("mov edx, [ebp + arg0]");
       iInstructionLen = 3;
       bInstructionFound = true;
 
@@ -79,31 +81,31 @@ bool CPatch::CanRewriteInstructionSet(long iAddress, int &iRewriteLen)
             || !memcmp(pByte, "\x8B\xF9", 2) // mov
             || *pByte == (char)0x6A)  // push XX
     {
-      PushLog("mov / push XX\n");
+      PushLog("mov / push XX");
       iInstructionLen = 2;
       bInstructionFound = true;
 
     } else if (!memcmp(pByte, "\x8B\x46", 2))    
     {
-      PushLog("mov ecx, [ebp + arg_0]\n");
+      PushLog("mov ecx, [ebp + arg_0]");
       iInstructionLen = 3;
       bInstructionFound = true;
 
     } else if (!memcmp(pByte, "\x8B\x4D", 2)) // mov ecx, [ebp + arg_0]
     {
-      PushLog("mov ecx, [ebp + arg_0]\n");
+      PushLog("mov ecx, [ebp + arg_0]");
       iInstructionLen = 3;
       bInstructionFound = true;
 
     } else if (!memcmp(pByte, "\x8B\x75", 2))
     {
-      PushLog("mov esi, [ebp + arg_0]\n");
+      PushLog("mov esi, [ebp + arg_0]");
       iInstructionLen = 3;
       bInstructionFound = true;
 
     } else if (!memcmp(pByte, "\x8B\x45", 2))
     {
-      PushLog("mov eax, [ebp + arg_0]\n");
+      PushLog("mov eax, [ebp + arg_0]");
       iInstructionLen = 3;
       bInstructionFound = true;
 
@@ -114,56 +116,56 @@ bool CPatch::CanRewriteInstructionSet(long iAddress, int &iRewriteLen)
 
     } else if (!memcmp(pByte, "\x8D\x45", 2)) // lea eax, [ebp + ...]
     {
-      PushLog("lea eax, [ebp + ...]\n");
+      PushLog("lea eax, [ebp + ...]");
       iInstructionLen = 3;
       bInstructionFound = true;
 
     } else if (!memcmp(pByte, "\x64\xA1", 2)) // mov eax, large FS
     {
-      PushLog("mov eax, large FS\n");
+      PushLog("mov eax, large FS");
       iInstructionLen = 6;
       bInstructionFound = true;
 
     } else if (*pByte == (char)0xA1) // mov eax, DWORD
     {
-      PushLog("mov eax, XX XX XX XX\n");
+      PushLog("mov eax, XX XX XX XX");
       iInstructionLen = 5;
       bInstructionFound = true;
 
     } else if (*pByte >= (char)0x50 && *pByte < (char)0x58) // push
     {
-      PushLog("push xxx\n");
+      PushLog("push xxx");
       iInstructionLen = 1;
       bInstructionFound = true;
 
     } else if (!memcmp(pByte, "\x81\xEC", 2)) // sub esp, DWORD
     {
-      PushLog("sub esp, DWORD\n");
+      PushLog("sub esp, DWORD");
       iInstructionLen = 6;
       bInstructionFound = true;
 
     } else if (!memcmp(pByte, "\x83\xEC", 2)) // sub esp, byte + N 
     {
-      PushLog("sub esp, byte + N\n");
+      PushLog("sub esp, byte + N");
       iInstructionLen = 3;
       bInstructionFound = true;
 
     } else if (*pByte == (char)0x89) // mov
     {
-      PushLog("mov\n");
+      PushLog("mov");
       iInstructionLen = 3;
       bInstructionFound = true;
 
     } else if (!memcmp(pByte, "\xF6\x46", 2)) // test byte ptr [esi+...]
     {
-      PushLog("test byte ptr [esi + ...]\n");
+      PushLog("test byte ptr [esi + ...]");
       iInstructionLen = 4;
       bInstructionFound = true;
 
     } else if (*pByte == (char)0xD9  // fld
             || *pByte == (char)0xD8) // fmul
     {
-      PushLog("fld / fadd / fmul\n");
+      PushLog("fld / fadd / fmul");
       iInstructionLen = 6;
       bInstructionFound = true;
     }
@@ -175,8 +177,8 @@ bool CPatch::CanRewriteInstructionSet(long iAddress, int &iRewriteLen)
       iRewriteLen = iReadLen;
 
       // [Cecil] Output patcher log
-      if (GetDebug()) {
-        InfoMessage(_strPatcherLog + "\nInstruction found! (iReadLen >= 5)");
+      if (_bDebugOutput) {
+        CPutString(_strPatcherLog + "\nInstruction found! (iReadLen >= 5)\n");
       }
 
       return true;
@@ -185,7 +187,7 @@ bool CPatch::CanRewriteInstructionSet(long iAddress, int &iRewriteLen)
   } while (bInstructionFound);
   
   // [Cecil] Output patcher log
-  if (GetDebug()) {
+  if (_bDebugOutput) {
     // Output next 8 instruction bytes
     UBYTE *pInstr = reinterpret_cast<UBYTE *>(iAddress);
 
@@ -213,7 +215,7 @@ BOOL CPatch::HookFunction(long iFuncToHook, long iMyHook, long *piNewCallAddress
 
   if (iFuncToHook == iMyHook || iFuncToHook == NULL || iMyHook == NULL) {
     // [Cecil] Something went wrong
-    if (GetDebug()) {
+    if (_bDebugOutput) {
       InfoMessage("(iFuncToHook == iMyHook) = %d\n(iFuncToHook == NULL) = %d\n(iMyHook == NULL) = %d",
                    (iFuncToHook == iMyHook),      (iFuncToHook == NULL),      (iMyHook == NULL));
     }
@@ -283,7 +285,7 @@ BOOL CPatch::HookFunction(long iFuncToHook, long iMyHook, long *piNewCallAddress
     ::VirtualProtect(reinterpret_cast<void *>(iFuncToHook), 5, dwOldProtect, &dwOldProtect);
 
   // [Cecil] Something went wrong
-  } else if (GetDebug()) {
+  } else if (_bDebugOutput) {
     InfoMessage("Cannot attempt to rewrite instructions: %s", GetWindowsError(GetLastError()));
   }
 

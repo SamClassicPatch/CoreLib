@@ -142,11 +142,6 @@ class CORE_API CPatch
       m_pRestorePatchSet = NULL;
     };
 
-    // Get debug logging state
-    static inline bool GetDebug(void) {
-      return _bDebugOutput;
-    };
-
     // Set debug logging state
     static inline void SetDebug(bool bState) {
       _bDebugOutput = bState;
