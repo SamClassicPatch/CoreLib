@@ -33,7 +33,7 @@ CCoreAPI *_pCoreAPI = NULL;
 CCoreAPI::EAppType CCoreAPI::eAppType = CCoreAPI::APP_UNKNOWN;
 
 // Define patch config
-CIniConfig _iniConfig;
+static CIniConfig _iniConfig;
 
 // Queue shadow updating for the next connection to a server
 static BOOL _bQueueShadowUpdate = TRUE;
@@ -92,7 +92,7 @@ void CCoreAPI::Setup(EAppType eSetType) {
     bLoadConfig = FALSE;
 
     try {
-      _iniConfig.Load_t(CORE_CONFIG_FILE, FALSE);
+      Props().Load_t(CORE_CONFIG_FILE, FALSE);
 
     } catch (char *strError) {
       (void)strError;

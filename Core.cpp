@@ -109,8 +109,7 @@ void CECIL_EndCore(void) {
   GetAPI()->CreateDir(CORE_CONFIG_FILE);
 
   try {
-    extern CIniConfig _iniConfig;
-    _iniConfig.Save_t(CORE_CONFIG_FILE);
+    CCoreAPI::Props().Save_t(CORE_CONFIG_FILE);
 
   } catch (char *strError) {
     CPrintF(TRANS("Cannot save patch configuration file: %s\n"), strError);

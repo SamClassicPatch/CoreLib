@@ -139,15 +139,13 @@ class CIniConfig : protected IniSections {
       iterator it = find(strSection);
       if (it == end()) it = insert(value_type(strSection, IniKeys())).first;
 
-      IniKeys &pairs = it->second;
-      IniKeys::iterator itPair = pairs.find(strKey);
+      // Insert a new key-value pair or find an existing one
+      IniKeys::_Pairib ib = it->second.insert(IniKeys::value_type(strKey, strValue));
 
-      // Create a new key, if there isn't the one needed
-      if (itPair == pairs.end()) {
-        itPair = pairs.insert(IniKeys::value_type(strKey, "")).first;
+      // Update value of the existing key
+      if (!ib.second) {
+        ib.first->second = strValue;
       }
-
-      itPair->second = strValue;
     };
 
     // Get value under a key or return a default value, if key or section doesn't exist
@@ -173,9 +171,9 @@ class CIniConfig : protected IniSections {
       IniKeys::const_iterator itPair = pairs.find(strKey);
       if (itPair == pairs.end()) return bDefValue;
 
-      // Determine boolean value from the string
+      // Determine boolean value from the beginning of a string
       const IniStr &str = itPair->second;
-      char ch = toupper(str[0]);
+      char ch = toupper(str[0]); // First character
 
       switch (ch) {
         // True values
@@ -187,12 +185,11 @@ class CIniConfig : protected IniSections {
         // On/Off
         case 'O': {
           // This is either '\0' or another character
-          ch = toupper(str[1]);
+          ch = toupper(str[1]); // Second character
 
           if (ch == 'N') return TRUE;
-          else
           if (ch == 'F') return FALSE;
-        }
+        } break;
       }
 
       return bDefValue;
