@@ -60,6 +60,23 @@ static void UpdateShadows(void)
   IWorld::GetWorld()->CalculateDirectionalShadows();
 };
 
+// Specify vanilla Bin directory as an extra DLL directory
+static void SetVanillaBinDirectory(void) {
+  // Load DLL directory method
+  HINSTANCE hKernel = GetModuleHandleA("Kernel32.dll");
+
+  // This should never happen, but still
+  if (hKernel == NULL) return;
+
+  typedef BOOL (*CSetDirFunc)(LPCSTR);
+  CSetDirFunc pSetDirFunc = (CSetDirFunc)GetProcAddress(hKernel, "SetDllDirectoryA");
+
+  // Set extra DLL directory
+  if (pSetDirFunc != NULL) {
+    pSetDirFunc((CCoreAPI::AppPath() + "Bin\\").str_String);
+  }
+};
+
 // Constructor
 CCoreAPI::CCoreAPI() :
   apiPatches(*new CPatchAPI), apiGame(*new CGameAPI), apiPlugins(*new CPluginAPI)
@@ -88,6 +105,9 @@ CCoreAPI::CCoreAPI() :
 void CCoreAPI::Setup(EAppType eSetType) {
   // Set application type
   eAppType = eSetType;
+
+  // Specify extra DLL directory
+  SetVanillaBinDirectory();
 
   // Load configuration file once
   static BOOL bLoadConfig = TRUE;
