@@ -99,10 +99,8 @@ void CCoreAPI::Setup(EAppType eSetType) {
     }
   }
 
-  // Output patcher actions
-  const CTFileName fnmPatcherOutput = AppPath() + AppBin() + "PatcherOutput";
-
-  if (IFiles::IsReadable(fnmPatcherOutput.str_String)) {
+  // Enable debug output for patcher actions
+  if (Props().GetBoolValue("", "DebugPatcher", false)) {
     CPatch::SetDebug(true);
   }
 };
