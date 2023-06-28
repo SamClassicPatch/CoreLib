@@ -44,6 +44,9 @@ CORE_API extern CTString sam_strIntroLevel;
 CORE_API extern CTString sam_strGameName;
 CORE_API extern CTString sam_strVersion;
 
+// Temporary password for connecting to some server
+CORE_API extern CTString cli_strConnectPassword;
+
 // Common components
 #include <CoreLib/API/CoreAPI.h>
 #include <CoreLib/Modules/PluginStock.h>

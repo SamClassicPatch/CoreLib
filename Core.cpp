@@ -37,6 +37,9 @@ CGame *_pGame = NULL;
 
 CTString sam_strVersion = _SE_VER_STRING; // Use version string
 
+// Temporary password for connecting to some server
+CTString cli_strConnectPassword = "";
+
 // Display information about the Classics patch
 static void PatchInfo(void) {
   static CTString strInfo =
@@ -85,6 +88,8 @@ void CECIL_InitCore(void) {
     _pShell->DeclareSymbol("persistent user CTString sam_strIntroLevel;", &sam_strIntroLevel);
     _pShell->DeclareSymbol("persistent user CTString sam_strGameName;",   &sam_strGameName);
     _pShell->DeclareSymbol("           user CTString sam_strVersion;",    &sam_strVersion);
+
+    _pShell->DeclareSymbol("persistent user CTString cli_strConnectPassword;", &cli_strConnectPassword);
   }
 
   _pShell->DeclareSymbol("user void IncludeScript(CTString);", &IncludeScript);
