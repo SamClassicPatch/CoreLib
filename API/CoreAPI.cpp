@@ -530,9 +530,24 @@ void CCoreAPI::ReinitConsole(INDEX ctCharsPerLine, INDEX ctLines) {
   con.con_strLastLine = con.con_strBuffer + ctCharsPerLine * (ctLines - 1);
   con.con_strCurrent = con.con_strLastLine;
 
+  // Break the log before restoring previous lines
+  CPrintF("\n--- CCoreAPI::ReinitConsole(%d, %d) ---\n\n", ctCharsPerLine - 1, ctLines);
+
   // Restore contents of the last log
+  BOOL bSkipEmptyLines = TRUE;
+
   for (INDEX iRestore = 0; iRestore < aLastLines.Count(); iRestore++) {
+    // Skip empty lines in the beginning
+    if (bSkipEmptyLines) {
+      CTString strLine = aLastLines[iRestore];
+      strLine.TrimSpacesLeft();
+
+      if (strLine == "") continue;
+    }
+
+    // At least one non-empty line printed
     CPutString(aLastLines[iRestore] + "\n");
+    bSkipEmptyLines = FALSE;
   }
 };
 
