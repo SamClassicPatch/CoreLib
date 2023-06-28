@@ -55,7 +55,8 @@ void INetwork::Initialize(void) {
   InitHttp();
 };
 
-// Handle packets coming from a client (CServer::Handle alternative)
+// Handle packets coming from a client
+// If output is TRUE, it will pass packets into engine's CServer::Handle()
 BOOL INetwork::ServerHandle(CMessageDispatcher *pmd, INDEX iClient, CNetworkMessage &nmMessage) {
   CSessionSocket &sso = _pNetwork->ga_srvServer.srv_assoSessions[iClient];
   sso.sso_tvMessageReceived = _pTimer->GetHighPrecisionTimer();
@@ -140,6 +141,7 @@ BOOL INetwork::ServerHandle(CMessageDispatcher *pmd, INDEX iClient, CNetworkMess
 };
 
 // Handle packets coming from a server
+// If output is TRUE, it will pass packets into engine's CSessionState::ProcessGameStreamBlock()
 BOOL INetwork::ClientHandle(CSessionState *pses, CNetworkMessage &nmMessage) {
 #if CLASSICSPATCH_EXT_PACKETS
 

@@ -164,10 +164,11 @@ BOOL IProcessPacket::OnClientDisconnect(INDEX iClient, CNetworkMessage &nmMessag
 // Client requesting the session state
 BOOL IProcessPacket::OnConnectRemoteSessionStateRequest(INDEX iClient, CNetworkMessage &nmMessage)
 {
-  // Get client identity
+  // [Cecil] Get identity of a remote client
+  ASSERT(iClient > 0);
   CClientIdentity *pci = IClientLogging::GetIdentity(iClient);
 
-  // Check if the client is banned
+  // [Cecil] Check if the client is banned
   CClientRestriction *pcr = CClientRestriction::IsBanned(pci);
   BOOL bBanned = (pcr != NULL);
 
@@ -189,12 +190,188 @@ BOOL IProcessPacket::OnConnectRemoteSessionStateRequest(INDEX iClient, CNetworkM
     return FALSE;
   }
 
-  // Check for connecting clients with split-screen
-  if (!CheckSplitScreenClients(iClient, nmMessage)) {
+  // Original function code
+  static CSymbolPtr pstrIPMask("ser_strIPMask");
+
+  // IP address is banned
+  if (IData::MatchesMask(GetComm().Server_GetClientName(iClient), pstrIPMask.GetString()) == !pbWhiteList.GetIndex()) {
+    INetwork::SendDisconnectMessage(iClient, LOCALIZE("You are banned from this server"), TRUE);
     return FALSE;
   }
 
-  return TRUE;
+  // Default version info
+  INDEX iMajor = 109;
+  INDEX iMinor = 1;
+
+  // Read version tag
+  INDEX iTag;
+  nmMessage >> iTag;
+
+  if (iTag == 'VTAG') {
+    nmMessage >> iMajor >> iMinor;
+  }
+
+  // Disconnect if mismatching version
+  if (iMajor != _SE_BUILD_MAJOR || iMinor != _SE_BUILD_MINOR) {
+    CTString strExplanation;
+    strExplanation.PrintF(LOCALIZE(
+      "This server runs version %d.%d, your version is %d.%d.\n"
+      "Please visit http://www.croteam.com for information on version updating."),
+      _SE_BUILD_MAJOR, _SE_BUILD_MINOR, iMajor, iMinor);
+
+    INetwork::SendDisconnectMessage(iClient, strExplanation, TRUE);
+    return FALSE;
+  }
+
+  // Check mod
+  CTString strGivenMod;
+  nmMessage >> strGivenMod;
+
+  // Disconnect with a special non-translatable mod tag
+  if (_strModName != strGivenMod) {
+    CTString strMod(0, "MOD:%s\\%s", _strModName, _strModURL);
+    INetwork::SendDisconnectMessage(iClient, strMod, TRUE);
+    return FALSE;
+  }
+
+  CTString strGivenPassword;
+  nmMessage >> strGivenPassword;
+
+  INDEX ctWantedLocalPlayers;
+  nmMessage >> ctWantedLocalPlayers;
+
+  // [Cecil] Check for connecting clients with split-screen
+  if (!CheckSplitScreenClients(iClient, ctWantedLocalPlayers)) {
+    return FALSE;
+  }
+
+  static CSymbolPtr pstrConnectPassword("net_strConnectPassword");
+  static CSymbolPtr pstrVIPPassword("net_strVIPPassword");
+  static CSymbolPtr pstrObserverPassword("net_strObserverPassword");
+  static CSymbolPtr piVIPReserve("net_iVIPReserve");
+  static CSymbolPtr piMaxObservers("net_iMaxObservers");
+  static CSymbolPtr piMaxClients("net_iMaxClients");
+
+  const CTString strPwdConnect  = pstrConnectPassword.GetString();
+  const CTString strPwdVIP      = pstrVIPPassword.GetString();
+  const CTString strPwdObserver = pstrObserverPassword.GetString();
+
+  // Count allowed players, clients and VIPs, then check if allowed to connect
+  INDEX ctMaxAllowedPlayers = _pNetwork->ga_sesSessionState.ses_ctMaxPlayers;
+  INDEX ctMaxAllowedClients = ctMaxAllowedPlayers;
+
+  if (piMaxClients.GetIndex() > 0) {
+    ctMaxAllowedClients = ClampUp(piMaxClients.GetIndex(), (INDEX)NET_MAXGAMECOMPUTERS);
+  }
+
+  INDEX ctMaxAllowedVIPPlayers = 0;
+  INDEX ctMaxAllowedVIPClients = 0;
+
+  if (piVIPReserve.GetIndex() > 0 && strPwdVIP != "") {
+    ctMaxAllowedVIPPlayers = ClampDn(piVIPReserve.GetIndex() - INetwork::CountPlayers(TRUE), 0L);
+    ctMaxAllowedVIPClients = ClampDn(piVIPReserve.GetIndex() - INetwork::CountClients(TRUE), 0L);
+  }
+
+  const INDEX ctMaxAllowedObservers = piMaxObservers.GetIndex();
+
+  // Get current amounts
+  const INDEX ctCurrentPlayers = INetwork::CountPlayers(FALSE);
+  const INDEX ctCurrentClients = INetwork::CountClients(FALSE);
+  const INDEX ctCurrentObservers = INetwork::CountObservers();
+
+  // Check which passwords this client can satisfy
+  BOOL bAutorizedAsVIP = FALSE;
+  BOOL bAutorizedAsObserver = FALSE;
+  BOOL bAutorizedAsPlayer = FALSE;
+
+  if (strPwdVIP != "" && strPwdVIP == strGivenPassword) {
+    bAutorizedAsVIP = TRUE;
+    bAutorizedAsPlayer = TRUE;
+    bAutorizedAsObserver = TRUE;
+  }
+
+  if (strPwdConnect == "" || strPwdConnect == strGivenPassword) {
+    bAutorizedAsPlayer = TRUE;
+  }
+
+  if ((strPwdObserver == "" && bAutorizedAsPlayer) || strPwdObserver == strGivenPassword) {
+    bAutorizedAsObserver = TRUE;
+  }
+
+  // Artificially decrease allowed number of players and clients for VIPs
+  if (!bAutorizedAsVIP) {
+    ctMaxAllowedPlayers = ClampDn(ctMaxAllowedPlayers - ctMaxAllowedVIPPlayers, 0L);
+    ctMaxAllowedClients = ClampDn(ctMaxAllowedClients - ctMaxAllowedVIPClients, 0L);
+  }
+
+  // Disconnect if too many clients or players
+  if (ctCurrentPlayers + ctWantedLocalPlayers > ctMaxAllowedPlayers
+   || ctCurrentClients + 1 > ctMaxAllowedClients) {
+    INetwork::SendDisconnectMessage(iClient, LOCALIZE("Server full!"), TRUE);
+    return FALSE;
+  }
+
+  // Disconnect observers
+  if (ctWantedLocalPlayers == 0) {
+    // If too many
+    if (ctCurrentObservers >= ctMaxAllowedObservers && !bAutorizedAsVIP) {
+      INetwork::SendDisconnectMessage(iClient, LOCALIZE("Too many observers!"), TRUE);
+      return FALSE;
+    }
+
+    // If password is wrong
+    if (!bAutorizedAsObserver) {
+      if (strGivenPassword == "") {
+        INetwork::SendDisconnectMessage(iClient, LOCALIZE("This server requires password for observers!"), TRUE);
+      } else {
+        INetwork::SendDisconnectMessage(iClient, LOCALIZE("Wrong observer password!"), TRUE);
+      }
+    }
+
+  // Disconnect players if password is wrong
+  } else if (!bAutorizedAsPlayer) {
+    if (strGivenPassword == "") {
+      INetwork::SendDisconnectMessage(iClient, LOCALIZE("This server requires password to connect!"), TRUE);
+    } else {
+      INetwork::SendDisconnectMessage(iClient, LOCALIZE("Wrong password!"), TRUE);
+    }
+  }
+
+  // Activate client socket and read parameters for it
+  CSessionSocket &sso = _pNetwork->ga_srvServer.srv_assoSessions[iClient];
+  sso.Activate();
+
+  sso.sso_ctLocalPlayers = ctWantedLocalPlayers;
+  sso.sso_bVIP = bAutorizedAsVIP;
+
+  nmMessage >> sso.sso_sspParams;
+
+  // Try to send base info
+  try {
+    static CSymbolPtr pstrMOTD("ser_strMOTD");
+
+    CTMemoryStream strmInfo;
+    strmInfo << INDEX(MSG_REP_CONNECTREMOTESESSIONSTATE);
+    strmInfo << pstrMOTD.GetString();
+    strmInfo << _pNetwork->ga_World.wo_fnmFileName;
+    strmInfo << _pNetwork->ga_sesSessionState.ses_ulSpawnFlags;
+    strmInfo.Write_t(_pNetwork->ga_aubDefaultProperties, NET_MAXSESSIONPROPERTIES);
+
+    const SLONG slSize = strmInfo.GetStreamSize() >> 10; // Size in KB
+
+    // Send reply to the remote session state
+    _pNetwork->SendToClientReliable(iClient, strmInfo);
+
+    CPrintF(LOCALIZE("Server: Sent initialization info to '%s' (%dk)\n"),
+      GetComm().Server_GetClientName(iClient).str_String, slSize);
+
+  // Abort on error
+  } catch (char *strError) {
+    sso.Deactivate();
+    CPrintF(LOCALIZE("Server: Cannot prepare connection data: %s\n"), strError);
+  }
+
+  return FALSE;
 };
 
 // Client requesting the connection to the server
@@ -282,7 +459,7 @@ BOOL IProcessPacket::OnPlayerConnectRequest(INDEX iClient, CNetworkMessage &nmMe
       for (INDEX iSession = 0; iSession < srv.srv_assoSessions.Count(); iSession++) {
         CSessionSocket &ssoBlock = srv.srv_assoSessions[iSession];
 
-        if (iSession == iClient || (iSession > 0 && !ssoBlock.sso_bActive)) {
+        if (iSession == iClient || (iSession > 0 && !ssoBlock.IsActive())) {
           continue;
         }
 
@@ -400,7 +577,7 @@ BOOL IProcessPacket::OnCharacterChangeRequest(INDEX iClient, CNetworkMessage &nm
     for (INDEX iSession = 0; iSession < srv.srv_assoSessions.Count(); iSession++) {
       CSessionSocket &ssoBlock = srv.srv_assoSessions[iSession];
 
-      if (iSession == iClient || (iSession > 0 && !ssoBlock.sso_bActive)) {
+      if (iSession == iClient || (iSession > 0 && !ssoBlock.IsActive())) {
         continue;
       }
 

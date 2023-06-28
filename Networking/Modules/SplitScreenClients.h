@@ -24,6 +24,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 extern INDEX ser_iMaxPlayersPerClient;
 
 // Check for connecting clients with split-screen
-BOOL CheckSplitScreenClients(INDEX iClient, CNetworkMessage &nmMessage);
+BOOL CheckSplitScreenClients(INDEX iClient, INDEX ctWantedPlayers);
 
 #endif

@@ -22,26 +22,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 INDEX ser_iMaxPlayersPerClient = 4;
 
 // Check for connecting clients with split-screen
-BOOL CheckSplitScreenClients(INDEX iClient, CNetworkMessage &nmMessage)
+BOOL CheckSplitScreenClients(INDEX iClient, INDEX ctWantedPlayers)
 {
   // Any amount of local players is allowed
   if (ser_iMaxPlayersPerClient < 1) {
     return TRUE;
   }
 
-  nmMessage.nm_pubPointer = nmMessage.nm_pubMessage + 13;
-
-  // Skip mod name and password
-  CTString strGivenMod;
-  CTString strGivenPassword;
-  nmMessage >> strGivenMod >> strGivenPassword;
-
-  // Read wanted local player count
-  INDEX ctWantedLocalPlayers;
-  nmMessage >> ctWantedLocalPlayers;
-
   // If client has more local players than allowed
-  if (ctWantedLocalPlayers > ser_iMaxPlayersPerClient)
+  if (ctWantedPlayers > ser_iMaxPlayersPerClient)
   {
     // Kick the client
     CTString strExplanation;
@@ -58,9 +47,6 @@ BOOL CheckSplitScreenClients(INDEX iClient, CNetworkMessage &nmMessage)
     INetwork::SendDisconnectMessage(iClient, strExplanation, TRUE);
     return FALSE;
   }
-
-  // Client is good, rewind to the beginning
-  nmMessage.Rewind();
 
   return TRUE;
 };

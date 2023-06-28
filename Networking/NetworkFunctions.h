@@ -72,7 +72,7 @@ class CORE_API INetwork {
       CSessionSocket &sso = srv.srv_assoSessions[iSession];
 
       // Add block to the buffer if client is active (server client always is)
-      if (iSession == 0 || sso.sso_bActive) {
+      if (iSession == 0 || sso.IsActive()) {
         ((CNetStream &)sso.sso_nsBuffer).AddBlock(nsb);
       }
     };
@@ -88,10 +88,12 @@ class CORE_API INetwork {
     // Initialize networking
     static void Initialize(void);
 
-    // Handle packets coming from a client (CServer::Handle alternative)
+    // Handle packets coming from a client
+    // If output is TRUE, it will pass packets into engine's CServer::Handle()
     static BOOL ServerHandle(CMessageDispatcher *pmd, INDEX iClient, CNetworkMessage &nmReceived);
 
     // Handle packets coming from a server
+    // If output is TRUE, it will pass packets into engine's CSessionState::ProcessGameStreamBlock()
     static BOOL ClientHandle(CSessionState *pses, CNetworkMessage &nmMessage);
 
     // Send disconnect message to a client (CServer::SendDisconnectMessage reimplementation)
@@ -104,6 +106,7 @@ class CORE_API INetwork {
   public:
 
     // Get number of active players
+    // Reimplementation of CServer::GetPlayersCount() and CServer::GetVIPPlayersCount() methods
     static inline INDEX CountPlayers(BOOL bOnlyVIP) {
       CServer &srv = _pNetwork->ga_srvServer;
       INDEX ctPlayers = 0;
@@ -123,6 +126,7 @@ class CORE_API INetwork {
     };
 
     // Get number of active clients
+    // Reimplementation of CServer::GetClientsCount() and CServer::GetVIPClientsCount() methods
     static inline INDEX CountClients(BOOL bOnlyVIP) {
       CServer &srv = _pNetwork->ga_srvServer;
 
@@ -145,6 +149,7 @@ class CORE_API INetwork {
     };
 
     // Get number of active observers
+    // Reimplementation of CServer::GetObserversCount() method
     static inline INDEX CountObservers(void) {
       CServer &srv = _pNetwork->ga_srvServer;
 
@@ -155,7 +160,7 @@ class CORE_API INetwork {
         CSessionSocket &sso = srv.srv_assoSessions[i];
 
         // Skip inactive clients
-        if (i > 0 && !sso.sso_bActive) continue;
+        if (i > 0 && !sso.IsActive()) continue;
 
         // Client with no players
         if (sso.sso_ctLocalPlayers == 0) {
