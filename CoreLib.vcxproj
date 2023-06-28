@@ -56,6 +56,7 @@
     <ClInclude Include="Interfaces\GfxFunctions.h" />
     <ClInclude Include="Interfaces\PropertyFunctions.h" />
     <ClInclude Include="Interfaces\RenderFunctions.h" />
+    <ClInclude Include="Interfaces\ResourceFunctions.h" />
     <ClInclude Include="Interfaces\WorldFunctions.h" />
     <ClInclude Include="Modules\PluginModule.h" />
     <ClInclude Include="Modules\PluginStock.h" />
