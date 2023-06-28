@@ -412,5 +412,8 @@
     <None Include="Definitions\GraphicsDefs.inl">
       <Filter>Header Files\Definitions headers</Filter>
     </None>
+    <None Include="Definitions\NetworkDefs.inl">
+      <Filter>Header Files\Definitions headers</Filter>
+    </None>
   </ItemGroup>
 </Project>

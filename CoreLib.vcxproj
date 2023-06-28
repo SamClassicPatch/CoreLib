@@ -144,6 +144,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Definitions\GraphicsDefs.inl" />
+    <None Include="Definitions\NetworkDefs.inl" />
     <None Include="Definitions\TextureEffectsDefs.inl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
