@@ -151,18 +151,16 @@ BOOL IProcessPacket::CanChangeCharacter(CPlayerEntity *pen) {
 };
 
 // Client confirming the disconnection
-BOOL IProcessPacket::OnClientDisconnect(INDEX iClient, CNetworkMessage &nmMessage) {
+void IProcessPacket::OnClientDisconnect(INDEX iClient, CNetworkMessage &nmMessage) {
   CSessionSocket &sso = _pNetwork->ga_srvServer.srv_assoSessions[iClient];
   sso.sso_iDisconnectedState = 2;
 
   // Make client inactive
   CActiveClient::DeactivateClient(iClient);
-
-  return FALSE;
 };
 
 // Client requesting the session state
-BOOL IProcessPacket::OnConnectRemoteSessionStateRequest(INDEX iClient, CNetworkMessage &nmMessage)
+void IProcessPacket::OnConnectRemoteSessionStateRequest(INDEX iClient, CNetworkMessage &nmMessage)
 {
   // [Cecil] Get identity of a remote client
   ASSERT(iClient > 0);
@@ -179,7 +177,7 @@ BOOL IProcessPacket::OnConnectRemoteSessionStateRequest(INDEX iClient, CNetworkM
     // No specific ban record
     if (!bBanned) {
       INetwork::SendDisconnectMessage(iClient, TRANS("You are not allowed on this server!"), TRUE);
-      return FALSE;
+      return;
     }
 
     CTString strTime, strReason;
@@ -187,7 +185,7 @@ BOOL IProcessPacket::OnConnectRemoteSessionStateRequest(INDEX iClient, CNetworkM
 
     strReason.PrintF(TRANS("You have been banned for %s!"), strTime);
     INetwork::SendDisconnectMessage(iClient, strReason, TRUE);
-    return FALSE;
+    return;
   }
 
   // Original function code
@@ -196,7 +194,7 @@ BOOL IProcessPacket::OnConnectRemoteSessionStateRequest(INDEX iClient, CNetworkM
   // IP address is banned
   if (IData::MatchesMask(GetComm().Server_GetClientName(iClient), pstrIPMask.GetString()) == !pbWhiteList.GetIndex()) {
     INetwork::SendDisconnectMessage(iClient, LOCALIZE("You are banned from this server"), TRUE);
-    return FALSE;
+    return;
   }
 
   // Default version info
@@ -220,7 +218,7 @@ BOOL IProcessPacket::OnConnectRemoteSessionStateRequest(INDEX iClient, CNetworkM
       _SE_BUILD_MAJOR, _SE_BUILD_MINOR, iMajor, iMinor);
 
     INetwork::SendDisconnectMessage(iClient, strExplanation, TRUE);
-    return FALSE;
+    return;
   }
 
   // Check mod
@@ -231,7 +229,7 @@ BOOL IProcessPacket::OnConnectRemoteSessionStateRequest(INDEX iClient, CNetworkM
   if (_strModName != strGivenMod) {
     CTString strMod(0, "MOD:%s\\%s", _strModName, _strModURL);
     INetwork::SendDisconnectMessage(iClient, strMod, TRUE);
-    return FALSE;
+    return;
   }
 
   CTString strGivenPassword;
@@ -241,9 +239,7 @@ BOOL IProcessPacket::OnConnectRemoteSessionStateRequest(INDEX iClient, CNetworkM
   nmMessage >> ctWantedLocalPlayers;
 
   // [Cecil] Check for connecting clients with split-screen
-  if (!CheckSplitScreenClients(iClient, ctWantedLocalPlayers)) {
-    return FALSE;
-  }
+  if (!CheckSplitScreenClients(iClient, ctWantedLocalPlayers)) return;
 
   static CSymbolPtr pstrConnectPassword("net_strConnectPassword");
   static CSymbolPtr pstrVIPPassword("net_strVIPPassword");
@@ -308,7 +304,7 @@ BOOL IProcessPacket::OnConnectRemoteSessionStateRequest(INDEX iClient, CNetworkM
   if (ctCurrentPlayers + ctWantedLocalPlayers > ctMaxAllowedPlayers
    || ctCurrentClients + 1 > ctMaxAllowedClients) {
     INetwork::SendDisconnectMessage(iClient, LOCALIZE("Server full!"), TRUE);
-    return FALSE;
+    return;
   }
 
   // Disconnect observers
@@ -316,7 +312,7 @@ BOOL IProcessPacket::OnConnectRemoteSessionStateRequest(INDEX iClient, CNetworkM
     // If too many
     if (ctCurrentObservers >= ctMaxAllowedObservers && !bAutorizedAsVIP) {
       INetwork::SendDisconnectMessage(iClient, LOCALIZE("Too many observers!"), TRUE);
-      return FALSE;
+      return;
     }
 
     // If password is wrong
@@ -326,6 +322,7 @@ BOOL IProcessPacket::OnConnectRemoteSessionStateRequest(INDEX iClient, CNetworkM
       } else {
         INetwork::SendDisconnectMessage(iClient, LOCALIZE("Wrong observer password!"), TRUE);
       }
+      return;
     }
 
   // Disconnect players if password is wrong
@@ -335,6 +332,7 @@ BOOL IProcessPacket::OnConnectRemoteSessionStateRequest(INDEX iClient, CNetworkM
     } else {
       INetwork::SendDisconnectMessage(iClient, LOCALIZE("Wrong password!"), TRUE);
     }
+    return;
   }
 
   // Activate client socket and read parameters for it
@@ -370,12 +368,10 @@ BOOL IProcessPacket::OnConnectRemoteSessionStateRequest(INDEX iClient, CNetworkM
     sso.Deactivate();
     CPrintF(LOCALIZE("Server: Cannot prepare connection data: %s\n"), strError);
   }
-
-  return FALSE;
 };
 
 // Client requesting the connection to the server
-BOOL IProcessPacket::OnPlayerConnectRequest(INDEX iClient, CNetworkMessage &nmMessage)
+void IProcessPacket::OnPlayerConnectRequest(INDEX iClient, CNetworkMessage &nmMessage)
 {
   // Read character data
   CPlayerCharacter pcCharacter;
@@ -395,7 +391,7 @@ BOOL IProcessPacket::OnPlayerConnectRequest(INDEX iClient, CNetworkMessage &nmMe
     // Character name is banned
     if (IData::MatchesMask(pcCharacter.GetName(), pstrNameMask.GetString()) == !pbWhiteList.GetIndex()) {
       INetwork::SendDisconnectMessage(iClient, LOCALIZE("You are banned from this server"), FALSE);
-      return FALSE;
+      return;
     }
   }
 
@@ -405,7 +401,7 @@ BOOL IProcessPacket::OnPlayerConnectRequest(INDEX iClient, CNetworkMessage &nmMe
   // Check if someone's connecting with too many players
   if (iClient > 0 && INetwork::CountClientPlayers(iClient) >= sso.sso_ctLocalPlayers) {
     INetwork::SendDisconnectMessage(iClient, LOCALIZE("Protocol violation"), FALSE);
-    return FALSE;
+    return;
   }
 
   // If there's a used character already
@@ -415,7 +411,7 @@ BOOL IProcessPacket::OnPlayerConnectRequest(INDEX iClient, CNetworkMessage &nmMe
     strMessage.PrintF(LOCALIZE("Player character '%s' already exists in this session."), pcCharacter.GetName());
 
     INetwork::SendDisconnectMessage(iClient, strMessage, FALSE);
-    return FALSE;
+    return;
   }
 
   // Find inactive player for the client
@@ -500,12 +496,10 @@ BOOL IProcessPacket::OnPlayerConnectRequest(INDEX iClient, CNetworkMessage &nmMe
     // Refuse connection
     INetwork::SendDisconnectMessage(iClient, LOCALIZE("Too many players in session."), FALSE);
   }
-
-  return FALSE;
 };
 
 // Client changing the character
-BOOL IProcessPacket::OnCharacterChangeRequest(INDEX iClient, CNetworkMessage &nmMessage)
+void IProcessPacket::OnCharacterChangeRequest(INDEX iClient, CNetworkMessage &nmMessage)
 {
   // Read character data
   INDEX iPlayer;
@@ -520,21 +514,21 @@ BOOL IProcessPacket::OnCharacterChangeRequest(INDEX iClient, CNetworkMessage &nm
 
   // Skip character changes blocked by the anti-flood system
   if (IAntiFlood::HandleCharacterChange(iClient)) {
-    return FALSE;
+    return;
   }
 
   CServer &srv = _pNetwork->ga_srvServer;
 
   // Invalid player
   if (iPlayer < 0 || iPlayer > srv.srv_aplbPlayers.Count() ) {
-    return FALSE;
+    return;
   }
 
   CPlayerBuffer &plb = srv.srv_aplbPlayers[iPlayer];
 
   // Wrong client or character
   if (plb.plb_iClient != iClient || !(plb.plb_pcCharacter == pcCharacter)) {
-    return FALSE;
+    return;
   }
 
   // [Cecil] Check if the entity is even capable of changing its appearance
@@ -542,7 +536,7 @@ BOOL IProcessPacket::OnCharacterChangeRequest(INDEX iClient, CNetworkMessage &nm
 
   if (!CanChangeCharacter(penPlayer)) {
     INetwork::SendChatToClient(iClient, "Server", TRANS("Please wait until you are fully connected to change your character."));
-    return FALSE;
+    return;
   }
 
   // Remember the character
@@ -590,8 +584,6 @@ BOOL IProcessPacket::OnCharacterChangeRequest(INDEX iClient, CNetworkMessage &nm
     // Send to everyone
     INetwork::AddBlockToAllSessions(nsbChangeChar);
   }
-
-  return FALSE;
 };
 
 // Receive action packet from one player of a client
@@ -626,7 +618,7 @@ static void ReceiveActionsForPlayer(CPlayerBuffer &plb, CNetworkMessage *pnm, IN
 };
 
 // Client sending player actions
-BOOL IProcessPacket::OnPlayerAction(INDEX iClient, CNetworkMessage &nmMessage)
+void IProcessPacket::OnPlayerAction(INDEX iClient, CNetworkMessage &nmMessage)
 {
   CServer &srv = _pNetwork->ga_srvServer;
   CSessionSocket &sso = srv.srv_assoSessions[iClient];
@@ -667,12 +659,10 @@ BOOL IProcessPacket::OnPlayerAction(INDEX iClient, CNetworkMessage &nmMessage)
 
     ReceiveActionsForPlayer(plb, &nmMessage, iMaxBuffer);
   }
-
-  return FALSE;
 };
 
 // Client sends a CRC check
-BOOL IProcessPacket::OnSyncCheck(INDEX iClient, CNetworkMessage &nmMessage) {
+void IProcessPacket::OnSyncCheck(INDEX iClient, CNetworkMessage &nmMessage) {
   static CSymbolPtr pbReportSyncOK("ser_bReportSyncOK");
   static CSymbolPtr pbReportSyncBad("ser_bReportSyncBad");
   static CSymbolPtr pbReportSyncLate("ser_bReportSyncLate");
@@ -765,8 +755,6 @@ BOOL IProcessPacket::OnSyncCheck(INDEX iClient, CNetworkMessage &nmMessage) {
     // Remember that this sync was ahead of time
     if (tmLastSync < tmTick) tmLastSync = tmTick;
   }
-
-  return FALSE;
 };
 
 // Client sending a chat message

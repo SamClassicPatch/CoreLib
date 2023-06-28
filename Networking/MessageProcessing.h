@@ -68,26 +68,26 @@ class CORE_API IProcessPacket {
     // Check if character can be changed for a specific player
     static BOOL CanChangeCharacter(CPlayerEntity *pen);
 
-  // Message processors
+  // Message processors (if they return TRUE, they also get processed by CServer afterwards)
   public:
 
     // Client confirming the disconnection
-    static BOOL OnClientDisconnect(INDEX iClient, CNetworkMessage &nmMessage);
+    static void OnClientDisconnect(INDEX iClient, CNetworkMessage &nmMessage);
 
     // Client requesting the session state
-    static BOOL OnConnectRemoteSessionStateRequest(INDEX iClient, CNetworkMessage &nmMessage);
+    static void OnConnectRemoteSessionStateRequest(INDEX iClient, CNetworkMessage &nmMessage);
 
     // Client requesting the connection to the server
-    static BOOL OnPlayerConnectRequest(INDEX iClient, CNetworkMessage &nmMessage);
+    static void OnPlayerConnectRequest(INDEX iClient, CNetworkMessage &nmMessage);
 
     // Client changing the character
-    static BOOL OnCharacterChangeRequest(INDEX iClient, CNetworkMessage &nmMessage);
+    static void OnCharacterChangeRequest(INDEX iClient, CNetworkMessage &nmMessage);
 
     // Client sending player actions
-    static BOOL OnPlayerAction(INDEX iClient, CNetworkMessage &nmMessage);
+    static void OnPlayerAction(INDEX iClient, CNetworkMessage &nmMessage);
 
     // Client sends a CRC check
-    static BOOL OnSyncCheck(INDEX iClient, CNetworkMessage &nmMessage);
+    static void OnSyncCheck(INDEX iClient, CNetworkMessage &nmMessage);
 
     // Client sending a chat message
     static BOOL OnChatInRequest(INDEX iClient, CNetworkMessage &nmMessage);

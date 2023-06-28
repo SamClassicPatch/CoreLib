@@ -67,27 +67,33 @@ BOOL INetwork::ServerHandle(CMessageDispatcher *pmd, INDEX iClient, CNetworkMess
   switch (ePacket) {
     // Client confirming the disconnection
     case PCK_REP_DISCONNECTED:
-      return IProcessPacket::OnClientDisconnect(iClient, nmMessage);
+      IProcessPacket::OnClientDisconnect(iClient, nmMessage);
+      return FALSE;
 
     // Client requesting the session state
     case MSG_REQ_CONNECTREMOTESESSIONSTATE:
-      return IProcessPacket::OnConnectRemoteSessionStateRequest(iClient, nmMessage);
+      IProcessPacket::OnConnectRemoteSessionStateRequest(iClient, nmMessage);
+      return FALSE;
 
     // Client requesting the connection to the server
     case MSG_REQ_CONNECTPLAYER:
-      return IProcessPacket::OnPlayerConnectRequest(iClient, nmMessage);
+      IProcessPacket::OnPlayerConnectRequest(iClient, nmMessage);
+      return FALSE;
 
     // Client changing the character
     case MSG_REQ_CHARACTERCHANGE:
-      return IProcessPacket::OnCharacterChangeRequest(iClient, nmMessage);
+      IProcessPacket::OnCharacterChangeRequest(iClient, nmMessage);
+      return FALSE;
 
     // Client sending player actions
     case MSG_ACTION:
-      return IProcessPacket::OnPlayerAction(iClient, nmMessage);
+      IProcessPacket::OnPlayerAction(iClient, nmMessage);
+      return FALSE;
 
     // Client sending a CRC check
     case MSG_SYNCCHECK:
-      return IProcessPacket::OnSyncCheck(iClient, nmMessage);
+      IProcessPacket::OnSyncCheck(iClient, nmMessage);
+      return FALSE;
 
     // Client sending a chat message
     case MSG_CHAT_IN:
