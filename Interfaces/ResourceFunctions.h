@@ -422,6 +422,8 @@ inline void Write_t(CTStream &strm, CModelObject &mo) {
 
 }; // Models namespace
 
+#if SE1_VER >= SE1_107
+
 namespace SKA {
 
 inline void Read_t(CTStream &strm, CModelInstance &mi);
@@ -842,6 +844,8 @@ inline void Skip_t(CTStream &strm) {
 };
 
 }; // SKA namespace
+
+#endif
 
 }; // namespace
 
