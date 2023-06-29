@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="API\ApiConfig.h" />
+    <ClInclude Include="API\CoreHooks.h" />
     <ClInclude Include="API\GameAPI.h" />
     <ClInclude Include="API\CoreAPI.h" />
     <ClInclude Include="API\PatchAPI.h" />
@@ -89,6 +90,7 @@
     <ClInclude Include="StdH.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="API\CoreHooks.cpp" />
     <ClCompile Include="API\GameAPI.cpp" />
     <ClCompile Include="API\CoreAPI.cpp" />
     <ClCompile Include="API\PatchAPI.cpp" />

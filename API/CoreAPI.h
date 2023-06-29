@@ -24,13 +24,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <CoreLib/Base/CommonCore.h>
 #include <CoreLib/API/ApiConfig.h>
 
+// Include global hooks
+#include <CoreLib/API/CoreHooks.h>
+
 // Declare API submodules
 class CPatchAPI;
 class CGameAPI;
 class CPluginAPI;
 
-// Core API class
-class CORE_API CCoreAPI {
+// Core API class (inherit hooks for backwards compatibility)
+class CORE_API CCoreAPI : public ICoreHooks {
   public:
     // Types of available applications on Serious Engine
     enum EAppType {
@@ -199,54 +202,6 @@ class CORE_API CCoreAPI {
 
     // Reinitialize console in the engine
     void ReinitConsole(INDEX ctCharsPerLine, INDEX ctLines);
-
-  // Global hooks
-  public:
-
-    // Called after starting world simulation
-    void OnGameStart(void);
-
-    // Called before stopping world simulation
-    void OnGameStop(void);
-
-    // Called after saving the game
-    void OnGameSave(const CTFileName &fnmSave);
-
-    // Called after loading a saved game
-    void OnGameLoad(const CTFileName &fnmSave);
-
-    // Called after starting demo playback
-    void OnDemoPlay(const CTFileName &fnmDemo);
-
-    // Called after starting demo recording
-    void OnDemoStart(const CTFileName &fnmDemo);
-
-    // Called after stopping demo recording
-    void OnDemoStop(void);
-
-    // Called after finishing reading the world file
-    void OnWorldLoad(CWorld *pwo, const CTFileName &fnmWorld);
-
-    // Called every simulation tick
-    void OnTick(void);
-
-    // Called every time a new player is added
-    void OnAddPlayer(CPlayerTarget &plt, BOOL bLocal);
-
-    // Called every time a player is removed
-    void OnRemovePlayer(CPlayerTarget &plt, BOOL bLocal);
-
-    // Called before redrawing game view
-    void OnPreDraw(CDrawPort *pdp);
-
-    // Called after redrawing game view
-    void OnPostDraw(CDrawPort *pdp);
-
-    // Called after rendering the world
-    void OnRenderView(CWorld &wo, CEntity *penViewer, CAnyProjection3D &apr, CDrawPort *pdp);
-
-    // Called every render frame
-    void OnFrame(CDrawPort *pdp);
 };
 
 // This variable can be used to access API of the Classics patch.

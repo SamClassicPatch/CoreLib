@@ -261,6 +261,9 @@
     <ClInclude Include="Interfaces\ResourceFunctions.h">
       <Filter>Header Files\Interfaces headers</Filter>
     </ClInclude>
+    <ClInclude Include="API\CoreHooks.h">
+      <Filter>Header Files\API headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="StdH.cpp">
@@ -406,6 +409,9 @@
     </ClCompile>
     <ClCompile Include="Networking\ExtPackets\ExtEntityDamage.cpp">
       <Filter>Source Files\Networking\ExtPackets</Filter>
+    </ClCompile>
+    <ClCompile Include="API\CoreHooks.cpp">
+      <Filter>Source Files\API</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

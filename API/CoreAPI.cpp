@@ -19,8 +19,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <Engine/GameShell.h>
 #include "Interfaces/FileFunctions.h"
 
-#include "Networking/Modules/ClientLogging.h"
-
 #include <STLIncludesBegin.h>
 #include <string>
 #include <fstream>
@@ -38,27 +36,6 @@ CTString CCoreAPI::strVanillaExt = "";
 
 // Define patch config
 static CIniConfig _iniConfig;
-
-// Queue shadow updating for the next connection to a server
-static BOOL _bQueueShadowUpdate = TRUE;
-
-// Fix broken shadows and lights by updating them
-static void UpdateShadows(void)
-{
-  FOREACHINDYNAMICCONTAINER(IWorld::GetWorld()->wo_cenEntities, CEntity, iten) {
-    if (!IsDerivedFromClass(iten, "Light")) continue;
-
-    // Update shadow layers for each light
-    CLightSource *pls = iten->GetLightSource();
-
-    if (pls != NULL) {
-      pls->FindShadowLayers(FALSE);
-    }
-  }
-
-  // Update shadows from the sun and such
-  IWorld::GetWorld()->CalculateDirectionalShadows();
-};
 
 // Specify vanilla Bin directory as an extra DLL directory
 static void SetVanillaBinDirectory(void) {
@@ -98,6 +75,7 @@ CCoreAPI::CCoreAPI() :
   ulVersion = CORE_PATCH_VERSION;
 
   // Update shadows in a current world
+  extern void UpdateShadows(void);
   _pShell->DeclareSymbol("user void UpdateShadows(void);", &UpdateShadows);
 };
 
@@ -548,195 +526,5 @@ void CCoreAPI::ReinitConsole(INDEX ctCharsPerLine, INDEX ctLines) {
     // At least one non-empty line printed
     CPutString(aLastLines[iRestore] + "\n");
     bSkipEmptyLines = FALSE;
-  }
-};
-
-// Called after starting world simulation
-void CCoreAPI::OnGameStart(void)
-{
-  // Call game start function for each plugin
-  FOREACHPLUGINHANDLER(GetPluginAPI()->cGameEvents, IGameEvents, pEvents) {
-    if ((IAbstractEvents *)pEvents == NULL) continue;
-
-    pEvents->OnGameStart();
-  }
-};
-
-// Called before stopping world simulation
-void CCoreAPI::OnGameStop(void)
-{
-  // Call game stop function for each plugin
-  FOREACHPLUGINHANDLER(GetPluginAPI()->cGameEvents, IGameEvents, pEvents) {
-    if ((IAbstractEvents *)pEvents == NULL) continue;
-
-    pEvents->OnGameStop();
-  }
-
-  // Queue shadow updating again
-  _bQueueShadowUpdate = TRUE;
-
-  // Reset all clients
-  CActiveClient::ResetAll();
-
-  // Save client log by the end of the game
-  IClientLogging::SaveLog();
-};
-
-// Called after saving the game
-void CCoreAPI::OnGameSave(const CTFileName &fnmSave)
-{
-  // Call game save function for each plugin
-  FOREACHPLUGINHANDLER(GetPluginAPI()->cGameEvents, IGameEvents, pEvents) {
-    if ((IAbstractEvents *)pEvents == NULL) continue;
-
-    pEvents->OnGameSave(fnmSave);
-  }
-};
-
-// Called after loading a saved game
-void CCoreAPI::OnGameLoad(const CTFileName &fnmSave)
-{
-  // Call game load function for each plugin
-  FOREACHPLUGINHANDLER(GetPluginAPI()->cGameEvents, IGameEvents, pEvents) {
-    if ((IAbstractEvents *)pEvents == NULL) continue;
-
-    pEvents->OnGameLoad(fnmSave);
-  }
-
-  // Update shadow maps
-  UpdateShadows();
-};
-
-// Called after starting demo playback
-void CCoreAPI::OnDemoPlay(const CTFileName &fnmDemo)
-{
-  // Call demo play function for each plugin
-  FOREACHPLUGINHANDLER(GetPluginAPI()->cDemoEvents, IDemoEvents, pEvents) {
-    if ((IAbstractEvents *)pEvents == NULL) continue;
-
-    pEvents->OnDemoPlay(fnmDemo);
-  }
-
-  // Update shadow maps
-  UpdateShadows();
-};
-
-// Called after starting demo recording
-void CCoreAPI::OnDemoStart(const CTFileName &fnmDemo)
-{
-  // Call demo start function for each plugin
-  FOREACHPLUGINHANDLER(GetPluginAPI()->cDemoEvents, IDemoEvents, pEvents) {
-    if ((IAbstractEvents *)pEvents == NULL) continue;
-
-    pEvents->OnDemoStart(fnmDemo);
-  }
-};
-
-// Called after stopping demo recording
-void CCoreAPI::OnDemoStop(void)
-{
-  // Call demo stop function for each plugin
-  FOREACHPLUGINHANDLER(GetPluginAPI()->cDemoEvents, IDemoEvents, pEvents) {
-    if ((IAbstractEvents *)pEvents == NULL) continue;
-
-    pEvents->OnDemoStop();
-  }
-};
-
-// Called after finishing reading the world file
-void CCoreAPI::OnWorldLoad(CWorld *pwo, const CTFileName &fnmWorld)
-{
-  // Call world load function for each plugin
-  FOREACHPLUGINHANDLER(GetPluginAPI()->cWorldEvents, IWorldEvents, pEvents) {
-    if ((IAbstractEvents *)pEvents == NULL) continue;
-
-    pEvents->OnWorldLoad(pwo, fnmWorld);
-  }
-};
-
-// Called every simulation tick
-void CCoreAPI::OnTick(void)
-{
-  // Call step function for each plugin
-  FOREACHPLUGINHANDLER(GetPluginAPI()->cProcessors, IProcessingEvents, pEvents) {
-    if ((IAbstractEvents *)pEvents == NULL) continue;
-
-    pEvents->OnStep();
-  }
-};
-
-// Called every time a new player is added
-void CCoreAPI::OnAddPlayer(CPlayerTarget &plt, BOOL bLocal)
-{
-  // Call player addition function for each plugin
-  FOREACHPLUGINHANDLER(GetPluginAPI()->cNetworkEvents, INetworkEvents, pEvents) {
-    if ((IAbstractEvents *)pEvents == NULL) continue;
-
-    pEvents->OnAddPlayer(plt, bLocal);
-  }
-
-  // Update shadow maps for connecting players
-  if (bLocal && !_pNetwork->IsServer())
-  {
-    // Only if queued
-    if (_bQueueShadowUpdate) {
-      _bQueueShadowUpdate = FALSE;
-      UpdateShadows();
-    }
-  }
-};
-
-// Called every time a player is removed
-void CCoreAPI::OnRemovePlayer(CPlayerTarget &plt, BOOL bLocal)
-{
-  // Call player removal function for each plugin
-  FOREACHPLUGINHANDLER(GetPluginAPI()->cNetworkEvents, INetworkEvents, pEvents) {
-    if ((IAbstractEvents *)pEvents == NULL) continue;
-
-    pEvents->OnRemovePlayer(plt, bLocal);
-  }
-};
-
-// Called before redrawing game view
-void CCoreAPI::OnPreDraw(CDrawPort *pdp)
-{
-  // Call pre-draw function for each plugin
-  FOREACHPLUGINHANDLER(GetPluginAPI()->cRenderers, IRenderingEvents, pEvents) {
-    if ((IAbstractEvents *)pEvents == NULL) continue;
-
-    pEvents->OnPreDraw(pdp);
-  }
-};
-
-// Called after redrawing game view
-void CCoreAPI::OnPostDraw(CDrawPort *pdp)
-{
-  // Call post-draw function for each plugin
-  FOREACHPLUGINHANDLER(GetPluginAPI()->cRenderers, IRenderingEvents, pEvents) {
-    if ((IAbstractEvents *)pEvents == NULL) continue;
-
-    pEvents->OnPostDraw(pdp);
-  }
-};
-
-// Called after rendering the world
-void CCoreAPI::OnRenderView(CWorld &wo, CEntity *penViewer, CAnyProjection3D &apr, CDrawPort *pdp)
-{
-  // Call render view function for each plugin
-  FOREACHPLUGINHANDLER(GetPluginAPI()->cRenderers, IRenderingEvents, pEvents) {
-    if ((IAbstractEvents *)pEvents == NULL) continue;
-
-    pEvents->OnRenderView(wo, penViewer, apr, pdp);
-  }
-};
-
-// Called every render frame
-void CCoreAPI::OnFrame(CDrawPort *pdp)
-{
-  // Call frame function for each plugin
-  FOREACHPLUGINHANDLER(GetPluginAPI()->cProcessors, IProcessingEvents, pEvents) {
-    if ((IAbstractEvents *)pEvents == NULL) continue;
-
-    pEvents->OnFrame(pdp);
   }
 };

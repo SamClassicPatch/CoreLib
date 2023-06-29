@@ -53,8 +53,8 @@ inline void CallFileRequester(CTFileName &fnmReplacement, char *achrTitle, char 
 
   // Try calling the file requester
   try {
-    CTFileName (*pFileRequester)(char *, char *, char *, char *) = NULL;
-    pLib->GetSymbol_t(&pFileRequester, "?FileRequester@@YA?AVCTFileName@@PAD000@Z");
+    typedef CTFileName (*CFileRequester)(char *, char *, char *, char *);
+    CFileRequester pFileRequester = (CFileRequester)pLib->GetSymbol_t("?FileRequester@@YA?AVCTFileName@@PAD000@Z");
 
     fnmReplacement = pFileRequester(achrTitle, pFilter, "Replace file directory", achrSelectedFile);
 
@@ -72,13 +72,13 @@ inline BOOL GetReplacingFile(const CTFileName &fnmSourceFile, CTFileName &fnmRep
 
   const CTString strBaseFile("Data\\BaseForReplacingFiles.txt");
 
-  // try to find replacing texture in base
+  // Try to find a replacement in the base file
   try {
     char strLine[256];
     char strSource[256];
     char strRemap[256];
 
-    // open file containing file names for replacing textures
+    // Read list with file remaps
     CTFileStream strm;
     strm.Open_t(strBaseFile);
 
