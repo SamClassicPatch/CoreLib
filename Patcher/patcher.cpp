@@ -47,76 +47,51 @@ bool CPatch::CanRewriteInstructionSet(long iAddress, int &iRewriteLen)
   int iInstructionLen;
 
   // Byte at the current address
-  char *pByte = NULL;
+  UBYTE *pByte = NULL;
 
   do {
     iInstructionLen = 0;
     bInstructionFound = false;
 
-    pByte = reinterpret_cast<char *>(iAddress);
+    pByte = reinterpret_cast<UBYTE *>(iAddress);
 
-    if (*pByte == (char)0xE9) // jmp XX XX XX XX
+    if (*pByte == 0xE9) // jmp DWORD
     {
-      PushLog("jmp XX XX XX XX");
+      PushLog("jmp DWORD");
       iInstructionLen = 5;
       m_iOldJump = 5 + iAddress + *reinterpret_cast<long *>(iAddress + 1);
 
-    } else if (*pByte == (char)0x68 // push???
-     ||        *pByte == (char)0xB8 // mov eax, XX XX XX XX
+    } else if (*pByte == 0x68 // push???
+     ||        *pByte == 0xB8 // mov eax, DWORD
      || !memcmp(pByte, "\xB8\x1E", 2))
     {
       PushLog("5 bytes");
       iInstructionLen = 5;
-      bInstructionFound = true;
-      
-    } else if (!memcmp(pByte, "\x8B\x55", 2)) // mov edx, [ebp + arg_0]
-    {
-      PushLog("mov edx, [ebp + arg0]");
-      iInstructionLen = 3;
       bInstructionFound = true;
 
     } else if (!memcmp(pByte, "\x8B\xFF", 2) 
             || !memcmp(pByte, "\x8B\xEC", 2)
             || !memcmp(pByte, "\x8B\xF1", 2)
             || !memcmp(pByte, "\x8B\xF9", 2) // mov
-            || *pByte == (char)0x6A)  // push XX
+            || *pByte == 0x6A)  // push XX
     {
       PushLog("mov / push XX");
       iInstructionLen = 2;
       bInstructionFound = true;
 
-    } else if (!memcmp(pByte, "\x8B\x46", 2))    
+    } else if (!memcmp(pByte, "\x8B\x45", 2)  // mov eax, [ebp + arg_0]
+            || !memcmp(pByte, "\x8B\x46", 2)  // mov ecx, [ebp + arg_0]
+            || !memcmp(pByte, "\x8B\x4D", 2)  // mov ecx, [ebp + arg_0]
+            || !memcmp(pByte, "\x8B\x5D", 2)  // mov ebx, [ebp + arg_0]
+            || !memcmp(pByte, "\x8B\x55", 2)  // mov edx, [ebp + arg_0]
+            || !memcmp(pByte, "\x8B\x75", 2)) // mov esi, [ebp + arg_0]
     {
-      PushLog("mov ecx, [ebp + arg_0]");
-      iInstructionLen = 3;
-      bInstructionFound = true;
-
-    } else if (!memcmp(pByte, "\x8B\x4D", 2)) // mov ecx, [ebp + arg_0]
-    {
-      PushLog("mov ecx, [ebp + arg_0]");
-      iInstructionLen = 3;
-      bInstructionFound = true;
-
-    } else if (!memcmp(pByte, "\x8B\x75", 2))
-    {
-      PushLog("mov esi, [ebp + arg_0]");
-      iInstructionLen = 3;
-      bInstructionFound = true;
-
-    } else if (!memcmp(pByte, "\x8B\x45", 2))
-    {
-      PushLog("mov eax, [ebp + arg_0]");
-      iInstructionLen = 3;
-      bInstructionFound = true;
-
-    } else if (!memcmp(pByte, "\x8B\x5D", 2))
-    {
-      PushLog("mov ebx, [ebp + arg_0]");
+      PushLog("mov XX, [ebp + arg_0]");
       iInstructionLen = 3;
       bInstructionFound = true;
 
     } else if (!memcmp(pByte, "\x8B\xB1", 2)) { // mov esi, [ecx + DWORD]
-      PushLog("mov esi, [ecx + XX XX XX XX]");
+      PushLog("mov esi, [ecx + DWORD]");
       iInstructionLen = 6;
       bInstructionFound = true;
 
@@ -132,15 +107,15 @@ bool CPatch::CanRewriteInstructionSet(long iAddress, int &iRewriteLen)
       iInstructionLen = 6;
       bInstructionFound = true;
 
-    } else if (*pByte == (char)0xA1) // mov eax, DWORD
+    } else if (*pByte == 0xA1) // mov eax, DWORD
     {
-      PushLog("mov eax, XX XX XX XX");
+      PushLog("mov eax, DWORD");
       iInstructionLen = 5;
       bInstructionFound = true;
 
-    } else if (*pByte >= (char)0x50 && *pByte < (char)0x58) // push
+    } else if (*pByte >= 0x50 && *pByte < 0x58) // push
     {
-      PushLog("push xxx");
+      PushLog("push XX");
       iInstructionLen = 1;
       bInstructionFound = true;
 
@@ -156,7 +131,7 @@ bool CPatch::CanRewriteInstructionSet(long iAddress, int &iRewriteLen)
       iInstructionLen = 3;
       bInstructionFound = true;
 
-    } else if (*pByte == (char)0x89) // mov
+    } else if (*pByte == 0x89) // mov
     {
       PushLog("mov");
       iInstructionLen = 3;
@@ -168,8 +143,8 @@ bool CPatch::CanRewriteInstructionSet(long iAddress, int &iRewriteLen)
       iInstructionLen = 4;
       bInstructionFound = true;
 
-    } else if (*pByte == (char)0xD9  // fld
-            || *pByte == (char)0xD8) // fmul
+    } else if (*pByte == 0xD9  // fld
+            || *pByte == 0xD8) // fmul
     {
       PushLog("fld / fadd / fmul");
       iInstructionLen = 6;
@@ -204,7 +179,7 @@ bool CPatch::CanRewriteInstructionSet(long iAddress, int &iRewriteLen)
 
     InfoMessage(_strPatcherLog + strError);
   }
-  
+
   return false;
 }
 
