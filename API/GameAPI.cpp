@@ -75,6 +75,11 @@ void CGameAPI::HookFields(void) {
 
   // Mark as hooked
   SetHooked(TRUE);
+
+  // Set mod URL to the latest patch release
+  if (_strModURL == "" || _strModURL.FindSubstr("croteam.com") != -1) {
+    _strModURL = "https://github.com/SamClassicPatch/SuperProject/releases/latest";
+  }
 };
 
 // Start new game
