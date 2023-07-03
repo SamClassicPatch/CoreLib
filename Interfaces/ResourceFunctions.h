@@ -39,28 +39,27 @@ namespace IRes {
 
 // Open file dialog for selecting a new file for a replacement
 inline void CallFileRequester(CTFileName &fnmReplacement, char *achrTitle, char *achrSelectedFile, char *pFilter) {
-  CPluginModule *pLib = NULL;
+  const CTString strLibPath = CCoreAPI::FullLibPath("EngineGUI");
   fnmReplacement = CTString("");
 
   // Try loading the library
-  try {
-    pLib = GetAPI()->LoadGameGuiPlugin();
+  HMODULE hLib = GetModuleHandleA(strLibPath.str_String);
 
-  } catch (char *strError) {
-    WarningMessage(LOCALIZE("Cannot load %s:\n%s\nCannot replace files!"), "EngineGUI.dll", strError);
+  if (hLib == NULL) {
+    WarningMessage(LOCALIZE("Cannot load %s:\n%s\nCannot replace files!"), strLibPath.str_String, GetWindowsError(GetLastError()));
     return;
   }
 
   // Try calling the file requester
-  try {
-    typedef CTFileName (*CFileRequester)(char *, char *, char *, char *);
-    CFileRequester pFileRequester = (CFileRequester)pLib->GetSymbol_t("?FileRequester@@YA?AVCTFileName@@PAD000@Z");
+  typedef CTFileName (*CFileRequester)(char *, char *, char *, char *);
+  CFileRequester pFileRequester = (CFileRequester)GetProcAddress(hLib, "?FileRequester@@YA?AVCTFileName@@PAD000@Z");
 
-    fnmReplacement = pFileRequester(achrTitle, pFilter, "Replace file directory", achrSelectedFile);
-
-  } catch (char *) {
-    WarningMessage(LOCALIZE("Error in %s:\nFileRequester() function not found\nCannot replace files!"), "EngineGUI.dll");
+  if (pFileRequester == NULL) {
+    WarningMessage(LOCALIZE("Error in %s:\nFileRequester() function not found\nCannot replace files!"), strLibPath.str_String);
+    return;
   }
+
+  fnmReplacement = pFileRequester(achrTitle, pFilter, "Replace file directory", achrSelectedFile);
 };
 
 // Get replacement for some non-existing file
