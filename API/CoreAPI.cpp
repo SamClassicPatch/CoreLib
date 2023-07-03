@@ -29,6 +29,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Define external core API
 CCoreAPI *_pCoreAPI = NULL;
 
+// Define release version of the core
+const ULONG CCoreAPI::ulCoreVersion = CORE_PATCH_VERSION;
+
 // Define static fields
 CCoreAPI::EAppType CCoreAPI::eAppType = CCoreAPI::APP_UNKNOWN;
 BOOL CCoreAPI::bCustomMod = FALSE;
@@ -131,8 +134,6 @@ CCoreAPI::CCoreAPI() :
   ssNew.ss_ulFlags = SSF_CONSTANT; // Unchangable
   ssNew.ss_pPreFunc = NULL; // Unused
   ssNew.ss_pPostFunc = NULL; // Unused
-
-  ulVersion = CORE_PATCH_VERSION;
 
   // Update shadows in a current world
   extern void UpdateShadows(void);

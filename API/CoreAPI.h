@@ -58,10 +58,10 @@ class CORE_API CCoreAPI : public ICoreHooks {
     };
 
   public:
+    static const ULONG ulCoreVersion; // Release version
     static EAppType eAppType; // Running application type
     static BOOL bCustomMod; // Using custom mod from the patch
     static CTString strVanillaExt; // Library extension of the vanilla game
-    ULONG ulVersion; // Release version
 
     // API submodules
     CPatchAPI &apiPatches;
@@ -176,7 +176,7 @@ class CORE_API CCoreAPI : public ICoreHooks {
 
     // Retrieve version of the patch
     virtual CTString GetVersion(void) {
-      CTString strVer = MakeVersionString(ulVersion);
+      CTString strVer = MakeVersionString(ulCoreVersion);
 
       // Append a dev build tag
       #if CORE_DEV_BUILD
