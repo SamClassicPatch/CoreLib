@@ -44,6 +44,19 @@ class CORE_API CCoreAPI : public ICoreHooks {
       APP_MODELER,     // Serious Modeler or Serious SKA Studio
     };
 
+    // Easily accessible properties from the global config
+    struct SConfigProps {
+      BOOL bCustomMod;
+      BOOL bDebugPatcher;
+      BOOL bDPIAware;
+      BOOL bExtendedFileSystem;
+      CTString strTFEDir;
+
+      SConfigProps(); // Constructor that sets default property states
+      void Load(void); // Load properties from the config
+      void Save(void); // Save properties into the config
+    };
+
   public:
     static EAppType eAppType; // Running application type
     static BOOL bCustomMod; // Using custom mod from the patch
@@ -156,8 +169,8 @@ class CORE_API CCoreAPI : public ICoreHooks {
     // Get absolute path to the game directory
     static const CTFileName &AppPath(void);
 
-    // Get config with global properties
-    static class CIniConfig &Props(void);
+    // Get global properties
+    static SConfigProps &Props(void);
 
   public:
 

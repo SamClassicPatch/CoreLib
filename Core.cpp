@@ -61,6 +61,14 @@ static void IncludeScript(const CTString &strScript) {
   _pShell->Execute(strLoad);
 };
 
+// Resave config properties into the file after setting them
+static void ResaveConfigProperties(void) {
+  CCoreAPI::Props().Save();
+
+  CPrintF(TRANS("Config properties have been resaved into '%s'!\n"), CORE_CONFIG_FILE);
+  CPutString(TRANS("Restart the game for the new settings to take effect!\n"));
+};
+
 // Initialize Core module (always after Serious Engine!)
 void CECIL_InitCore(void) {
   // Create core API
@@ -92,7 +100,23 @@ void CECIL_InitCore(void) {
     _pShell->DeclareSymbol("persistent user CTString cli_strConnectPassword;", &cli_strConnectPassword);
   }
 
-  _pShell->DeclareSymbol("user void IncludeScript(CTString);", &IncludeScript);
+  _pShell->DeclareSymbol("user void IncludeScript(INDEX);", &IncludeScript);
+
+  // Config property symbols
+  {
+    _pShell->DeclareSymbol("void ResaveConfigProperties(void);", &ResaveConfigProperties);
+
+    #define DEFINE_PROP_SYMBOL(_Type, _Property) \
+      _pShell->DeclareSymbol(#_Type " cfg_" #_Property ";", &CCoreAPI::Props()._Property);
+
+    DEFINE_PROP_SYMBOL(INDEX, bCustomMod);
+    DEFINE_PROP_SYMBOL(INDEX, bDebugPatcher);
+    DEFINE_PROP_SYMBOL(INDEX, bDPIAware);
+    DEFINE_PROP_SYMBOL(INDEX, bExtendedFileSystem);
+    DEFINE_PROP_SYMBOL(CTString, strTFEDir);
+
+    #undef DEFINE_PROP_SYMBOL
+  }
 
   // Initialize networking
   INetwork::Initialize();
@@ -111,14 +135,7 @@ void CECIL_InitCore(void) {
 // Clean up Core module (always before Serious Engine!)
 void CECIL_EndCore(void) {
   // Save configuration properties
-  GetAPI()->CreateDir(CORE_CONFIG_FILE);
-
-  try {
-    CCoreAPI::Props().Save_t(CORE_CONFIG_FILE);
-
-  } catch (char *strError) {
-    CPrintF(TRANS("Cannot save patch configuration file: %s\n"), strError);
-  }
+  CCoreAPI::Props().Save();
 
   // Release all loaded plugins
   GetAPI()->ReleasePlugins(PLF_ALL);

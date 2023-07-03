@@ -34,8 +34,9 @@ CCoreAPI::EAppType CCoreAPI::eAppType = CCoreAPI::APP_UNKNOWN;
 BOOL CCoreAPI::bCustomMod = FALSE;
 CTString CCoreAPI::strVanillaExt = "";
 
-// Define patch config
+// Define patch config and its property holder
 static CIniConfig _iniConfig;
+static CCoreAPI::SConfigProps _cfgProps;
 
 // Specify vanilla Bin directory as an extra DLL directory
 static void SetVanillaBinDirectory(void) {
@@ -51,6 +52,65 @@ static void SetVanillaBinDirectory(void) {
   // Set extra DLL directory
   if (pSetDirFunc != NULL) {
     pSetDirFunc((CCoreAPI::AppPath() + "Bin\\").str_String);
+  }
+};
+
+// Constructor that sets default property states
+CCoreAPI::SConfigProps::SConfigProps()
+  : bCustomMod(TRUE), bDebugPatcher(FALSE), bDPIAware(TRUE), bExtendedFileSystem(TRUE), strTFEDir("")
+{
+};
+
+// Load properties from the config
+void CCoreAPI::SConfigProps::Load(void) {
+  // Try loading only once
+  static BOOL bLoaded = FALSE;
+
+  if (bLoaded) return;
+  bLoaded = TRUE;
+
+  // Try to load from a file
+  try {
+    _iniConfig.Load_t(CORE_CONFIG_FILE, FALSE);
+
+  // Abort
+  } catch (char *strError) {
+    (void)strError;
+
+    _iniConfig.Clear();
+    return;
+  }
+
+  // Get values
+  bCustomMod          = _iniConfig.GetBoolValue("", "CustomMod", TRUE);
+  bDebugPatcher       = _iniConfig.GetBoolValue("", "DebugPatcher", FALSE);
+  bDPIAware           = _iniConfig.GetBoolValue("", "DPIAware", TRUE);
+  bExtendedFileSystem = _iniConfig.GetBoolValue("", "ExtendedFileSystem", TRUE);
+  strTFEDir           = _iniConfig.GetValue("", "TFEDir", "");
+};
+
+// Save properties into the config
+void CCoreAPI::SConfigProps::Save(void) {
+  // Macro for quickly converting any non-string value into string
+  #define TO_STR(_Expr) static_cast<std::ostringstream &>((std::ostringstream() << std::dec << _Expr)).str().c_str()
+
+  // Set new values
+  _iniConfig.SetValue("", "CustomMod", TO_STR(bCustomMod));
+  _iniConfig.SetValue("", "DebugPatcher", TO_STR(bDebugPatcher));
+  _iniConfig.SetValue("", "DPIAware", TO_STR(bDPIAware));
+  _iniConfig.SetValue("", "ExtendedFileSystem", TO_STR(bExtendedFileSystem));
+  _iniConfig.SetValue("", "TFEDir", strTFEDir);
+
+  #undef TO_STR
+
+  // Save into a file
+  GetAPI()->CreateDir(CORE_CONFIG_FILE);
+
+  try {
+    _iniConfig.Save_t(CORE_CONFIG_FILE);
+
+  } catch (char *strError) {
+    CPrintF(TRANS("Cannot save patch configuration file: %s\n"), strError);
   }
 };
 
@@ -87,19 +147,8 @@ void CCoreAPI::Setup(EAppType eSetType) {
   // Specify extra DLL directory
   SetVanillaBinDirectory();
 
-  // Load configuration file once
-  static BOOL bLoadConfig = TRUE;
-
-  if (bLoadConfig) {
-    bLoadConfig = FALSE;
-
-    try {
-      Props().Load_t(CORE_CONFIG_FILE, FALSE);
-
-    } catch (char *strError) {
-      (void)strError;
-    }
-  }
+  // Load configuration properties
+  _cfgProps.Load();
 
   // Load vanilla extension
   std::ifstream strm((CCoreAPI::AppPath() + "ModExt.txt").str_String);
@@ -113,7 +162,7 @@ void CCoreAPI::Setup(EAppType eSetType) {
   }
 
   // Enable debug output for patcher actions
-  if (Props().GetBoolValue("", "DebugPatcher", false)) {
+  if (Props().bDebugPatcher) {
     CPatch::SetDebug(true);
   }
 };
@@ -214,8 +263,8 @@ const CTFileName &CCoreAPI::AppPath(void) {
 };
 
 // Get config with global properties
-CIniConfig &CCoreAPI::Props(void) {
-  return _iniConfig;
+CCoreAPI::SConfigProps &CCoreAPI::Props(void) {
+  return _cfgProps;
 };
 
 // Disable GameSpy usage
