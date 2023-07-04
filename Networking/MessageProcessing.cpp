@@ -286,9 +286,8 @@ void IProcessPacket::OnConnectRemoteSessionStateRequest(INDEX iClient, CNetworkM
   // [Cecil] Disconnect unless the client has the right patch version installed
   if (_bForbidVanilla && !CheckClientPatch(iClient, nmMessage)) {
     // Prompt to download the right patch version
-    const CTString strVersion = GetAPI()->GetVersion();
-    const CTString strMod = "MOD:Classics Patch " + strVersion
-      + "\\https://github.com/SamClassicPatch/SuperProject/releases/" + strVersion;
+    const CTString strVer = GetAPI()->GetVersion();
+    const CTString strMod = "MOD:Classics Patch " + strVer + "\\" + CLASSICSPATCH_URL_TAGRELEASE(strVer);
 
     INetwork::SendDisconnectMessage(iClient, strMod, TRUE);
     return;

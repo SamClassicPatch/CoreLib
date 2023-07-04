@@ -41,4 +41,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Classics Patch configuration file
 #define CORE_CONFIG_FILE CTString("Data\\ClassicsPatch\\Config.ini")
 
+// Relevant links to different webpages of the project
+#define CLASSICSPATCH_URL_SHORT   "github.com/SamClassicPatch"
+#define CLASSICSPATCH_URL_PROJECT "https://" CLASSICSPATCH_URL_SHORT "/SuperProject"
+
+// URL to the latest patch release
+#define CLASSICSPATCH_URL_LATESTRELEASE CLASSICSPATCH_URL_PROJECT "/releases/latest"
+
+// URL to a patch release under a specific tag
+#define CLASSICSPATCH_URL_TAGRELEASE(_TagName) (CTString(CLASSICSPATCH_URL_PROJECT "/releases/tag/") + _TagName)
+
+// URL for the latest release request via HttpRequest()
+#define CLASSICSPATCH_URL_HTTPREQUEST L"/repos/SamClassicPatch/SuperProject/releases/latest"
+
 #endif

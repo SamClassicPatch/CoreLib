@@ -44,7 +44,7 @@ CTString cli_strConnectPassword = "";
 static void PatchInfo(void) {
   static CTString strInfo =
     "\nSerious Sam Classics Patch"
-    "\ngithub.com/SamClassicPatch"
+    "\n" CLASSICSPATCH_URL_SHORT
     "\n"
     "\n- Engine version: " _SE_VER_STRING
     "\n- Patch version: "
