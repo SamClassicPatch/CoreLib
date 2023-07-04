@@ -31,6 +31,7 @@ void INetwork::Initialize(void) {
   _pShell->DeclareSymbol("persistent user INDEX ser_iMaxMessagesPerSecond;",   &ser_iMaxMessagesPerSecond);
   _pShell->DeclareSymbol("persistent user INDEX ser_iMaxPlayersPerClient;",    &ser_iMaxPlayersPerClient);
   _pShell->DeclareSymbol("persistent user INDEX ser_bReportSyncBadToClients;", &IProcessPacket::_bReportSyncBadToClients);
+  _pShell->DeclareSymbol("persistent user INDEX ser_bForbidVanilla;",          &IProcessPacket::_bForbidVanilla);
   _pShell->DeclareSymbol("persistent user CTString ser_strCommandPrefix;",     &ser_strCommandPrefix);
 
   // Initialize query manager

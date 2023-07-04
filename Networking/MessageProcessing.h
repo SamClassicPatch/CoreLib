@@ -20,6 +20,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #pragma once
 #endif
 
+// Identification tag to append at the end of the session state to distinguish patch users from normal clients
+static const char _aSessionStatePatchTag[8] = {
+  (char)0x43, (char)0x65, (char)0x63, (char)0x69,
+  (char)0x6C, (char)0xBB, (char)0xD1, (char)0xEB,
+};
+
 // Interface with custom message processing methods
 class CORE_API IProcessPacket {
   public:
@@ -37,6 +43,9 @@ class CORE_API IProcessPacket {
 
     // Notify clients whenever they desync
     static INDEX _bReportSyncBadToClients;
+
+    // Prevent clients from joining unless they have the same patch installed
+    static INDEX _bForbidVanilla;
 
   #if CLASSICSPATCH_GUID_MASKING
 

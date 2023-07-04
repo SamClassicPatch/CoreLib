@@ -30,6 +30,9 @@ INDEX IProcessPacket::_iHandlingClient = IProcessPacket::CLT_NONE;
 // Notify clients whenever they desync
 INDEX IProcessPacket::_bReportSyncBadToClients = FALSE;
 
+// Prevent clients from joining unless they have the same patch installed
+INDEX IProcessPacket::_bForbidVanilla = FALSE;
+
 #if CLASSICSPATCH_GUID_MASKING
 
 // Arrays of sync checks per client
@@ -159,6 +162,44 @@ void IProcessPacket::OnClientDisconnect(INDEX iClient, CNetworkMessage &nmMessag
   CActiveClient::DeactivateClient(iClient);
 };
 
+// Try checking if the client is running the same patch version as the server
+static BOOL CheckClientPatch(INDEX iClient, CNetworkMessage &nmMessage) {
+  const CTString strClient = GetComm().Server_GetClientName(iClient);
+
+  // Tag length and client version
+  const ULONG ctTagLen = sizeof(_aSessionStatePatchTag);
+  ULONG ulClientVer;
+
+  // Desired position in the packet vs the last possible position
+  const UBYTE *pubDesired = nmMessage.nm_pubPointer + ctTagLen + sizeof(ulClientVer);
+  const UBYTE *pubEnd = nmMessage.nm_pubMessage + nmMessage.nm_slSize;
+
+  // If there's enough space for the tag and the version
+  if (pubDesired <= pubEnd) {
+    // Read them
+    char aClientTag[ctTagLen];
+
+    nmMessage.Read(aClientTag, ctTagLen);
+    nmMessage >> ulClientVer;
+
+    // Verify client tag and version
+    const BOOL bTagMatch = (memcmp(aClientTag, _aSessionStatePatchTag, ctTagLen) == 0);
+    const BOOL bVersionMatch = (ulClientVer == CCoreAPI::ulCoreVersion);
+
+    CPrintF(TRANS("Server: Client '%s' has provided an identification tag:\n"
+                  "  Tag match: %d | Version match: %d\n"), strClient.str_String, bTagMatch, bVersionMatch);
+
+    // Client is running the right patch
+    return (bTagMatch && bVersionMatch);
+
+  } else {
+    CPrintF(TRANS("Server: Client '%s' hasn't provided an identification tag\n"), strClient.str_String);
+  }
+
+  // Client isn't running the right patch
+  return FALSE;
+};
+
 // Client requesting the session state
 void IProcessPacket::OnConnectRemoteSessionStateRequest(INDEX iClient, CNetworkMessage &nmMessage)
 {
@@ -237,6 +278,21 @@ void IProcessPacket::OnConnectRemoteSessionStateRequest(INDEX iClient, CNetworkM
 
   INDEX ctWantedLocalPlayers;
   nmMessage >> ctWantedLocalPlayers;
+
+  // [Cecil] Read socket parameters in advance
+  CSessionSocketParams sspClient;
+  nmMessage >> sspClient;
+
+  // [Cecil] Disconnect unless the client has the right patch version installed
+  if (_bForbidVanilla && !CheckClientPatch(iClient, nmMessage)) {
+    // Prompt to download the right patch version
+    const CTString strVersion = GetAPI()->GetVersion();
+    const CTString strMod = "MOD:Classics Patch " + strVersion
+      + "\\https://github.com/SamClassicPatch/SuperProject/releases/" + strVersion;
+
+    INetwork::SendDisconnectMessage(iClient, strMod, TRUE);
+    return;
+  }
 
   // [Cecil] Check for connecting clients with split-screen
   if (!CheckSplitScreenClients(iClient, ctWantedLocalPlayers)) return;
@@ -341,8 +397,7 @@ void IProcessPacket::OnConnectRemoteSessionStateRequest(INDEX iClient, CNetworkM
 
   sso.sso_ctLocalPlayers = ctWantedLocalPlayers;
   sso.sso_bVIP = bAutorizedAsVIP;
-
-  nmMessage >> sso.sso_sspParams;
+  sso.sso_sspParams = sspClient;
 
   // Try to send base info
   try {
