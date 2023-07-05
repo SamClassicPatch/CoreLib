@@ -24,6 +24,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class CHighScoreEntry; // #include <Game/Game.h>
 class CControls;       // #include <Game/Game.h>
 
+// Engine-compatible replacement for CUniversalSessionProperties
+typedef UBYTE CSesPropsContainer[NET_MAXSESSIONPROPERTIES];
+
 // API class for the Game library
 class CORE_API CGameAPI {
   public:
