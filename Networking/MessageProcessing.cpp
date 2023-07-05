@@ -33,6 +33,26 @@ INDEX IProcessPacket::_bReportSyncBadToClients = FALSE;
 // Prevent clients from joining unless they have the same patch installed
 INDEX IProcessPacket::_bForbidVanilla = FALSE;
 
+// Allow changing value of a symbol unless currently running a server
+BOOL IProcessPacket::UpdateSymbolValue(void *pSymbol) {
+  // Cannot change the value while running the game as a server
+  if (_pNetwork->IsServer()) {
+    CPutString(TRANS("Cannot change the value of this shell symbol while the server is running!\n"));
+    return FALSE;
+  }
+
+  // Safe to change
+  return TRUE;
+};
+
+// Register commands for packet processing
+void IProcessPacket::RegisterCommands(void) {
+  _pShell->DeclareSymbol("INDEX UpdateServerSymbolValue(INDEX);", &UpdateSymbolValue);
+
+  _pShell->DeclareSymbol("persistent user INDEX ser_bReportSyncBadToClients;", &_bReportSyncBadToClients);
+  _pShell->DeclareSymbol("persistent user INDEX ser_bForbidVanilla pre:UpdateServerSymbolValue;", &_bForbidVanilla);
+};
+
 #if CLASSICSPATCH_GUID_MASKING
 
 // Arrays of sync checks per client

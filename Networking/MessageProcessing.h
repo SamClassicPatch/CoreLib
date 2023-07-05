@@ -31,6 +31,7 @@ class CORE_API IProcessPacket {
   public:
     typedef CStaticArray<CSyncCheck> CSyncCheckArray;
 
+  // Helper variables and functions
   public:
     // Special values for handling client index (never use positive integers!)
     enum {
@@ -47,6 +48,12 @@ class CORE_API IProcessPacket {
     // Prevent clients from joining unless they have the same patch installed
     static INDEX _bForbidVanilla;
 
+    // Allow changing value of a symbol unless currently running a server
+    static BOOL UpdateSymbolValue(void *pSymbol);
+
+    // Register commands for packet processing
+    static void RegisterCommands(void);
+
   #if CLASSICSPATCH_GUID_MASKING
 
     // Arrays of sync checks per client
@@ -55,15 +62,10 @@ class CORE_API IProcessPacket {
     // Should mask player GUIDs or not
     static BOOL _bMaskGUIDs;
 
-  #endif // CLASSICSPATCH_GUID_MASKING
-
-  // Helper functions
-  public:
-
-  #if CLASSICSPATCH_GUID_MASKING
     // Clear arrays with sync checks
     static void ClearSyncChecks(void);
-  #endif
+
+  #endif // CLASSICSPATCH_GUID_MASKING
 
     // Buffer sync check for the server
     static void AddSyncCheck(const INDEX iClient, const CSyncCheck &sc);
