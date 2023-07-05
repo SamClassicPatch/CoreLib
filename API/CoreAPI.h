@@ -174,8 +174,8 @@ class CORE_API CCoreAPI : public ICoreHooks {
 
   public:
 
-    // Retrieve version of the patch
-    virtual CTString GetVersion(void) {
+    // Retrieve version of the patch before initializing the core
+    static inline CTString GetCoreVersion(void) {
       CTString strVer = MakeVersionString(ulCoreVersion);
 
       // Append a dev build tag
@@ -184,6 +184,11 @@ class CORE_API CCoreAPI : public ICoreHooks {
       #endif
 
       return strVer;
+    };
+
+    // Retrieve version of the patch after initializing the core
+    virtual CTString GetVersion(void) {
+      return GetCoreVersion();
     };
 
     // Disable GameSpy usage

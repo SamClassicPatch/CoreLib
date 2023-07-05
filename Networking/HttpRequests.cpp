@@ -101,7 +101,7 @@ CHttpResponse HttpRequest(LPCWSTR wstrServer, LPCWSTR wstrVerb, LPCWSTR wstrObje
   HINTERNET hRequest = NULL;
 
   // Convert user agent string into a wide string
-  const CTString strUserAgent(0, "Serious Sam Classics Patch WinHTTP/%s", (GetAPI() != NULL) ? GetAPI()->GetVersion() : "1.0");
+  const CTString strUserAgent = "Serious Sam Classics Patch WinHTTP/" + CCoreAPI::GetCoreVersion();
 
   const INDEX ctLength = strUserAgent.Length() + 1;
   wchar_t *wstrAgent = new wchar_t[ctLength];
