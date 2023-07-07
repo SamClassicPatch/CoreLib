@@ -17,6 +17,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "Networking/Modules/ClientLogging.h"
 
+// Auto update shadows upon loading into worlds
+INDEX gam_bAutoUpdateShadows = TRUE;
+
 // Queue shadow updating for the next connection to a server
 static BOOL _bQueueShadowUpdate = TRUE;
 
@@ -146,7 +149,9 @@ void ICoreHooks::OnGameLoad(const CTFileName &fnmSave)
   }
 
   // Update shadow maps
-  UpdateShadows();
+  if (gam_bAutoUpdateShadows) {
+    UpdateShadows();
+  }
 };
 
 // Called every time a new player is added
@@ -165,7 +170,10 @@ void ICoreHooks::OnAddPlayer(CPlayerTarget &plt, BOOL bLocal)
     // Only if queued
     if (_bQueueShadowUpdate) {
       _bQueueShadowUpdate = FALSE;
-      UpdateShadows();
+
+      if (gam_bAutoUpdateShadows) {
+        UpdateShadows();
+      }
     }
   }
 };
@@ -192,7 +200,9 @@ void ICoreHooks::OnDemoPlay(const CTFileName &fnmDemo)
   }
 
   // Update shadow maps
-  UpdateShadows();
+  if (gam_bAutoUpdateShadows) {
+    UpdateShadows();
+  }
 };
 
 // Called after starting demo recording

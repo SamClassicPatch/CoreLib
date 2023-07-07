@@ -138,6 +138,9 @@ CCoreAPI::CCoreAPI() :
   // Update shadows in a current world
   extern void UpdateShadows(void);
   _pShell->DeclareSymbol("user void UpdateShadows(void);", &UpdateShadows);
+
+  extern INDEX gam_bAutoUpdateShadows;
+  _pShell->DeclareSymbol("persistent INDEX gam_bAutoUpdateShadows;", &gam_bAutoUpdateShadows);
 };
 
 // Setup the core before initializing it
