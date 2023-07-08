@@ -163,7 +163,7 @@ BOOL IProcessPacket::CanChangeCharacter(CPlayerEntity *pen) {
   static CPropertyPtr pptrAnimator(pen);
 
   // Check if player has a player animator to handle the character change
-  if (pptrAnimator.ByIdOrOffset(CEntityProperty::EPT_ENTITYPTR, (0x191 << 8) + 17, 0x388))
+  if (pptrAnimator.ByVariable("CPlayer", "m_penAnimator"))
   {
     CEntity *penAnimator = ENTITYPROPERTY(pen, pptrAnimator.Offset(), CEntityPointer);
     return (penAnimator != NULL);

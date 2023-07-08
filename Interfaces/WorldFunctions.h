@@ -191,15 +191,24 @@ inline CEntityProperty *PropertyForName(LibClassHolder lch, ULONG ulType, const 
 
 // Find entity property by its name or ID of a specific type
 inline CEntityProperty *PropertyForNameOrId(LibClassHolder lch, ULONG ulType, const CTString &strName, ULONG ulID) {
-  // Find property by type and name first
-  CEntityProperty *pep = PropertyForName(lch, ulType, strName);
+  // Find property by name first, if there's any
+  CEntityProperty *pep = (strName == "" ? NULL : PropertyForName(lch, ulType, strName));
 
-  // Try searching by type and ID
+  // Try searching by ID
   if (pep == NULL) {
     pep = PropertyForIdOrOffset(lch, ulType, ulID, -1);
   }
 
   return pep;
+};
+
+// Find entity property by its variable name
+inline CEntityProperty *PropertyForVariable(LibClassHolder lch, const CTString &strClass, const CTString &strVariable) {
+  // Find property data
+  const CEntityProperty *pep = GetPatchAPI()->FindProperty(strClass, strVariable);
+
+  // Try to find it by name or ID
+  return PropertyForNameOrId(lch, pep->ep_eptType, pep->ep_strName, pep->ep_ulID);
 };
 
 // Find WorldSettingsController in a world

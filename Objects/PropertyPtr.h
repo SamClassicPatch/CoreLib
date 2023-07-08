@@ -75,6 +75,16 @@ class CPropertyPtr {
 
       return (_pep != NULL);
     };
+
+    // Get property by variable
+    BOOL ByVariable(const char *strClass, const char *strVariable) {
+      if (_pep == NULL) {
+        _pep = IWorld::PropertyForVariable(_lch, strClass, strVariable);
+        ASSERTMSG(_pep != NULL, "Cannot find property by variable for CPropertyPtr!");
+      }
+
+      return (_pep != NULL);
+    };
 };
 
 #endif
