@@ -15,6 +15,23 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "StdH.h"
 
+// Define table of entity property references
+#include <EngineEx/PropertyTables.h>
+
+static CPropertyRefTable _mapPropRefs;
+
+// Define static references that get added into the reference table immediately
+#define ENTITYPROPERTYREF_DECL static
+#define ENTITYPROPERTYREF_ENTRY(Class, Refs, RefsCount) \
+  struct Class##_PropRefsEntryInit { \
+    int iDummy; \
+    Class##_PropRefsEntryInit() { \
+      _mapPropRefs.FillPropertyReferences(#Class, Refs, RefsCount); \
+    }; \
+  } Class##_proprefsentry;
+
+#include <EntitiesV/_DefinePropertyRefLists.inl>
+
 // Engine library handle
 HINSTANCE CPatchAPI::hEngine = NULL;
 
@@ -176,4 +193,13 @@ void *CPatchAPI::GetEngineSymbol(const char *strSymbol) {
 // Retrieve address from the entities by a symbol name
 void *CPatchAPI::GetEntitiesSymbol(const char *strSymbol) {
   return GetProcAddress(hEntities, strSymbol);
+};
+
+// Find entity property data by a variable name of a specific class
+const CEntityProperty *CPatchAPI::FindProperty(const CTString &strClass, const CTString &strVariable) {
+  // Find property in the table
+  const CEntityProperty *pep = _mapPropRefs.FindProperty(strClass, strVariable);
+  ASSERTMSG(pep != NULL, "Cannot find entity property data in the reference table!");
+
+  return pep;
 };

@@ -98,6 +98,9 @@ class CORE_API CPatchAPI {
     virtual BOOL IsEntitiesModded(void) {
       return fnmEntities.HasPrefix(_fnmMod);
     };
+
+    // Find entity property data by a variable name of a specific class
+    virtual const CEntityProperty *FindProperty(const CTString &strClass, const CTString &strVariable);
 };
 
 #endif
