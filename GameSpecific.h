@@ -31,69 +31,67 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #error Unsupported engine version!
 #endif
 
-// Addresses of specific engine elements
+// Engine module address
+#ifdef NDEBUG
+  #define HMODULE_ENGINE (GetModuleHandleA("Engine.dll"))
+#else
+  #define HMODULE_ENGINE (GetModuleHandleA("EngineD.dll"))
+#endif
+
+// Engine module address by single byte offsetting
+#define ADDR_ENGINE ((UBYTE *)HMODULE_ENGINE)
+
+// Relative addresses of specific elements in the engine
 #ifdef NDEBUG
   // InitStreams()
-  #define ADDR_INITSTREAMS (CHOOSE_FOR_GAME(0x600DA2C0, 0x600AA2C0, 0x600E65F0))
+  #define ADDR_INITSTREAMS (ADDR_ENGINE + CHOOSE_FOR_GAME(0x1A2C0, 0x1A2C0, 0x265F0))
 
   // CRenderer::Render()
-  #define ADDR_RENDERER_RENDER (CHOOSE_FOR_GAME(0x601A8CD0, 0x60178DB0, 0x601B4A00))
+  #define ADDR_RENDERER_RENDER (ADDR_ENGINE + CHOOSE_FOR_GAME(0xE8CD0, 0xE8DB0, 0xF4A00))
 
   // &_areRenderers[0]
-  #define ADDR_RENDERER_ARRAY ((CRenderer *)(ULONG *)CHOOSE_FOR_GAME(0x6029C4F8, 0x6026C538, 0x602CDAF0))
+  #define ADDR_RENDERER_ARRAY (ADDR_ENGINE + CHOOSE_FOR_GAME(0x1DC4F8, 0x1DC538, 0x20DAF0))
 
   // Static variables from Unzip.cpp
-  #define ADDR_UNZIP_CRITSEC  ((CTCriticalSection *)(ULONG *)CHOOSE_FOR_GAME(0x602A0388, 0x602703C8, 0x602D31C8)) // &zip_csLock
-  #define ADDR_UNZIP_HANDLES  ((ULONG *)CHOOSE_FOR_GAME(0x60285030, 0x60255070, 0x602B6298)) // &_azhHandles
-  #define ADDR_UNZIP_ENTRIES  ((ULONG *)CHOOSE_FOR_GAME(0x60285040, 0x60255080, 0x602B62A8)) // &_azeFiles
-  #define ADDR_UNZIP_ARCHIVES ((ULONG *)CHOOSE_FOR_GAME(0x60285020, 0x60255060, 0x602B6288)) // &_afnmArchives
+  #define ADDR_UNZIP_CRITSEC  (ADDR_ENGINE + CHOOSE_FOR_GAME(0x1E0388, 0x1E03C8, 0x2131C8)) // &zip_csLock
+  #define ADDR_UNZIP_HANDLES  (ADDR_ENGINE + CHOOSE_FOR_GAME(0x1C5030, 0x1C5070, 0x1F6298)) // &_azhHandles
+  #define ADDR_UNZIP_ENTRIES  (ADDR_ENGINE + CHOOSE_FOR_GAME(0x1C5040, 0x1C5080, 0x1F62A8)) // &_azeFiles
+  #define ADDR_UNZIP_ARCHIVES (ADDR_ENGINE + CHOOSE_FOR_GAME(0x1C5020, 0x1C5060, 0x1F6288)) // &_afnmArchives
 
   // UNZIP* methods
-  #define ADDR_UNZIP_OPEN      (CHOOSE_FOR_GAME(0x600E19E0, 0x600B1A70, 0x600EDD50)) // UNZIPOpen_t()
-  #define ADDR_UNZIP_GETSIZE   (CHOOSE_FOR_GAME(0x600E1D90, 0x600B1E20, 0x600EE100)) // UNZIPGetSize()
-  #define ADDR_UNZIP_READBLOCK (CHOOSE_FOR_GAME(0x600E1DF0, 0x600B1E80, 0x600EE160)) // UNZIPReadBlock_t()
-  #define ADDR_UNZIP_CLOSE     (CHOOSE_FOR_GAME(0x600E20F0, 0x600B2180, 0x600EE460)) // UNZIPClose()
-  #define ADDR_UNZIP_GETFILECOUNT     (CHOOSE_FOR_GAME(0x600E18C0, 0x600B1950, 0x600EDC30)) // UNZIPGetFileCount()
-  #define ADDR_UNZIP_GETFILEATINDEX   (CHOOSE_FOR_GAME(0x600E18D0, 0x600B1960, 0x600EDC40)) // UNZIPGetFileAtIndex()
-  #define ADDR_UNZIP_ISFILEATINDEXMOD (CHOOSE_FOR_GAME(0x600E18F0, 0x600B1980, 0x600EDC60)) // UNZIPIsFileAtIndexMod()
-
-  // CPlayerEntity::Write_t()
-  #define ADDR_PLAYER_WRITE (CHOOSE_FOR_GAME(0x601FBC10, 0x601CBBF0, 0x60226460))
-
-  // CPlayerEntity::ChecksumForSync()
-  #define ADDR_PLAYER_CHECKSUM (CHOOSE_FOR_GAME(0x601FBCA0, 0x601CBC80, 0x602264F0))
+  #define ADDR_UNZIP_OPEN      (ADDR_ENGINE + CHOOSE_FOR_GAME(0x219E0, 0x21A70, 0x2DD50)) // UNZIPOpen_t()
+  #define ADDR_UNZIP_GETSIZE   (ADDR_ENGINE + CHOOSE_FOR_GAME(0x21D90, 0x21E20, 0x2E100)) // UNZIPGetSize()
+  #define ADDR_UNZIP_READBLOCK (ADDR_ENGINE + CHOOSE_FOR_GAME(0x21DF0, 0x21E80, 0x2E160)) // UNZIPReadBlock_t()
+  #define ADDR_UNZIP_CLOSE     (ADDR_ENGINE + CHOOSE_FOR_GAME(0x220F0, 0x22180, 0x2E460)) // UNZIPClose()
+  #define ADDR_UNZIP_GETFILECOUNT     (ADDR_ENGINE + CHOOSE_FOR_GAME(0x218C0, 0x21950, 0x2DC30)) // UNZIPGetFileCount()
+  #define ADDR_UNZIP_GETFILEATINDEX   (ADDR_ENGINE + CHOOSE_FOR_GAME(0x218D0, 0x21960, 0x2DC40)) // UNZIPGetFileAtIndex()
+  #define ADDR_UNZIP_ISFILEATINDEXMOD (ADDR_ENGINE + CHOOSE_FOR_GAME(0x218F0, 0x21980, 0x2DC60)) // UNZIPIsFileAtIndexMod()
 
 // Debug addresses
 #elif SE1_VER == SE1_107
   // InitStreams()
-  #define ADDR_INITSTREAMS (0x10007B49)
+  #define ADDR_INITSTREAMS (ADDR_ENGINE + 0x7B49)
 
   // CRenderer::Render()
-  #define ADDR_RENDERER_RENDER (0x10008062)
+  #define ADDR_RENDERER_RENDER (ADDR_ENGINE + 0x8062)
 
   // &_areRenderers[0]
-  #define ADDR_RENDERER_ARRAY ((CRenderer *)(ULONG *)0x10440458)
+  #define ADDR_RENDERER_ARRAY (ADDR_ENGINE + 0x440458)
 
   // Static variables from Unzip.cpp
-  #define ADDR_UNZIP_CRITSEC  ((CTCriticalSection *)(ULONG *)0x10446BC8) // &zip_csLock
-  #define ADDR_UNZIP_HANDLES  ((ULONG *)0x10424158) // &_azhHandles
-  #define ADDR_UNZIP_ENTRIES  ((ULONG *)0x10424168) // &_azeFiles
-  #define ADDR_UNZIP_ARCHIVES ((ULONG *)0x10424148) // &_afnmArchives
+  #define ADDR_UNZIP_CRITSEC  (ADDR_ENGINE + 0x446BC8) // &zip_csLock
+  #define ADDR_UNZIP_HANDLES  (ADDR_ENGINE + 0x424158) // &_azhHandles
+  #define ADDR_UNZIP_ENTRIES  (ADDR_ENGINE + 0x424168) // &_azeFiles
+  #define ADDR_UNZIP_ARCHIVES (ADDR_ENGINE + 0x424148) // &_afnmArchives
 
   // UNZIP* methods
-  #define ADDR_UNZIP_OPEN      (0x10002C20) // UNZIPOpen_t()
-  #define ADDR_UNZIP_GETSIZE   (0x1000720C) // UNZIPGetSize()
-  #define ADDR_UNZIP_READBLOCK (0x10008693) // UNZIPReadBlock_t()
-  #define ADDR_UNZIP_CLOSE     (0x100088FA) // UNZIPClose()
-  #define ADDR_UNZIP_GETFILECOUNT     (0x10001456) // UNZIPGetFileCount()
-  #define ADDR_UNZIP_GETFILEATINDEX   (0x10005268) // UNZIPGetFileAtIndex()
-  #define ADDR_UNZIP_ISFILEATINDEXMOD (0x1000A45C) // UNZIPIsFileAtIndexMod()
-
-  // CPlayerEntity::Write_t()
-  #define ADDR_PLAYER_WRITE (0x10005731)
-
-  // CPlayerEntity::ChecksumForSync()
-  #define ADDR_PLAYER_CHECKSUM (0x1000279D)
+  #define ADDR_UNZIP_OPEN      (ADDR_ENGINE + 0x2C20) // UNZIPOpen_t()
+  #define ADDR_UNZIP_GETSIZE   (ADDR_ENGINE + 0x720C) // UNZIPGetSize()
+  #define ADDR_UNZIP_READBLOCK (ADDR_ENGINE + 0x8693) // UNZIPReadBlock_t()
+  #define ADDR_UNZIP_CLOSE     (ADDR_ENGINE + 0x88FA) // UNZIPClose()
+  #define ADDR_UNZIP_GETFILECOUNT     (ADDR_ENGINE + 0x1456) // UNZIPGetFileCount()
+  #define ADDR_UNZIP_GETFILEATINDEX   (ADDR_ENGINE + 0x5268) // UNZIPGetFileAtIndex()
+  #define ADDR_UNZIP_ISFILEATINDEXMOD (ADDR_ENGINE + 0xA45C) // UNZIPIsFileAtIndexMod()
 #endif
 
 #endif

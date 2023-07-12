@@ -93,7 +93,7 @@ void IUnzip::Close(INDEX) {
 #include <Extras/zlib/zlib.h>
 
 // [Cecil] Pointer to 'zip_csLock' in the engine
-static CTCriticalSection *_pcsZipLock = ADDR_UNZIP_CRITSEC;
+static CTCriticalSection *_pcsZipLock = (CTCriticalSection *)ADDR_UNZIP_CRITSEC;
 
 #pragma pack(push, 1)
 

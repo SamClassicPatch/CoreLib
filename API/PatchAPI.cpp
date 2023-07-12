@@ -99,11 +99,7 @@ static INDEX GetFuncPatch(const CTString &strName) {
 // Constructor
 CPatchAPI::CPatchAPI() {
   // Hook up the libraries
-  #ifdef NDEBUG
-    hEngine = GetModuleHandleA("Engine.dll");
-  #else
-    hEngine = GetModuleHandleA("EngineD.dll");
-  #endif
+  hEngine = HMODULE_ENGINE;
 
   #if SE1_VER >= SE1_107
     fnmEntities = CCoreAPI::FullLibPath("Entities" + _strModExt);
