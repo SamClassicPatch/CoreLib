@@ -46,12 +46,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   // InitStreams()
   #define ADDR_INITSTREAMS (ADDR_ENGINE + CHOOSE_FOR_GAME(0x1A2C0, 0x1A2C0, 0x265F0))
 
-  // CRenderer::Render()
-  #define ADDR_RENDERER_RENDER (ADDR_ENGINE + CHOOSE_FOR_GAME(0xE8CD0, 0xE8DB0, 0xF4A00))
-
-  // &_areRenderers[0]
-  #define ADDR_RENDERER_ARRAY (ADDR_ENGINE + CHOOSE_FOR_GAME(0x1DC4F8, 0x1DC538, 0x20DAF0))
-
   // Static variables from Unzip.cpp
   #define ADDR_UNZIP_CRITSEC  (ADDR_ENGINE + CHOOSE_FOR_GAME(0x1E0388, 0x1E03C8, 0x2131C8)) // &zip_csLock
   #define ADDR_UNZIP_HANDLES  (ADDR_ENGINE + CHOOSE_FOR_GAME(0x1C5030, 0x1C5070, 0x1F6298)) // &_azhHandles
@@ -71,12 +65,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #elif SE1_VER == SE1_107
   // InitStreams()
   #define ADDR_INITSTREAMS (ADDR_ENGINE + 0x7B49)
-
-  // CRenderer::Render()
-  #define ADDR_RENDERER_RENDER (ADDR_ENGINE + 0x8062)
-
-  // &_areRenderers[0]
-  #define ADDR_RENDERER_ARRAY (ADDR_ENGINE + 0x440458)
 
   // Static variables from Unzip.cpp
   #define ADDR_UNZIP_CRITSEC  (ADDR_ENGINE + 0x446BC8) // &zip_csLock
