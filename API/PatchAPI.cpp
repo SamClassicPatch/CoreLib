@@ -55,9 +55,10 @@ static void ListFuncPatches(void) {
 
     // Mark as enabled or not and indent the index
     const char *strPatched = (fpPatch.pPatch->IsPatched() ? " [^c00ff00ON^r]" : "[^cff0000OFF^r]");
-    const INDEX ctIdent = ClampDn(2 - INDEX(log10((FLOAT)iPatch)), (INDEX)0);
+    const INDEX ctIndentLog10 = (iPatch == 0) ? 0 : log10((FLOAT)iPatch);
+    const INDEX ctIndent = ClampDn(2 - ctIndentLog10, (INDEX)0);
 
-    CPrintF("%s %*s%d - %s\n", strPatched, ctIdent, "", iPatch, fpPatch.strName);
+    CPrintF("%s %*s%d - %s\n", strPatched, ctIndent, "", iPatch, fpPatch.strName);
   }
 };
 
