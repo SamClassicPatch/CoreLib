@@ -46,10 +46,9 @@ static void PatchInfo(void) {
     "\nSerious Sam Classics Patch"
     "\n" CLASSICSPATCH_URL_SHORT
     "\n"
-    "\n- Engine version: " _SE_VER_STRING
-    "\n- Patch version: "
-    + GetAPI()->GetVersion()
-    + "\n\n(c) Dreamy Cecil, 2022-2023\n";
+    "\n- Engine version: " + CTString(_SE_VER_STRING)
+  + "\n- Patch version: " + GetAPI()->GetVersion()
+  + "\n\n(c) Dreamy Cecil, 2022-2023\n";
 
   CPutString(strInfo);
 };
@@ -100,7 +99,7 @@ void CECIL_InitCore(void) {
     _pShell->DeclareSymbol("persistent user CTString cli_strConnectPassword;", &cli_strConnectPassword);
   }
 
-  _pShell->DeclareSymbol("user void IncludeScript(INDEX);", &IncludeScript);
+  _pShell->DeclareSymbol("user void IncludeScript(CTString);", &IncludeScript);
 
   // Config property symbols
   {
