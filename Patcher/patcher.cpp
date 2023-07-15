@@ -131,10 +131,22 @@ bool CPatch::CanRewriteInstructionSet(long iAddress, int &iRewriteLen)
       iInstructionLen = 3;
       bInstructionFound = true;
 
+    } else if (!memcmp(pByte, "\x83\xE4", 2)) // and esp, byte
+    {
+      PushLog("and esp, byte");
+      iInstructionLen = 3;
+      bInstructionFound = true;
+
     } else if (*pByte == 0x89) // mov
     {
       PushLog("mov");
       iInstructionLen = 3;
+      bInstructionFound = true;
+
+    } else if (*pByte == 0xF3) // movss xmm0, [ebp + arg_0]
+    {
+      PushLog("movss xmm0, [ebp + arg_0]");
+      iInstructionLen = 5;
       bInstructionFound = true;
 
     } else if (!memcmp(pByte, "\xF6\x46", 2)) // test byte ptr [esi+...]
