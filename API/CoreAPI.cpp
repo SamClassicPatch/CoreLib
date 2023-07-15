@@ -273,6 +273,8 @@ CCoreAPI::SConfigProps &CCoreAPI::Props(void) {
 
 // Disable GameSpy usage
 void CCoreAPI::DisableGameSpy(void) {
+#if CLASSICSPATCH_NEW_QUERY
+
   static BOOL bDisabled = FALSE;
 
   if (bDisabled) return;
@@ -293,6 +295,8 @@ void CCoreAPI::DisableGameSpy(void) {
 
     bDisabled = TRUE;
   }
+
+#endif // CLASSICSPATCH_NEW_QUERY
 };
 
 // Create a series of directories within the game folder

@@ -35,9 +35,11 @@ void INetwork::Initialize(void) {
   // Register commands for packet processing
   IProcessPacket::RegisterCommands();
 
+#if CLASSICSPATCH_NEW_QUERY
   // Initialize query manager
   extern void InitQuery(void);
   InitQuery();
+#endif
 
 #if CLASSICSPATCH_EXT_PACKETS
   // Register extension packets

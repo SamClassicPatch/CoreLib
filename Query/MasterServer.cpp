@@ -19,6 +19,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "QueryManager.h"
 #include "Networking/CommInterface.h"
 
+#if CLASSICSPATCH_NEW_QUERY
+
 // When the last heartbeat has been sent
 static TIME _tmLastHeartbeat = -1.0f;
 
@@ -259,3 +261,51 @@ void EnumCancel(void) {
 };
 
 }; // namespace
+
+#else
+
+namespace IMasterServer {
+
+INDEX GetProtocol(void) {
+  return E_MS_LEGACY;
+};
+
+void OnServerStart(void)
+{
+};
+
+void OnServerEnd(void)
+{
+};
+
+void OnServerUpdate(void)
+{
+};
+
+void OnServerStateChanged(void)
+{
+};
+
+void SendHeartbeat(INDEX iChallenge)
+{
+};
+
+void EnumTrigger(BOOL bInternet)
+{
+};
+
+void EnumSessions(BOOL bInternet) {
+  _pNetwork->EnumSessions(bInternet);
+};
+
+void EnumUpdate(void)
+{
+};
+
+void EnumCancel(void)
+{
+};
+
+}; // namespace
+
+#endif // CLASSICSPATCH_NEW_QUERY

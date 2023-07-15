@@ -15,6 +15,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "StdH.h"
 
+#if CLASSICSPATCH_NEW_QUERY
+
 #include "ServerRequest.h"
 #include "QueryManager.h"
 
@@ -58,3 +60,5 @@ CTimerValue SServerRequest::PopRequestTime(const sockaddr_in &addr) {
 
   return __int64(-1);
 };
+
+#endif // CLASSICSPATCH_NEW_QUERY

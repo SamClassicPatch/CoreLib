@@ -15,6 +15,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "StdH.h"
 
+#if CLASSICSPATCH_NEW_QUERY
+
 #include "QueryManager.h"
 #include "Networking/NetworkFunctions.h"
 #include "Interfaces/WorldFunctions.h"
@@ -214,3 +216,5 @@ void ServerParsePacket(INDEX iLength) {
 
 }; // namespace
 }; // namespace
+
+#endif // CLASSICSPATCH_NEW_QUERY

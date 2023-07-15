@@ -33,6 +33,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #define CLASSICSPATCH_EXT_PACKETS  1 // Support for custom extension packets
   #define CLASSICSPATCH_GUID_MASKING 1 // System for masking GUIDs of player characters separately for each server client
 
+  // Query
+  #define CLASSICSPATCH_NEW_QUERY 1 // Utilize new query manager and switch master servers
+
 // EnginePatches
 
   // Global
