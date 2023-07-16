@@ -68,8 +68,8 @@ static void ResaveConfigProperties(void) {
   CPutString(TRANS("Restart the game for the new settings to take effect!\n"));
 };
 
-// Initialize Core module (always after Serious Engine!)
-void CECIL_InitCore(void) {
+// Initialize Core module (always after 'SE_InitEngine'!)
+void ClassicsPatch_InitCore(void) {
   // Create core API
   new CCoreAPI();
 
@@ -131,8 +131,8 @@ void CECIL_InitCore(void) {
   GetAPI()->LoadPlugins(PLF_ENGINE);
 };
 
-// Clean up Core module (always before Serious Engine!)
-void CECIL_EndCore(void) {
+// Clean up Core module (always before 'SE_EndEngine'!)
+void ClassicsPatch_EndCore(void) {
   // Save configuration properties
   CCoreAPI::Props().Save();
 

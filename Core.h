@@ -56,7 +56,7 @@ CORE_API extern CTString cli_strConnectPassword;
 #include <CoreLib/Interfaces/WorldFunctions.h>
 
 // Initialize Core module (always after 'SE_InitEngine'!)
-CORE_API void CECIL_InitCore(void);
+CORE_API void ClassicsPatch_InitCore(void);
 
 // Clean up Core module (always before 'SE_EndEngine'!)
-CORE_API void CECIL_EndCore(void);
+CORE_API void ClassicsPatch_EndCore(void);
