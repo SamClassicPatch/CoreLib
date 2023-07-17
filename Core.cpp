@@ -54,7 +54,10 @@ static void PatchInfo(void) {
 };
 
 // Helper method for loading scripts via string variables
-static void IncludeScript(const CTString &strScript) {
+static void IncludeScript(SHELL_FUNC_ARGS) {
+  BEGIN_SHELL_FUNC;
+  const CTString &strScript = *NEXT_ARG(CTString *);
+
   // Include command doesn't support variables, so the string needs to be inserted
   CTString strLoad(0, "include \"%s\";", strScript.str_String);
   _pShell->Execute(strLoad);

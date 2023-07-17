@@ -52,7 +52,10 @@ static void ListPlugins(void) {
 };
 
 // Enable specific plugin
-static void EnablePlugin(INDEX iPlugin) {
+static void EnablePlugin(SHELL_FUNC_ARGS) {
+  BEGIN_SHELL_FUNC;
+  INDEX iPlugin = NEXT_ARG(INDEX);
+
   CPluginStock *pStock = GetPluginAPI()->pPluginStock;
 
   if (iPlugin < 0 || iPlugin >= pStock->GetTotalCount()) {
@@ -78,7 +81,10 @@ static void EnablePlugin(INDEX iPlugin) {
 };
 
 // Disable specific plugin
-static void DisablePlugin(INDEX iPlugin) {
+static void DisablePlugin(SHELL_FUNC_ARGS) {
+  BEGIN_SHELL_FUNC;
+  INDEX iPlugin = NEXT_ARG(INDEX);
+
   CPluginStock *pStock = GetPluginAPI()->pPluginStock;
 
   if (iPlugin < 0 || iPlugin >= pStock->GetTotalCount()) {

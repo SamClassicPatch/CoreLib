@@ -28,7 +28,10 @@ static EExtEntityEvent _eePacketEvent;
 static ULONG _ctPacketEventFields = 0;
 
 // Begin event setup of a specific type
-void SetupEvent(INDEX iEventType) {
+void SetupEvent(SHELL_FUNC_ARGS) {
+  BEGIN_SHELL_FUNC;
+  INDEX iEventType = NEXT_ARG(INDEX);
+
   // Reset event
   _eePacketEvent.Reset();
   _ctPacketEventFields = 0;
@@ -38,7 +41,11 @@ void SetupEvent(INDEX iEventType) {
 };
 
 // Set event field to an integer
-void EventFieldIndex(INDEX iField, INDEX iValue) {
+void EventFieldIndex(SHELL_FUNC_ARGS) {
+  BEGIN_SHELL_FUNC;
+  INDEX iField = NEXT_ARG(INDEX);
+  INDEX iValue = NEXT_ARG(INDEX);
+
   ASSERT(iField >= 0 && iField < 64);
   iField = Clamp(iField, (INDEX)0, (INDEX)63);
 
@@ -48,7 +55,11 @@ void EventFieldIndex(INDEX iField, INDEX iValue) {
 };
 
 // Set event field to a float
-void EventFieldFloat(INDEX iField, FLOAT fValue) {
+void EventFieldFloat(SHELL_FUNC_ARGS) {
+  BEGIN_SHELL_FUNC;
+  INDEX iField = NEXT_ARG(INDEX);
+  FLOAT fValue = NEXT_ARG(FLOAT);
+
   ASSERT(iField >= 0 && iField < 64);
   iField = Clamp(iField, (INDEX)0, (INDEX)63);
 
@@ -58,7 +69,13 @@ void EventFieldFloat(INDEX iField, FLOAT fValue) {
 };
 
 // Set three event fields to vector values
-void EventFieldVector(INDEX iField, FLOAT fX, FLOAT fY, FLOAT fZ) {
+void EventFieldVector(SHELL_FUNC_ARGS) {
+  BEGIN_SHELL_FUNC;
+  INDEX iField = NEXT_ARG(INDEX);
+  FLOAT fX = NEXT_ARG(FLOAT);
+  FLOAT fY = NEXT_ARG(FLOAT);
+  FLOAT fZ = NEXT_ARG(FLOAT);
+
   ASSERT(iField >= 0 && iField < 62);
   iField = Clamp(iField, (INDEX)0, (INDEX)61);
 
@@ -68,14 +85,21 @@ void EventFieldVector(INDEX iField, FLOAT fX, FLOAT fY, FLOAT fZ) {
 };
 
 // Create entity from the list
-void EntityCreate(const CTString &strClass) {
+void EntityCreate(SHELL_FUNC_ARGS) {
+  BEGIN_SHELL_FUNC;
+  const CTString &strClass = *NEXT_ARG(CTString *);
+
   CExtEntityCreate pck;
   pck.fnmClass = "Classes\\" + strClass + ".ecl";
   pck.SendPacket();
 };
 
 // Destroy entities
-void EntityDelete(INDEX iEntity, INDEX iSameClass) {
+void EntityDelete(SHELL_FUNC_ARGS) {
+  BEGIN_SHELL_FUNC;
+  INDEX iEntity = NEXT_ARG(INDEX);
+  INDEX iSameClass = NEXT_ARG(INDEX);
+
   CExtEntityDelete pck;
   pck.ulEntity = iEntity;
   pck.bSameClass = (iSameClass != 0);
@@ -83,7 +107,11 @@ void EntityDelete(INDEX iEntity, INDEX iSameClass) {
 };
 
 // Copy entity
-void EntityCopy(INDEX iEntity, INDEX iCopies) {
+void EntityCopy(SHELL_FUNC_ARGS) {
+  BEGIN_SHELL_FUNC;
+  INDEX iEntity = NEXT_ARG(INDEX);
+  INDEX iCopies = NEXT_ARG(INDEX);
+
   CExtEntityCopy pck;
   pck.ulEntity = iEntity;
   pck.ubCopies = Clamp(iCopies, (INDEX)0, (INDEX)31);
@@ -91,7 +119,10 @@ void EntityCopy(INDEX iEntity, INDEX iCopies) {
 };
 
 // Send set up event to an entity
-void EntityEvent(INDEX iEntity) {
+void EntityEvent(SHELL_FUNC_ARGS) {
+  BEGIN_SHELL_FUNC;
+  INDEX iEntity = NEXT_ARG(INDEX);
+
   CExtEntityEvent pck;
   pck.ulEntity = iEntity;
   pck.Copy(_eePacketEvent, _ctPacketEventFields);
@@ -99,7 +130,10 @@ void EntityEvent(INDEX iEntity) {
 };
 
 // Receive item by an entity via a set up event
-void EntityItem(INDEX iEntity) {
+void EntityItem(SHELL_FUNC_ARGS) {
+  BEGIN_SHELL_FUNC;
+  INDEX iEntity = NEXT_ARG(INDEX);
+
   CExtEntityItem pck;
   pck.ulEntity = iEntity;
   pck.Copy(_eePacketEvent, _ctPacketEventFields);
@@ -107,7 +141,10 @@ void EntityItem(INDEX iEntity) {
 };
 
 // Initialize entity
-void EntityInit(INDEX iEntity) {
+void EntityInit(SHELL_FUNC_ARGS) {
+  BEGIN_SHELL_FUNC;
+  INDEX iEntity = NEXT_ARG(INDEX);
+
   CExtEntityInit pck;
   pck.ulEntity = iEntity;
   pck.SetEvent(EVoid(), sizeof(EVoid));
@@ -115,7 +152,10 @@ void EntityInit(INDEX iEntity) {
 };
 
 // Initialize entity with preset event
-void EntityInitEvent(INDEX iEntity) {
+void EntityInitEvent(SHELL_FUNC_ARGS) {
+  BEGIN_SHELL_FUNC;
+  INDEX iEntity = NEXT_ARG(INDEX);
+
   CExtEntityInit pck;
   pck.ulEntity = iEntity;
   pck.Copy(_eePacketEvent, _ctPacketEventFields);
@@ -123,7 +163,14 @@ void EntityInitEvent(INDEX iEntity) {
 };
 
 // Set new entity position
-void EntitySetPos(INDEX iEntity, FLOAT fX, FLOAT fY, FLOAT fZ, INDEX iRelative) {
+void EntitySetPos(SHELL_FUNC_ARGS) {
+  BEGIN_SHELL_FUNC;
+  INDEX iEntity = NEXT_ARG(INDEX);
+  FLOAT fX = NEXT_ARG(FLOAT);
+  FLOAT fY = NEXT_ARG(FLOAT);
+  FLOAT fZ = NEXT_ARG(FLOAT);
+  INDEX iRelative = NEXT_ARG(INDEX);
+
   CExtEntityPosition pck;
   pck.ulEntity = iEntity;
   pck.vSet = FLOAT3D(fX, fY, fZ);
@@ -133,7 +180,14 @@ void EntitySetPos(INDEX iEntity, FLOAT fX, FLOAT fY, FLOAT fZ, INDEX iRelative) 
 };
 
 // Set new entity rotation
-void EntitySetRot(INDEX iEntity, FLOAT fH, FLOAT fP, FLOAT fB, INDEX iRelative) {
+void EntitySetRot(SHELL_FUNC_ARGS) {
+  BEGIN_SHELL_FUNC;
+  INDEX iEntity = NEXT_ARG(INDEX);
+  FLOAT fH = NEXT_ARG(FLOAT);
+  FLOAT fP = NEXT_ARG(FLOAT);
+  FLOAT fB = NEXT_ARG(FLOAT);
+  INDEX iRelative = NEXT_ARG(INDEX);
+
   CExtEntityPosition pck;
   pck.ulEntity = iEntity;
   pck.vSet = FLOAT3D(fH, fP, fB);
@@ -143,7 +197,17 @@ void EntitySetRot(INDEX iEntity, FLOAT fH, FLOAT fP, FLOAT fB, INDEX iRelative) 
 };
 
 // Set new entity placement
-void EntityTeleport(INDEX iEntity, FLOAT fX, FLOAT fY, FLOAT fZ, FLOAT fH, FLOAT fP, FLOAT fB, INDEX iRelative) {
+void EntityTeleport(SHELL_FUNC_ARGS) {
+  BEGIN_SHELL_FUNC;
+  INDEX iEntity = NEXT_ARG(INDEX);
+  FLOAT fX = NEXT_ARG(FLOAT);
+  FLOAT fY = NEXT_ARG(FLOAT);
+  FLOAT fZ = NEXT_ARG(FLOAT);
+  FLOAT fH = NEXT_ARG(FLOAT);
+  FLOAT fP = NEXT_ARG(FLOAT);
+  FLOAT fB = NEXT_ARG(FLOAT);
+  INDEX iRelative = NEXT_ARG(INDEX);
+
   CExtEntityTeleport pck;
   pck.ulEntity = iEntity;
   pck.plSet = CPlacement3D(FLOAT3D(fX, fY, fZ), ANGLE3D(fH, fP, fB));
@@ -152,7 +216,11 @@ void EntityTeleport(INDEX iEntity, FLOAT fX, FLOAT fY, FLOAT fZ, FLOAT fH, FLOAT
 };
 
 // Parent entity
-void EntityParent(INDEX iEntity, INDEX iParent) {
+void EntityParent(SHELL_FUNC_ARGS) {
+  BEGIN_SHELL_FUNC;
+  INDEX iEntity = NEXT_ARG(INDEX);
+  INDEX iParent = NEXT_ARG(INDEX);
+
   CExtEntityParent pck;
   pck.ulEntity = iEntity;
   pck.ulParent = iParent;
@@ -160,7 +228,13 @@ void EntityParent(INDEX iEntity, INDEX iParent) {
 };
 
 // Change number property by name or ID
-void EntityNumberProp(INDEX iEntity, const CTString &strProp, INDEX iPropID, FLOAT fValue) {
+void EntityNumberProp(SHELL_FUNC_ARGS) {
+  BEGIN_SHELL_FUNC;
+  INDEX iEntity = NEXT_ARG(INDEX);
+  const CTString &strProp = *NEXT_ARG(CTString *);
+  INDEX iPropID = NEXT_ARG(INDEX);
+  FLOAT fValue = NEXT_ARG(FLOAT);
+
   CExtEntityProp pck;
   pck.ulEntity = iEntity;
 
@@ -175,7 +249,13 @@ void EntityNumberProp(INDEX iEntity, const CTString &strProp, INDEX iPropID, FLO
 };
 
 // Change string property by name or ID
-void EntityStringProp(INDEX iEntity, const CTString &strProp, INDEX iPropID, const CTString &strValue) {
+void EntityStringProp(SHELL_FUNC_ARGS) {
+  BEGIN_SHELL_FUNC;
+  INDEX iEntity = NEXT_ARG(INDEX);
+  const CTString &strProp = *NEXT_ARG(CTString *);
+  INDEX iPropID = NEXT_ARG(INDEX);
+  const CTString &strValue = *NEXT_ARG(CTString *);
+
   CExtEntityProp pck;
   pck.ulEntity = iEntity;
 
@@ -190,7 +270,11 @@ void EntityStringProp(INDEX iEntity, const CTString &strProp, INDEX iPropID, con
 };
 
 // Change entity health
-void EntityHealth(INDEX iEntity, FLOAT fHealth) {
+void EntityHealth(SHELL_FUNC_ARGS) {
+  BEGIN_SHELL_FUNC;
+  INDEX iEntity = NEXT_ARG(INDEX);
+  FLOAT fHealth = NEXT_ARG(FLOAT);
+
   CExtEntityHealth pck;
   pck.ulEntity = iEntity;
   pck.fHealth = fHealth;
@@ -198,7 +282,12 @@ void EntityHealth(INDEX iEntity, FLOAT fHealth) {
 };
 
 // Change entity flags
-void EntityFlags(INDEX iEntity, INDEX iFlags, INDEX iRemove) {
+void EntityFlags(SHELL_FUNC_ARGS) {
+  BEGIN_SHELL_FUNC;
+  INDEX iEntity = NEXT_ARG(INDEX);
+  INDEX iFlags = NEXT_ARG(INDEX);
+  INDEX iRemove = NEXT_ARG(INDEX);
+
   CExtEntityFlags pck;
   pck.ulEntity = iEntity;
   pck.EntityFlags(iFlags, (iRemove != 0));
@@ -206,7 +295,12 @@ void EntityFlags(INDEX iEntity, INDEX iFlags, INDEX iRemove) {
 };
 
 // Change physical flags
-void EntityPhysicalFlags(INDEX iEntity, INDEX iFlags, INDEX iRemove) {
+void EntityPhysicalFlags(SHELL_FUNC_ARGS) {
+  BEGIN_SHELL_FUNC;
+  INDEX iEntity = NEXT_ARG(INDEX);
+  INDEX iFlags = NEXT_ARG(INDEX);
+  INDEX iRemove = NEXT_ARG(INDEX);
+
   CExtEntityFlags pck;
   pck.ulEntity = iEntity;
   pck.PhysicalFlags(iFlags, (iRemove != 0));
@@ -214,7 +308,12 @@ void EntityPhysicalFlags(INDEX iEntity, INDEX iFlags, INDEX iRemove) {
 };
 
 // Change collision flags
-void EntityCollisionFlags(INDEX iEntity, INDEX iFlags, INDEX iRemove) {
+void EntityCollisionFlags(SHELL_FUNC_ARGS) {
+  BEGIN_SHELL_FUNC;
+  INDEX iEntity = NEXT_ARG(INDEX);
+  INDEX iFlags = NEXT_ARG(INDEX);
+  INDEX iRemove = NEXT_ARG(INDEX);
+
   CExtEntityFlags pck;
   pck.ulEntity = iEntity;
   pck.CollisionFlags(iFlags, (iRemove != 0));
@@ -222,7 +321,13 @@ void EntityCollisionFlags(INDEX iEntity, INDEX iFlags, INDEX iRemove) {
 };
 
 // Set movement speed
-void EntityMove(INDEX iEntity, FLOAT fX, FLOAT fY, FLOAT fZ) {
+void EntityMove(SHELL_FUNC_ARGS) {
+  BEGIN_SHELL_FUNC;
+  INDEX iEntity = NEXT_ARG(INDEX);
+  FLOAT fX = NEXT_ARG(FLOAT);
+  FLOAT fY = NEXT_ARG(FLOAT);
+  FLOAT fZ = NEXT_ARG(FLOAT);
+
   CExtEntityMove pck;
   pck.ulEntity = iEntity;
   pck.vSpeed = FLOAT3D(fX, fY, fZ);
@@ -230,7 +335,13 @@ void EntityMove(INDEX iEntity, FLOAT fX, FLOAT fY, FLOAT fZ) {
 };
 
 // Set rotation speed
-void EntityRotate(INDEX iEntity, FLOAT fH, FLOAT fP, FLOAT fB) {
+void EntityRotate(SHELL_FUNC_ARGS) {
+  BEGIN_SHELL_FUNC;
+  INDEX iEntity = NEXT_ARG(INDEX);
+  FLOAT fH = NEXT_ARG(FLOAT);
+  FLOAT fP = NEXT_ARG(FLOAT);
+  FLOAT fB = NEXT_ARG(FLOAT);
+
   CExtEntityRotate pck;
   pck.ulEntity = iEntity;
   pck.vSpeed = FLOAT3D(fH, fP, fB);
@@ -238,7 +349,13 @@ void EntityRotate(INDEX iEntity, FLOAT fH, FLOAT fP, FLOAT fB) {
 };
 
 // Give impulse in an absolute direction
-void EntityImpulse(INDEX iEntity, FLOAT fX, FLOAT fY, FLOAT fZ) {
+void EntityImpulse(SHELL_FUNC_ARGS) {
+  BEGIN_SHELL_FUNC;
+  INDEX iEntity = NEXT_ARG(INDEX);
+  FLOAT fX = NEXT_ARG(FLOAT);
+  FLOAT fY = NEXT_ARG(FLOAT);
+  FLOAT fZ = NEXT_ARG(FLOAT);
+
   CExtEntityImpulse pck;
   pck.ulEntity = iEntity;
   pck.vSpeed = FLOAT3D(fX, fY, fZ);
@@ -256,7 +373,12 @@ static FLOAT3D _vDamageVec1(0, 0, 0);
 static FLOAT3D _vDamageVec2(0, 0, 0);
 
 // Begin damage setup with an inflictor
-void SetupDamage(INDEX iInflictor, INDEX iType, FLOAT fDamage) {
+void SetupDamage(SHELL_FUNC_ARGS) {
+  BEGIN_SHELL_FUNC;
+  INDEX iInflictor = NEXT_ARG(INDEX);
+  INDEX iType = NEXT_ARG(INDEX);
+  FLOAT fDamage = NEXT_ARG(FLOAT);
+
   _iDamageSetup = -1;
 
   _ulDamageInflictor = iInflictor;
@@ -265,7 +387,16 @@ void SetupDamage(INDEX iInflictor, INDEX iType, FLOAT fDamage) {
 };
 
 // Setup direct damage (target, hit point, direction)
-void SetDirectDamage(INDEX iTarget, FLOAT fHitX, FLOAT fHitY, FLOAT fHitZ, FLOAT fDirX, FLOAT fDirY, FLOAT fDirZ) {
+void SetDirectDamage(SHELL_FUNC_ARGS) {
+  BEGIN_SHELL_FUNC;
+  INDEX iTarget = NEXT_ARG(INDEX);
+  FLOAT fHitX = NEXT_ARG(FLOAT);
+  FLOAT fHitY = NEXT_ARG(FLOAT);
+  FLOAT fHitZ = NEXT_ARG(FLOAT);
+  FLOAT fDirX = NEXT_ARG(FLOAT);
+  FLOAT fDirY = NEXT_ARG(FLOAT);
+  FLOAT fDirZ = NEXT_ARG(FLOAT);
+
   _iDamageSetup = 0;
 
   _ulDamageTarget = iTarget;
@@ -274,7 +405,14 @@ void SetDirectDamage(INDEX iTarget, FLOAT fHitX, FLOAT fHitY, FLOAT fHitZ, FLOAT
 };
 
 // Setup range damage (hit center, fall off, hot spot)
-void SetRangeDamage(FLOAT fX, FLOAT fY, FLOAT fZ, FLOAT fFallOff, FLOAT fHotSpot) {
+void SetRangeDamage(SHELL_FUNC_ARGS) {
+  BEGIN_SHELL_FUNC;
+  FLOAT fX = NEXT_ARG(FLOAT);
+  FLOAT fY = NEXT_ARG(FLOAT);
+  FLOAT fZ = NEXT_ARG(FLOAT);
+  FLOAT fFallOff = NEXT_ARG(FLOAT);
+  FLOAT fHotSpot = NEXT_ARG(FLOAT);
+
   _iDamageSetup = 1;
 
   _vDamageVec1 = FLOAT3D(fX, fY, fZ);
@@ -282,7 +420,15 @@ void SetRangeDamage(FLOAT fX, FLOAT fY, FLOAT fZ, FLOAT fFallOff, FLOAT fHotSpot
 };
 
 // Setup box damage (min corner, max corner)
-void SetBoxDamage(FLOAT fX1, FLOAT fY1, FLOAT fZ1, FLOAT fX2, FLOAT fY2, FLOAT fZ2) {
+void SetBoxDamage(SHELL_FUNC_ARGS) {
+  BEGIN_SHELL_FUNC;
+  FLOAT fX1 = NEXT_ARG(FLOAT);
+  FLOAT fY1 = NEXT_ARG(FLOAT);
+  FLOAT fZ1 = NEXT_ARG(FLOAT);
+  FLOAT fX2 = NEXT_ARG(FLOAT);
+  FLOAT fY2 = NEXT_ARG(FLOAT);
+  FLOAT fZ2 = NEXT_ARG(FLOAT);
+
   _iDamageSetup = 2;
 
   _vDamageVec1 = FLOAT3D(fX1, fY1, fZ1);

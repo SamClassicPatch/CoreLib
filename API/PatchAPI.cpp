@@ -63,7 +63,10 @@ static void ListFuncPatches(void) {
 };
 
 // Enable specific function patch
-static void EnableFuncPatch(INDEX iPatch) {
+static void EnableFuncPatch(SHELL_FUNC_ARGS) {
+  BEGIN_SHELL_FUNC;
+  INDEX iPatch = NEXT_ARG(INDEX);
+
   if (iPatch < 0 || iPatch >= GetPatchAPI()->aPatches.Count()) {
     CPutString(TRANS("Invalid patch index!\n"));
     return;
@@ -80,7 +83,10 @@ static void EnableFuncPatch(INDEX iPatch) {
 };
 
 // Disable specific function patch
-static void DisableFuncPatch(INDEX iPatch) {
+static void DisableFuncPatch(SHELL_FUNC_ARGS) {
+  BEGIN_SHELL_FUNC;
+  INDEX iPatch = NEXT_ARG(INDEX);
+
   if (iPatch < 0 || iPatch >= GetPatchAPI()->aPatches.Count()) {
     CPutString(TRANS("Invalid patch index!\n"));
     return;
@@ -93,7 +99,10 @@ static void DisableFuncPatch(INDEX iPatch) {
 };
 
 // Get function patch index by its name
-static INDEX GetFuncPatch(const CTString &strName) {
+static INDEX GetFuncPatch(SHELL_FUNC_ARGS) {
+  BEGIN_SHELL_FUNC;
+  const CTString &strName = *NEXT_ARG(CTString *);
+
   return GetPatchAPI()->GetPatchIndex(strName, NULL);
 };
 

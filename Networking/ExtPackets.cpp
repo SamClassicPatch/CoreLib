@@ -88,7 +88,11 @@ CExtPacket *CExtPacket::CreatePacket(EType ePacket, BOOL bClient) {
 };
 
 // [Cecil] TEMP: Get entity of a specific class under a certain index
-static INDEX GetEntity(const CTString &strClass, INDEX iEntity) {
+static INDEX GetEntity(SHELL_FUNC_ARGS) {
+  BEGIN_SHELL_FUNC;
+  const CTString &strClass = *NEXT_ARG(CTString *);
+  INDEX iEntity = NEXT_ARG(INDEX);
+
   CEntities cen;
   IWorld::FindClasses(IWorld::GetWorld()->wo_cenEntities, cen, strClass);
 

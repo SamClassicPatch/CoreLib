@@ -34,6 +34,21 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <CoreLib/GameSpecific.h>
 #include <CoreLib/Compatibility/SymbolPtr.h>
 
+#if SE1_VER != SE1_110
+  // Declare shell function arguments
+  #define SHELL_FUNC_ARGS void *__pFirstArg
+
+  // Begin shell function code
+  #define BEGIN_SHELL_FUNC void *pArgs = (void *)&__pFirstArg
+
+#else
+  // Declare shell function arguments
+  #define SHELL_FUNC_ARGS void *pArgs
+
+  // Begin shell function code
+  #define BEGIN_SHELL_FUNC NOTHING
+#endif
+
 // Next argument in the symbol function call
 #define NEXT_ARG(Type) (*((Type *&)pArgs)++)
 
