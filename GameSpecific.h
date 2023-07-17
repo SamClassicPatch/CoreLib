@@ -20,15 +20,26 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #pragma once
 #endif
 
-// Choose value based on configuration
+// Choose value based on engine
+#if SE1_VER <= SE1_107
+  #define CHOOSE_FOR_ENGINE(_107, _150, _110) _107
+#elif SE1_VER == SE1_150
+  #define CHOOSE_FOR_ENGINE(_107, _150, _110) _150
+#elif SE1_VER == SE1_110
+  #define CHOOSE_FOR_ENGINE(_107, _150, _110) _110
+#else
+  #error Unsupported engine version!
+#endif
+
+// Choose value based on game
 #if SE1_VER == SE1_105 && SE1_GAME == SS_TFE
   #define CHOOSE_FOR_GAME(_TFE105, _TSE105, _TSE107) _TFE105
 #elif SE1_VER == SE1_105 && SE1_GAME == SS_TSE
   #define CHOOSE_FOR_GAME(_TFE105, _TSE105, _TSE107) _TSE105
-#elif SE1_VER == SE1_107
+#elif SE1_VER >= SE1_107
   #define CHOOSE_FOR_GAME(_TFE105, _TSE105, _TSE107) _TSE107
 #else
-  #error Unsupported engine version!
+  #error Unsupported game!
 #endif
 
 // Engine module address

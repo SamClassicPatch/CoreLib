@@ -27,7 +27,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Write player character into a network packet
 CNetworkMessage &operator<<(CNetworkMessage &nm, CPlayerCharacter &pc) {
   nm << pc.pc_strName;
-  nm << pc.pc_strTeam;
+
+  // [Cecil] Rev: No player teams
+  #if SE1_GAME != SS_REV
+    nm << pc.pc_strTeam;
+  #endif
 
   nm.Write(pc.pc_aubGUID, PLAYERGUIDSIZE);
   nm.Write(pc.pc_aubAppearance, MAX_PLAYERAPPEARANCE);
@@ -38,7 +42,11 @@ CNetworkMessage &operator<<(CNetworkMessage &nm, CPlayerCharacter &pc) {
 // Read player character from a network packet
 CNetworkMessage &operator>>(CNetworkMessage &nm, CPlayerCharacter &pc) {
   nm >> pc.pc_strName;
-  nm >> pc.pc_strTeam;
+
+  // [Cecil] Rev: No player teams
+  #if SE1_GAME != SS_REV
+    nm >> pc.pc_strTeam;
+  #endif
 
   nm.Read(pc.pc_aubGUID, PLAYERGUIDSIZE);
   nm.Read(pc.pc_aubAppearance, MAX_PLAYERAPPEARANCE);

@@ -172,6 +172,11 @@ class CORE_API CGameAPI {
 
     // Set console state
     virtual void SetConState(INDEX iState) {
+      // [Cecil] Rev: Force console to become closed (CS_TURNINGOFF -> CS_OFF)
+      #if SE1_GAME == SS_REV
+        if (iState == 3) iState = 0;
+      #endif
+
       *piConsoleState = iState;
     };
 

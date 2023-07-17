@@ -91,6 +91,11 @@ BOOL CGameAPI::NewGame(const CTString &strSession, const CTFileName &fnmWorld, C
 
   BOOL bResult = _pGame->NewGame(strSession, fnmWorld, sp);
 
+  // [Cecil] Rev: Prepare world after starting the game
+  #if SE1_GAME == SS_REV
+    if (bResult) bResult = _pGame->WorldStart();
+  #endif
+
   if (bResult) {
     // Start game for Core
     GetAPI()->OnGameStart();
@@ -102,7 +107,7 @@ BOOL CGameAPI::NewGame(const CTString &strSession, const CTFileName &fnmWorld, C
 // Get name of a specific gamemode
 CTString CGameAPI::GetGameTypeNameSS(INDEX iGameMode)
 {
-  static CSymbolPtr symptr("GetGameTypeName");
+  static CSymbolPtr symptr(CHOOSE_FOR_ENGINE("GetGameTypeName", "GetGameTypeName", "GetGameTypeNameSS"));
 
   // No symbol
   if (!symptr.Exists()) {
@@ -120,7 +125,7 @@ CTString CGameAPI::GetGameTypeNameSS(INDEX iGameMode)
 // Get name of the current gamemode
 CTString CGameAPI::GetCurrentGameTypeNameSS(void)
 {
-  static CSymbolPtr symptr("GetCurrentGameTypeName");
+  static CSymbolPtr symptr(CHOOSE_FOR_ENGINE("GetCurrentGameTypeName", "GetCurrentGameTypeName", "GetCurrentGameTypeNameSS"));
 
   // No symbol
   if (!symptr.Exists()) {
@@ -143,7 +148,7 @@ ULONG CGameAPI::GetSpawnFlagsForGameTypeSS(INDEX iGameMode)
     return SPF_SINGLEPLAYER;
   }
 
-  static CSymbolPtr symptr("GetSpawnFlagsForGameType");
+  static CSymbolPtr symptr(CHOOSE_FOR_ENGINE("GetSpawnFlagsForGameType", "GetSpawnFlagsForGameType", "GetSpawnFlagsForGameTypeSS"));
 
   // No symbol
   if (!symptr.Exists()) {
@@ -161,7 +166,7 @@ ULONG CGameAPI::GetSpawnFlagsForGameTypeSS(INDEX iGameMode)
 // Check if some menu is enabled
 BOOL CGameAPI::IsMenuEnabledSS(const CTString &strMenu)
 {
-  static CSymbolPtr symptr("IsMenuEnabled");
+  static CSymbolPtr symptr(CHOOSE_FOR_ENGINE("IsMenuEnabled", "IsMenuEnabled", "IsMenuEnabledSS"));
 
   // No symbol
   if (!symptr.Exists()) {

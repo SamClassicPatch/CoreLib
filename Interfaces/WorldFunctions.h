@@ -204,11 +204,16 @@ inline CEntityProperty *PropertyForNameOrId(LibClassHolder lch, ULONG ulType, co
 
 // Find entity property by its variable name
 inline CEntityProperty *PropertyForVariable(LibClassHolder lch, const CTString &strClass, const CTString &strVariable) {
+#if SE1_GAME != SS_REV
   // Find property data
   const CEntityProperty *pep = GetPatchAPI()->FindProperty(strClass, strVariable);
 
   // Try to find it by name or ID
   return PropertyForNameOrId(lch, pep->ep_eptType, pep->ep_strName, pep->ep_ulID);
+
+#else
+  return lch->PropertyForVariable(strVariable);
+#endif
 };
 
 // Find WorldSettingsController in a world

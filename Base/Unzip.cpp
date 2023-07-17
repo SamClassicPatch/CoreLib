@@ -179,7 +179,9 @@ class CZipEntry {
     SLONG ze_slDataOffset;       // Position of compressed data inside archive
     ULONG ze_ulCRC;              // Checksum of the file
     BOOL ze_bStored;             // Set if file is not compressed, but stored
+  #if SE1_GAME != SS_REV
     BOOL ze_bMod;                // Set if from a mod's archive
+  #endif
 
     void Clear(void) {
       ze_pfnmArchive = NULL;
@@ -422,7 +424,10 @@ static void ReadZIPDirectory_t(CTFileName *pfnmZip)
       ze.ze_slUncompressedSize = fh.fh_slUncompressedSize;
       ze.ze_slDataOffset = fh.fh_slLocalHeaderOffset;
       ze.ze_ulCRC = fh.fh_slCRC32;
-      ze.ze_bMod = bMod;
+
+      #if SE1_GAME != SS_REV
+        ze.ze_bMod = bMod;
+      #endif
 
       // Check for compressopn
       if (fh.fh_swCompressionMethod == 0) {
@@ -564,7 +569,11 @@ const CTFileName &IUnzip::GetFileAtIndex(INDEX i) {
 
 // Check if specific file is from a mod
 BOOL IUnzip::IsFileAtIndexMod(INDEX i) {
+#if SE1_GAME != SS_REV
   return _aZipFiles[i].ze_bMod;
+#else
+  return FALSE;
+#endif
 };
 
 // Get index of a specific file (-1 if no file)
