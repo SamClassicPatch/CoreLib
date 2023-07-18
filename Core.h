@@ -49,6 +49,7 @@ CORE_API extern CTString cli_strConnectPassword;
 
 // Common components
 #include <CoreLib/API/CoreAPI.h>
+#include <CoreLib/Base/GameDirectories.h>
 #include <CoreLib/Modules/PluginStock.h>
 
 #include <CoreLib/Interfaces/ConfigFunctions.h>

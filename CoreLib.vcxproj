@@ -29,6 +29,7 @@
     <ClInclude Include="API\Plugins\PluginSymbols.h" />
     <ClInclude Include="Base\CommonCore.h" />
     <ClInclude Include="Base\CoreTimerHandler.h" />
+    <ClInclude Include="Base\GameDirectories.h" />
     <ClInclude Include="Base\Unzip.h" />
     <ClInclude Include="Compatibility\Game.h" />
     <ClInclude Include="Compatibility\VanillaEvents.h" />
@@ -96,6 +97,7 @@
     <ClCompile Include="API\PatchAPI.cpp" />
     <ClCompile Include="API\PluginAPI.cpp" />
     <ClCompile Include="Base\CoreTimerHandler.cpp" />
+    <ClCompile Include="Base\GameDirectories.cpp" />
     <ClCompile Include="Base\Unzip.cpp" />
     <ClCompile Include="Core.cpp" />
     <ClCompile Include="Definitions\InlineDefinitions.cpp" />
