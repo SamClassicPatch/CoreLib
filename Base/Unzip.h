@@ -20,56 +20,77 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #pragma once
 #endif
 
-// Interface with functions for getting files out of ZIP archives
-class CORE_API IUnzip {
+// A file entry in a ZIP archive
+class CZipEntry {
   public:
-    // Add one zip archive to the currently active set
-    static void AddArchive(const CTFileName &fnm);
+    const CTFileName *ze_pfnmArchive; // Path of the archive
+    CTFileName ze_fnm;           // File name with path inside archive
+    SLONG ze_slCompressedSize;   // Size of file in the archive
+    SLONG ze_slUncompressedSize; // Size when uncompressed
+    SLONG ze_slDataOffset;       // Position of compressed data inside archive
+    ULONG ze_ulCRC;              // Checksum of the file
+    BOOL ze_bStored;             // Set if file is not compressed, but stored
 
-    // Read directories of all currently added archives in reverse alphabetical order
-    static void ReadDirectoriesReverse_t(void);
+    // [Cecil] Rev: Mod archives cannot exist
+  #if SE1_GAME != SS_REV
+    BOOL ze_bMod; // Set if from a mod's archive
+  #endif
 
   public:
-    // Enumeration for all files in all zips
-    static INDEX GetFileCount(void);
-
-    // Get file at a specific position
-    static const CTFileName &GetFileAtIndex(INDEX i);
-
-    // Check if specific file is from a mod
-    static BOOL IsFileAtIndexMod(INDEX i);
-
-    // Get index of a specific file (-1 if no file)
-    static INDEX GetFileIndex(const CTFileName &fnm);
-
-    // [Cecil] Get path to the archive with the file
-    static const CTFileName &GetFileArchive(const CTFileName &fnm);
-
-    // Get info of a zip file entry
-    static void GetFileInfo(INDEX iHandle, CTFileName &fnmZip,
-      SLONG &slOffset, SLONG &slSizeCompressed, SLONG &slSizeUncompressed, 
-      BOOL &bCompressed);
-
-    // Check if a file entry exists
-    static inline BOOL FileExists(const CTFileName &fnm) {
-      return (GetFileIndex(fnm) != -1);
+    void Clear(void) {
+      ze_pfnmArchive = NULL;
+      ze_fnm.Clear();
     };
-
-  public:
-    // Open a zip file entry for reading
-    static INDEX Open_t(const CTFileName &fnm);
-
-    // Get uncompressed size of a file
-    static SLONG GetSize(INDEX iHandle);
-
-    // Get CRC of a file
-    static ULONG GetCRC(INDEX iHandle);
-
-    // Read a block from ZIP file
-    static void ReadBlock_t(INDEX iHandle, UBYTE *pub, SLONG slStart, SLONG slLen);
-
-    // Close a ZIP file entry
-    static void Close(INDEX iHandle);
 };
+
+// Interface with functions for getting files out of ZIP archives
+namespace IUnzip {
+
+// Add one zip archive to the currently active set
+CORE_API void AddArchive(const CTFileName &fnm);
+
+// Read directories of all currently added archives in reverse alphabetical order
+CORE_API void ReadDirectoriesReverse_t(void);
+
+// Enumeration for all files in all zips
+CORE_API INDEX GetFileCount(void);
+
+// Get file at a specific position
+CORE_API const CTFileName &GetFileAtIndex(INDEX i);
+
+// Check if specific file is from a mod
+CORE_API BOOL IsFileAtIndexMod(INDEX i);
+
+// Get index of a specific file (-1 if no file)
+CORE_API INDEX GetFileIndex(const CTFileName &fnm);
+
+// [Cecil] Get path to the archive with the file
+CORE_API const CTFileName &GetFileArchive(const CTFileName &fnm);
+
+// Get info of a zip file entry
+CORE_API void GetFileInfo(INDEX iHandle, CTFileName &fnmZip,
+  SLONG &slOffset, SLONG &slSizeCompressed, SLONG &slSizeUncompressed, BOOL &bCompressed);
+
+// Check if a file entry exists
+inline BOOL FileExists(const CTFileName &fnm) {
+  return (GetFileIndex(fnm) != -1);
+};
+
+// Open a zip file entry for reading
+CORE_API INDEX Open_t(const CTFileName &fnm);
+
+// Get uncompressed size of a file
+CORE_API SLONG GetSize(INDEX iHandle);
+
+// Get CRC of a file
+CORE_API ULONG GetCRC(INDEX iHandle);
+
+// Read a block from ZIP file
+CORE_API void ReadBlock_t(INDEX iHandle, UBYTE *pub, SLONG slStart, SLONG slLen);
+
+// Close a ZIP file entry
+CORE_API void Close(INDEX iHandle);
+
+}; // namespace
 
 #endif

@@ -19,72 +19,75 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #ifdef CORE_NO_ZLIB
 
+namespace IUnzip {
+
 // zlib library isn't utilized
 #define NO_ZLIB_ERROR ASSERTALWAYS("zlib library usage has been disabled!")
 
-void IUnzip::AddArchive(const CTFileName &) {
+void AddArchive(const CTFileName &) {
   NO_ZLIB_ERROR;
 };
 
-void IUnzip::ReadDirectoriesReverse_t(void) {
+void ReadDirectoriesReverse_t(void) {
   NO_ZLIB_ERROR;
 };
 
-INDEX IUnzip::GetFileCount(void) {
+INDEX GetFileCount(void) {
   NO_ZLIB_ERROR;
   return -1;
 };
 
-const CTFileName &IUnzip::GetFileAtIndex(INDEX) {
+const CTFileName &GetFileAtIndex(INDEX) {
   NO_ZLIB_ERROR;
   static const CTFileName fnmNone = CTString("");
   return fnmNone;
 };
 
-BOOL IUnzip::IsFileAtIndexMod(INDEX) {
+BOOL IsFileAtIndexMod(INDEX) {
   NO_ZLIB_ERROR;
   return FALSE;
 };
 
-INDEX IUnzip::GetFileIndex(const CTFileName &) {
+INDEX GetFileIndex(const CTFileName &) {
   NO_ZLIB_ERROR;
   return -1;
 };
 
 // [Cecil] Get path to the archive with the file
-const CTFileName &IUnzip::GetFileArchive(const CTFileName &fnm) {
+const CTFileName &GetFileArchive(const CTFileName &fnm) {
   NO_ZLIB_ERROR;
-
-  static CTFileName fnmNoFile = CTString("");
-  return fnmNoFile;
+  static const CTFileName fnmNone = CTString("");
+  return fnmNone;
 };
 
-void IUnzip::GetFileInfo(INDEX, CTFileName &, SLONG &, SLONG &, SLONG &, BOOL &) {
+void GetFileInfo(INDEX, CTFileName &, SLONG &, SLONG &, SLONG &, BOOL &) {
   NO_ZLIB_ERROR;
 };
 
-INDEX IUnzip::Open_t(const CTFileName &) {
-  NO_ZLIB_ERROR;
-  return -1;
-};
-
-SLONG IUnzip::GetSize(INDEX) {
+INDEX Open_t(const CTFileName &) {
   NO_ZLIB_ERROR;
   return -1;
 };
 
-ULONG IUnzip::GetCRC(INDEX) {
+SLONG GetSize(INDEX) {
+  NO_ZLIB_ERROR;
+  return -1;
+};
+
+ULONG GetCRC(INDEX) {
   NO_ZLIB_ERROR;
   return 0;
 };
 
-void IUnzip::ReadBlock_t(INDEX, UBYTE *, SLONG, SLONG) {
+void ReadBlock_t(INDEX, UBYTE *, SLONG, SLONG) {
   NO_ZLIB_ERROR;
 };
 
-void IUnzip::Close(INDEX) {
+void Close(INDEX) {
   NO_ZLIB_ERROR;
 };
+
+}; // namespace
 
 #else
 
@@ -168,26 +171,6 @@ struct EndOfDir {
 };
 
 #pragma pack(pop)
-
-// One entry (a zipped file) in a zip archive
-class CZipEntry {
-  public:
-    CTFileName *ze_pfnmArchive;  // Path of the archive
-    CTFileName ze_fnm;           // File name with path inside archive
-    SLONG ze_slCompressedSize;   // Size of file in the archive
-    SLONG ze_slUncompressedSize; // Size when uncompressed
-    SLONG ze_slDataOffset;       // Position of compressed data inside archive
-    ULONG ze_ulCRC;              // Checksum of the file
-    BOOL ze_bStored;             // Set if file is not compressed, but stored
-  #if SE1_GAME != SS_REV
-    BOOL ze_bMod;                // Set if from a mod's archive
-  #endif
-
-    void Clear(void) {
-      ze_pfnmArchive = NULL;
-      ze_fnm.Clear();
-    };
-};
 
 #define BUF_SIZE 1024
 
@@ -287,8 +270,10 @@ static inline BOOL VerifyHandle(INDEX iHandle) {
   return TRUE;
 };
 
+namespace IUnzip {
+
 // Add one zip archive to the currently active set
-void IUnzip::AddArchive(const CTFileName &fnm)
+void AddArchive(const CTFileName &fnm)
 {
   _aZipArchives.Push() = fnm;
 };
@@ -478,9 +463,9 @@ static void ReadOneArchiveDir_t(CTFileName &fnm)
   }
 };
 
-int qsort_ArchiveCTFileName_reverse(const void *pElement1, const void *pElement2)
-{                   
-  // get the filenames
+static int qsort_ArchiveCTFileName_reverse(const void *pElement1, const void *pElement2)
+{
+  // Get the filenames
   const CTFileName &fnm1 = *(const CTFileName *)pElement1;
   const CTFileName &fnm2 = *(const CTFileName *)pElement2;
 
@@ -528,7 +513,7 @@ int qsort_ArchiveCTFileName_reverse(const void *pElement1, const void *pElement2
 };
 
 // Read directories of all currently added archives in reverse alphabetical order
-void IUnzip::ReadDirectoriesReverse_t(void)
+void ReadDirectoriesReverse_t(void)
 {
   // No archives
   if (_aZipArchives.Count() == 0) return;
@@ -558,17 +543,17 @@ void IUnzip::ReadDirectoriesReverse_t(void)
 };
 
 // Enumeration for all files in all zips
-INDEX IUnzip::GetFileCount(void) {
+INDEX GetFileCount(void) {
   return _aZipFiles.Count();
 };
 
 // Get file at a specific position
-const CTFileName &IUnzip::GetFileAtIndex(INDEX i) {
+const CTFileName &GetFileAtIndex(INDEX i) {
   return _aZipFiles[i].ze_fnm;
 };
 
 // Check if specific file is from a mod
-BOOL IUnzip::IsFileAtIndexMod(INDEX i) {
+BOOL IsFileAtIndexMod(INDEX i) {
 #if SE1_GAME != SS_REV
   return _aZipFiles[i].ze_bMod;
 #else
@@ -577,7 +562,7 @@ BOOL IUnzip::IsFileAtIndexMod(INDEX i) {
 };
 
 // Get index of a specific file (-1 if no file)
-INDEX IUnzip::GetFileIndex(const CTFileName &fnm)
+INDEX GetFileIndex(const CTFileName &fnm)
 {
   for (INDEX iFile = 0; iFile < _aZipFiles.Count(); iFile++) {
     // Filename matches
@@ -590,7 +575,7 @@ INDEX IUnzip::GetFileIndex(const CTFileName &fnm)
 };
 
 // [Cecil] Get path to the archive with the file
-const CTFileName &IUnzip::GetFileArchive(const CTFileName &fnm) {
+const CTFileName &GetFileArchive(const CTFileName &fnm) {
   for (INDEX iFile = 0; iFile < _aZipFiles.Count(); iFile++) {
     // Filename matches
     if (_aZipFiles[iFile].ze_fnm == fnm) {
@@ -603,7 +588,7 @@ const CTFileName &IUnzip::GetFileArchive(const CTFileName &fnm) {
 };
 
 // Get info of a zip file entry
-void IUnzip::GetFileInfo(INDEX iHandle, CTFileName &fnmZip, 
+void GetFileInfo(INDEX iHandle, CTFileName &fnmZip, 
   SLONG &slOffset, SLONG &slSizeCompressed, SLONG &slSizeUncompressed, BOOL &bCompressed)
 {
   if (!VerifyHandle(iHandle)) return;
@@ -619,7 +604,7 @@ void IUnzip::GetFileInfo(INDEX iHandle, CTFileName &fnmZip,
 };
 
 // Open a zip file entry for reading
-INDEX IUnzip::Open_t(const CTFileName &fnm)
+INDEX Open_t(const CTFileName &fnm)
 {
   CZipEntry *pze = NULL;
 
@@ -731,7 +716,7 @@ INDEX IUnzip::Open_t(const CTFileName &fnm)
 };
 
 // Get uncompressed size of a file
-SLONG IUnzip::GetSize(INDEX iHandle)
+SLONG GetSize(INDEX iHandle)
 {
   if (!VerifyHandle(iHandle)) return 0;
 
@@ -739,7 +724,7 @@ SLONG IUnzip::GetSize(INDEX iHandle)
 };
 
 // Get CRC of a file
-ULONG IUnzip::GetCRC(INDEX iHandle)
+ULONG GetCRC(INDEX iHandle)
 {
   if (!VerifyHandle(iHandle)) return 0;
 
@@ -747,7 +732,7 @@ ULONG IUnzip::GetCRC(INDEX iHandle)
 };
 
 // Read a block from ZIP file
-void IUnzip::ReadBlock_t(INDEX iHandle, UBYTE *pub, SLONG slStart, SLONG slLen)
+void ReadBlock_t(INDEX iHandle, UBYTE *pub, SLONG slStart, SLONG slLen)
 {
   if (!VerifyHandle(iHandle)) return;
 
@@ -856,12 +841,14 @@ void IUnzip::ReadBlock_t(INDEX iHandle, UBYTE *pub, SLONG slStart, SLONG slLen)
 };
 
 // Close a ZIP file entry
-void IUnzip::Close(INDEX iHandle)
+void Close(INDEX iHandle)
 {
   if (!VerifyHandle(iHandle)) return;
 
   // Clear it
   _aZipHandles[iHandle].Clear();
 };
+
+}; // namespace
 
 #endif
