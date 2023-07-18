@@ -63,9 +63,9 @@ inline INDEX GetSlashPos(const char *strString) {
 };
 
 // CTFileName method from 1.10
-inline void SetAbsolutePath(CTFileName &fnm) {
+inline void SetAbsolutePath(CTString &strPath) {
   // Collect path parts
-  CTString strRemaining(fnm);
+  CTString strRemaining(strPath);
   CStringStack astrParts;
 
   INDEX iSlashPos = GetSlashPos(strRemaining);
@@ -131,26 +131,61 @@ inline void SetAbsolutePath(CTFileName &fnm) {
     }
   }
 
-  fnm = strRemaining;
+  strPath = strRemaining;
 };
 
 // Convert relative paths into absolute paths and add missing backslashes
-inline void SetFullDirectory(CTFileName &fnmDir) {
-  INDEX iLength = fnmDir.Length();
+inline void SetFullDirectory(CTString &strDir) {
+  INDEX iLength = strDir.Length();
 
   // Add missing backslash at the end
-  if (fnmDir[iLength - 1] != '\\') {
-    fnmDir += CTString("\\");
+  if (strDir[iLength - 1] != '\\') {
+    strDir += CTString("\\");
   }
 
   // If shorter than 2 characters or doesn't start with a drive directory
-  if (iLength < 2 || fnmDir[1] != ':') {
+  if (iLength < 2 || strDir[1] != ':') {
     // Convert relative path into absolute path
-    fnmDir = CCoreAPI::AppPath() + fnmDir;
+    strDir = CCoreAPI::AppPath() + strDir;
   }
 
   // Convert the rest of the path into absolute path
-  SetAbsolutePath(fnmDir);
+  SetAbsolutePath(strDir);
+};
+
+// Fix formatting of paths from Revolution
+inline void FixRevPath(CTString &strPath) {
+  CTString strParse = strPath;
+
+  char *pchSrc = strParse.str_String;
+  char *pchDst = strPath.str_String;
+
+  // Clear path characters
+  memset(pchDst, '\0', strlen(pchDst));
+
+  while (*pchSrc != '\0') {
+    // Correct forward slashes to backslashes
+    if (*pchSrc == '/') {
+      *pchSrc = '\\';
+    }
+
+    // Check for succeeding slashes
+    char *pchNext = pchSrc + 1;
+
+    if (*pchSrc == '\\' && (*pchNext == '/' || *pchNext == '\\')) {
+      // Skip them
+      pchSrc++;
+      continue;
+    }
+
+    // Copy the character and proceed
+    *pchDst = *pchSrc;
+    pchSrc++;
+    pchDst++;
+  }
+
+  // Remove slash from the beginning
+  strPath.RemovePrefix("\\");
 };
 
 // Check if the file is readable
