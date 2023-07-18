@@ -46,6 +46,9 @@ class CZipEntry {
 // Interface with functions for getting files out of ZIP archives
 namespace IUnzip {
 
+// [Cecil] Sort files in ZIP archives by content directory
+CORE_API void SortEntries(void);
+
 // Add one zip archive to the currently active set
 CORE_API void AddArchive(const CTFileName &fnm);
 

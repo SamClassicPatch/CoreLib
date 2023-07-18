@@ -24,6 +24,10 @@ namespace IUnzip {
 // zlib library isn't utilized
 #define NO_ZLIB_ERROR ASSERTALWAYS("zlib library usage has been disabled!")
 
+void SortEntries(void) {
+  NO_ZLIB_ERROR;
+};
+
 void AddArchive(const CTFileName &) {
   NO_ZLIB_ERROR;
 };
@@ -277,6 +281,74 @@ static inline BOOL VerifyHandle(INDEX iHandle) {
 };
 
 namespace IUnzip {
+
+// [Cecil] Get priority for a specific archive
+static INDEX ArchiveDirPriority(CTFileName fnm)
+{
+  #define PRI_MOD   5
+  #define PRI_CDMOD 4
+  #define PRI_EXTRA 3
+  #define PRI_GAME  2
+  #define PRI_OTHER 1
+  #define PRI_CD    0
+
+  // Current game (less important than extra content, more than everything else)
+  if (fnm.RemovePrefix(CCoreAPI::AppPath())) {
+    // Mod or game
+    return fnm.HasPrefix("Mods\\") ? PRI_MOD : PRI_GAME;
+
+  // CD path (the least important)
+  } else if (_fnmCDPath != "" && fnm.RemovePrefix(_fnmCDPath)) {
+    // CD mod or CD
+    return fnm.HasPrefix("Mods\\") ? PRI_CDMOD : PRI_CD;
+  }
+
+  // Other game path
+  for (INDEX iDir = 0; iDir < GAME_DIRECTORIES_CT; iDir++) {
+    const CTString &strDir = _astrGameDirs[iDir];
+
+    if (strDir != "" && fnm.HasPrefix(strDir)) {
+      // Less important than current game
+      return PRI_OTHER;
+    }
+  }
+
+  // Otherwise it's extra content directory (the most important)
+  return PRI_EXTRA;
+};
+
+// [Cecil] Compare two ZIP file entries
+static int qsort_CompareContentDir(const void *pElement1, const void *pElement2)
+{
+  // Get the entries
+  const CZipEntry &ze1 = *(const CZipEntry *)pElement1;
+  const CZipEntry &ze2 = *(const CZipEntry *)pElement2;
+
+  // Sort archive directories with priority
+  INDEX iPriority1 = ArchiveDirPriority(*ze1.ze_pfnmArchive);
+  INDEX iPriority2 = ArchiveDirPriority(*ze2.ze_pfnmArchive);
+
+  if (iPriority1 < iPriority2) {
+    return +1;
+  } else if (iPriority1 > iPriority2) {
+    return -1;
+  }
+
+  // Sort archives in reverse alphabetical order
+  return -stricmp(ze1.ze_pfnmArchive->str_String, ze2.ze_pfnmArchive->str_String);
+};
+
+// [Cecil] Sort files in ZIP archives by content directory
+void SortEntries(void) {
+  // Order of archives after sorting:
+  // 1. From mod
+  // 2. From mod on CD
+  // 3. From extra content directories
+  // 4. From the game itself
+  // 5. From other game directories
+  // 6. From CD
+  qsort(&_aZipFiles[0], _aZipFiles.Count(), sizeof(CZipEntry), qsort_CompareContentDir);
+};
 
 // Add one zip archive to the currently active set
 void AddArchive(const CTFileName &fnm)
