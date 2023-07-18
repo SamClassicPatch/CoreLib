@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #pragma once
 #endif
 
+#include <CoreLib/Base/GameDirectories.h>
 #include <CoreLib/Base/Unzip.h>
 #include <CoreLib/Interfaces/DataFunctions.h>
 
@@ -41,6 +42,7 @@ enum EFileListFlags {
   FLF_ONLYMOD     = (1 << 4),      // List exclusively from the mod directory
   FLF_IGNORELISTS = (1 << 5),      // Ignore include/exclude lists if playing a mod
   FLF_IGNOREGRO   = (1 << 6),      // Ignore contents of loaded GRO packages
+  FLF_SEARCHGAMES = (1 << 7),      // Search directories of other games
 };
 
 // Include/exclude lists for base directory writing/reading
@@ -360,6 +362,17 @@ inline void ListGameFiles(CFileList &afnmFiles, const CTString &strDir, const CT
     ListInDir(CCoreAPI::AppPath(), afnmTemp, strDir, strPattern, bRecursive,
               bLists ? &aBaseBrowseInc : NULL, bLists ? &aBaseBrowseExc : NULL);
 
+    // [Cecil] List files from other game directories
+    if (ulFlags & FLF_SEARCHGAMES) {
+      for (INDEX iDir = 0; iDir < GAME_DIRECTORIES_CT; iDir++)
+      {
+        if (_astrGameDirs[iDir] == "") continue;
+
+        ListInDir(_astrGameDirs[iDir], afnmTemp, strDir, strPattern, bRecursive,
+                  bLists ? &aBaseBrowseInc : NULL, bLists ? &aBaseBrowseExc : NULL);
+      }
+    }
+
     // List extra files from the CD
     if (ulFlags & FLF_SEARCHCD && bCD) {
       ListInDir(_fnmCDPath, afnmTemp, strDir, strPattern, bRecursive,
@@ -377,7 +390,9 @@ inline void ListGameFiles(CFileList &afnmFiles, const CTString &strDir, const CT
     INDEX ctFilesInZips = IUnzip::GetFileCount();
 
     for (INDEX iFileInZip = 0; iFileInZip < ctFilesInZips; iFileInZip++) {
-      const CTFileName &fnm = IUnzip::GetFileAtIndex(iFileInZip);
+      // Get ZIP entry
+      const CZipEntry &ze = IUnzip::GetEntry(iFileInZip);
+      const CTFileName &fnm = ze.ze_fnm;
 
       // Skip if not under this directory
       if (bRecursive) {
@@ -391,6 +406,23 @@ inline void ListGameFiles(CFileList &afnmFiles, const CTString &strDir, const CT
       // Doesn't match the pattern
       if (strPattern != "" && !fnm.Matches(strPattern)) continue;
 
+      // [Cecil] Ignore archive files from other game directories
+      BOOL bSkipFromOtherGames = FALSE;
+
+      if (!(ulFlags & FLF_SEARCHGAMES)) {
+        for (INDEX iDir = 0; iDir < GAME_DIRECTORIES_CT; iDir++)
+        {
+          if (_astrGameDirs[iDir] == "") continue;
+
+          if (ze.ze_pfnmArchive->HasPrefix(_astrGameDirs[iDir])) {
+            bSkipFromOtherGames = TRUE;
+            break;
+          }
+        }
+      }
+
+      if (bSkipFromOtherGames) continue;
+
       BOOL bFileFromMod = IUnzip::IsFileAtIndexMod(iFileInZip);
 
       // List files exclusively from the mod
@@ -401,7 +433,7 @@ inline void ListGameFiles(CFileList &afnmFiles, const CTString &strDir, const CT
 
       // List files from the game
       } else if (!bFileFromMod) {
-        // Not a mod or shouldn't match mod's browse paths
+        // Not a mod file or shouldn't match mod's browse paths
         if (!bLists) {
           afnmTemp.Push() = fnm;
 

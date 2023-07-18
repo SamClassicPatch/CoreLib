@@ -37,6 +37,12 @@ INDEX GetFileCount(void) {
   return -1;
 };
 
+const CZipEntry &GetEntry(INDEX i) {
+  NO_ZLIB_ERROR;
+  static const CZipEntry zeInvalid;
+  return zeInvalid;
+};
+
 const CTFileName &GetFileAtIndex(INDEX) {
   NO_ZLIB_ERROR;
   static const CTFileName fnmNone = CTString("");
@@ -545,6 +551,11 @@ void ReadDirectoriesReverse_t(void)
 // Enumeration for all files in all zips
 INDEX GetFileCount(void) {
   return _aZipFiles.Count();
+};
+
+// [Cecil] Get ZIP file entry at a specific position
+const CZipEntry &GetEntry(INDEX i) {
+  return _aZipFiles[i];
 };
 
 // Get file at a specific position

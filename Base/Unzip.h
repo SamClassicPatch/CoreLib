@@ -55,6 +55,9 @@ CORE_API void ReadDirectoriesReverse_t(void);
 // Enumeration for all files in all zips
 CORE_API INDEX GetFileCount(void);
 
+// [Cecil] Get ZIP file entry at a specific position
+CORE_API const CZipEntry &GetEntry(INDEX i);
+
 // Get file at a specific position
 CORE_API const CTFileName &GetFileAtIndex(INDEX i);
 
