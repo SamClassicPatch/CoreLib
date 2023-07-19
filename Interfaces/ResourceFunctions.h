@@ -63,11 +63,16 @@ inline void CallFileRequester(CTFileName &fnmReplacement, char *achrTitle, char 
 };
 
 // Get replacement for some non-existing file
-inline BOOL GetReplacingFile(const CTFileName &fnmSourceFile, CTFileName &fnmReplacement, char *pFilter) {
-  static CSymbolPtr pbUseBase("wed_bUseBaseForReplacement");
+inline BOOL ReplaceFile(const CTFileName &fnmSourceFile, CTFileName &fnmReplacement, char *pFilter) {
+  // Peek into the base file without adding a new replacement entry in-game
+  const BOOL bReadOnly = (CCoreAPI::GetApplication() != CCoreAPI::APP_EDITOR);
 
-  // Don't replace files
-  if (!pbUseBase.Exists() || !pbUseBase.GetIndex()) return FALSE;
+  if (!bReadOnly) {
+    static CSymbolPtr pbUseBase("wed_bUseBaseForReplacement");
+
+    // Don't replace files
+    if (!pbUseBase.Exists() || !pbUseBase.GetIndex()) return FALSE;
+  }
 
   const CTString strBaseFile("Data\\BaseForReplacingFiles.txt");
 
@@ -89,7 +94,7 @@ inline BOOL GetReplacingFile(const CTFileName &fnmSourceFile, CTFileName &fnmRep
       if (CTString(strSource) ==  strRemap) continue;
 
       // Get remapped file
-      if (strSource == fnmReplacement) {
+      if (strSource == fnmSourceFile) {
         fnmReplacement = CTString(strRemap);
         return TRUE;
       }
@@ -98,6 +103,9 @@ inline BOOL GetReplacingFile(const CTFileName &fnmSourceFile, CTFileName &fnmRep
   } catch (char *strError) {
     (void)strError;
   }
+
+  // No replacement found
+  if (bReadOnly) return FALSE;
 
   // Call file requester for substituting the file
   const CTString strTitle(0, LOCALIZE("For:\"%s\""), fnmSourceFile.str_String);
@@ -142,7 +150,7 @@ void SetDataFromFile_t(Type &object, CTFileName &fnmData, char *strFilters)
       // Find replacement file
       CTFileName fnmReplacement;
 
-      if (IRes::GetReplacingFile(fnmData, fnmReplacement, strFilters)) {
+      if (IRes::ReplaceFile(fnmData, fnmReplacement, strFilters)) {
         fnmData = fnmReplacement;
 
       } else {
