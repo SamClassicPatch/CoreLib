@@ -50,6 +50,7 @@ class CORE_API CCoreAPI : public ICoreHooks {
       BOOL bDebugPatcher;
       BOOL bDPIAware;
       BOOL bExtendedFileSystem;
+      BOOL bFullAppIntegration;
       CTString strTFEDir;
 
       SConfigProps(); // Constructor that sets default property states

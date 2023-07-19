@@ -115,6 +115,7 @@ void ClassicsPatch_InitCore(void) {
     DEFINE_PROP_SYMBOL(INDEX, bDebugPatcher);
     DEFINE_PROP_SYMBOL(INDEX, bDPIAware);
     DEFINE_PROP_SYMBOL(INDEX, bExtendedFileSystem);
+    DEFINE_PROP_SYMBOL(INDEX, bFullAppIntegration);
     DEFINE_PROP_SYMBOL(CTString, strTFEDir);
 
     #undef DEFINE_PROP_SYMBOL

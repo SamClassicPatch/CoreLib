@@ -60,7 +60,8 @@ static void SetVanillaBinDirectory(void) {
 
 // Constructor that sets default property states
 CCoreAPI::SConfigProps::SConfigProps()
-  : bCustomMod(TRUE), bDebugPatcher(FALSE), bDPIAware(TRUE), bExtendedFileSystem(TRUE), strTFEDir("")
+  : bCustomMod(TRUE), bDebugPatcher(FALSE), bDPIAware(TRUE), bExtendedFileSystem(TRUE),
+    bFullAppIntegration(FALSE), strTFEDir("")
 {
 };
 
@@ -89,6 +90,7 @@ void CCoreAPI::SConfigProps::Load(void) {
   bDebugPatcher       = _iniConfig.GetBoolValue("", "DebugPatcher", FALSE);
   bDPIAware           = _iniConfig.GetBoolValue("", "DPIAware", TRUE);
   bExtendedFileSystem = _iniConfig.GetBoolValue("", "ExtendedFileSystem", TRUE);
+  bFullAppIntegration = _iniConfig.GetBoolValue("", "FullAppIntegration", FALSE);
   strTFEDir           = _iniConfig.GetValue("", "TFEDir", "");
 };
 
@@ -102,6 +104,7 @@ void CCoreAPI::SConfigProps::Save(void) {
   _iniConfig.SetValue("", "DebugPatcher", TO_STR(bDebugPatcher));
   _iniConfig.SetValue("", "DPIAware", TO_STR(bDPIAware));
   _iniConfig.SetValue("", "ExtendedFileSystem", TO_STR(bExtendedFileSystem));
+  _iniConfig.SetValue("", "FullAppIntegration", TO_STR(bFullAppIntegration));
   _iniConfig.SetValue("", "TFEDir", strTFEDir);
 
   #undef TO_STR
