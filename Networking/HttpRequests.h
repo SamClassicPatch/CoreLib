@@ -20,8 +20,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #pragma once
 #endif
 
-// HTTP response as an array of bytes
-typedef CStaticArray<char> CHttpResponse;
+#include <STLIncludesBegin.h>
+#include <string>
+#include <STLIncludesEnd.h>
+
+// HTTP response as a null-terminated string (array of bytes)
+typedef std::string CHttpResponse;
 
 // HTTP callback function
 typedef void (*CHttpCallback)(CHttpResponse aResponse);

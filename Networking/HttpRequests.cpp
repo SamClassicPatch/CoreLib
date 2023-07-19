@@ -146,15 +146,13 @@ CHttpResponse HttpRequest(LPCWSTR wstrServer, LPCWSTR wstrVerb, LPCWSTR wstrObje
       }
 
       // Allocate space for new data
-      INDEX iCount = aResponse.Count();
-      aResponse.Expand(iCount + ulSize);
-
-      ZeroMemory(aResponse.sa_Array + iCount, ulSize);
+      size_t iCount = aResponse.length();
+      aResponse.append(iCount + ulSize, '\0');
 
       // Read the data
       ULONG ulDownloaded = 0;
 
-      if (!WinHttpReadData(hRequest, (LPVOID)(aResponse.sa_Array + iCount), ulSize, &ulDownloaded)) {
+      if (!WinHttpReadData(hRequest, (LPVOID)(&aResponse[iCount]), ulSize, &ulDownloaded)) {
         CPrintF(TRANS("Error %u in WinHttpReadData()\n"), GetLastError());
 
       } else if (ulSize > 0) {
@@ -172,11 +170,6 @@ CHttpResponse HttpRequest(LPCWSTR wstrServer, LPCWSTR wstrVerb, LPCWSTR wstrObje
   if (hRequest != NULL) WinHttpCloseHandle(hRequest);
   if (hConnect != NULL) WinHttpCloseHandle(hConnect);
   if (hSession != NULL) WinHttpCloseHandle(hSession);
-
-  // Add null terminator
-  INDEX iCount = aResponse.Count();
-  aResponse.Expand(iCount + 1);
-  aResponse[iCount] = '\0';
 
   if (pCallback != NULL) {
     pCallback(aResponse);
