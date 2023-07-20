@@ -62,6 +62,9 @@ class CORE_API IProcessPacket {
     // Should mask player GUIDs or not
     static BOOL _bMaskGUIDs;
 
+    // Check if should use GUID masking
+    static BOOL ShouldMaskGUIDs(void);
+
     // Clear arrays with sync checks
     static void ClearSyncChecks(void);
 

@@ -61,6 +61,12 @@ CStaticArray<IProcessPacket::CSyncCheckArray> IProcessPacket::_aClientChecks;
 // Should mask player GUIDs or not
 BOOL IProcessPacket::_bMaskGUIDs = TRUE;
 
+// Check if should use GUID masking
+BOOL IProcessPacket::ShouldMaskGUIDs(void) {
+  // Setting is on; running a server; with more than one player
+  return IProcessPacket::_bMaskGUIDs && _pNetwork->IsServer() && _pNetwork->ga_sesSessionState.ses_ctMaxPlayers > 1;
+};
+
 // Clear arrays with sync checks
 void IProcessPacket::ClearSyncChecks(void)
 {
@@ -76,7 +82,7 @@ void IProcessPacket::AddSyncCheck(const INDEX iClient, const CSyncCheck &sc)
 {
 #if CLASSICSPATCH_GUID_MASKING
   // Use the first array if not masking
-  CSyncCheckArray &aChecks = _aClientChecks[_bMaskGUIDs ? iClient : 0];
+  CSyncCheckArray &aChecks = _aClientChecks[ShouldMaskGUIDs() ? iClient : 0];
 #else
   CSyncCheckArray &aChecks = _pNetwork->ga_srvServer.srv_ascChecks;
 #endif
@@ -110,7 +116,7 @@ INDEX IProcessPacket::FindSyncCheck(const INDEX iClient, TIME tmTick, CSyncCheck
 {
 #if CLASSICSPATCH_GUID_MASKING
   // Use the first array if not masking
-  CSyncCheckArray &aChecks = _aClientChecks[_bMaskGUIDs ? iClient : 0];
+  CSyncCheckArray &aChecks = _aClientChecks[ShouldMaskGUIDs() ? iClient : 0];
 #else
   CSyncCheckArray &aChecks = _pNetwork->ga_srvServer.srv_ascChecks;
 #endif
@@ -503,7 +509,7 @@ void IProcessPacket::OnPlayerConnectRequest(INDEX iClient, CNetworkMessage &nmMe
     const INDEX iLastSequence = ++srv.srv_iLastProcessedSequence;
 
   #if CLASSICSPATCH_GUID_MASKING
-    if (_bMaskGUIDs) {
+    if (ShouldMaskGUIDs()) {
       // Send message back to this client about adding a new player
       if (iClient == 0 || sso.sso_bActive) {
         CNetStreamBlock nsbClientPlayer(MSG_SEQ_ADDPLAYER, iLastSequence);
@@ -525,7 +531,7 @@ void IProcessPacket::OnPlayerConnectRequest(INDEX iClient, CNetworkMessage &nmMe
 
   #if CLASSICSPATCH_GUID_MASKING
     // Send to other clients
-    if (_bMaskGUIDs) {
+    if (ShouldMaskGUIDs()) {
       for (INDEX iSession = 0; iSession < srv.srv_assoSessions.Count(); iSession++) {
         CSessionSocket &ssoBlock = srv.srv_assoSessions[iSession];
 
@@ -619,7 +625,7 @@ void IProcessPacket::OnCharacterChangeRequest(INDEX iClient, CNetworkMessage &nm
   const INDEX iLastSequence = ++srv.srv_iLastProcessedSequence;
 
 #if CLASSICSPATCH_GUID_MASKING
-  if (_bMaskGUIDs) {
+  if (ShouldMaskGUIDs()) {
     // Send character change back to this client
     if (iClient == 0 || srv.srv_assoSessions[iClient].sso_bActive) {
       CNetStreamBlock nsbClientChar(MSG_SEQ_CHARACTERCHANGE, iLastSequence);
@@ -641,7 +647,7 @@ void IProcessPacket::OnCharacterChangeRequest(INDEX iClient, CNetworkMessage &nm
 
 #if CLASSICSPATCH_GUID_MASKING
   // Send to other clients
-  if (_bMaskGUIDs) {
+  if (ShouldMaskGUIDs()) {
     for (INDEX iSession = 0; iSession < srv.srv_assoSessions.Count(); iSession++) {
       CSessionSocket &ssoBlock = srv.srv_assoSessions[iSession];
 
