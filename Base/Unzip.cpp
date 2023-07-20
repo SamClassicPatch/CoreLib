@@ -285,35 +285,34 @@ namespace IUnzip {
 // [Cecil] Get priority for a specific archive
 static INDEX ArchiveDirPriority(CTFileName fnm)
 {
-  #define PRI_MOD   5
-  #define PRI_CDMOD 4
-  #define PRI_EXTRA 3
-  #define PRI_GAME  2
-  #define PRI_OTHER 1
-  #define PRI_CD    0
+  #define PRI_MOD   103
+  #define PRI_CDMOD 102
+  #define PRI_EXTRA 101
+  #define PRI_GAME  100
+  #define PRI_CD   -100 // Absolute last resort
 
-  // Current game (less important than extra content, more than everything else)
+  // Current game (overrides other games and CD)
   if (fnm.RemovePrefix(CCoreAPI::AppPath())) {
-    // Mod or game
+    // Check for mod (overrides everything)
     return fnm.HasPrefix("Mods\\") ? PRI_MOD : PRI_GAME;
 
-  // CD path (the least important)
+  // CD path
   } else if (_fnmCDPath != "" && fnm.RemovePrefix(_fnmCDPath)) {
-    // CD mod or CD
+    // Check for CD mod (overrides everything but normal mod)
     return fnm.HasPrefix("Mods\\") ? PRI_CDMOD : PRI_CD;
   }
 
-  // Other game path
+  // Other game paths
   for (INDEX iDir = 0; iDir < GAME_DIRECTORIES_CT; iDir++) {
     const CTString &strDir = _astrGameDirs[iDir];
 
     if (strDir != "" && fnm.HasPrefix(strDir)) {
-      // Less important than current game
-      return PRI_OTHER;
+      // Sort by list index (doesn't override other files)
+      return iDir;
     }
   }
 
-  // Otherwise it's extra content directory (the most important)
+  // None of the above - extra content directory (overrides current game)
   return PRI_EXTRA;
 };
 
