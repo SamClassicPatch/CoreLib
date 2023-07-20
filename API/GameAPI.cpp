@@ -53,8 +53,13 @@ void CGameAPI::HookFields(void) {
   pstrJoinAddress = &_pGame->gam_strJoinAddress;
 
   astrAxisNames      = &_pGame->gm_astrAxisNames[0];
+
+  // [Cecil] Rev: No high score table
+#if SE1_GAME != SS_REV
   ahseHighScores     = &_pGame->gm_ahseHighScores[0];
   piLastSetHighScore = &_pGame->gm_iLastSetHighScore;
+#endif
+
   apcPlayers         = &_pGame->gm_apcPlayers[0];
   pctrlControlsExtra = &_pGame->gm_ctrlControlsExtra;
   piSinglePlayer     = &_pGame->gm_iSinglePlayer;
@@ -185,7 +190,21 @@ BOOL CGameAPI::IsMenuEnabledSS(const CTString &strMenu)
 
 // Get one of the high score entries
 CHighScoreEntry *CGameAPI::GetHighScore(INDEX iEntry) const {
-  return &ahseHighScores[iEntry];
+  #if SE1_GAME != SS_REV
+    return &ahseHighScores[iEntry];
+
+  #else
+    // [Cecil] Rev: Dummy table entry
+    static const struct DummyHighScore {
+      CTString strPlayer;
+      INDEX iDiff;
+      TIME tmTime;
+      INDEX ctKills;
+      INDEX ctScore;
+    } hse = { "<invalid>", 0xBBD1EB, 0.0, 0, 0 };
+
+    return (CHighScoreEntry *)&hse;
+  #endif
 };
 
 // Get actions of extra controls

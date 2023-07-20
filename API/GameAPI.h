@@ -235,12 +235,18 @@ class CORE_API CGameAPI {
 
     // Get index of the last set high score
     virtual INDEX GetLastSetHighScore(void) const {
-      return *piLastSetHighScore;
+      #if SE1_GAME != SS_REV
+        return *piLastSetHighScore;
+      #else
+        return -1;
+      #endif
     };
 
     // Set index of the last set high score
     virtual void SetLastSetHighScore(INDEX iHighScore) {
-      *piLastSetHighScore = iHighScore;
+      #if SE1_GAME != SS_REV
+        *piLastSetHighScore = iHighScore;
+      #endif
     };
 
     // Get player character for some profile
