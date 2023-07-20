@@ -53,7 +53,6 @@ class CORE_API CNetStreamBlock : public CNetworkMessage {
     void Read_t(CTStream &strm);
 };
 
-
 // Stream of message blocks that can be sent across network
 // Reimplementation of Serious Engine's CNetworkStream
 class CORE_API CNetStream {
@@ -61,10 +60,6 @@ class CORE_API CNetStream {
     CListHead ns_lhBlocks; // List of blocks of this stream (higher sequences first)
 
   public:
-    // Declarations for proper casting of CNetworkStream
-    CNetStream(void);
-    ~CNetStream(void);
-
     // Add block that's already allocated to the stream
     void AddAllocatedBlock(CNetStreamBlock *pnsbBlock);
 

@@ -39,7 +39,7 @@ CNetStreamBlock::CNetStreamBlock(CNetworkMessage &nmOther, INDEX iSequenceNumber
 void CNetStreamBlock::ReadFromMessage(CNetworkMessage &nmToRead) {
   // Read sequence number from message
   nmToRead >> nsb_iSequenceNumber;
-  
+
   // Read the block as a submessage
   nmToRead.ExtractSubMessage(*this);
 };
@@ -48,7 +48,7 @@ void CNetStreamBlock::ReadFromMessage(CNetworkMessage &nmToRead) {
 void CNetStreamBlock::WriteToMessage(CNetworkMessage &nmToWrite) {
   // Write sequence number to message
   nmToWrite << nsb_iSequenceNumber;
-  
+
   // Write the block as a submessage
   nmToWrite.InsertSubMessage(*this);
 };
@@ -62,10 +62,10 @@ void CNetStreamBlock::RemoveFromStream(void) {
 void CNetStreamBlock::Write_t(CTStream &strm) {
   // Write sequence number
   strm << nsb_iSequenceNumber;
-  
+
   // Write block size
   strm << nm_slSize;
-  
+
   // Write block contents
   strm.Write_t(nm_pubMessage, nm_slSize);
 };
@@ -74,21 +74,21 @@ void CNetStreamBlock::Write_t(CTStream &strm) {
 void CNetStreamBlock::Read_t(CTStream &strm) {
   // Read sequence number
   strm >> nsb_iSequenceNumber;
-  
+
   // Read block size
   strm >> nm_slSize;
-  
+
   // Read block contents
   strm.Read_t(nm_pubMessage, nm_slSize);
-  
+
   // Init the message read/write pointer
   nm_pubPointer = nm_pubMessage;
   nm_iBit = 0;
-  
+
   // Get the message type
   UBYTE ubType = 0;
   *this >> ubType;
-  
+
   nm_mtType = (MESSAGETYPE)ubType;
 };
 
@@ -96,7 +96,7 @@ void CNetStreamBlock::Read_t(CTStream &strm) {
 void CNetStream::AddAllocatedBlock(CNetStreamBlock *pnsbBlock) {
   // Preserve iterator for later use
   LISTITER(CNetStreamBlock, nsb_lnInStream) itnsbInList(ns_lhBlocks);
-  
+
   // Search all blocks already in list
   for (; !itnsbInList.IsPastEnd(); itnsbInList.MoveToNext())
   {
