@@ -46,12 +46,18 @@ class CORE_API CCoreAPI : public ICoreHooks {
 
     // Easily accessible properties from the global config
     struct SConfigProps {
+      #define CONFIG_DEFAULT_DIR_TFE "..\\Serious Sam Classic The First Encounter\\"
+      #define CONFIG_DEFAULT_DIR_SSR "..\\Serious Sam Revolution\\"
+      #define CONFIG_DEFAULT_DIR_WORKSHOP "..\\workshop\\content\\227780\\"
+
       BOOL bCustomMod;
       BOOL bDebugPatcher;
       BOOL bDPIAware;
       BOOL bExtendedFileSystem;
       BOOL bFullAppIntegration;
       CTString strTFEDir;
+      CTString strSSRDir;
+      CTString strSSRWorkshop;
 
       SConfigProps(); // Constructor that sets default property states
       void Load(void); // Load properties from the config

@@ -61,7 +61,7 @@ static void SetVanillaBinDirectory(void) {
 // Constructor that sets default property states
 CCoreAPI::SConfigProps::SConfigProps()
   : bCustomMod(TRUE), bDebugPatcher(FALSE), bDPIAware(TRUE), bExtendedFileSystem(TRUE),
-    bFullAppIntegration(FALSE), strTFEDir("")
+    bFullAppIntegration(FALSE), strTFEDir(""), strSSRDir(""), strSSRWorkshop("")
 {
 };
 
@@ -91,7 +91,9 @@ void CCoreAPI::SConfigProps::Load(void) {
   bDPIAware           = _iniConfig.GetBoolValue("", "DPIAware", TRUE);
   bExtendedFileSystem = _iniConfig.GetBoolValue("", "ExtendedFileSystem", TRUE);
   bFullAppIntegration = _iniConfig.GetBoolValue("", "FullAppIntegration", FALSE);
-  strTFEDir           = _iniConfig.GetValue("", "TFEDir", "");
+  strTFEDir           = _iniConfig.GetValue("", "TFEDir", CONFIG_DEFAULT_DIR_TFE);
+  strSSRDir           = _iniConfig.GetValue("", "SSRDir", CONFIG_DEFAULT_DIR_SSR);
+  strSSRWorkshop      = _iniConfig.GetValue("", "SSRWorkshop", CONFIG_DEFAULT_DIR_WORKSHOP);
 };
 
 // Save properties into the config
@@ -106,6 +108,8 @@ void CCoreAPI::SConfigProps::Save(void) {
   _iniConfig.SetValue("", "ExtendedFileSystem", TO_STR(bExtendedFileSystem));
   _iniConfig.SetValue("", "FullAppIntegration", TO_STR(bFullAppIntegration));
   _iniConfig.SetValue("", "TFEDir", strTFEDir);
+  _iniConfig.SetValue("", "SSRDir", strSSRDir);
+  _iniConfig.SetValue("", "SSRWorkshop", strSSRWorkshop);
 
   #undef TO_STR
 

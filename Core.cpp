@@ -117,6 +117,8 @@ void ClassicsPatch_InitCore(void) {
     DEFINE_PROP_SYMBOL(INDEX, bExtendedFileSystem);
     DEFINE_PROP_SYMBOL(INDEX, bFullAppIntegration);
     DEFINE_PROP_SYMBOL(CTString, strTFEDir);
+    DEFINE_PROP_SYMBOL(CTString, strSSRDir);
+    DEFINE_PROP_SYMBOL(CTString, strSSRWorkshop);
 
     #undef DEFINE_PROP_SYMBOL
   }
