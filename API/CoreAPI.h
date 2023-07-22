@@ -48,7 +48,7 @@ class CORE_API CCoreAPI : public ICoreHooks {
     struct SConfigProps {
       #define CONFIG_DEFAULT_DIR_TFE "..\\Serious Sam Classic The First Encounter\\"
       #define CONFIG_DEFAULT_DIR_SSR "..\\Serious Sam Revolution\\"
-      #define CONFIG_DEFAULT_DIR_WORKSHOP "..\\workshop\\content\\227780\\"
+      #define CONFIG_DEFAULT_DIR_WORKSHOP "..\\..\\workshop\\content\\227780\\"
 
       BOOL bCustomMod;
       BOOL bDebugPatcher;
