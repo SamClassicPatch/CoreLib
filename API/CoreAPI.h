@@ -66,9 +66,6 @@ class CORE_API CCoreAPI : public ICoreHooks {
 
   public:
     static const ULONG ulCoreVersion; // Release version
-    static EAppType eAppType; // Running application type
-    static BOOL bCustomMod; // Using custom mod from the patch
-    static CTString strVanillaExt; // Library extension of the vanilla game
 
     // API submodules
     CPatchAPI &apiPatches;
@@ -81,30 +78,23 @@ class CORE_API CCoreAPI : public ICoreHooks {
 
     // Get running application type after initializing the core
     // For modules that aren't utilizing Core library directly (e.g. plugins)
-    virtual EAppType GetAppType(void) {
-      return eAppType;
-    };
+    virtual EAppType GetAppType(void);
 
     // Get running application type before initializing the core
-    static inline EAppType GetApplication(void) {
-      return eAppType;
-    };
+    static EAppType GetApplication(void);
 
     // Check if playing with a custom mod
-    static inline BOOL IsCustomModActive(void) {
-      return bCustomMod;
-    };
+    static BOOL IsCustomModActive(void);
+
+    // Set custom mod state only once
+    static void SetCustomMod(BOOL bState);
 
     // Get vanilla library extension after initializing the core
     // For modules that aren't utilizing Core library directly (e.g. plugins)
-    virtual CTString GetModExt(void) {
-      return strVanillaExt;
-    };
+    virtual CTString GetModExt(void);
 
     // Get vanilla library extension before initializing the core
-    static inline CTString GetVanillaExt(void) {
-      return strVanillaExt;
-    };
+    static CTString GetVanillaExt(void);
 
     // Setup the core before initializing it
     static void Setup(EAppType eSetType);

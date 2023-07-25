@@ -32,10 +32,10 @@ CCoreAPI *_pCoreAPI = NULL;
 // Define release version of the core
 const ULONG CCoreAPI::ulCoreVersion = CORE_PATCH_VERSION;
 
-// Define static fields
-CCoreAPI::EAppType CCoreAPI::eAppType = CCoreAPI::APP_UNKNOWN;
-BOOL CCoreAPI::bCustomMod = FALSE;
-CTString CCoreAPI::strVanillaExt = "";
+// Define constant data
+static CCoreAPI::EAppType _eAppType = CCoreAPI::APP_UNKNOWN; // Running application type
+static BOOL _bCustomMod = FALSE; // Using custom mod from the patch
+static CTString _strVanillaExt = ""; // Library extension of the vanilla game
 
 // Define patch config and its property holder
 static CIniConfig _iniConfig;
@@ -132,6 +132,9 @@ CCoreAPI::CCoreAPI() :
   ASSERT(_pCoreAPI == NULL);
   _pCoreAPI = this;
 
+  // Disable custom mod if it was never set
+  SetCustomMod(FALSE);
+
   // Add core API to symbols
   CShellSymbol &ssNew = *_pShell->sh_assSymbols.New(1);
 
@@ -150,10 +153,48 @@ CCoreAPI::CCoreAPI() :
   _pShell->DeclareSymbol("persistent INDEX gam_bAutoUpdateShadows;", &gam_bAutoUpdateShadows);
 };
 
+// Get running application type after initializing the core
+// For modules that aren't utilizing Core library directly (e.g. plugins)
+CCoreAPI::EAppType CCoreAPI::GetAppType(void) {
+  return _eAppType;
+};
+
+// Get running application type before initializing the core
+CCoreAPI::EAppType CCoreAPI::GetApplication(void) {
+  return _eAppType;
+};
+
+// Check if playing with a custom mod
+BOOL CCoreAPI::IsCustomModActive(void) {
+  return _bCustomMod;
+};
+
+// Set custom mod state only once
+void CCoreAPI::SetCustomMod(BOOL bState) {
+  // Don't let the state be changed
+  static BOOL bCustomModSet = FALSE;
+
+  if (bCustomModSet) return;
+  bCustomModSet = TRUE;
+
+  _bCustomMod = bState;
+};
+
+// Get vanilla library extension after initializing the core
+// For modules that aren't utilizing Core library directly (e.g. plugins)
+CTString CCoreAPI::GetModExt(void) {
+  return _strVanillaExt;
+};
+
+// Get vanilla library extension before initializing the core
+CTString CCoreAPI::GetVanillaExt(void) {
+  return _strVanillaExt;
+};
+
 // Setup the core before initializing it
 void CCoreAPI::Setup(EAppType eSetType) {
   // Set application type
-  eAppType = eSetType;
+  _eAppType = eSetType;
 
   // Specify extra DLL directory
   SetVanillaBinDirectory();
@@ -168,7 +209,7 @@ void CCoreAPI::Setup(EAppType eSetType) {
     std::string strReadExt;
 
     if (std::getline(strm, strReadExt)) {
-      strVanillaExt = strReadExt.c_str();
+      _strVanillaExt = strReadExt.c_str();
     }
   }
 
