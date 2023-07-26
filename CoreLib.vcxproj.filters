@@ -267,6 +267,9 @@
     <ClInclude Include="Base\GameDirectories.h">
       <Filter>Header Files\Base headers</Filter>
     </ClInclude>
+    <ClInclude Include="API\CoreVariables.h">
+      <Filter>Header Files\API headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="StdH.cpp">

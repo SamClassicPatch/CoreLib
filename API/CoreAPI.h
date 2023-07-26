@@ -24,8 +24,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <CoreLib/Base/CommonCore.h>
 #include <CoreLib/API/ApiConfig.h>
 
-// Include global hooks
+// Include global hooks and variable data
 #include <CoreLib/API/CoreHooks.h>
+#include <CoreLib/API/CoreVariables.h>
 
 // Declare API submodules
 class CPatchAPI;
@@ -66,6 +67,7 @@ class CORE_API CCoreAPI : public ICoreHooks {
 
   public:
     static const ULONG ulCoreVersion; // Release version
+    static CCoreVariables varData; // Variable data
 
     // API submodules
     CPatchAPI &apiPatches;

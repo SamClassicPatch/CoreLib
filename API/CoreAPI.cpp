@@ -37,6 +37,9 @@ static CCoreAPI::EAppType _eAppType = CCoreAPI::APP_UNKNOWN; // Running applicat
 static BOOL _bCustomMod = FALSE; // Using custom mod from the patch
 static CTString _strVanillaExt = ""; // Library extension of the vanilla game
 
+// Define variable data
+CCoreVariables CCoreAPI::varData;
+
 // Define patch config and its property holder
 static CIniConfig _iniConfig;
 static CCoreAPI::SConfigProps _cfgProps;
@@ -130,20 +133,29 @@ CCoreAPI::CCoreAPI() :
 {
   // Make sure that this is the only API class
   ASSERT(_pCoreAPI == NULL);
+
   _pCoreAPI = this;
+  varData.pAPI = this;
 
   // Disable custom mod if it was never set
   SetCustomMod(FALSE);
 
-  // Add core API to symbols
-  CShellSymbol &ssNew = *_pShell->sh_assSymbols.New(1);
+  // Add core API and variable data to symbols
+  CShellSymbol *pssNew = _pShell->sh_assSymbols.New(2);
 
-  ssNew.ss_strName = "CoreAPI"; // Access by this symbol name
-  ssNew.ss_istType = 0; // Should be '_shell_istUndeclared'
-  ssNew.ss_pvValue = this; // Pointer to self
-  ssNew.ss_ulFlags = SSF_CONSTANT; // Unchangable
-  ssNew.ss_pPreFunc = NULL; // Unused
-  ssNew.ss_pPostFunc = NULL; // Unused
+  pssNew[0].ss_strName = "CoreAPI";
+  pssNew[0].ss_pvValue = this;
+
+  pssNew[1].ss_strName = CORE_VARIABLE_DATA_SYMBOL;
+  pssNew[1].ss_pvValue = &varData;
+
+  // Default values for shell symbols
+  for (INDEX iSymbol = 0; iSymbol < 2; iSymbol++) {
+    pssNew[iSymbol].ss_istType = 0; // Should be '_shell_istUndeclared'
+    pssNew[iSymbol].ss_ulFlags = SSF_CONSTANT; // Unchangable
+    pssNew[iSymbol].ss_pPreFunc = NULL; // Unused
+    pssNew[iSymbol].ss_pPostFunc = NULL; // Unused
+  }
 
   // Update shadows in a current world
   extern void UpdateShadows(void);
