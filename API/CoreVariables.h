@@ -29,9 +29,13 @@ class CCoreVariables {
     // Pointer to CCoreAPI
     void *pAPI;
 
+    // Variable data (changed by Classics Patch)
+    BOOL bGameplayExt; // Gameplay logic extensions (set by starting any session)
+
   public:
     // Default constructor
-    CCoreVariables() : pAPI(NULL)
+    CCoreVariables() : pAPI(NULL),
+      bGameplayExt(TRUE)
     {
     };
 };

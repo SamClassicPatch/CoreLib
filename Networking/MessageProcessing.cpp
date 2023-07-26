@@ -435,6 +435,10 @@ void IProcessPacket::OnConnectRemoteSessionStateRequest(INDEX iClient, CNetworkM
     strmInfo << _pNetwork->ga_sesSessionState.ses_ulSpawnFlags;
     strmInfo.Write_t(_pNetwork->ga_aubDefaultProperties, NET_MAXSESSIONPROPERTIES);
 
+    // [Cecil] Append extra info to the session state for patched clients
+    extern void AppendServerInfoToSessionState(CTMemoryStream &strm);
+    AppendServerInfoToSessionState(strmInfo);
+
     const SLONG slSize = strmInfo.GetStreamSize() >> 10; // Size in KB
 
     // Send reply to the remote session state
