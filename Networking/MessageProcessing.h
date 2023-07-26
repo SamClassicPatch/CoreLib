@@ -85,11 +85,23 @@ class CORE_API IProcessPacket {
     // Check if character can be changed for a specific player
     static BOOL CanChangeCharacter(CPlayerEntity *pen);
 
+  // Session state data
+  public:
+
+    // Write patch identification tag into a stream
+    static void WritePatchTag(CTStream &strm);
+
+    // Read patch identification tag from a stream
+    static BOOL ReadPatchTag(CTStream &strm, ULONG *pulReadVersion);
+
     // Reset data before starting any session
-    static void ResetSessionData(BOOL bServer);
+    static void ResetSessionData(BOOL bNewSetup);
+
+    // Append extra info about the patched server
+    static void WriteServerInfoToSessionState(CTStream &strm);
 
     // Read extra info about the patched server
-    static void ReadServerInfoFromSessionState(CTMemoryStream &strm);
+    static void ReadServerInfoFromSessionState(CTStream &strm);
 
   // Message processors (if they return TRUE, they also get processed by CServer afterwards)
   public:

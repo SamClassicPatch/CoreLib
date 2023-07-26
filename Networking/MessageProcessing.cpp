@@ -443,8 +443,7 @@ void IProcessPacket::OnConnectRemoteSessionStateRequest(INDEX iClient, CNetworkM
     strmInfo.Write_t(_pNetwork->ga_aubDefaultProperties, NET_MAXSESSIONPROPERTIES);
 
     // [Cecil] Append extra info to the session state for patched clients
-    extern void AppendServerInfoToSessionState(CTMemoryStream &strm);
-    AppendServerInfoToSessionState(strmInfo);
+    WriteServerInfoToSessionState(strmInfo);
 
     const SLONG slSize = strmInfo.GetStreamSize() >> 10; // Size in KB
 

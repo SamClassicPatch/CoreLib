@@ -17,71 +17,88 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "MessageProcessing.h"
 
-// Available chunks
-static const CChunkID _cidExclusive0("PXG0"); // Patch-Exclusive Gameplay = false
-static const CChunkID _cidExclusive1("PXG1"); // Patch-Exclusive Gameplay = true
-
-// Read one chunk and process its data
-static void ReadOneServerInfoChunk(CTMemoryStream &strm) {
-  // Get chunk ID and compare it
-  CChunkID cid = strm.GetID_t();
-
-  // Vanilla gameplay
-  if (cid == _cidExclusive0) {
-    CCoreAPI::varData.bGameplayExt = FALSE;
-
-  // Patched gameplay
-  } else if (cid == _cidExclusive1) {
-    CCoreAPI::varData.bGameplayExt = TRUE;
-  }
-};
-
-// Append extra info about the server to the session state for patched clients
-void AppendServerInfoToSessionState(CTMemoryStream &strm) {
-  // Patch identification tag and the release version
+// Write patch identification tag into a stream
+void IProcessPacket::WritePatchTag(CTStream &strm) {
+  // Write tag and release version
   strm.Write_t(_aSessionStatePatchTag, sizeof(_aSessionStatePatchTag));
   strm << (ULONG)CCoreAPI::ulCoreVersion;
+};
 
-  // Write amount of info chunks
-  strm << (INDEX)1;
+// Read patch identification tag from a stream
+BOOL IProcessPacket::ReadPatchTag(CTStream &strm, ULONG *pulReadVersion) {
+  // Remember stream position
+  const SLONG slPos = strm.GetPos_t();
 
-  // Patch-exclusive gameplay (synchronize with the server)
-  strm.WriteID_t(CCoreAPI::varData.bGameplayExt ? _cidExclusive1 : _cidExclusive0);
+  // Tag length and release version
+  const ULONG ctTagLen = sizeof(_aSessionStatePatchTag);
+  ULONG ulVer;
+
+  // Check if there's enough data
+  const SLONG slRemaining = strm.GetStreamSize() - slPos;
+
+  // No tag if not enough data
+  if (slRemaining < ctTagLen + sizeof(ulVer)) {
+    return FALSE;
+  }
+
+  // Read tag and version
+  char aTag[ctTagLen];
+
+  strm.Read_t(aTag, ctTagLen);
+  strm >> ulVer;
+
+  // Set read version
+  if (pulReadVersion != NULL) {
+    *pulReadVersion = ulVer;
+  }
+
+  // Return back upon incorrect tag
+  if (memcmp(aTag, _aSessionStatePatchTag, ctTagLen) != 0) {
+    strm.SetPos_t(slPos);
+    return FALSE;
+  }
+
+  // Correct tag
+  return TRUE;
 };
 
 // Reset data before starting any session
-void IProcessPacket::ResetSessionData(BOOL bServer) {
-  // Reset for server
-  if (bServer) {
-    // Toggle gameplay logic extensions
+void IProcessPacket::ResetSessionData(BOOL bNewSetup) {
+  // Set new data
+  if (bNewSetup) {
     CCoreAPI::varData.bGameplayExt = _bGameplayExt;
 
-  // Reset for client
+  // Reset to vanilla
   } else {
-    // No patched gameplay for vanilla servers
     CCoreAPI::varData.bGameplayExt = FALSE;
   }
 };
 
+// Read one chunk and process its data
+static void ReadOneServerInfoChunk(CTStream &strm) {
+  // Get chunk ID and compare it
+  CChunkID cid = strm.GetID_t();
+};
+
+// Append extra info about the patched server
+void IProcessPacket::WriteServerInfoToSessionState(CTStream &strm) {
+  // No gameplay extensions
+  if (!CCoreAPI::varData.bGameplayExt) return;
+
+  // Write patch tag
+  IProcessPacket::WritePatchTag(strm);
+
+  // Write amount of info chunks
+  strm << (INDEX)0;
+};
+
 // Read extra info about the patched server
-void IProcessPacket::ReadServerInfoFromSessionState(CTMemoryStream &strm) {
-  // Tag length and server version
-  const ULONG ctTagLen = sizeof(_aSessionStatePatchTag);
-  ULONG ulServerVer;
+void IProcessPacket::ReadServerInfoFromSessionState(CTStream &strm) {
+  // Skip if patch tag cannot be verified
+  if (!ReadPatchTag(strm, NULL)) return;
 
-  // Check if there's enough data
-  const SLONG slRemaining = strm.GetStreamSize() - strm.GetPos_t();
-
-  if (slRemaining < ctTagLen + sizeof(ulServerVer)) return;
-
-  // Read server tag and version
-  char aServerTag[ctTagLen];
-
-  strm.Read_t(aServerTag, ctTagLen);
-  strm >> ulServerVer;
-
-  // Skip if server tag cannot be verified
-  if (memcmp(aServerTag, _aSessionStatePatchTag, ctTagLen) != 0) return;
+  // Gameplay extensions are active
+  CCoreAPI::varData.bGameplayExt = TRUE;
 
   // Read amount of written chunks
   INDEX ctChunks;
