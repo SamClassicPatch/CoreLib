@@ -48,6 +48,9 @@ class CORE_API IProcessPacket {
     // Prevent clients from joining unless they have the same patch installed
     static INDEX _bForbidVanilla;
 
+    // Enable gameplay logic extensions on the server
+    static INDEX _bGameplayExt;
+
     // Allow changing value of a symbol unless currently running a server
     static BOOL UpdateSymbolValue(void *pSymbol);
 

@@ -18,8 +18,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "MessageProcessing.h"
 
 // Available chunks
-static const CChunkID _cidExclusive0("CPX0"); // Classics Patch Exclusive = false
-static const CChunkID _cidExclusive1("CPX1"); // Classics Patch Exclusive = true
+static const CChunkID _cidExclusive0("PXG0"); // Patch-Exclusive Gameplay = false
+static const CChunkID _cidExclusive1("PXG1"); // Patch-Exclusive Gameplay = true
 
 // Read one chunk and process its data
 static void ReadOneServerInfoChunk(CTMemoryStream &strm) {
@@ -45,15 +45,16 @@ void AppendServerInfoToSessionState(CTMemoryStream &strm) {
   // Write amount of info chunks
   strm << (INDEX)1;
 
-  // Classics Patch exclusivity
-  strm.WriteID_t(IProcessPacket::_bForbidVanilla ? _cidExclusive1 : _cidExclusive0);
+  // Patch-exclusive gameplay (synchronize with the server)
+  strm.WriteID_t(CCoreAPI::varData.bGameplayExt ? _cidExclusive1 : _cidExclusive0);
 };
 
 // Reset data before starting any session
 void IProcessPacket::ResetSessionData(BOOL bServer) {
   // Reset for server
   if (bServer) {
-    CCoreAPI::varData.bGameplayExt = TRUE;
+    // Toggle gameplay logic extensions
+    CCoreAPI::varData.bGameplayExt = _bGameplayExt;
 
   // Reset for client
   } else {
