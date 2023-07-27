@@ -26,17 +26,40 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Patch-independent Core data
 class CCoreVariables {
   public:
+    // Gameplay extensions
+    struct GameplayExt {
+      BOOL bGameplayExt; // Utilize gameplay extensions (resets other settings to vanilla, if disabled)
+      BOOL bFixTimers; // Fix timers for entity logic to delay slowdown bug
+
+      // Default constructor
+      GameplayExt() {
+        Reset();
+      };
+
+      // Set vanilla-compatible settings
+      void Reset(void) {
+        bGameplayExt = FALSE;
+        bFixTimers = FALSE;
+      };
+
+      // Assignment operator
+      GameplayExt &operator=(const GameplayExt &other) {
+        // Copy all data
+        memcpy(this, &other, sizeof(GameplayExt));
+        return *this;
+      };
+    };
+
+  public:
     // Pointer to CCoreAPI
     void *pAPI;
 
     // Variable data (changed by Classics Patch)
-    BOOL bGameplayExt; // Utilize gameplay extensions (resets other settings to vanilla, if disabled)
-    BOOL bFixTimers; // Fix timers for entity logic to delay slowdown bug
+    GameplayExt gex;
 
   public:
     // Default constructor
-    CCoreVariables() : pAPI(NULL),
-      bGameplayExt(TRUE), bFixTimers(TRUE)
+    CCoreVariables() : pAPI(NULL), gex()
     {
     };
 };

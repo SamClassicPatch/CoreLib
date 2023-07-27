@@ -49,8 +49,7 @@ class CORE_API IProcessPacket {
     static INDEX _bForbidVanilla;
 
     // Gameplay extensions
-    static INDEX _bGameplayExt; // Enable gameplay extensions
-    static INDEX _bFixTimers; // Fix logic timers
+    static CCoreVariables::GameplayExt _gexSetup;
 
     // Allow changing value of a symbol unless currently running a server
     static BOOL UpdateSymbolValue(void *pSymbol);

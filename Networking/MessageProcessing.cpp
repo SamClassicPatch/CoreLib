@@ -34,8 +34,7 @@ INDEX IProcessPacket::_bReportSyncBadToClients = FALSE;
 INDEX IProcessPacket::_bForbidVanilla = FALSE;
 
 // Gameplay extensions
-INDEX IProcessPacket::_bGameplayExt = TRUE;
-INDEX IProcessPacket::_bFixTimers = TRUE;
+CCoreVariables::GameplayExt IProcessPacket::_gexSetup;
 
 // Allow changing value of a symbol unless currently running a server
 BOOL IProcessPacket::UpdateSymbolValue(void *pSymbol) {
@@ -57,8 +56,13 @@ void IProcessPacket::RegisterCommands(void) {
   _pShell->DeclareSymbol("persistent user INDEX ser_bForbidVanilla pre:UpdateServerSymbolValue;", &_bForbidVanilla);
 
   // Gameplay extensions
-  _pShell->DeclareSymbol("persistent user INDEX gex_bEnable pre:UpdateServerSymbolValue;", &_bGameplayExt);
-  _pShell->DeclareSymbol("persistent user INDEX gex_bFixTimers pre:UpdateServerSymbolValue;", &_bFixTimers);
+  #define GAMEPLAY_EXT_SYMBOL(_Type, _Command, _Variable) \
+    _pShell->DeclareSymbol("persistent user " #_Type " " _Command " pre:UpdateServerSymbolValue;", &_Variable)
+
+  GAMEPLAY_EXT_SYMBOL(INDEX, "gex_bEnable", _gexSetup.bGameplayExt);
+  GAMEPLAY_EXT_SYMBOL(INDEX, "gex_bFixTimers", _gexSetup.bFixTimers);
+
+  #undef GAMEPLAY_EXT_SYMBOL
 };
 
 #if CLASSICSPATCH_GUID_MASKING
@@ -318,7 +322,7 @@ void IProcessPacket::OnConnectRemoteSessionStateRequest(INDEX iClient, CNetworkM
   nmMessage >> sspClient;
 
   // [Cecil] Check if vanilla clients are forbidden or using incompatible gameplay extensions
-  const BOOL bForbid = (_bForbidVanilla || _bGameplayExt);
+  const BOOL bForbid = (_bForbidVanilla || _gexSetup.bGameplayExt);
 
   // [Cecil] Disconnect unless the client has the right patch version installed
   if (bForbid && !CheckClientPatch(iClient, nmMessage)) {

@@ -64,16 +64,13 @@ BOOL IProcessPacket::ReadPatchTag(CTStream &strm, ULONG *pulReadVersion) {
 
 // Reset data before starting any session
 void IProcessPacket::ResetSessionData(BOOL bNewSetup) {
-  // Set gameplay extensions
-  CCoreAPI::varData.bGameplayExt = (bNewSetup && _bGameplayExt);
-
   // Set new data
-  if (CCoreAPI::varData.bGameplayExt) {
-    CCoreAPI::varData.bFixTimers = _bFixTimers;
+  if (bNewSetup && _gexSetup.bGameplayExt) {
+    CCoreAPI::varData.gex = _gexSetup;
 
   // Reset to vanilla
   } else {
-    CCoreAPI::varData.bFixTimers = FALSE;
+    CCoreAPI::varData.gex.Reset();
   }
 };
 
@@ -86,18 +83,19 @@ static void ReadOneServerInfoChunk(CTStream &strm) {
   // Get chunk ID and compare it
   CChunkID cid = strm.GetID_t();
 
+  // Fix logic timers
   if (cid == _cidTimers0) {
-    CCoreAPI::varData.bFixTimers = FALSE;
+    CCoreAPI::varData.gex.bFixTimers = FALSE;
 
   } else if (cid == _cidTimers1) {
-    CCoreAPI::varData.bFixTimers = TRUE;
+    CCoreAPI::varData.gex.bFixTimers = TRUE;
   }
 };
 
 // Append extra info about the patched server
 void IProcessPacket::WriteServerInfoToSessionState(CTStream &strm) {
   // No gameplay extensions
-  if (!CCoreAPI::varData.bGameplayExt) return;
+  if (!CCoreAPI::varData.gex.bGameplayExt) return;
 
   // Write patch tag
   IProcessPacket::WritePatchTag(strm);
@@ -106,7 +104,7 @@ void IProcessPacket::WriteServerInfoToSessionState(CTStream &strm) {
   strm << (INDEX)1;
 
   // Fix logic timers
-  strm.WriteID_t(CCoreAPI::varData.bFixTimers ? _cidTimers1 : _cidTimers0);
+  strm.WriteID_t(CCoreAPI::varData.gex.bFixTimers ? _cidTimers1 : _cidTimers0);
 };
 
 // Read extra info about the patched server
@@ -115,7 +113,7 @@ void IProcessPacket::ReadServerInfoFromSessionState(CTStream &strm) {
   if (!ReadPatchTag(strm, NULL)) return;
 
   // Gameplay extensions are active
-  CCoreAPI::varData.bGameplayExt = TRUE;
+  CCoreAPI::varData.gex.bGameplayExt = TRUE;
 
   // Read amount of written chunks
   INDEX ctChunks;
