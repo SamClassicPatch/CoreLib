@@ -62,6 +62,10 @@ void IProcessPacket::RegisterCommands(void) {
   GAMEPLAY_EXT_SYMBOL(INDEX, "gex_bEnable", _gexSetup.bGameplayExt);
   GAMEPLAY_EXT_SYMBOL(INDEX, "gex_bFixTimers", _gexSetup.bFixTimers);
 
+  GAMEPLAY_EXT_SYMBOL(INDEX, "gex_bUnlimitedAirControl", _gexSetup.bUnlimitedAirControl);
+  GAMEPLAY_EXT_SYMBOL(FLOAT, "gex_fMoveSpeed", _gexSetup.fMoveSpeed);
+  GAMEPLAY_EXT_SYMBOL(FLOAT, "gex_fJumpHeight", _gexSetup.fJumpHeight);
+
   #undef GAMEPLAY_EXT_SYMBOL
 };
 

@@ -31,6 +31,10 @@ class CCoreVariables {
       BOOL bGameplayExt; // Utilize gameplay extensions (resets other settings to vanilla, if disabled)
       BOOL bFixTimers; // Fix timers for entity logic to delay slowdown bug
 
+      BOOL bUnlimitedAirControl; // Let players move while in air indefinitely
+      FLOAT fMoveSpeed; // Movement speed multiplier
+      FLOAT fJumpHeight; // Jump height multiplier
+
       // Default constructor
       GameplayExt() {
         Reset();
@@ -40,6 +44,10 @@ class CCoreVariables {
       void Reset(void) {
         bGameplayExt = FALSE;
         bFixTimers = FALSE;
+
+        bUnlimitedAirControl = FALSE;
+        fMoveSpeed = 1.0f;
+        fJumpHeight = 1.0f;
       };
 
       // Assignment operator

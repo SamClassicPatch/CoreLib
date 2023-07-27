@@ -77,6 +77,10 @@ void IProcessPacket::ResetSessionData(BOOL bNewSetup) {
 // Available data chunks
 static const CChunkID _cidTimers0("TMR0"); // Fix logic timers = false
 static const CChunkID _cidTimers1("TMR1"); // Fix logic timers = true
+static const CChunkID _cidAirControl0("UAC0"); // Unlimited air control = false
+static const CChunkID _cidAirControl1("UAC1"); // Unlimited air control = true
+static const CChunkID _cidMoveSpeed("MOVE"); // Movement speed multiplier
+static const CChunkID _cidJumpHeight("JUMP"); // Jump height multiplier
 
 // Read one chunk and process its data
 static void ReadOneServerInfoChunk(CTStream &strm) {
@@ -89,6 +93,20 @@ static void ReadOneServerInfoChunk(CTStream &strm) {
 
   } else if (cid == _cidTimers1) {
     CCoreAPI::varData.gex.bFixTimers = TRUE;
+
+  // Unlimited air control
+  } else if (cid == _cidAirControl0) {
+    CCoreAPI::varData.gex.bUnlimitedAirControl = FALSE;
+
+  } else if (cid == _cidAirControl1) {
+    CCoreAPI::varData.gex.bUnlimitedAirControl = TRUE;
+
+  // Movement speed and jump height multipliers
+  } else if (cid == _cidMoveSpeed) {
+    strm >> CCoreAPI::varData.gex.fMoveSpeed;
+
+  } else if (cid == _cidJumpHeight) {
+    strm >> CCoreAPI::varData.gex.fJumpHeight;
   }
 };
 
@@ -101,10 +119,21 @@ void IProcessPacket::WriteServerInfoToSessionState(CTStream &strm) {
   IProcessPacket::WritePatchTag(strm);
 
   // Write amount of info chunks
-  strm << (INDEX)1;
+  strm << (INDEX)4;
+
+  CCoreVariables::GameplayExt &gex = CCoreAPI::varData.gex;
 
   // Fix logic timers
-  strm.WriteID_t(CCoreAPI::varData.gex.bFixTimers ? _cidTimers1 : _cidTimers0);
+  strm.WriteID_t(gex.bFixTimers ? _cidTimers1 : _cidTimers0);
+
+  // Player settings
+  strm.WriteID_t(gex.bUnlimitedAirControl ? _cidAirControl1 : _cidAirControl0);
+
+  strm.WriteID_t(_cidMoveSpeed);
+  strm << gex.fMoveSpeed;
+
+  strm.WriteID_t(_cidJumpHeight);
+  strm << gex.fJumpHeight;
 };
 
 // Read extra info about the patched server
