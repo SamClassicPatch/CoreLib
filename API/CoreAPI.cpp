@@ -162,7 +162,7 @@ CCoreAPI::CCoreAPI() :
   _pShell->DeclareSymbol("user void UpdateShadows(void);", &UpdateShadows);
 
   extern INDEX gam_bAutoUpdateShadows;
-  _pShell->DeclareSymbol("persistent INDEX gam_bAutoUpdateShadows;", &gam_bAutoUpdateShadows);
+  _pShell->DeclareSymbol("persistent user INDEX gam_bAutoUpdateShadows;", &gam_bAutoUpdateShadows);
 };
 
 // Get running application type after initializing the core
