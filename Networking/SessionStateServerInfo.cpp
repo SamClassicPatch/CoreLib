@@ -64,20 +64,34 @@ BOOL IProcessPacket::ReadPatchTag(CTStream &strm, ULONG *pulReadVersion) {
 
 // Reset data before starting any session
 void IProcessPacket::ResetSessionData(BOOL bNewSetup) {
+  // Set gameplay extensions
+  CCoreAPI::varData.bGameplayExt = (bNewSetup && _bGameplayExt);
+
   // Set new data
-  if (bNewSetup) {
-    CCoreAPI::varData.bGameplayExt = _bGameplayExt;
+  if (CCoreAPI::varData.bGameplayExt) {
+    CCoreAPI::varData.bFixTimers = _bFixTimers;
 
   // Reset to vanilla
   } else {
-    CCoreAPI::varData.bGameplayExt = FALSE;
+    CCoreAPI::varData.bFixTimers = FALSE;
   }
 };
+
+// Available data chunks
+static const CChunkID _cidTimers0("TMR0"); // Fix logic timers = false
+static const CChunkID _cidTimers1("TMR1"); // Fix logic timers = true
 
 // Read one chunk and process its data
 static void ReadOneServerInfoChunk(CTStream &strm) {
   // Get chunk ID and compare it
   CChunkID cid = strm.GetID_t();
+
+  if (cid == _cidTimers0) {
+    CCoreAPI::varData.bFixTimers = FALSE;
+
+  } else if (cid == _cidTimers1) {
+    CCoreAPI::varData.bFixTimers = TRUE;
+  }
 };
 
 // Append extra info about the patched server
@@ -89,7 +103,10 @@ void IProcessPacket::WriteServerInfoToSessionState(CTStream &strm) {
   IProcessPacket::WritePatchTag(strm);
 
   // Write amount of info chunks
-  strm << (INDEX)0;
+  strm << (INDEX)1;
+
+  // Fix logic timers
+  strm.WriteID_t(CCoreAPI::varData.bFixTimers ? _cidTimers1 : _cidTimers0);
 };
 
 // Read extra info about the patched server

@@ -48,8 +48,9 @@ class CORE_API IProcessPacket {
     // Prevent clients from joining unless they have the same patch installed
     static INDEX _bForbidVanilla;
 
-    // Enable gameplay logic extensions on the server
-    static INDEX _bGameplayExt;
+    // Gameplay extensions
+    static INDEX _bGameplayExt; // Enable gameplay extensions
+    static INDEX _bFixTimers; // Fix logic timers
 
     // Allow changing value of a symbol unless currently running a server
     static BOOL UpdateSymbolValue(void *pSymbol);
@@ -91,7 +92,7 @@ class CORE_API IProcessPacket {
     // Write patch identification tag into a stream
     static void WritePatchTag(CTStream &strm);
 
-    // Read patch identification tag from a stream
+    // Read patch identification tag from a stream and verify it
     static BOOL ReadPatchTag(CTStream &strm, ULONG *pulReadVersion);
 
     // Reset data before starting any session

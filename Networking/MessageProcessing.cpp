@@ -33,8 +33,9 @@ INDEX IProcessPacket::_bReportSyncBadToClients = FALSE;
 // Prevent clients from joining unless they have the same patch installed
 INDEX IProcessPacket::_bForbidVanilla = FALSE;
 
-// Enable gameplay logic extensions on the server
+// Gameplay extensions
 INDEX IProcessPacket::_bGameplayExt = TRUE;
+INDEX IProcessPacket::_bFixTimers = TRUE;
 
 // Allow changing value of a symbol unless currently running a server
 BOOL IProcessPacket::UpdateSymbolValue(void *pSymbol) {
@@ -54,7 +55,10 @@ void IProcessPacket::RegisterCommands(void) {
 
   _pShell->DeclareSymbol("persistent user INDEX ser_bReportSyncBadToClients;", &_bReportSyncBadToClients);
   _pShell->DeclareSymbol("persistent user INDEX ser_bForbidVanilla pre:UpdateServerSymbolValue;", &_bForbidVanilla);
-  _pShell->DeclareSymbol("persistent user INDEX ser_bGameplayExt pre:UpdateServerSymbolValue;", &_bGameplayExt);
+
+  // Gameplay extensions
+  _pShell->DeclareSymbol("persistent user INDEX gex_bEnable pre:UpdateServerSymbolValue;", &_bGameplayExt);
+  _pShell->DeclareSymbol("persistent user INDEX gex_bFixTimers pre:UpdateServerSymbolValue;", &_bFixTimers);
 };
 
 #if CLASSICSPATCH_GUID_MASKING
@@ -313,7 +317,7 @@ void IProcessPacket::OnConnectRemoteSessionStateRequest(INDEX iClient, CNetworkM
   CSessionSocketParams sspClient;
   nmMessage >> sspClient;
 
-  // [Cecil] Check if vanilla clients are forbidden or using incompatible gameplay logic extensions
+  // [Cecil] Check if vanilla clients are forbidden or using incompatible gameplay extensions
   const BOOL bForbid = (_bForbidVanilla || _bGameplayExt);
 
   // [Cecil] Disconnect unless the client has the right patch version installed
