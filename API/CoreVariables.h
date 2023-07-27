@@ -30,12 +30,13 @@ class CCoreVariables {
     void *pAPI;
 
     // Variable data (changed by Classics Patch)
-    BOOL bGameplayExt; // Gameplay logic extensions (set by starting any session)
+    BOOL bGameplayExt; // Utilize gameplay extensions (resets other settings to vanilla, if disabled)
+    BOOL bFixTimers; // Fix timers for entity logic to delay slowdown bug
 
   public:
     // Default constructor
     CCoreVariables() : pAPI(NULL),
-      bGameplayExt(TRUE)
+      bGameplayExt(TRUE), bFixTimers(TRUE)
     {
     };
 };
