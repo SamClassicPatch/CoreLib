@@ -50,6 +50,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #define CLASSICSPATCH_FIX_SKA           1 // Fix SKA issues by patching methods
   #define CLASSICSPATCH_FIX_STRINGS       1 // Fix CTString methods by patching them
   #define CLASSICSPATCH_EXTEND_TEXTURES   1 // Extend texture functionality by patching its methods
+  #define CLASSICSPATCH_FIX_LOGICTIMERS   1 // Fix imprecise timers for entity logic
   #define CLASSICSPATCH_FIX_STREAMPAGING  1 // Fix streams by patching their paging methods (no need for 1.10)
 
 #endif
