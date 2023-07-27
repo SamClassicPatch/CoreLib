@@ -20,6 +20,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #pragma once
 #endif
 
+#if CLASSICSPATCH_EXT_PACKETS
+
 // Interface for commands for sending extension packets
 namespace IPacketCommands {
 
@@ -70,5 +72,7 @@ void SetBoxDamage(SHELL_FUNC_ARGS);
 void EntityDamage(void);
 
 }; // namespace
+
+#endif // CLASSICSPATCH_EXT_PACKETS
 
 #endif

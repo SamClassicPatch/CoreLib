@@ -15,6 +15,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "StdH.h"
 
+#if CLASSICSPATCH_EXT_PACKETS
+
 #include "PacketCommands.h"
 #include "Networking/ExtPackets.h"
 
@@ -475,3 +477,5 @@ void EntityDamage(void) {
 };
 
 }; // namespace
+
+#endif // CLASSICSPATCH_EXT_PACKETS
