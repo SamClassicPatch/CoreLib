@@ -33,8 +33,8 @@ INDEX IProcessPacket::_bReportSyncBadToClients = FALSE;
 // Prevent clients from joining unless they have the same patch installed
 INDEX IProcessPacket::_bForbidVanilla = FALSE;
 
-// Gameplay extensions
-CCoreVariables::GameplayExt IProcessPacket::_gexSetup;
+// Gameplay extensions (reset to recommended settings)
+CCoreVariables::GameplayExt IProcessPacket::_gexSetup(FALSE);
 
 // Allow changing value of a symbol unless currently running a server
 BOOL IProcessPacket::UpdateSymbolValue(void *pSymbol) {

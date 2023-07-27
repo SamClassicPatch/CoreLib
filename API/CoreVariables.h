@@ -36,15 +36,24 @@ class CCoreVariables {
       FLOAT fJumpHeight; // Jump height multiplier
 
       // Default constructor
-      GameplayExt() {
-        Reset();
+      GameplayExt(BOOL bVanilla = TRUE) {
+        Reset(bVanilla);
       };
 
-      // Set vanilla-compatible settings
-      void Reset(void) {
-        bGameplayExt = FALSE;
-        bFixTimers = FALSE;
+      // Reset settings
+      void Reset(BOOL bVanilla) {
+        // Vanilla-compatible settings
+        if (bVanilla) {
+          bGameplayExt = FALSE;
+          bFixTimers = FALSE;
 
+        // Recommended settings
+        } else {
+          bGameplayExt = TRUE;
+          bFixTimers = TRUE;
+        }
+
+        // Default settings
         bUnlimitedAirControl = FALSE;
         fMoveSpeed = 1.0f;
         fJumpHeight = 1.0f;
@@ -67,7 +76,7 @@ class CCoreVariables {
 
   public:
     // Default constructor
-    CCoreVariables() : pAPI(NULL), gex()
+    CCoreVariables() : pAPI(NULL), gex(TRUE)
     {
     };
 };

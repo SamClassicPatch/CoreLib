@@ -70,7 +70,7 @@ void IProcessPacket::ResetSessionData(BOOL bNewSetup) {
 
   // Reset to vanilla
   } else {
-    CCoreAPI::varData.gex.Reset();
+    CCoreAPI::varData.gex.Reset(TRUE);
   }
 };
 
