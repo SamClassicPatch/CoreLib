@@ -37,27 +37,9 @@ class CORE_API CGameAPI {
       NP_CLIENT,
     };
 
-    // Difficuties for CSessionProperties
-    struct Difficulty {
-      INDEX iIndex;
-      CTString strName;
-
-      // Default constructor
-      Difficulty() : iIndex(0), strName("")
-      {
-      };
-
-      // Constructor with an index and a translated name
-      Difficulty(INDEX iSetIndex, const char *strSetName) :
-        iIndex(iSetIndex), strName(TRANSV(strSetName))
-      {
-      };
-    };
-    
   public:
     // Session properties
     CStaticArray<INDEX> sp_aiGameModes; // Game mode indices
-    CStaticArray<Difficulty> sp_aGameDifficulties; // Game difficulties
 
     BOOL bGameHooked; // CGame fields have been hooked
 
@@ -122,16 +104,6 @@ class CORE_API CGameAPI {
     // Get game mode index
     virtual INDEX GetGameMode(INDEX i) const {
       return sp_aiGameModes[i];
-    };
-
-    // Get game difficulty index
-    virtual INDEX GetDifficultyIndex(INDEX i) const {
-      return sp_aGameDifficulties[i].iIndex;
-    };
-
-    // Get game difficulty name
-    virtual const CTString &GetDifficultyName(INDEX i) const {
-      return sp_aGameDifficulties[i].strName;
     };
 
     // Get amount of available local players

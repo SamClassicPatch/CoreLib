@@ -22,15 +22,6 @@ CGameAPI::CGameAPI() {
   sp_aiGameModes[0] = -1; // Flyover - for intro screen
   sp_aiGameModes[1] =  0; // Cooperative - for singleplayer
 
-  // Session properties difficulties used by the patch
-  sp_aGameDifficulties.New(6);
-  sp_aGameDifficulties[0] = Difficulty(-1, "Tourist");
-  sp_aGameDifficulties[1] = Difficulty( 0, "Easy");
-  sp_aGameDifficulties[2] = Difficulty( 1, "Normal");
-  sp_aGameDifficulties[3] = Difficulty( 2, "Hard");
-  sp_aGameDifficulties[4] = Difficulty( 3, "Serious");
-  sp_aGameDifficulties[5] = Difficulty( 4, "Mental");
-
   // Fields are not hooked yet
   bGameHooked = FALSE;
 };

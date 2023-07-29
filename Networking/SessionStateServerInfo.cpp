@@ -66,11 +66,11 @@ BOOL IProcessPacket::ReadPatchTag(CTStream &strm, ULONG *pulReadVersion) {
 void IProcessPacket::ResetSessionData(BOOL bNewSetup) {
   // Set new data
   if (bNewSetup && _gexSetup.bGameplayExt) {
-    CCoreAPI::varData.gex = _gexSetup;
+    CoreGEX() = _gexSetup;
 
   // Reset to vanilla
   } else {
-    CCoreAPI::varData.gex.Reset(TRUE);
+    CoreGEX().Reset(TRUE);
   }
 };
 
@@ -89,31 +89,31 @@ static void ReadOneServerInfoChunk(CTStream &strm) {
 
   // Fix logic timers
   if (cid == _cidTimers0) {
-    CCoreAPI::varData.gex.bFixTimers = FALSE;
+    CoreGEX().bFixTimers = FALSE;
 
   } else if (cid == _cidTimers1) {
-    CCoreAPI::varData.gex.bFixTimers = TRUE;
+    CoreGEX().bFixTimers = TRUE;
 
   // Unlimited air control
   } else if (cid == _cidAirControl0) {
-    CCoreAPI::varData.gex.bUnlimitedAirControl = FALSE;
+    CoreGEX().bUnlimitedAirControl = FALSE;
 
   } else if (cid == _cidAirControl1) {
-    CCoreAPI::varData.gex.bUnlimitedAirControl = TRUE;
+    CoreGEX().bUnlimitedAirControl = TRUE;
 
   // Movement speed and jump height multipliers
   } else if (cid == _cidMoveSpeed) {
-    strm >> CCoreAPI::varData.gex.fMoveSpeed;
+    strm >> CoreGEX().fMoveSpeed;
 
   } else if (cid == _cidJumpHeight) {
-    strm >> CCoreAPI::varData.gex.fJumpHeight;
+    strm >> CoreGEX().fJumpHeight;
   }
 };
 
 // Append extra info about the patched server
 void IProcessPacket::WriteServerInfoToSessionState(CTStream &strm) {
   // No gameplay extensions
-  if (!CCoreAPI::varData.gex.bGameplayExt) return;
+  if (!CoreGEX().bGameplayExt) return;
 
   // Write patch tag
   IProcessPacket::WritePatchTag(strm);
@@ -121,19 +121,17 @@ void IProcessPacket::WriteServerInfoToSessionState(CTStream &strm) {
   // Write amount of info chunks
   strm << (INDEX)4;
 
-  CCoreVariables::GameplayExt &gex = CCoreAPI::varData.gex;
-
   // Fix logic timers
-  strm.WriteID_t(gex.bFixTimers ? _cidTimers1 : _cidTimers0);
+  strm.WriteID_t(CoreGEX().bFixTimers ? _cidTimers1 : _cidTimers0);
 
   // Player settings
-  strm.WriteID_t(gex.bUnlimitedAirControl ? _cidAirControl1 : _cidAirControl0);
+  strm.WriteID_t(CoreGEX().bUnlimitedAirControl ? _cidAirControl1 : _cidAirControl0);
 
   strm.WriteID_t(_cidMoveSpeed);
-  strm << gex.fMoveSpeed;
+  strm << CoreGEX().fMoveSpeed;
 
   strm.WriteID_t(_cidJumpHeight);
-  strm << gex.fJumpHeight;
+  strm << CoreGEX().fJumpHeight;
 };
 
 // Read extra info about the patched server
@@ -142,7 +140,7 @@ void IProcessPacket::ReadServerInfoFromSessionState(CTStream &strm) {
   if (!ReadPatchTag(strm, NULL)) return;
 
   // Gameplay extensions are active
-  CCoreAPI::varData.gex.bGameplayExt = TRUE;
+  CoreGEX().bGameplayExt = TRUE;
 
   // Read amount of written chunks
   INDEX ctChunks;

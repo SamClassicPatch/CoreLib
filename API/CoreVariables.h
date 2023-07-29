@@ -67,17 +67,80 @@ class CCoreVariables {
       };
     };
 
+    // Mod difficuties
+    struct Difficulty {
+      INDEX iLevel; // Difficulty level (for gam_iStartDifficulty)
+      CTString strName; // Display name
+
+      // Menu button settings
+      CTString strTip; // Difficulty description
+      CTString strCommand; // Allow difficulty selection if the value is TRUE
+      BOOL bFlash; // Make text blink
+
+      // Default constructor
+      Difficulty() : iLevel(0), strName(""), strTip(""), strCommand(""), bFlash(FALSE)
+      {
+      };
+
+      // Constructor with an index and a translated name
+      Difficulty(INDEX iSetLevel, const char *strSetName, const char *strSetTip, const char *strSetCommand = "") :
+        iLevel(iSetLevel), strName(strSetName), strTip(strSetTip), strCommand(strSetCommand), bFlash(FALSE)
+      {
+      };
+
+      // Check the command to see if the difficulty is active
+      BOOL IsActive(void) const {
+        // Always active if no command
+        if (strCommand == "") return TRUE;
+
+        CShellSymbol *pss = _pShell->GetSymbol(strCommand, TRUE);
+
+        // Always active if no symbol
+        if (pss == NULL) return TRUE;
+
+        return *(INDEX *)pss->ss_pvValue;
+      };
+    };
+
   public:
     // Pointer to CCoreAPI
     void *pAPI;
 
     // Variable data (changed by Classics Patch)
-    GameplayExt gex;
+    GameplayExt &gex;
+
+    // Modifiable data (changed by user)
+    CStaticArray<Difficulty> aGameDiffs; // Game difficulties
 
   public:
     // Default constructor
-    CCoreVariables() : pAPI(NULL), gex(TRUE)
+    CCoreVariables() : pAPI(NULL), gex(*new GameplayExt(TRUE))
     {
+      ResetGameDiffs();
+    };
+
+    // Set default game difficulties
+    void ResetGameDiffs(void) {
+      aGameDiffs.New(6);
+
+      aGameDiffs[0] = Difficulty(-1, "Tourist", "for non-FPS players");
+      aGameDiffs[1] = Difficulty( 0, "Easy",    "for unexperienced FPS players");
+      aGameDiffs[2] = Difficulty( 1, "Normal",  "for experienced FPS players");
+      aGameDiffs[3] = Difficulty( 2, "Hard",    "for experienced Serious Sam players");
+      aGameDiffs[4] = Difficulty( 3, "Serious", "are you serious?");
+
+      aGameDiffs[5] = Difficulty( 4, "Mental",  "you are not serious!", "sam_bMentalActivated");
+      aGameDiffs[5].bFlash = TRUE;
+    };
+
+    // Get game difficulty
+    const Difficulty &GetDiff(INDEX i) const {
+      return aGameDiffs[i];
+    };
+
+    // Get amount of difficulties
+    INDEX CountDiffs(void) const {
+      return aGameDiffs.Count();
     };
 };
 

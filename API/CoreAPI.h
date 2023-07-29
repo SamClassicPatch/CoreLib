@@ -270,6 +270,16 @@ inline CCoreAPI *GetAPI(void) {
   return _pCoreAPI;
 };
 
+// Get core variable data
+inline CCoreVariables &CoreVarData(void) {
+  return CCoreAPI::varData;
+};
+
+// Get gameplay extensions
+inline CCoreVariables::GameplayExt &CoreGEX(void) {
+  return CoreVarData().gex;
+};
+
 // Get patch API module
 inline CPatchAPI *GetPatchAPI(void) {
   return &GetAPI()->apiPatches;
