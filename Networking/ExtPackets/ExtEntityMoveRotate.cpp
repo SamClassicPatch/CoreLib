@@ -40,7 +40,7 @@ void CExtEntityMove::Process(void) {
 
   if (!EntityExists(pen)) return;
 
-  if (IsDerivedFromClass(pen, "MovableEntity")) {
+  if (IsDerivedFromID(pen, CMovableEntity_ClassID)) {
     ((CMovableEntity *)pen)->SetDesiredTranslation(vSpeed);
     ExtServerReport(TRANS("Changed movement speed of %u entity to [%.2f, %.2f, %.2f]\n"), pen->en_ulID, vSpeed(1), vSpeed(2), vSpeed(3));
 
@@ -54,7 +54,7 @@ void CExtEntityRotate::Process(void) {
 
   if (!EntityExists(pen)) return;
 
-  if (IsDerivedFromClass(pen, "MovableEntity")) {
+  if (IsDerivedFromID(pen, CMovableEntity_ClassID)) {
     ((CMovableEntity *)pen)->SetDesiredRotation(vSpeed);
     ExtServerReport(TRANS("Changed rotation speed of %u entity to [%.2f, %.2f, %.2f]\n"), pen->en_ulID, vSpeed(1), vSpeed(2), vSpeed(3));
 
@@ -68,7 +68,7 @@ void CExtEntityImpulse::Process(void) {
 
   if (!EntityExists(pen)) return;
 
-  if (IsDerivedFromClass(pen, "MovableEntity")) {
+  if (IsDerivedFromID(pen, CMovableEntity_ClassID)) {
     ((CMovableEntity *)pen)->GiveImpulseTranslationAbsolute(vSpeed);
     ExtServerReport(TRANS("Gave impulse to %u entity: [%.2f, %.2f, %.2f]\n"), vSpeed(1), vSpeed(2), vSpeed(3), pen->en_ulID);
 

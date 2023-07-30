@@ -27,7 +27,8 @@ static BOOL _bQueueShadowUpdate = TRUE;
 void UpdateShadows(void)
 {
   FOREACHINDYNAMICCONTAINER(IWorld::GetWorld()->wo_cenEntities, CEntity, iten) {
-    if (!IsDerivedFromClass(iten, "Light")) continue;
+    // CLight_ClassID
+    if (!IsDerivedFromID(iten, 200)) continue;
 
     // Update shadow layers for each light
     CLightSource *pls = iten->GetLightSource();

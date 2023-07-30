@@ -32,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
       }; \
     } Class##_proprefsentry;
 
+  #include <EccExtras/EntityProperties.h>
   #include <EntitiesV/_DefinePropertyRefLists.inl>
 #endif
 

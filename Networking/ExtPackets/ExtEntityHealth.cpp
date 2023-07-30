@@ -34,7 +34,7 @@ void CExtEntityHealth::Process(void) {
 
   if (!EntityExists(pen)) return;
 
-  if (IWorld::IsLiveEntity(pen)) {
+  if (IsLiveEntity(pen)) {
     ((CLiveEntity *)pen)->SetHealth(fHealth);
     ExtServerReport(TRANS("Set health of %u entity to %.2f\n"), pen->en_ulID, fHealth);
 

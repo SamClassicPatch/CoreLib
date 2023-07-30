@@ -44,9 +44,10 @@ void CExtEntityDelete::Process(void) {
   // Delete all entities of the same class
   if (bSameClass) {
     const char *strClass = pen->GetClass()->ec_pdecDLLClass->dec_strName;
-    
+    INDEX iClassID = pen->GetClass()->ec_pdecDLLClass->dec_iID;
+
     CEntities cenDestroy;
-    IWorld::FindClasses(IWorld::GetWorld()->wo_cenEntities, cenDestroy, strClass);
+    IWorld::FindClassesByID(IWorld::GetWorld()->wo_cenEntities, cenDestroy, iClassID);
 
     const INDEX ctEntities = cenDestroy.Count();
 

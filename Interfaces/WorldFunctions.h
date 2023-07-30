@@ -23,6 +23,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <Engine/Entities/Entity.h>
 #include <Engine/World/World.h>
 
+#include <EngineEx/Entities.h>
+
 // Containers of entities
 typedef CDynamicContainer<CEntity>             CEntities;
 typedef CDynamicContainer<CLiveEntity>         CLiveEntities;
@@ -256,45 +258,19 @@ inline void FindClasses(CEntities &cInput, CEntities &cOutput, const char *strCl
   }
 };
 
-// Check if the entity is derived from CLiveEntity
-inline BOOL IsLiveEntity(CEntity *pen) {
-  if (pen == NULL) {
-    ASSERT(FALSE);
-    return FALSE;
-  }
+// Find entities of a specific class ID
+inline void FindClassesByID(CEntities &cInput, CEntities &cOutput, INDEX iClassID) {
+  ASSERT(cOutput.Count() == 0);
 
-  // Go through the class hierarchy
-  CDLLEntityClass *pdecClass = pen->GetClass()->ec_pdecDLLClass;
+  FOREACHINDYNAMICCONTAINER(cInput, CEntity, iten) {
+    CEntity *penCheck = iten;
 
-  for (; pdecClass != NULL; pdecClass = pdecClass->dec_pdecBase) {
-    // [Cecil] NOTE: Same ID as CLiveEntity_DLLClass or CRationalEntity_DLLClass because they don't have further pointers to classes that
-    // they derive from, i.e. an entity derived from CRationalEntity won't be detected as CLiveEntity because it's not in this hierarchy.
-    if (pdecClass->dec_iID == 32001 || pdecClass->dec_iID == 32002) {
-      return TRUE;
+    if (!IsDerivedFromID(penCheck, iClassID)) {
+      continue;
     }
+
+    cOutput.Add(penCheck);
   }
-
-  return FALSE;
-};
-
-// Check if the entity is derived from CRationalEntity
-inline BOOL IsRationalEntity(CEntity *pen) {
-  if (pen == NULL) {
-    ASSERT(FALSE);
-    return FALSE;
-  }
-
-  // Go through the class hierarchy
-  CDLLEntityClass *pdecClass = pen->GetClass()->ec_pdecDLLClass;
-
-  for (; pdecClass != NULL; pdecClass = pdecClass->dec_pdecBase) {
-    // Same ID as CRationalEntity_DLLClass
-    if (pdecClass->dec_iID == 32002) {
-      return TRUE;
-    }
-  }
-
-  return FALSE;
 };
 
 // Get pointers to local player entities
