@@ -35,336 +35,336 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Trigger events
 
 // Stop event
-static const SLONG EVENTCODE_EStop = 0x00000000;
-class EStop : public CEntityEvent {
+static const SLONG EVENTCODE_VNL_EStop = 0x00000000;
+class VNL_EStop : public CEntityEvent {
   public:
-    EStop() : CEntityEvent(EVENTCODE_EStop) {};
-    DEFINE_MAKE_COPY(EStop);
+    VNL_EStop() : CEntityEvent(EVENTCODE_VNL_EStop) {};
+    DEFINE_MAKE_COPY(VNL_EStop);
 };
-CLEAR_TO_DEFAULT(EStop);
+CLEAR_TO_DEFAULT(VNL_EStop);
 
 // Start event
-static const SLONG EVENTCODE_EStart = 0x00000001;
-class EStart : public CEntityEvent {
+static const SLONG EVENTCODE_VNL_EStart = 0x00000001;
+class VNL_EStart : public CEntityEvent {
   public:
     CVanillaEventEntity penCaused;
 
-    EStart() : CEntityEvent(EVENTCODE_EStart) {
+    VNL_EStart() : CEntityEvent(EVENTCODE_VNL_EStart) {
       ClearToDefault(penCaused);
     };
 
-    DEFINE_MAKE_COPY(EStart);
+    DEFINE_MAKE_COPY(VNL_EStart);
 };
-CLEAR_TO_DEFAULT(EStart);
+CLEAR_TO_DEFAULT(VNL_EStart);
 
 // Activate event
-static const SLONG EVENTCODE_EActivate = 0x00000002;
-class EActivate : public CEntityEvent {
+static const SLONG EVENTCODE_VNL_EActivate = 0x00000002;
+class VNL_EActivate : public CEntityEvent {
   public:
-    EActivate() : CEntityEvent(EVENTCODE_EActivate) {};
-    DEFINE_MAKE_COPY(EActivate);
+    VNL_EActivate() : CEntityEvent(EVENTCODE_VNL_EActivate) {};
+    DEFINE_MAKE_COPY(VNL_EActivate);
 };
-CLEAR_TO_DEFAULT(EActivate);
+CLEAR_TO_DEFAULT(VNL_EActivate);
 
 // Deactivate event
-static const SLONG EVENTCODE_EDeactivate = 0x00000003;
-class EDeactivate : public CEntityEvent {
+static const SLONG EVENTCODE_VNL_EDeactivate = 0x00000003;
+class VNL_EDeactivate : public CEntityEvent {
   public:
-    EDeactivate() : CEntityEvent(EVENTCODE_EDeactivate) {};
-    DEFINE_MAKE_COPY(EDeactivate);
+    VNL_EDeactivate() : CEntityEvent(EVENTCODE_VNL_EDeactivate) {};
+    DEFINE_MAKE_COPY(VNL_EDeactivate);
 };
-CLEAR_TO_DEFAULT(EDeactivate);
+CLEAR_TO_DEFAULT(VNL_EDeactivate);
 
 // Environment Start event
-static const SLONG EVENTCODE_EEnvironmentStart = 0x00000004;
-class EEnvironmentStart : public CEntityEvent {
+static const SLONG EVENTCODE_VNL_EEnvironmentStart = 0x00000004;
+class VNL_EEnvironmentStart : public CEntityEvent {
   public:
-    EEnvironmentStart() : CEntityEvent(EVENTCODE_EEnvironmentStart) {};
-    DEFINE_MAKE_COPY(EEnvironmentStart);
+    VNL_EEnvironmentStart() : CEntityEvent(EVENTCODE_VNL_EEnvironmentStart) {};
+    DEFINE_MAKE_COPY(VNL_EEnvironmentStart);
 };
-CLEAR_TO_DEFAULT(EEnvironmentStart);
+CLEAR_TO_DEFAULT(VNL_EEnvironmentStart);
 
 // Environment Stop event
-static const SLONG EVENTCODE_EEnvironmentStop = 0x00000005;
-class EEnvironmentStop : public CEntityEvent {
+static const SLONG EVENTCODE_VNL_EEnvironmentStop = 0x00000005;
+class VNL_EEnvironmentStop : public CEntityEvent {
   public:
-    EEnvironmentStop() : CEntityEvent(EVENTCODE_EEnvironmentStop) {};
-    DEFINE_MAKE_COPY(EEnvironmentStop);
+    VNL_EEnvironmentStop() : CEntityEvent(EVENTCODE_VNL_EEnvironmentStop) {};
+    DEFINE_MAKE_COPY(VNL_EEnvironmentStop);
 };
-CLEAR_TO_DEFAULT(EEnvironmentStop);
+CLEAR_TO_DEFAULT(VNL_EEnvironmentStop);
 
 // End event
-static const SLONG EVENTCODE_EEnd = 0x00000006;
-class EEnd : public CEntityEvent {
+static const SLONG EVENTCODE_VNL_EEnd = 0x00000006;
+class VNL_EEnd : public CEntityEvent {
   public:
-    EEnd() : CEntityEvent(EVENTCODE_EEnd) {};
-    DEFINE_MAKE_COPY(EEnd);
+    VNL_EEnd() : CEntityEvent(EVENTCODE_VNL_EEnd) {};
+    DEFINE_MAKE_COPY(VNL_EEnd);
 };
-CLEAR_TO_DEFAULT(EEnd);
+CLEAR_TO_DEFAULT(VNL_EEnd);
 
 // Trigger event
-static const SLONG EVENTCODE_ETrigger = 0x00000007;
-class ETrigger : public CEntityEvent {
+static const SLONG EVENTCODE_VNL_ETrigger = 0x00000007;
+class VNL_ETrigger : public CEntityEvent {
   public:
     CVanillaEventEntity penCaused;
 
-    ETrigger() : CEntityEvent(EVENTCODE_ETrigger) {
+    VNL_ETrigger() : CEntityEvent(EVENTCODE_VNL_ETrigger) {
       ClearToDefault(penCaused);
     };
 
-    DEFINE_MAKE_COPY(ETrigger);
+    DEFINE_MAKE_COPY(VNL_ETrigger);
 };
-CLEAR_TO_DEFAULT(ETrigger);
+CLEAR_TO_DEFAULT(VNL_ETrigger);
 
 // Teleport Moving Brush event
-static const SLONG EVENTCODE_ETeleportMovingBrush = 0x00000008;
-class ETeleportMovingBrush : public CEntityEvent {
+static const SLONG EVENTCODE_VNL_ETeleportMovingBrush = 0x00000008;
+class VNL_ETeleportMovingBrush : public CEntityEvent {
   public:
-    ETeleportMovingBrush() : CEntityEvent(EVENTCODE_ETeleportMovingBrush) {};
-    DEFINE_MAKE_COPY(ETeleportMovingBrush);
+    VNL_ETeleportMovingBrush() : CEntityEvent(EVENTCODE_VNL_ETeleportMovingBrush) {};
+    DEFINE_MAKE_COPY(VNL_ETeleportMovingBrush);
 };
-CLEAR_TO_DEFAULT(ETeleportMovingBrush);
+CLEAR_TO_DEFAULT(VNL_ETeleportMovingBrush);
 
 // Reminder event
-static const SLONG EVENTCODE_EReminder = 0x00000009;
-class EReminder : public CEntityEvent {
+static const SLONG EVENTCODE_VNL_EReminder = 0x00000009;
+class VNL_EReminder : public CEntityEvent {
   public:
     INDEX iValue;
 
-    EReminder() : CEntityEvent(EVENTCODE_EReminder) {
+    VNL_EReminder() : CEntityEvent(EVENTCODE_VNL_EReminder) {
       ClearToDefault(iValue);
     };
 
-    DEFINE_MAKE_COPY(EReminder);
+    DEFINE_MAKE_COPY(VNL_EReminder);
 };
-CLEAR_TO_DEFAULT(EReminder);
+CLEAR_TO_DEFAULT(VNL_EReminder);
 
 // Start Attack event
-static const SLONG EVENTCODE_EStartAttack = 0x0000000a;
-class EStartAttack : public CEntityEvent {
+static const SLONG EVENTCODE_VNL_EStartAttack = 0x0000000a;
+class VNL_EStartAttack : public CEntityEvent {
   public:
-    EStartAttack() : CEntityEvent(EVENTCODE_EStartAttack) {};
-    DEFINE_MAKE_COPY(EStartAttack);
+    VNL_EStartAttack() : CEntityEvent(EVENTCODE_VNL_EStartAttack) {};
+    DEFINE_MAKE_COPY(VNL_EStartAttack);
 };
-CLEAR_TO_DEFAULT(EStartAttack);
+CLEAR_TO_DEFAULT(VNL_EStartAttack);
 
 // Stop Attack event
-static const SLONG EVENTCODE_EStopAttack = 0x0000000b;
-class EStopAttack : public CEntityEvent {
+static const SLONG EVENTCODE_VNL_EStopAttack = 0x0000000b;
+class VNL_EStopAttack : public CEntityEvent {
   public:
-    EStopAttack() : CEntityEvent(EVENTCODE_EStopAttack) {};
-    DEFINE_MAKE_COPY(EStopAttack);
+    VNL_EStopAttack() : CEntityEvent(EVENTCODE_VNL_EStopAttack) {};
+    DEFINE_MAKE_COPY(VNL_EStopAttack);
 };
-CLEAR_TO_DEFAULT(EStopAttack);
+CLEAR_TO_DEFAULT(VNL_EStopAttack);
 
 // Stop Blindness event
-static const SLONG EVENTCODE_EStopBlindness = 0x0000000c;
-class EStopBlindness : public CEntityEvent {
+static const SLONG EVENTCODE_VNL_EStopBlindness = 0x0000000c;
+class VNL_EStopBlindness : public CEntityEvent {
   public:
-    EStopBlindness() : CEntityEvent(EVENTCODE_EStopBlindness) {};
-    DEFINE_MAKE_COPY(EStopBlindness);
+    VNL_EStopBlindness() : CEntityEvent(EVENTCODE_VNL_EStopBlindness) {};
+    DEFINE_MAKE_COPY(VNL_EStopBlindness);
 };
-CLEAR_TO_DEFAULT(EStopBlindness);
+CLEAR_TO_DEFAULT(VNL_EStopBlindness);
 
 // Stop Deafness event
-static const SLONG EVENTCODE_EStopDeafness = 0x0000000d;
-class EStopDeafness : public CEntityEvent {
+static const SLONG EVENTCODE_VNL_EStopDeafness = 0x0000000d;
+class VNL_EStopDeafness : public CEntityEvent {
   public:
-    EStopDeafness() : CEntityEvent(EVENTCODE_EStopDeafness) {};
-    DEFINE_MAKE_COPY(EStopDeafness);
+    VNL_EStopDeafness() : CEntityEvent(EVENTCODE_VNL_EStopDeafness) {};
+    DEFINE_MAKE_COPY(VNL_EStopDeafness);
 };
-CLEAR_TO_DEFAULT(EStopDeafness);
+CLEAR_TO_DEFAULT(VNL_EStopDeafness);
 
 // Receive Score event
-static const SLONG EVENTCODE_EReceiveScore = 0x0000000e;
-class EReceiveScore : public CEntityEvent {
+static const SLONG EVENTCODE_VNL_EReceiveScore = 0x0000000e;
+class VNL_EReceiveScore : public CEntityEvent {
   public:
     INDEX iPoints;
 
-    EReceiveScore() : CEntityEvent(EVENTCODE_EReceiveScore) {
+    VNL_EReceiveScore() : CEntityEvent(EVENTCODE_VNL_EReceiveScore) {
       ClearToDefault(iPoints);
     };
 
-    DEFINE_MAKE_COPY(EReceiveScore);
+    DEFINE_MAKE_COPY(VNL_EReceiveScore);
 };
-CLEAR_TO_DEFAULT(EReceiveScore);
+CLEAR_TO_DEFAULT(VNL_EReceiveScore);
 
 // Killed Enemy event
-static const SLONG EVENTCODE_EKilledEnemy = 0x0000000f;
-class EKilledEnemy : public CEntityEvent {
+static const SLONG EVENTCODE_VNL_EKilledEnemy = 0x0000000f;
+class VNL_EKilledEnemy : public CEntityEvent {
   public:
-    EKilledEnemy() : CEntityEvent(EVENTCODE_EKilledEnemy) {};
-    DEFINE_MAKE_COPY(EKilledEnemy);
+    VNL_EKilledEnemy() : CEntityEvent(EVENTCODE_VNL_EKilledEnemy) {};
+    DEFINE_MAKE_COPY(VNL_EKilledEnemy);
 };
-CLEAR_TO_DEFAULT(EKilledEnemy);
+CLEAR_TO_DEFAULT(VNL_EKilledEnemy);
 
 // Secret Found event
-static const SLONG EVENTCODE_ESecretFound = 0x00000010;
-class ESecretFound : public CEntityEvent {
+static const SLONG EVENTCODE_VNL_ESecretFound = 0x00000010;
+class VNL_ESecretFound : public CEntityEvent {
   public:
-    ESecretFound() : CEntityEvent(EVENTCODE_ESecretFound) {};
-    DEFINE_MAKE_COPY(ESecretFound);
+    VNL_ESecretFound() : CEntityEvent(EVENTCODE_VNL_ESecretFound) {};
+    DEFINE_MAKE_COPY(VNL_ESecretFound);
 };
-CLEAR_TO_DEFAULT(ESecretFound);
+CLEAR_TO_DEFAULT(VNL_ESecretFound);
 
 // Other global events
 
 // Notify about a sound from something
-static const SLONG EVENTCODE_ESound = 0x00000011;
-class ESound : public CEntityEvent {
+static const SLONG EVENTCODE_VNL_ESound = 0x00000011;
+class VNL_ESound : public CEntityEvent {
   public:
     INDEX EsndtSound; // SoundType enum
     CVanillaEventEntity penTarget;
 
-    ESound() : CEntityEvent(EVENTCODE_ESound) {
+    VNL_ESound() : CEntityEvent(EVENTCODE_VNL_ESound) {
       ClearToDefault(EsndtSound);
       ClearToDefault(penTarget);
     };
 
-    DEFINE_MAKE_COPY(ESound);
+    DEFINE_MAKE_COPY(VNL_ESound);
 };
-CLEAR_TO_DEFAULT(ESound);
+CLEAR_TO_DEFAULT(VNL_ESound);
 
 // Trigger ScrollHolder
-static const SLONG EVENTCODE_EScroll = 0x00000012;
-class EScroll : public CEntityEvent {
+static const SLONG EVENTCODE_VNL_EScroll = 0x00000012;
+class VNL_EScroll : public CEntityEvent {
   public:
     BOOL bStart;
     CVanillaEventEntity penSender;
 
-    EScroll() : CEntityEvent(EVENTCODE_EScroll) {
+    VNL_EScroll() : CEntityEvent(EVENTCODE_VNL_EScroll) {
       ClearToDefault(bStart);
       ClearToDefault(penSender);
     };
 
-    DEFINE_MAKE_COPY(EScroll);
+    DEFINE_MAKE_COPY(VNL_EScroll);
 };
-CLEAR_TO_DEFAULT(EScroll);
+CLEAR_TO_DEFAULT(VNL_EScroll);
 
 // Trigger TextFXHolder
-static const SLONG EVENTCODE_ETextFX = 0x00000013;
-class ETextFX : public CEntityEvent {
+static const SLONG EVENTCODE_VNL_ETextFX = 0x00000013;
+class VNL_ETextFX : public CEntityEvent {
   public:
     BOOL bStart;
     CVanillaEventEntity penSender;
 
-    ETextFX() : CEntityEvent(EVENTCODE_ETextFX) {
+    VNL_ETextFX() : CEntityEvent(EVENTCODE_VNL_ETextFX) {
       ClearToDefault(bStart);
       ClearToDefault(penSender);
     };
 
-    DEFINE_MAKE_COPY(ETextFX);
+    DEFINE_MAKE_COPY(VNL_ETextFX);
 };
-CLEAR_TO_DEFAULT(ETextFX);
+CLEAR_TO_DEFAULT(VNL_ETextFX);
 
 // Trigger HudPicHolder
-static const SLONG EVENTCODE_EHudPicFX = 0x00000014;
-class EHudPicFX : public CEntityEvent {
+static const SLONG EVENTCODE_VNL_EHudPicFX = 0x00000014;
+class VNL_EHudPicFX : public CEntityEvent {
   public:
     BOOL bStart;
     CVanillaEventEntity penSender;
 
-    EHudPicFX() : CEntityEvent(EVENTCODE_EHudPicFX) {
+    VNL_EHudPicFX() : CEntityEvent(EVENTCODE_VNL_EHudPicFX) {
       ClearToDefault(bStart);
       ClearToDefault(penSender);
     };
 
-    DEFINE_MAKE_COPY(EHudPicFX);
+    DEFINE_MAKE_COPY(VNL_EHudPicFX);
 };
-CLEAR_TO_DEFAULT(EHudPicFX);
+CLEAR_TO_DEFAULT(VNL_EHudPicFX);
 
 // Trigger CreditsHolder
-static const SLONG EVENTCODE_ECredits = 0x00000015;
-class ECredits : public CEntityEvent {
+static const SLONG EVENTCODE_VNL_ECredits = 0x00000015;
+class VNL_ECredits : public CEntityEvent {
   public:
     BOOL bStart;
     CVanillaEventEntity penSender;
 
-    ECredits() : CEntityEvent(EVENTCODE_ECredits) {
+    VNL_ECredits() : CEntityEvent(EVENTCODE_VNL_ECredits) {
       ClearToDefault(bStart);
       ClearToDefault(penSender);
     };
 
-    DEFINE_MAKE_COPY(ECredits);
+    DEFINE_MAKE_COPY(VNL_ECredits);
 };
-CLEAR_TO_DEFAULT(ECredits);
+CLEAR_TO_DEFAULT(VNL_ECredits);
 
 // Display center message
-static const SLONG EVENTCODE_ECenterMessage = 0x00000016;
-class ECenterMessage : public CEntityEvent {
+static const SLONG EVENTCODE_VNL_ECenterMessage = 0x00000016;
+class VNL_ECenterMessage : public CEntityEvent {
   public:
     CTString strMessage;
     TIME tmLength;
     INDEX mssSound; // MessageSound enum
 
-    ECenterMessage() : CEntityEvent(EVENTCODE_ECenterMessage) {
+    VNL_ECenterMessage() : CEntityEvent(EVENTCODE_VNL_ECenterMessage) {
       ClearToDefault(strMessage);
       ClearToDefault(tmLength);
       ClearToDefault(mssSound);
     };
 
-    DEFINE_MAKE_COPY(ECenterMessage);
+    DEFINE_MAKE_COPY(VNL_ECenterMessage);
 };
-CLEAR_TO_DEFAULT(ECenterMessage);
+CLEAR_TO_DEFAULT(VNL_ECenterMessage);
 
 // Receive computer message
-static const SLONG EVENTCODE_EComputerMessage = 0x00000017;
-class EComputerMessage : public CEntityEvent {
+static const SLONG EVENTCODE_VNL_EComputerMessage = 0x00000017;
+class VNL_EComputerMessage : public CEntityEvent {
   public:
     CTFileName fnmMessage;
 
-    EComputerMessage() : CEntityEvent(EVENTCODE_EComputerMessage) {
+    VNL_EComputerMessage() : CEntityEvent(EVENTCODE_VNL_EComputerMessage) {
       ClearToDefault(fnmMessage);
     };
 
-    DEFINE_MAKE_COPY(EComputerMessage);
+    DEFINE_MAKE_COPY(VNL_EComputerMessage);
 };
-CLEAR_TO_DEFAULT(EComputerMessage);
+CLEAR_TO_DEFAULT(VNL_EComputerMessage);
 
 // Play voice message
-static const SLONG EVENTCODE_EVoiceMessage = 0x00000018;
-class EVoiceMessage : public CEntityEvent {
+static const SLONG EVENTCODE_VNL_EVoiceMessage = 0x00000018;
+class VNL_EVoiceMessage : public CEntityEvent {
   public:
     CTFileName fnmMessage;
 
-    EVoiceMessage() : CEntityEvent(EVENTCODE_EVoiceMessage) {
+    VNL_EVoiceMessage() : CEntityEvent(EVENTCODE_VNL_EVoiceMessage) {
       ClearToDefault(fnmMessage);
     };
 
-    DEFINE_MAKE_COPY(EVoiceMessage);
+    DEFINE_MAKE_COPY(VNL_EVoiceMessage);
 };
-CLEAR_TO_DEFAULT(EVoiceMessage);
+CLEAR_TO_DEFAULT(VNL_EVoiceMessage);
 
 // Get hit by the spaceship's beam
-static const SLONG EVENTCODE_EHitBySpaceShipBeam = 0x00000019;
-class EHitBySpaceShipBeam : public CEntityEvent {
+static const SLONG EVENTCODE_VNL_EHitBySpaceShipBeam = 0x00000019;
+class VNL_EHitBySpaceShipBeam : public CEntityEvent {
   public:
-    EHitBySpaceShipBeam() : CEntityEvent(EVENTCODE_EHitBySpaceShipBeam) {};
-    DEFINE_MAKE_COPY(EHitBySpaceShipBeam);
+    VNL_EHitBySpaceShipBeam() : CEntityEvent(EVENTCODE_VNL_EHitBySpaceShipBeam) {};
+    DEFINE_MAKE_COPY(VNL_EHitBySpaceShipBeam);
 };
-CLEAR_TO_DEFAULT(EHitBySpaceShipBeam);
+CLEAR_TO_DEFAULT(VNL_EHitBySpaceShipBeam);
 
 // Specific entity events
 
 // AmmoItem: Receive ammo
-static const SLONG EVENTCODE_EAmmoItem = 0x03230000;
-class EAmmoItem : public CEntityEvent {
+static const SLONG EVENTCODE_VNL_EAmmoItem = 0x03230000;
+class VNL_EAmmoItem : public CEntityEvent {
   public:
     INDEX EaitType; // AmmoItemType enum
     INDEX iQuantity;
 
-    EAmmoItem() : CEntityEvent(EVENTCODE_EAmmoItem) {
+    VNL_EAmmoItem() : CEntityEvent(EVENTCODE_VNL_EAmmoItem) {
       ClearToDefault(EaitType);
       ClearToDefault(iQuantity);
     };
 
-    DEFINE_MAKE_COPY(EAmmoItem);
+    DEFINE_MAKE_COPY(VNL_EAmmoItem);
 };
-CLEAR_TO_DEFAULT(EAmmoItem);
+CLEAR_TO_DEFAULT(VNL_EAmmoItem);
 
 // AmmoPack: Receive ammo pack
-static const SLONG EVENTCODE_EAmmoPackItem = 0x03260000;
-class EAmmoPackItem : public CEntityEvent {
+static const SLONG EVENTCODE_VNL_EAmmoPackItem = 0x03260000;
+class VNL_EAmmoPackItem : public CEntityEvent {
   public:
     INDEX iShells;
     INDEX iBullets;
@@ -375,7 +375,7 @@ class EAmmoPackItem : public CEntityEvent {
     INDEX iIronBalls;
     INDEX iSniperBullets;
 
-    EAmmoPackItem() : CEntityEvent(EVENTCODE_EAmmoPackItem) {
+    VNL_EAmmoPackItem() : CEntityEvent(EVENTCODE_VNL_EAmmoPackItem) {
       ClearToDefault(iShells);
       ClearToDefault(iBullets);
       ClearToDefault(iRockets);
@@ -386,227 +386,227 @@ class EAmmoPackItem : public CEntityEvent {
       ClearToDefault(iSniperBullets);
     };
 
-    DEFINE_MAKE_COPY(EAmmoPackItem);
+    DEFINE_MAKE_COPY(VNL_EAmmoPackItem);
 };
-CLEAR_TO_DEFAULT(EAmmoPackItem);
+CLEAR_TO_DEFAULT(VNL_EAmmoPackItem);
 
 // ArmorItem: Receive armor
-static const SLONG EVENTCODE_EArmor = 0x03240000;
-class EArmor : public CEntityEvent {
+static const SLONG EVENTCODE_VNL_EArmor = 0x03240000;
+class VNL_EArmor : public CEntityEvent {
   public:
     FLOAT fArmor;
     BOOL bOverTopArmor;
 
-    EArmor() : CEntityEvent(EVENTCODE_EArmor) {
+    VNL_EArmor() : CEntityEvent(EVENTCODE_VNL_EArmor) {
       ClearToDefault(fArmor);
       ClearToDefault(bOverTopArmor);
     };
 
-    DEFINE_MAKE_COPY(EArmor);
+    DEFINE_MAKE_COPY(VNL_EArmor);
 };
-CLEAR_TO_DEFAULT(EArmor);
+CLEAR_TO_DEFAULT(VNL_EArmor);
 
 // HealthItem: Receive health
-static const SLONG EVENTCODE_EHealth = 0x03210000;
-class EHealth : public CEntityEvent {
+static const SLONG EVENTCODE_VNL_EHealth = 0x03210000;
+class VNL_EHealth : public CEntityEvent {
   public:
     FLOAT fHealth;
     BOOL bOverTopHealth;
 
-    EHealth() : CEntityEvent(EVENTCODE_EHealth) {
+    VNL_EHealth() : CEntityEvent(EVENTCODE_VNL_EHealth) {
       ClearToDefault(fHealth);
       ClearToDefault(bOverTopHealth);
     };
 
-    DEFINE_MAKE_COPY(EHealth);
+    DEFINE_MAKE_COPY(VNL_EHealth);
 };
-CLEAR_TO_DEFAULT(EHealth);
+CLEAR_TO_DEFAULT(VNL_EHealth);
 
 // KeyItem: Receive key
-static const SLONG EVENTCODE_EKey = 0x03250000;
-class EKey : public CEntityEvent {
+static const SLONG EVENTCODE_VNL_EKey = 0x03250000;
+class VNL_EKey : public CEntityEvent {
   public:
     INDEX kitType; // KeyItemType enum
 
-    EKey() : CEntityEvent(EVENTCODE_EKey) {
+    VNL_EKey() : CEntityEvent(EVENTCODE_VNL_EKey) {
       ClearToDefault(kitType);
     };
 
-    DEFINE_MAKE_COPY(EKey);
+    DEFINE_MAKE_COPY(VNL_EKey);
 };
-CLEAR_TO_DEFAULT(EKey);
+CLEAR_TO_DEFAULT(VNL_EKey);
 
 // MessageItem: Receive message
-static const SLONG EVENTCODE_EMessageItem = 0x03270000;
-class EMessageItem : public CEntityEvent {
+static const SLONG EVENTCODE_VNL_EMessageItem = 0x03270000;
+class VNL_EMessageItem : public CEntityEvent {
   public:
     CTFileName fnmMessage;
 
-    EMessageItem() : CEntityEvent(EVENTCODE_EMessageItem) {
+    VNL_EMessageItem() : CEntityEvent(EVENTCODE_VNL_EMessageItem) {
       ClearToDefault(fnmMessage);
     };
 
-    DEFINE_MAKE_COPY(EMessageItem);
+    DEFINE_MAKE_COPY(VNL_EMessageItem);
 };
-CLEAR_TO_DEFAULT(EMessageItem);
+CLEAR_TO_DEFAULT(VNL_EMessageItem);
 
 // PowerUpItem: Receive powerup
-static const SLONG EVENTCODE_EPowerUp = 0x03280000;
-class EPowerUp : public CEntityEvent {
+static const SLONG EVENTCODE_VNL_EPowerUp = 0x03280000;
+class VNL_EPowerUp : public CEntityEvent {
   public:
     INDEX puitType; // PowerUpItemType enum
 
-    EPowerUp() : CEntityEvent(EVENTCODE_EPowerUp) {
+    VNL_EPowerUp() : CEntityEvent(EVENTCODE_VNL_EPowerUp) {
       ClearToDefault(puitType);
     };
 
-    DEFINE_MAKE_COPY(EPowerUp);
+    DEFINE_MAKE_COPY(VNL_EPowerUp);
 };
-CLEAR_TO_DEFAULT(EPowerUp);
+CLEAR_TO_DEFAULT(VNL_EPowerUp);
 
 // WeaponItem: Receive weapon
-static const SLONG EVENTCODE_EWeaponItem = 0x03220000;
-class EWeaponItem : public CEntityEvent {
+static const SLONG EVENTCODE_VNL_EWeaponItem = 0x03220000;
+class VNL_EWeaponItem : public CEntityEvent {
   public:
     INDEX iWeapon;
     INDEX iAmmo;
     BOOL bDropped;
 
-    EWeaponItem() : CEntityEvent(EVENTCODE_EWeaponItem) {
+    VNL_EWeaponItem() : CEntityEvent(EVENTCODE_VNL_EWeaponItem) {
       ClearToDefault(iWeapon);
       ClearToDefault(iAmmo);
       ClearToDefault(bDropped);
     };
 
-    DEFINE_MAKE_COPY(EWeaponItem);
+    DEFINE_MAKE_COPY(VNL_EWeaponItem);
 };
-CLEAR_TO_DEFAULT(EWeaponItem);
+CLEAR_TO_DEFAULT(VNL_EWeaponItem);
 
 // EnemyBase: Restart attack
-static const SLONG EVENTCODE_ERestartAttack = 0x01360000;
-class ERestartAttack : public CEntityEvent {
+static const SLONG EVENTCODE_VNL_ERestartAttack = 0x01360000;
+class VNL_ERestartAttack : public CEntityEvent {
   public:
-    ERestartAttack() : CEntityEvent(EVENTCODE_ERestartAttack) {};
-    DEFINE_MAKE_COPY(ERestartAttack);
+    VNL_ERestartAttack() : CEntityEvent(EVENTCODE_VNL_ERestartAttack) {};
+    DEFINE_MAKE_COPY(VNL_ERestartAttack);
 };
-CLEAR_TO_DEFAULT(ERestartAttack);
+CLEAR_TO_DEFAULT(VNL_ERestartAttack);
 
 // EnemyBase: Reconsider behavior
-static const SLONG EVENTCODE_EReconsiderBehavior = 0x01360001;
-class EReconsiderBehavior : public CEntityEvent {
+static const SLONG EVENTCODE_VNL_EReconsiderBehavior = 0x01360001;
+class VNL_EReconsiderBehavior : public CEntityEvent {
   public:
-    EReconsiderBehavior() : CEntityEvent(EVENTCODE_EReconsiderBehavior) {};
-    DEFINE_MAKE_COPY(EReconsiderBehavior);
+    VNL_EReconsiderBehavior() : CEntityEvent(EVENTCODE_VNL_EReconsiderBehavior) {};
+    DEFINE_MAKE_COPY(VNL_EReconsiderBehavior);
 };
-CLEAR_TO_DEFAULT(EReconsiderBehavior);
+CLEAR_TO_DEFAULT(VNL_EReconsiderBehavior);
 
 // EnemyBase: Force wound animation
-static const SLONG EVENTCODE_EForceWound = 0x01360002;
-class EForceWound : public CEntityEvent {
+static const SLONG EVENTCODE_VNL_EForceWound = 0x01360002;
+class VNL_EForceWound : public CEntityEvent {
   public:
-    EForceWound() : CEntityEvent(EVENTCODE_EForceWound) {};
-    DEFINE_MAKE_COPY(EForceWound);
+    VNL_EForceWound() : CEntityEvent(EVENTCODE_VNL_EForceWound) {};
+    DEFINE_MAKE_COPY(VNL_EForceWound);
 };
-CLEAR_TO_DEFAULT(EForceWound);
+CLEAR_TO_DEFAULT(VNL_EForceWound);
 
 // PlayerWeapons: Select new weapon
-static const SLONG EVENTCODE_ESelectWeapon = 0x01920001;
-class ESelectWeapon : public CEntityEvent {
+static const SLONG EVENTCODE_VNL_ESelectWeapon = 0x01920001;
+class VNL_ESelectWeapon : public CEntityEvent {
   public:
     INDEX iWeapon;
 
-    ESelectWeapon() : CEntityEvent(EVENTCODE_ESelectWeapon) {
+    VNL_ESelectWeapon() : CEntityEvent(EVENTCODE_VNL_ESelectWeapon) {
       ClearToDefault(iWeapon);
     };
 
-    DEFINE_MAKE_COPY(ESelectWeapon);
+    DEFINE_MAKE_COPY(VNL_ESelectWeapon);
 };
-CLEAR_TO_DEFAULT(ESelectWeapon);
+CLEAR_TO_DEFAULT(VNL_ESelectWeapon);
 
 // PlayerWeapons: Play boring animation
-static const SLONG EVENTCODE_EBoringWeapon = 0x01920002;
-class EBoringWeapon : public CEntityEvent {
+static const SLONG EVENTCODE_VNL_EBoringWeapon = 0x01920002;
+class VNL_EBoringWeapon : public CEntityEvent {
   public:
-    EBoringWeapon() : CEntityEvent(EVENTCODE_EBoringWeapon) {};
-    DEFINE_MAKE_COPY(EBoringWeapon);
+    VNL_EBoringWeapon() : CEntityEvent(EVENTCODE_VNL_EBoringWeapon) {};
+    DEFINE_MAKE_COPY(VNL_EBoringWeapon);
 };
-CLEAR_TO_DEFAULT(EBoringWeapon);
+CLEAR_TO_DEFAULT(VNL_EBoringWeapon);
 
 // PlayerWeapons: Start firing current weapon
-static const SLONG EVENTCODE_EFireWeapon = 0x01920003;
-class EFireWeapon : public CEntityEvent {
+static const SLONG EVENTCODE_VNL_EFireWeapon = 0x01920003;
+class VNL_EFireWeapon : public CEntityEvent {
   public:
-    EFireWeapon() : CEntityEvent(EVENTCODE_EFireWeapon) {};
-    DEFINE_MAKE_COPY(EFireWeapon);
+    VNL_EFireWeapon() : CEntityEvent(EVENTCODE_VNL_EFireWeapon) {};
+    DEFINE_MAKE_COPY(VNL_EFireWeapon);
 };
-CLEAR_TO_DEFAULT(EFireWeapon);
+CLEAR_TO_DEFAULT(VNL_EFireWeapon);
 
 // PlayerWeapons: Stop firing current weapon
-static const SLONG EVENTCODE_EReleaseWeapon = 0x01920004;
-class EReleaseWeapon : public CEntityEvent {
+static const SLONG EVENTCODE_VNL_EReleaseWeapon = 0x01920004;
+class VNL_EReleaseWeapon : public CEntityEvent {
   public:
-    EReleaseWeapon() : CEntityEvent(EVENTCODE_EReleaseWeapon) {};
-    DEFINE_MAKE_COPY(EReleaseWeapon);
+    VNL_EReleaseWeapon() : CEntityEvent(EVENTCODE_VNL_EReleaseWeapon) {};
+    DEFINE_MAKE_COPY(VNL_EReleaseWeapon);
 };
-CLEAR_TO_DEFAULT(EReleaseWeapon);
+CLEAR_TO_DEFAULT(VNL_EReleaseWeapon);
 
 // PlayerWeapons: Reload current weapon
-static const SLONG EVENTCODE_EReloadWeapon = 0x01920005;
-class EReloadWeapon : public CEntityEvent {
+static const SLONG EVENTCODE_VNL_EReloadWeapon = 0x01920005;
+class VNL_EReloadWeapon : public CEntityEvent {
   public:
-    EReloadWeapon() : CEntityEvent(EVENTCODE_EReloadWeapon) {};
-    DEFINE_MAKE_COPY(EReloadWeapon);
+    VNL_EReloadWeapon() : CEntityEvent(EVENTCODE_VNL_EReloadWeapon) {};
+    DEFINE_MAKE_COPY(VNL_EReloadWeapon);
 };
-CLEAR_TO_DEFAULT(EReloadWeapon);
+CLEAR_TO_DEFAULT(VNL_EReloadWeapon);
 
 // PlayerWeapons: When the weapon has been changed
-static const SLONG EVENTCODE_EWeaponChanged = 0x01920006;
-class EWeaponChanged : public CEntityEvent {
+static const SLONG EVENTCODE_VNL_EWeaponChanged = 0x01920006;
+class VNL_EWeaponChanged : public CEntityEvent {
   public:
-    EWeaponChanged() : CEntityEvent(EVENTCODE_EWeaponChanged) {};
-    DEFINE_MAKE_COPY(EWeaponChanged);
+    VNL_EWeaponChanged() : CEntityEvent(EVENTCODE_VNL_EWeaponChanged) {};
+    DEFINE_MAKE_COPY(VNL_EWeaponChanged);
 };
-CLEAR_TO_DEFAULT(EWeaponChanged);
+CLEAR_TO_DEFAULT(VNL_EWeaponChanged);
 
 // Specific initialization events
 
 // AirShockwave
-static const SLONG EVENTCODE_EAirShockwave = 0x015d0000;
-class EAirShockwave : public CEntityEvent {
+static const SLONG EVENTCODE_VNL_EAirShockwave = 0x015d0000;
+class VNL_EAirShockwave : public CEntityEvent {
   public:
     CVanillaEventEntity penLauncher;
     FLOAT fHeight;
     FLOAT fEndWidth;
     FLOAT fDuration;
 
-    EAirShockwave() : CEntityEvent(EVENTCODE_EAirShockwave) {
+    VNL_EAirShockwave() : CEntityEvent(EVENTCODE_VNL_EAirShockwave) {
       ClearToDefault(penLauncher);
       ClearToDefault(fHeight);
       ClearToDefault(fEndWidth);
       ClearToDefault(fDuration);
     };
 
-    DEFINE_MAKE_COPY(EAirShockwave);
+    DEFINE_MAKE_COPY(VNL_EAirShockwave);
 };
-CLEAR_TO_DEFAULT(EAirShockwave);
+CLEAR_TO_DEFAULT(VNL_EAirShockwave);
 
 // AirWave
-static const SLONG EVENTCODE_EAirWave = 0x01fe0000;
-class EAirWave : public CEntityEvent {
+static const SLONG EVENTCODE_VNL_EAirWave = 0x01fe0000;
+class VNL_EAirWave : public CEntityEvent {
   public:
     CVanillaEventEntity penLauncher;
 
-    EAirWave() : CEntityEvent(EVENTCODE_EAirWave) {
+    VNL_EAirWave() : CEntityEvent(EVENTCODE_VNL_EAirWave) {
       ClearToDefault(penLauncher);
     };
 
-    DEFINE_MAKE_COPY(EAirWave);
+    DEFINE_MAKE_COPY(VNL_EAirWave);
 };
-CLEAR_TO_DEFAULT(EAirWave);
+CLEAR_TO_DEFAULT(VNL_EAirWave);
 
 // BasicEffect
-static const SLONG EVENTCODE_ESpawnEffect = 0x02590000;
-class ESpawnEffect : public CEntityEvent {
+static const SLONG EVENTCODE_VNL_ESpawnEffect = 0x02590000;
+class VNL_ESpawnEffect : public CEntityEvent {
   public:
     INDEX betType; // BasicEffectType enum
     FLOAT3D vNormal;
@@ -614,7 +614,7 @@ class ESpawnEffect : public CEntityEvent {
     FLOAT3D vStretch;
     COLOR colMuliplier;
 
-    ESpawnEffect() : CEntityEvent(EVENTCODE_ESpawnEffect) {
+    VNL_ESpawnEffect() : CEntityEvent(EVENTCODE_VNL_ESpawnEffect) {
       ClearToDefault(betType);
       ClearToDefault(vNormal);
       ClearToDefault(vDirection);
@@ -622,13 +622,13 @@ class ESpawnEffect : public CEntityEvent {
       ClearToDefault(colMuliplier);
     };
 
-    DEFINE_MAKE_COPY(ESpawnEffect);
+    DEFINE_MAKE_COPY(VNL_ESpawnEffect);
 };
-CLEAR_TO_DEFAULT(ESpawnEffect);
+CLEAR_TO_DEFAULT(VNL_ESpawnEffect);
 
 // BloodSpray
-static const SLONG EVENTCODE_ESpawnSpray = 0x025b0000;
-class ESpawnSpray : public CEntityEvent {
+static const SLONG EVENTCODE_VNL_ESpawnSpray = 0x025b0000;
+class VNL_ESpawnSpray : public CEntityEvent {
   public:
     INDEX sptType; // SprayParticlesType enum
     FLOAT fDamagePower;
@@ -639,7 +639,7 @@ class ESpawnSpray : public CEntityEvent {
     FLOAT fLaunchPower;
     COLOR colBurnColor;
 
-    ESpawnSpray() : CEntityEvent(EVENTCODE_ESpawnSpray) {
+    VNL_ESpawnSpray() : CEntityEvent(EVENTCODE_VNL_ESpawnSpray) {
       ClearToDefault(sptType);
       ClearToDefault(fDamagePower);
       ClearToDefault(fSizeMultiplier);
@@ -650,63 +650,63 @@ class ESpawnSpray : public CEntityEvent {
       ClearToDefault(colBurnColor);
     };
 
-    DEFINE_MAKE_COPY(ESpawnSpray);
+    DEFINE_MAKE_COPY(VNL_ESpawnSpray);
 };
-CLEAR_TO_DEFAULT(ESpawnSpray);
+CLEAR_TO_DEFAULT(VNL_ESpawnSpray);
 
 // Bullet
-static const SLONG EVENTCODE_EBulletInit = 0x01f60000;
-class EBulletInit : public CEntityEvent {
+static const SLONG EVENTCODE_VNL_EBulletInit = 0x01f60000;
+class VNL_EBulletInit : public CEntityEvent {
   public:
     CVanillaEventEntity penOwner;
     FLOAT fDamage;
 
-    EBulletInit() : CEntityEvent(EVENTCODE_EBulletInit) {
+    VNL_EBulletInit() : CEntityEvent(EVENTCODE_VNL_EBulletInit) {
       ClearToDefault(penOwner);
       ClearToDefault(fDamage);
     };
 
-    DEFINE_MAKE_COPY(EBulletInit);
+    DEFINE_MAKE_COPY(VNL_EBulletInit);
 };
-CLEAR_TO_DEFAULT(EBulletInit);
+CLEAR_TO_DEFAULT(VNL_EBulletInit);
 
 // CannonBall
-static const SLONG EVENTCODE_ELaunchCannonBall = 0x01fa0000;
-class ELaunchCannonBall : public CEntityEvent {
+static const SLONG EVENTCODE_VNL_ELaunchCannonBall = 0x01fa0000;
+class VNL_ELaunchCannonBall : public CEntityEvent {
   public:
     CVanillaEventEntity penLauncher;
     INDEX cbtType; // CannonBallType enum
     FLOAT fLaunchPower;
     FLOAT fSize;
 
-    ELaunchCannonBall() : CEntityEvent(EVENTCODE_ELaunchCannonBall) {
+    VNL_ELaunchCannonBall() : CEntityEvent(EVENTCODE_VNL_ELaunchCannonBall) {
       ClearToDefault(penLauncher);
       ClearToDefault(cbtType);
       ClearToDefault(fLaunchPower);
       ClearToDefault(fSize);
     };
 
-    DEFINE_MAKE_COPY(ELaunchCannonBall);
+    DEFINE_MAKE_COPY(VNL_ELaunchCannonBall);
 };
-CLEAR_TO_DEFAULT(ELaunchCannonBall);
+CLEAR_TO_DEFAULT(VNL_ELaunchCannonBall);
 
 // CyborgBike
-static const SLONG EVENTCODE_ECyborgBike = 0x014b0000;
-class ECyborgBike : public CEntityEvent {
+static const SLONG EVENTCODE_VNL_ECyborgBike = 0x014b0000;
+class VNL_ECyborgBike : public CEntityEvent {
   public:
     FLOAT fSpeed;
 
-    ECyborgBike() : CEntityEvent(EVENTCODE_ECyborgBike) {
+    VNL_ECyborgBike() : CEntityEvent(EVENTCODE_VNL_ECyborgBike) {
       ClearToDefault(fSpeed);
     };
 
-    DEFINE_MAKE_COPY(ECyborgBike);
+    DEFINE_MAKE_COPY(VNL_ECyborgBike);
 };
-CLEAR_TO_DEFAULT(ECyborgBike);
+CLEAR_TO_DEFAULT(VNL_ECyborgBike);
 
 // Debris
-static const SLONG EVENTCODE_ESpawnDebris = 0x025a0000;
-class ESpawnDebris : public CEntityEvent {
+static const SLONG EVENTCODE_VNL_ESpawnDebris = 0x025a0000;
+class VNL_ESpawnDebris : public CEntityEvent {
   public:
     INDEX Eeibt; // EntityInfoBodyType enum
     CModelData *pmd;
@@ -728,7 +728,7 @@ class ESpawnDebris : public CEntityEvent {
     FLOAT3D vStretch;
     CVanillaEventEntity penFallFXPapa;
 
-    ESpawnDebris() : CEntityEvent(EVENTCODE_ESpawnDebris) {
+    VNL_ESpawnDebris() : CEntityEvent(EVENTCODE_VNL_ESpawnDebris) {
       ClearToDefault(Eeibt);
       ClearToDefault(pmd);
       ClearToDefault(fSize);
@@ -750,29 +750,29 @@ class ESpawnDebris : public CEntityEvent {
       ClearToDefault(penFallFXPapa);
     };
 
-    DEFINE_MAKE_COPY(ESpawnDebris);
+    DEFINE_MAKE_COPY(VNL_ESpawnDebris);
 };
-CLEAR_TO_DEFAULT(ESpawnDebris);
+CLEAR_TO_DEFAULT(VNL_ESpawnDebris);
 
 // DevilProjectile
-static const SLONG EVENTCODE_EDevilProjectile = 0x01ff0000;
-class EDevilProjectile : public CEntityEvent {
+static const SLONG EVENTCODE_VNL_EDevilProjectile = 0x01ff0000;
+class VNL_EDevilProjectile : public CEntityEvent {
   public:
     CVanillaEventEntity penLauncher;
     CVanillaEventEntity penTarget;
 
-    EDevilProjectile() : CEntityEvent(EVENTCODE_EDevilProjectile) {
+    VNL_EDevilProjectile() : CEntityEvent(EVENTCODE_VNL_EDevilProjectile) {
       ClearToDefault(penLauncher);
       ClearToDefault(penTarget);
     };
 
-    DEFINE_MAKE_COPY(EDevilProjectile);
+    DEFINE_MAKE_COPY(VNL_EDevilProjectile);
 };
-CLEAR_TO_DEFAULT(EDevilProjectile);
+CLEAR_TO_DEFAULT(VNL_EDevilProjectile);
 
 // Effector
-static const SLONG EVENTCODE_ESpawnEffector = 0x02600000;
-class ESpawnEffector : public CEntityEvent {
+static const SLONG EVENTCODE_VNL_ESpawnEffector = 0x02600000;
+class VNL_ESpawnEffector : public CEntityEvent {
   public:
     INDEX eetType; // EffectorEffectType enum
     FLOAT3D vDamageDir;
@@ -783,7 +783,7 @@ class ESpawnEffector : public CEntityEvent {
     CVanillaEventEntity penModel;
     CVanillaEventEntity penModel2;
 
-    ESpawnEffector() : CEntityEvent(EVENTCODE_ESpawnEffector) {
+    VNL_ESpawnEffector() : CEntityEvent(EVENTCODE_VNL_ESpawnEffector) {
       ClearToDefault(eetType);
       ClearToDefault(vDamageDir);
       ClearToDefault(vDestination);
@@ -794,175 +794,175 @@ class ESpawnEffector : public CEntityEvent {
       ClearToDefault(penModel2);
     };
 
-    DEFINE_MAKE_COPY(ESpawnEffector);
+    DEFINE_MAKE_COPY(VNL_ESpawnEffector);
 };
-CLEAR_TO_DEFAULT(ESpawnEffector);
+CLEAR_TO_DEFAULT(VNL_ESpawnEffector);
 
 // Flame
-static const SLONG EVENTCODE_EFlame = 0x01f80000;
-class EFlame : public CEntityEvent {
+static const SLONG EVENTCODE_VNL_EFlame = 0x01f80000;
+class VNL_EFlame : public CEntityEvent {
   public:
     CVanillaEventEntity penOwner;
     CVanillaEventEntity penAttach;
 
-    EFlame() : CEntityEvent(EVENTCODE_EFlame) {
+    VNL_EFlame() : CEntityEvent(EVENTCODE_VNL_EFlame) {
       ClearToDefault(penOwner);
       ClearToDefault(penAttach);
     };
 
-    DEFINE_MAKE_COPY(EFlame);
+    DEFINE_MAKE_COPY(VNL_EFlame);
 };
-CLEAR_TO_DEFAULT(EFlame);
+CLEAR_TO_DEFAULT(VNL_EFlame);
 
 // LarvaOffspring
-static const SLONG EVENTCODE_ELaunchLarvaOffspring = 0x01610000;
-class ELaunchLarvaOffspring : public CEntityEvent {
+static const SLONG EVENTCODE_VNL_ELaunchLarvaOffspring = 0x01610000;
+class VNL_ELaunchLarvaOffspring : public CEntityEvent {
   public:
     CVanillaEventEntity penLauncher;
 
-    ELaunchLarvaOffspring() : CEntityEvent(EVENTCODE_ELaunchLarvaOffspring) {
+    VNL_ELaunchLarvaOffspring() : CEntityEvent(EVENTCODE_VNL_ELaunchLarvaOffspring) {
       ClearToDefault(penLauncher);
     };
 
-    DEFINE_MAKE_COPY(ELaunchLarvaOffspring);
+    DEFINE_MAKE_COPY(VNL_ELaunchLarvaOffspring);
 };
-CLEAR_TO_DEFAULT(ELaunchLarvaOffspring);
+CLEAR_TO_DEFAULT(VNL_ELaunchLarvaOffspring);
 
 // PlayerAnimator
-static const SLONG EVENTCODE_EAnimatorInit = 0x01960000;
-class EAnimatorInit : public CEntityEvent {
+static const SLONG EVENTCODE_VNL_EAnimatorInit = 0x01960000;
+class VNL_EAnimatorInit : public CEntityEvent {
   public:
     CVanillaEventEntity penPlayer;
 
-    EAnimatorInit() : CEntityEvent(EVENTCODE_EAnimatorInit) {
+    VNL_EAnimatorInit() : CEntityEvent(EVENTCODE_VNL_EAnimatorInit) {
       ClearToDefault(penPlayer);
     };
 
-    DEFINE_MAKE_COPY(EAnimatorInit);
+    DEFINE_MAKE_COPY(VNL_EAnimatorInit);
 };
-CLEAR_TO_DEFAULT(EAnimatorInit);
+CLEAR_TO_DEFAULT(VNL_EAnimatorInit);
 
 // PlayerView
-static const SLONG EVENTCODE_EViewInit = 0x01930000;
-class EViewInit : public CEntityEvent {
+static const SLONG EVENTCODE_VNL_EViewInit = 0x01930000;
+class VNL_EViewInit : public CEntityEvent {
   public:
     CVanillaEventEntity penOwner;
     CVanillaEventEntity penCamera;
     INDEX vtView; // ViewType enum
     BOOL bDeathFixed;
 
-    EViewInit() : CEntityEvent(EVENTCODE_EViewInit) {
+    VNL_EViewInit() : CEntityEvent(EVENTCODE_VNL_EViewInit) {
       ClearToDefault(penOwner);
       ClearToDefault(penCamera);
       ClearToDefault(vtView);
       ClearToDefault(bDeathFixed);
     };
 
-    DEFINE_MAKE_COPY(EViewInit);
+    DEFINE_MAKE_COPY(VNL_EViewInit);
 };
-CLEAR_TO_DEFAULT(EViewInit);
+CLEAR_TO_DEFAULT(VNL_EViewInit);
 
 // PlayerWeapons
-static const SLONG EVENTCODE_EWeaponsInit = 0x01920000;
-class EWeaponsInit : public CEntityEvent {
+static const SLONG EVENTCODE_VNL_EWeaponsInit = 0x01920000;
+class VNL_EWeaponsInit : public CEntityEvent {
   public:
     CVanillaEventEntity penOwner;
 
-    EWeaponsInit() : CEntityEvent(EVENTCODE_EWeaponsInit) {
+    VNL_EWeaponsInit() : CEntityEvent(EVENTCODE_VNL_EWeaponsInit) {
       ClearToDefault(penOwner);
     };
 
-    DEFINE_MAKE_COPY(EWeaponsInit);
+    DEFINE_MAKE_COPY(VNL_EWeaponsInit);
 };
-CLEAR_TO_DEFAULT(EWeaponsInit);
+CLEAR_TO_DEFAULT(VNL_EWeaponsInit);
 
 // PlayerWeaponsEffects
-static const SLONG EVENTCODE_EWeaponEffectInit = 0x01950000;
-class EWeaponEffectInit : public CEntityEvent {
+static const SLONG EVENTCODE_VNL_EWeaponEffectInit = 0x01950000;
+class VNL_EWeaponEffectInit : public CEntityEvent {
   public:
     CVanillaEventEntity penOwner;
     INDEX EwetEffect; // WeaponEffectType enum
 
-    EWeaponEffectInit() : CEntityEvent(EVENTCODE_EWeaponEffectInit) {
+    VNL_EWeaponEffectInit() : CEntityEvent(EVENTCODE_VNL_EWeaponEffectInit) {
       ClearToDefault(penOwner);
       ClearToDefault(EwetEffect);
     };
 
-    DEFINE_MAKE_COPY(EWeaponEffectInit);
+    DEFINE_MAKE_COPY(VNL_EWeaponEffectInit);
 };
-CLEAR_TO_DEFAULT(EWeaponEffectInit);
+CLEAR_TO_DEFAULT(VNL_EWeaponEffectInit);
 
 // Projectile
-static const SLONG EVENTCODE_ELaunchProjectile = 0x01f50000;
-class ELaunchProjectile : public CEntityEvent {
+static const SLONG EVENTCODE_VNL_ELaunchProjectile = 0x01f50000;
+class VNL_ELaunchProjectile : public CEntityEvent {
   public:
     CVanillaEventEntity penLauncher;
     INDEX prtType; // ProjectileType enum
     FLOAT fSpeed;
     FLOAT fStretch;
 
-    ELaunchProjectile() : CEntityEvent(EVENTCODE_ELaunchProjectile) {
+    VNL_ELaunchProjectile() : CEntityEvent(EVENTCODE_VNL_ELaunchProjectile) {
       ClearToDefault(penLauncher);
       ClearToDefault(prtType);
       ClearToDefault(fSpeed);
       ClearToDefault(fStretch);
     };
 
-    DEFINE_MAKE_COPY(ELaunchProjectile);
+    DEFINE_MAKE_COPY(VNL_ELaunchProjectile);
 };
-CLEAR_TO_DEFAULT(ELaunchProjectile);
+CLEAR_TO_DEFAULT(VNL_ELaunchProjectile);
 
 // Reminder
-static const SLONG EVENTCODE_EReminderInit = 0x02bf0000;
-class EReminderInit : public CEntityEvent {
+static const SLONG EVENTCODE_VNL_EReminderInit = 0x02bf0000;
+class VNL_EReminderInit : public CEntityEvent {
   public:
     CVanillaEventEntity penOwner;
     FLOAT fWaitTime;
     INDEX iValue;
 
-    EReminderInit() : CEntityEvent(EVENTCODE_EReminderInit) {
+    VNL_EReminderInit() : CEntityEvent(EVENTCODE_VNL_EReminderInit) {
       ClearToDefault(penOwner);
       ClearToDefault(fWaitTime);
       ClearToDefault(iValue);
     };
 
-    DEFINE_MAKE_COPY(EReminderInit);
+    DEFINE_MAKE_COPY(VNL_EReminderInit);
 };
-CLEAR_TO_DEFAULT(EReminderInit);
+CLEAR_TO_DEFAULT(VNL_EReminderInit);
 
 // SeriousBomb
-static const SLONG EVENTCODE_ESeriousBomb = 0x01620000;
-class ESeriousBomb : public CEntityEvent {
+static const SLONG EVENTCODE_VNL_ESeriousBomb = 0x01620000;
+class VNL_ESeriousBomb : public CEntityEvent {
   public:
     CVanillaEventEntity penOwner;
 
-    ESeriousBomb() : CEntityEvent(EVENTCODE_ESeriousBomb) {
+    VNL_ESeriousBomb() : CEntityEvent(EVENTCODE_VNL_ESeriousBomb) {
       ClearToDefault(penOwner);
     };
 
-    DEFINE_MAKE_COPY(ESeriousBomb);
+    DEFINE_MAKE_COPY(VNL_ESeriousBomb);
 };
-CLEAR_TO_DEFAULT(ESeriousBomb);
+CLEAR_TO_DEFAULT(VNL_ESeriousBomb);
 
 // SpawnerProjectile
-static const SLONG EVENTCODE_ESpawnerProjectile = 0x01fb0000;
-class ESpawnerProjectile : public CEntityEvent {
+static const SLONG EVENTCODE_VNL_ESpawnerProjectile = 0x01fb0000;
+class VNL_ESpawnerProjectile : public CEntityEvent {
   public:
     CVanillaEventEntity penOwner;
     CVanillaEventEntity penTemplate;
 
-    ESpawnerProjectile() : CEntityEvent(EVENTCODE_ESpawnerProjectile) {
+    VNL_ESpawnerProjectile() : CEntityEvent(EVENTCODE_VNL_ESpawnerProjectile) {
       ClearToDefault(penOwner);
       ClearToDefault(penTemplate);
     };
 
-    DEFINE_MAKE_COPY(ESpawnerProjectile);
+    DEFINE_MAKE_COPY(VNL_ESpawnerProjectile);
 };
-CLEAR_TO_DEFAULT(ESpawnerProjectile);
+CLEAR_TO_DEFAULT(VNL_ESpawnerProjectile);
 
 // Spinner
-static const SLONG EVENTCODE_ESpinnerInit = 0x015c0000;
-class ESpinnerInit : public CEntityEvent {
+static const SLONG EVENTCODE_VNL_ESpinnerInit = 0x015c0000;
+class VNL_ESpinnerInit : public CEntityEvent {
   public:
     CVanillaEventEntity penParent;
     CVanillaEventEntity penTwister;
@@ -972,7 +972,7 @@ class ESpinnerInit : public CEntityEvent {
     BOOL bImpulse;
     FLOAT tmImpulseDuration;
 
-    ESpinnerInit() : CEntityEvent(EVENTCODE_ESpinnerInit) {
+    VNL_ESpinnerInit() : CEntityEvent(EVENTCODE_VNL_ESpinnerInit) {
       ClearToDefault(penParent);
       ClearToDefault(penTwister);
       ClearToDefault(vRotationAngle);
@@ -982,13 +982,13 @@ class ESpinnerInit : public CEntityEvent {
       ClearToDefault(tmImpulseDuration);
     };
 
-    DEFINE_MAKE_COPY(ESpinnerInit);
+    DEFINE_MAKE_COPY(VNL_ESpinnerInit);
 };
-CLEAR_TO_DEFAULT(ESpinnerInit);
+CLEAR_TO_DEFAULT(VNL_ESpinnerInit);
 
 // Twister
-static const SLONG EVENTCODE_ETwister = 0x01fb0000;
-class ETwister : public CEntityEvent {
+static const SLONG EVENTCODE_VNL_ETwister = 0x01fb0000;
+class VNL_ETwister : public CEntityEvent {
   public:
     CVanillaEventEntity penOwner;
     FLOAT fSize;
@@ -997,7 +997,7 @@ class ETwister : public CEntityEvent {
     BOOL bGrow;
     BOOL bMovingAllowed;
 
-    ETwister() : CEntityEvent(EVENTCODE_ETwister) {
+    VNL_ETwister() : CEntityEvent(EVENTCODE_VNL_ETwister) {
       ClearToDefault(penOwner);
       ClearToDefault(fSize);
       ClearToDefault(fDuration);
@@ -1006,38 +1006,38 @@ class ETwister : public CEntityEvent {
       ClearToDefault(bMovingAllowed);
     };
 
-    DEFINE_MAKE_COPY(ETwister);
+    DEFINE_MAKE_COPY(VNL_ETwister);
 };
-CLEAR_TO_DEFAULT(ETwister);
+CLEAR_TO_DEFAULT(VNL_ETwister);
 
 // Watcher
-static const SLONG EVENTCODE_EWatcherInit = 0x02bc0000;
-class EWatcherInit : public CEntityEvent {
+static const SLONG EVENTCODE_VNL_EWatcherInit = 0x02bc0000;
+class VNL_EWatcherInit : public CEntityEvent {
   public:
     CVanillaEventEntity penOwner;
 
-    EWatcherInit() : CEntityEvent(EVENTCODE_EWatcherInit) {
+    VNL_EWatcherInit() : CEntityEvent(EVENTCODE_VNL_EWatcherInit) {
       ClearToDefault(penOwner);
     };
 
-    DEFINE_MAKE_COPY(EWatcherInit);
+    DEFINE_MAKE_COPY(VNL_EWatcherInit);
 };
-CLEAR_TO_DEFAULT(EWatcherInit);
+CLEAR_TO_DEFAULT(VNL_EWatcherInit);
 
 // Water
-static const SLONG EVENTCODE_EWater = 0x01fc0000;
-class EWater : public CEntityEvent {
+static const SLONG EVENTCODE_VNL_EWater = 0x01fc0000;
+class VNL_EWater : public CEntityEvent {
   public:
     CVanillaEventEntity penLauncher;
     INDEX EwsSize; // WaterSize enum
 
-    EWater() : CEntityEvent(EVENTCODE_EWater) {
+    VNL_EWater() : CEntityEvent(EVENTCODE_VNL_EWater) {
       ClearToDefault(penLauncher);
       ClearToDefault(EwsSize);
     };
 
-    DEFINE_MAKE_COPY(EWater);
+    DEFINE_MAKE_COPY(VNL_EWater);
 };
-CLEAR_TO_DEFAULT(EWater);
+CLEAR_TO_DEFAULT(VNL_EWater);
 
 #endif

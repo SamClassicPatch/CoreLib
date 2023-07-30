@@ -112,77 +112,77 @@ void CExtPacket::RegisterExtPackets(void)
   _pShell->DeclareSymbol("user INDEX GetEntity(CTString, INDEX);", &GetEntity);
 
   // Vanilla event types
-  _pShell->DeclareSymbol("const INDEX EVENTCODE_EStop;",                 (void *)&EVENTCODE_EStop);
-  _pShell->DeclareSymbol("const INDEX EVENTCODE_EStart;",                (void *)&EVENTCODE_EStart);
-  _pShell->DeclareSymbol("const INDEX EVENTCODE_EActivate;",             (void *)&EVENTCODE_EActivate);
-  _pShell->DeclareSymbol("const INDEX EVENTCODE_EDeactivate;",           (void *)&EVENTCODE_EDeactivate);
-  _pShell->DeclareSymbol("const INDEX EVENTCODE_EEnvironmentStart;",     (void *)&EVENTCODE_EEnvironmentStart);
-  _pShell->DeclareSymbol("const INDEX EVENTCODE_EEnvironmentStop;",      (void *)&EVENTCODE_EEnvironmentStop);
-  _pShell->DeclareSymbol("const INDEX EVENTCODE_EEnd;",                  (void *)&EVENTCODE_EEnd);
-  _pShell->DeclareSymbol("const INDEX EVENTCODE_ETrigger;",              (void *)&EVENTCODE_ETrigger);
-  _pShell->DeclareSymbol("const INDEX EVENTCODE_ETeleportMovingBrush;",  (void *)&EVENTCODE_ETeleportMovingBrush);
-  _pShell->DeclareSymbol("const INDEX EVENTCODE_EReminder;",             (void *)&EVENTCODE_EReminder);
-  _pShell->DeclareSymbol("const INDEX EVENTCODE_EStartAttack;",          (void *)&EVENTCODE_EStartAttack);
-  _pShell->DeclareSymbol("const INDEX EVENTCODE_EStopAttack;",           (void *)&EVENTCODE_EStopAttack);
-  _pShell->DeclareSymbol("const INDEX EVENTCODE_EStopBlindness;",        (void *)&EVENTCODE_EStopBlindness);
-  _pShell->DeclareSymbol("const INDEX EVENTCODE_EStopDeafness;",         (void *)&EVENTCODE_EStopDeafness);
-  _pShell->DeclareSymbol("const INDEX EVENTCODE_EReceiveScore;",         (void *)&EVENTCODE_EReceiveScore);
-  _pShell->DeclareSymbol("const INDEX EVENTCODE_EKilledEnemy;",          (void *)&EVENTCODE_EKilledEnemy);
-  _pShell->DeclareSymbol("const INDEX EVENTCODE_ESecretFound;",          (void *)&EVENTCODE_ESecretFound);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EStop;",                 (void *)&EVENTCODE_VNL_EStop);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EStart;",                (void *)&EVENTCODE_VNL_EStart);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EActivate;",             (void *)&EVENTCODE_VNL_EActivate);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EDeactivate;",           (void *)&EVENTCODE_VNL_EDeactivate);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EEnvironmentStart;",     (void *)&EVENTCODE_VNL_EEnvironmentStart);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EEnvironmentStop;",      (void *)&EVENTCODE_VNL_EEnvironmentStop);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EEnd;",                  (void *)&EVENTCODE_VNL_EEnd);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_ETrigger;",              (void *)&EVENTCODE_VNL_ETrigger);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_ETeleportMovingBrush;",  (void *)&EVENTCODE_VNL_ETeleportMovingBrush);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EReminder;",             (void *)&EVENTCODE_VNL_EReminder);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EStartAttack;",          (void *)&EVENTCODE_VNL_EStartAttack);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EStopAttack;",           (void *)&EVENTCODE_VNL_EStopAttack);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EStopBlindness;",        (void *)&EVENTCODE_VNL_EStopBlindness);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EStopDeafness;",         (void *)&EVENTCODE_VNL_EStopDeafness);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EReceiveScore;",         (void *)&EVENTCODE_VNL_EReceiveScore);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EKilledEnemy;",          (void *)&EVENTCODE_VNL_EKilledEnemy);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_ESecretFound;",          (void *)&EVENTCODE_VNL_ESecretFound);
 
-  _pShell->DeclareSymbol("const INDEX EVENTCODE_ESound;",                (void *)&EVENTCODE_ESound);
-  _pShell->DeclareSymbol("const INDEX EVENTCODE_EScroll;",               (void *)&EVENTCODE_EScroll);
-  _pShell->DeclareSymbol("const INDEX EVENTCODE_ETextFX;",               (void *)&EVENTCODE_ETextFX);
-  _pShell->DeclareSymbol("const INDEX EVENTCODE_EHudPicFX;",             (void *)&EVENTCODE_EHudPicFX);
-  _pShell->DeclareSymbol("const INDEX EVENTCODE_ECredits;",              (void *)&EVENTCODE_ECredits);
-  _pShell->DeclareSymbol("const INDEX EVENTCODE_ECenterMessage;",        (void *)&EVENTCODE_ECenterMessage);
-  _pShell->DeclareSymbol("const INDEX EVENTCODE_EComputerMessage;",      (void *)&EVENTCODE_EComputerMessage);
-  _pShell->DeclareSymbol("const INDEX EVENTCODE_EVoiceMessage;",         (void *)&EVENTCODE_EVoiceMessage);
-  _pShell->DeclareSymbol("const INDEX EVENTCODE_EHitBySpaceShipBeam;",   (void *)&EVENTCODE_EHitBySpaceShipBeam);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_ESound;",                (void *)&EVENTCODE_VNL_ESound);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EScroll;",               (void *)&EVENTCODE_VNL_EScroll);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_ETextFX;",               (void *)&EVENTCODE_VNL_ETextFX);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EHudPicFX;",             (void *)&EVENTCODE_VNL_EHudPicFX);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_ECredits;",              (void *)&EVENTCODE_VNL_ECredits);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_ECenterMessage;",        (void *)&EVENTCODE_VNL_ECenterMessage);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EComputerMessage;",      (void *)&EVENTCODE_VNL_EComputerMessage);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EVoiceMessage;",         (void *)&EVENTCODE_VNL_EVoiceMessage);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EHitBySpaceShipBeam;",   (void *)&EVENTCODE_VNL_EHitBySpaceShipBeam);
 
-  _pShell->DeclareSymbol("const INDEX EVENTCODE_EAmmoItem;",             (void *)&EVENTCODE_EAmmoItem);
-  _pShell->DeclareSymbol("const INDEX EVENTCODE_EAmmoPackItem;",         (void *)&EVENTCODE_EAmmoPackItem);
-  _pShell->DeclareSymbol("const INDEX EVENTCODE_EArmor;",                (void *)&EVENTCODE_EArmor);
-  _pShell->DeclareSymbol("const INDEX EVENTCODE_EHealth;",               (void *)&EVENTCODE_EHealth);
-  _pShell->DeclareSymbol("const INDEX EVENTCODE_EKey;",                  (void *)&EVENTCODE_EKey);
-  _pShell->DeclareSymbol("const INDEX EVENTCODE_EMessageItem;",          (void *)&EVENTCODE_EMessageItem);
-  _pShell->DeclareSymbol("const INDEX EVENTCODE_EPowerUp;",              (void *)&EVENTCODE_EPowerUp);
-  _pShell->DeclareSymbol("const INDEX EVENTCODE_EWeaponItem;",           (void *)&EVENTCODE_EWeaponItem);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EAmmoItem;",             (void *)&EVENTCODE_VNL_EAmmoItem);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EAmmoPackItem;",         (void *)&EVENTCODE_VNL_EAmmoPackItem);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EArmor;",                (void *)&EVENTCODE_VNL_EArmor);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EHealth;",               (void *)&EVENTCODE_VNL_EHealth);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EKey;",                  (void *)&EVENTCODE_VNL_EKey);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EMessageItem;",          (void *)&EVENTCODE_VNL_EMessageItem);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EPowerUp;",              (void *)&EVENTCODE_VNL_EPowerUp);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EWeaponItem;",           (void *)&EVENTCODE_VNL_EWeaponItem);
 
-  _pShell->DeclareSymbol("const INDEX EVENTCODE_ERestartAttack;",        (void *)&EVENTCODE_ERestartAttack);
-  _pShell->DeclareSymbol("const INDEX EVENTCODE_EReconsiderBehavior;",   (void *)&EVENTCODE_EReconsiderBehavior);
-  _pShell->DeclareSymbol("const INDEX EVENTCODE_EForceWound;",           (void *)&EVENTCODE_EForceWound);
-  _pShell->DeclareSymbol("const INDEX EVENTCODE_ESelectWeapon;",         (void *)&EVENTCODE_ESelectWeapon);
-  _pShell->DeclareSymbol("const INDEX EVENTCODE_EBoringWeapon;",         (void *)&EVENTCODE_EBoringWeapon);
-  _pShell->DeclareSymbol("const INDEX EVENTCODE_EFireWeapon;",           (void *)&EVENTCODE_EFireWeapon);
-  _pShell->DeclareSymbol("const INDEX EVENTCODE_EReleaseWeapon;",        (void *)&EVENTCODE_EReleaseWeapon);
-  _pShell->DeclareSymbol("const INDEX EVENTCODE_EReloadWeapon;",         (void *)&EVENTCODE_EReloadWeapon);
-  _pShell->DeclareSymbol("const INDEX EVENTCODE_EWeaponChanged;",        (void *)&EVENTCODE_EWeaponChanged);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_ERestartAttack;",        (void *)&EVENTCODE_VNL_ERestartAttack);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EReconsiderBehavior;",   (void *)&EVENTCODE_VNL_EReconsiderBehavior);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EForceWound;",           (void *)&EVENTCODE_VNL_EForceWound);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_ESelectWeapon;",         (void *)&EVENTCODE_VNL_ESelectWeapon);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EBoringWeapon;",         (void *)&EVENTCODE_VNL_EBoringWeapon);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EFireWeapon;",           (void *)&EVENTCODE_VNL_EFireWeapon);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EReleaseWeapon;",        (void *)&EVENTCODE_VNL_EReleaseWeapon);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EReloadWeapon;",         (void *)&EVENTCODE_VNL_EReloadWeapon);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EWeaponChanged;",        (void *)&EVENTCODE_VNL_EWeaponChanged);
 
-  _pShell->DeclareSymbol("const INDEX EVENTCODE_EAirShockwave;",         (void *)&EVENTCODE_EAirShockwave);
-  _pShell->DeclareSymbol("const INDEX EVENTCODE_EAirWave;",              (void *)&EVENTCODE_EAirWave);
-  _pShell->DeclareSymbol("const INDEX EVENTCODE_ESpawnEffect;",          (void *)&EVENTCODE_ESpawnEffect);
-  _pShell->DeclareSymbol("const INDEX EVENTCODE_ESpawnSpray;",           (void *)&EVENTCODE_ESpawnSpray);
-  _pShell->DeclareSymbol("const INDEX EVENTCODE_EBulletInit;",           (void *)&EVENTCODE_EBulletInit);
-  _pShell->DeclareSymbol("const INDEX EVENTCODE_ELaunchCannonBall;",     (void *)&EVENTCODE_ELaunchCannonBall);
-  _pShell->DeclareSymbol("const INDEX EVENTCODE_ECyborgBike;",           (void *)&EVENTCODE_ECyborgBike);
-  _pShell->DeclareSymbol("const INDEX EVENTCODE_ESpawnDebris;",          (void *)&EVENTCODE_ESpawnDebris);
-  _pShell->DeclareSymbol("const INDEX EVENTCODE_EDevilProjectile;",      (void *)&EVENTCODE_EDevilProjectile);
-  _pShell->DeclareSymbol("const INDEX EVENTCODE_ESpawnEffector;",        (void *)&EVENTCODE_ESpawnEffector);
-  _pShell->DeclareSymbol("const INDEX EVENTCODE_EFlame;",                (void *)&EVENTCODE_EFlame);
-  _pShell->DeclareSymbol("const INDEX EVENTCODE_ELaunchLarvaOffspring;", (void *)&EVENTCODE_ELaunchLarvaOffspring);
-  _pShell->DeclareSymbol("const INDEX EVENTCODE_EAnimatorInit;",         (void *)&EVENTCODE_EAnimatorInit);
-  _pShell->DeclareSymbol("const INDEX EVENTCODE_EViewInit;",             (void *)&EVENTCODE_EViewInit);
-  _pShell->DeclareSymbol("const INDEX EVENTCODE_EWeaponsInit;",          (void *)&EVENTCODE_EWeaponsInit);
-  _pShell->DeclareSymbol("const INDEX EVENTCODE_EWeaponEffectInit;",     (void *)&EVENTCODE_EWeaponEffectInit);
-  _pShell->DeclareSymbol("const INDEX EVENTCODE_ELaunchProjectile;",     (void *)&EVENTCODE_ELaunchProjectile);
-  _pShell->DeclareSymbol("const INDEX EVENTCODE_EReminderInit;",         (void *)&EVENTCODE_EReminderInit);
-  _pShell->DeclareSymbol("const INDEX EVENTCODE_ESeriousBomb;",          (void *)&EVENTCODE_ESeriousBomb);
-  _pShell->DeclareSymbol("const INDEX EVENTCODE_ESpawnerProjectile;",    (void *)&EVENTCODE_ESpawnerProjectile);
-  _pShell->DeclareSymbol("const INDEX EVENTCODE_ESpinnerInit;",          (void *)&EVENTCODE_ESpinnerInit);
-  _pShell->DeclareSymbol("const INDEX EVENTCODE_ETwister;",              (void *)&EVENTCODE_ETwister);
-  _pShell->DeclareSymbol("const INDEX EVENTCODE_EWatcherInit;",          (void *)&EVENTCODE_EWatcherInit);
-  _pShell->DeclareSymbol("const INDEX EVENTCODE_EWater;",                (void *)&EVENTCODE_EWater);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EAirShockwave;",         (void *)&EVENTCODE_VNL_EAirShockwave);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EAirWave;",              (void *)&EVENTCODE_VNL_EAirWave);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_ESpawnEffect;",          (void *)&EVENTCODE_VNL_ESpawnEffect);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_ESpawnSpray;",           (void *)&EVENTCODE_VNL_ESpawnSpray);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EBulletInit;",           (void *)&EVENTCODE_VNL_EBulletInit);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_ELaunchCannonBall;",     (void *)&EVENTCODE_VNL_ELaunchCannonBall);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_ECyborgBike;",           (void *)&EVENTCODE_VNL_ECyborgBike);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_ESpawnDebris;",          (void *)&EVENTCODE_VNL_ESpawnDebris);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EDevilProjectile;",      (void *)&EVENTCODE_VNL_EDevilProjectile);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_ESpawnEffector;",        (void *)&EVENTCODE_VNL_ESpawnEffector);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EFlame;",                (void *)&EVENTCODE_VNL_EFlame);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_ELaunchLarvaOffspring;", (void *)&EVENTCODE_VNL_ELaunchLarvaOffspring);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EAnimatorInit;",         (void *)&EVENTCODE_VNL_EAnimatorInit);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EViewInit;",             (void *)&EVENTCODE_VNL_EViewInit);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EWeaponsInit;",          (void *)&EVENTCODE_VNL_EWeaponsInit);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EWeaponEffectInit;",     (void *)&EVENTCODE_VNL_EWeaponEffectInit);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_ELaunchProjectile;",     (void *)&EVENTCODE_VNL_ELaunchProjectile);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EReminderInit;",         (void *)&EVENTCODE_VNL_EReminderInit);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_ESeriousBomb;",          (void *)&EVENTCODE_VNL_ESeriousBomb);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_ESpawnerProjectile;",    (void *)&EVENTCODE_VNL_ESpawnerProjectile);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_ESpinnerInit;",          (void *)&EVENTCODE_VNL_ESpinnerInit);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_ETwister;",              (void *)&EVENTCODE_VNL_ETwister);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EWatcherInit;",          (void *)&EVENTCODE_VNL_EWatcherInit);
+  _pShell->DeclareSymbol("const INDEX EVENTCODE_EWater;",                (void *)&EVENTCODE_VNL_EWater);
 
   // Event setup
   _pShell->DeclareSymbol("user void pck_SetupEvent(INDEX);", &IPacketCommands::SetupEvent);
@@ -277,60 +277,60 @@ void EExtEntityEvent::ConvertTypes(void)
   // Convert entity IDs into pointers
   switch (ee_slEvent) {
     // First field is an entity
-    case EVENTCODE_EStart:
-    case EVENTCODE_ETrigger:
-    case EVENTCODE_EAirShockwave:
-    case EVENTCODE_EAirWave:
-    case EVENTCODE_EBulletInit:
-    case EVENTCODE_ELaunchCannonBall:
-    case EVENTCODE_ELaunchLarvaOffspring:
-    case EVENTCODE_EAnimatorInit:
-    case EVENTCODE_EWeaponsInit:
-    case EVENTCODE_EWeaponEffectInit:
-    case EVENTCODE_ELaunchProjectile:
-    case EVENTCODE_EReminderInit:
-    case EVENTCODE_ESeriousBomb:
-    case EVENTCODE_EWatcherInit:
-    case EVENTCODE_EWater: {
-      EStart &ee = (EStart &)*this;
+    case EVENTCODE_VNL_EStart:
+    case EVENTCODE_VNL_ETrigger:
+    case EVENTCODE_VNL_EAirShockwave:
+    case EVENTCODE_VNL_EAirWave:
+    case EVENTCODE_VNL_EBulletInit:
+    case EVENTCODE_VNL_ELaunchCannonBall:
+    case EVENTCODE_VNL_ELaunchLarvaOffspring:
+    case EVENTCODE_VNL_EAnimatorInit:
+    case EVENTCODE_VNL_EWeaponsInit:
+    case EVENTCODE_VNL_EWeaponEffectInit:
+    case EVENTCODE_VNL_ELaunchProjectile:
+    case EVENTCODE_VNL_EReminderInit:
+    case EVENTCODE_VNL_ESeriousBomb:
+    case EVENTCODE_VNL_EWatcherInit:
+    case EVENTCODE_VNL_EWater: {
+      VNL_EStart &ee = (VNL_EStart &)*this;
       ee.penCaused = EntityFromID(0);
     } break;
 
     // Second field is an entity
-    case EVENTCODE_ESound:
-    case EVENTCODE_EScroll:
-    case EVENTCODE_ETextFX:
-    case EVENTCODE_EHudPicFX:
-    case EVENTCODE_ECredits: {
-      ESound &ee = (ESound &)*this;
+    case EVENTCODE_VNL_ESound:
+    case EVENTCODE_VNL_EScroll:
+    case EVENTCODE_VNL_ETextFX:
+    case EVENTCODE_VNL_EHudPicFX:
+    case EVENTCODE_VNL_ECredits: {
+      VNL_ESound &ee = (VNL_ESound &)*this;
       ee.penTarget = EntityFromID(1);
     } break;
 
     // Two first fields are entities
-    case EVENTCODE_EDevilProjectile:
-    case EVENTCODE_EFlame:
-    case EVENTCODE_EViewInit:
-    case EVENTCODE_ESpinnerInit: {
-      EFlame &ee = (EFlame &)*this;
+    case EVENTCODE_VNL_EDevilProjectile:
+    case EVENTCODE_VNL_EFlame:
+    case EVENTCODE_VNL_EViewInit:
+    case EVENTCODE_VNL_ESpinnerInit: {
+      VNL_EFlame &ee = (VNL_EFlame &)*this;
       ee.penOwner = EntityFromID(0);
       ee.penAttach = EntityFromID(1);
     } break;
 
     // Same ID as ETwister
-    case EVENTCODE_ESpawnerProjectile: {
-      ESpawnerProjectile &ee = (ESpawnerProjectile &)*this;
+    case EVENTCODE_VNL_ESpawnerProjectile: {
+      VNL_ESpawnerProjectile &ee = (VNL_ESpawnerProjectile &)*this;
       ee.penOwner = EntityFromID(0);
       ee.penTemplate = MaybeEntity(1); // Preserves 'ETwister::fSize'
     } break;
 
     // Skips: sptType, fDamagePower, fSizeMultiplier, vDirection
-    case EVENTCODE_ESpawnSpray: {
-      ESpawnSpray &ee = (ESpawnSpray &)*this;
+    case EVENTCODE_VNL_ESpawnSpray: {
+      VNL_ESpawnSpray &ee = (VNL_ESpawnSpray &)*this;
       ee.penOwner = EntityFromID(6);
     } break;
 
-    case EVENTCODE_ESpawnDebris: {
-      ESpawnDebris &ee = (ESpawnDebris &)*this;
+    case EVENTCODE_VNL_ESpawnDebris: {
+      VNL_ESpawnDebris &ee = (VNL_ESpawnDebris &)*this;
       ee.penFallFXPapa = EntityFromID(22);
 
       if (ee.penFallFXPapa != NULL) {
@@ -345,8 +345,8 @@ void EExtEntityEvent::ConvertTypes(void)
     } break;
 
     // Skips: eetType, vDamageDir, vDestination, tmLifeTime, fSize, ctCount
-    case EVENTCODE_ESpawnEffector: {
-      ESpawnEffector &ee = (ESpawnEffector &)*this;
+    case EVENTCODE_VNL_ESpawnEffector: {
+      VNL_ESpawnEffector &ee = (VNL_ESpawnEffector &)*this;
       ee.penModel  = EntityFromID(10);
       ee.penModel2 = EntityFromID(11);
     } break;
