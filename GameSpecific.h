@@ -38,6 +38,19 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #define CHOOSE_FOR_GAME(_TFE105, _TSE105, _TSE107) _TSE105
 #elif SE1_VER >= SE1_107
   #define CHOOSE_FOR_GAME(_TFE105, _TSE105, _TSE107) _TSE107
+
+  // [Cecil] TEMP: Revolution support
+  #if SE1_GAME == SS_REV
+    static CTFileName _fnmCDPath = CTString("");
+    static CTFileName _fnmMod = CTString("");
+    static CTString _strModName = "";
+    static CTString _strModURL = "";
+    static CTString _strModExt = "";
+
+    #define GetGameSpyPlayerInfo GetGameAgentPlayerInfo
+    #define LoadAnyGfxFormat_t Load_t
+  #endif
+
 #else
   #error Unsupported game!
 #endif
@@ -53,7 +66,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define ADDR_ENGINE ((UBYTE *)HMODULE_ENGINE)
 
 // Relative addresses of specific elements in the engine
-#ifdef NDEBUG
+#if SE1_GAME == SS_REV // Revolution addresses
+  // InitStreams()
+  #define ADDR_INITSTREAMS (ADDR_ENGINE + 0x80ED0)
+
+  // Static variables from Unzip.cpp
+  #define ADDR_UNZIP_CRITSEC  (ADDR_ENGINE + 0x29B938) // &zip_csLock
+  #define ADDR_UNZIP_HANDLES  (ADDR_ENGINE + 0x270D58) // &_azhHandles
+  #define ADDR_UNZIP_ENTRIES  (ADDR_ENGINE + 0x270D48) // &_azeFiles
+  #define ADDR_UNZIP_ARCHIVES (ADDR_ENGINE + 0x270D68) // &_afnmArchives
+
+#elif defined(NDEBUG) // Release 1.05 & 1.07 addresses
   // InitStreams()
   #define ADDR_INITSTREAMS (ADDR_ENGINE + CHOOSE_FOR_GAME(0x1A2C0, 0x1A2C0, 0x265F0))
 
@@ -72,8 +95,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #define ADDR_UNZIP_GETFILEATINDEX   (ADDR_ENGINE + CHOOSE_FOR_GAME(0x218D0, 0x21960, 0x2DC40)) // UNZIPGetFileAtIndex()
   #define ADDR_UNZIP_ISFILEATINDEXMOD (ADDR_ENGINE + CHOOSE_FOR_GAME(0x218F0, 0x21980, 0x2DC60)) // UNZIPIsFileAtIndexMod()
 
-// Debug addresses
-#elif SE1_VER == SE1_107
+#elif SE1_VER == SE1_107 // Debug addresses
   // InitStreams()
   #define ADDR_INITSTREAMS (ADDR_ENGINE + 0x7B49)
 
