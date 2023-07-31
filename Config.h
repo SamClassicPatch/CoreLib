@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 
 // [Cecil] TEMP: Feature should be disabled for Revolution
-#define NOT_REV (SE1_GAME != SS_REV)
+#define CORECONFIG_NOT_REV (SE1_GAME != SS_REV)
 
 // CoreLib
 
@@ -33,11 +33,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #define CLASSICSPATCH_FUNC_DEFINITIONS  (1) // Define methods that aren't exported from the engine
 
   // Networking
-  #define CLASSICSPATCH_EXT_PACKETS  (1 && NOT_REV) // Support for custom extension packets
-  #define CLASSICSPATCH_GUID_MASKING (1 && NOT_REV) // System for masking GUIDs of player characters separately for each server client
+  #define CLASSICSPATCH_EXT_PACKETS  (1 && CORECONFIG_NOT_REV) // Support for custom extension packets
+  #define CLASSICSPATCH_GUID_MASKING (1 && CORECONFIG_NOT_REV) // System for masking GUIDs of player characters separately for each server client
 
   // Query
-  #define CLASSICSPATCH_NEW_QUERY (1 && NOT_REV) // Utilize new query manager and switch master servers
+  #define CLASSICSPATCH_NEW_QUERY (1 && CORECONFIG_NOT_REV) // Utilize new query manager and switch master servers
 
 // EnginePatches
 
@@ -50,12 +50,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #define CLASSICSPATCH_EXTEND_FILESYSTEM (1) // Extend file system functionality by patching its methods
   #define CLASSICSPATCH_EXTEND_NETWORK    (1) // Extend networking functionality by patching its methods
   #define CLASSICSPATCH_FIX_RENDERING     (1) // Fix FOV and other rendering issues by patching methods
-  #define CLASSICSPATCH_FIX_SKA           (1 && NOT_REV) // Fix SKA issues by patching methods
+  #define CLASSICSPATCH_FIX_SKA           (1 && CORECONFIG_NOT_REV) // Fix SKA issues by patching methods
   #define CLASSICSPATCH_FIX_STRINGS       (1) // Fix CTString methods by patching them
   #define CLASSICSPATCH_EXTEND_TEXTURES   (1) // Extend texture functionality by patching its methods
-  #define CLASSICSPATCH_FIX_LOGICTIMERS   (1 && NOT_REV) // Fix imprecise timers for entity logic
-  #define CLASSICSPATCH_FIX_STREAMPAGING  (1 && NOT_REV) // Fix streams by patching their paging methods (no need for 1.10)
-
-#undef NOT_REV
+  #define CLASSICSPATCH_FIX_LOGICTIMERS   (1 && CORECONFIG_NOT_REV) // Fix imprecise timers for entity logic
+  #define CLASSICSPATCH_FIX_STREAMPAGING  (1 && CORECONFIG_NOT_REV) // Fix streams by patching their paging methods (no need for 1.10)
 
 #endif
