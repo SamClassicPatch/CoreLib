@@ -49,6 +49,9 @@ class CORE_API ICoreHooks {
     // Called after starting world simulation
     static void OnGameStart(void);
 
+    // Called after changing the level
+    static void OnChangeLevel(void);
+
     // Called before stopping world simulation
     static void OnGameStop(void);
 

@@ -137,6 +137,9 @@ class IGameEvents : public IAbstractEvents {
     // After starting the server and loading in the world
     virtual void OnGameStart(void);
 
+    // After changing the level
+    virtual void OnChangeLevel(void);
+
     // Before stopping the server
     virtual void OnGameStop(void);
 

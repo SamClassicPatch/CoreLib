@@ -108,6 +108,17 @@ void ICoreHooks::OnGameStart(void)
   }
 };
 
+// Called after changing the level
+void ICoreHooks::OnChangeLevel(void)
+{
+  // Call level change function for each plugin
+  FOREACHPLUGINHANDLER(GetPluginAPI()->cGameEvents, IGameEvents, pEvents) {
+    if ((IAbstractEvents *)pEvents == NULL) continue;
+
+    pEvents->OnChangeLevel();
+  }
+};
+
 // Called before stopping world simulation
 void ICoreHooks::OnGameStop(void)
 {
