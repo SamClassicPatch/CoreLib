@@ -37,12 +37,13 @@ struct DirToRead {
 enum EFileListFlags {
   FLF_RECURSIVE   = DLI_RECURSIVE, // Look into subdirectories
   FLF_SEARCHCD    = DLI_SEARCHCD,  // List extras from the CD
-  FLF_SEARCHMOD   = (1 << 2),      // List extras from the mod
-  FLF_ONLYCD      = (1 << 3),      // List exclusively from the CD directory
-  FLF_ONLYMOD     = (1 << 4),      // List exclusively from the mod directory
+  FLF_SEARCHMOD   = (1 << 2),      // List extras from the mod (always enabled in SE1's MakeDirList)
+  FLF_ONLYCD      = (1 << 3),      // List exclusively from the CD directory (incompatible with FLF_ONLYMOD)
+  FLF_ONLYMOD     = (1 << 4),      // List exclusively from the mod directory (incompatible with FLF_ONLYCD)
   FLF_IGNORELISTS = (1 << 5),      // Ignore include/exclude lists if playing a mod
   FLF_IGNOREGRO   = (1 << 6),      // Ignore contents of loaded GRO packages
-  FLF_SEARCHGAMES = (1 << 7),      // Search directories of other games
+  FLF_SEARCHGAMES = (1 << 7),      // Search directories of other games (TFE, SSR etc.)
+  FLF_REUSELIST   = (1 << 8),      // Reuse existing entries in the provided list
 };
 
 // Include/exclude lists for base directory writing/reading
@@ -327,8 +328,6 @@ inline void ListInDir(const CTFileName &fnmBaseDir, CFileList &afnm,
 // List files from a specific game directory
 inline void ListGameFiles(CFileList &afnmFiles, const CTString &strDir, const CTString &strPattern, ULONG ulFlags)
 {
-  afnmFiles.PopAll();
-
   const BOOL bRecursive = ulFlags & FLF_RECURSIVE;
 
   // Don't allow multiple exclusive flags at once
@@ -340,6 +339,15 @@ inline void ListGameFiles(CFileList &afnmFiles, const CTString &strDir, const CT
 
   // Make a temporary list
   CFileList afnmTemp;
+
+  // Reuse the file list
+  if (ulFlags & FLF_REUSELIST) {
+    afnmTemp = afnmFiles;
+  }
+
+  // Clear the final list
+  afnmFiles.PopAll();
+
   BOOL bMod = (_fnmMod != "");
   BOOL bCD = (_fnmCDPath != "");
   BOOL bLists = bMod && !(ulFlags & FLF_IGNORELISTS);

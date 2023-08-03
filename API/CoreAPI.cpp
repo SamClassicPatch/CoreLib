@@ -513,17 +513,12 @@ CPluginModule *CCoreAPI::LoadGameGuiPlugin(void) {
 void CCoreAPI::LoadPlugins(ULONG ulUtilityFlags) {
   // List all library files
   CFileList afnmGameDir;
-  CFileList afnmModDir;
 
-  #define LIST_PLUGINS_FLAGS IFiles::FLF_RECURSIVE | IFiles::FLF_IGNORELISTS | IFiles::FLF_IGNOREGRO
+  #define LIST_PLUGINS_FLAGS (IFiles::FLF_RECURSIVE | IFiles::FLF_IGNORELISTS | IFiles::FLF_IGNOREGRO)
+  #define LIST_PLUGINS_FLAGS_MOD (LIST_PLUGINS_FLAGS | IFiles::FLF_ONLYMOD | IFiles::FLF_REUSELIST)
 
   IFiles::ListGameFiles(afnmGameDir, CCoreAPI::AppBin()    + "Plugins\\", "*.dll", LIST_PLUGINS_FLAGS);
-  IFiles::ListGameFiles(afnmModDir,  CCoreAPI::AppModBin() + "Plugins\\", "*.dll", LIST_PLUGINS_FLAGS | IFiles::FLF_ONLYMOD);
-
-  // Move mod plugins in the same list
-  for (INDEX iMod = 0; iMod < afnmModDir.Count(); iMod++) {
-    afnmGameDir.Push() = afnmModDir[iMod];
-  }
+  IFiles::ListGameFiles(afnmGameDir, CCoreAPI::AppModBin() + "Plugins\\", "*.dll", LIST_PLUGINS_FLAGS_MOD);
 
   CPrintF("--- Loading user plugins (flags: 0x%X) ---\n", ulUtilityFlags);
 
