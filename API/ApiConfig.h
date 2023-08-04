@@ -30,10 +30,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 
 // Current API version
-#define CORE_API_VERSION 6
+#define CORE_API_VERSION 7
 
 // Current Classics Patch version
-#define CORE_PATCH_VERSION CCoreAPI::MakeVersion(1, 6, 2)
+#define CORE_PATCH_VERSION CCoreAPI::MakeVersion(1, 7, 0)
 
 // Indication of a build under active development (disabled for releases)
 #define CORE_DEV_BUILD 1
@@ -43,7 +43,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 // Relevant links to different webpages of the project
 #define CLASSICSPATCH_URL_SHORT   "github.com/SamClassicPatch"
-#define CLASSICSPATCH_URL_PROJECT "https://" CLASSICSPATCH_URL_SHORT "/SuperProject"
+#define CLASSICSPATCH_URL_FULL    "https://" CLASSICSPATCH_URL_SHORT
+#define CLASSICSPATCH_URL_PROJECT CLASSICSPATCH_URL_FULL "/SuperProject"
 
 // URL to the latest patch release
 #define CLASSICSPATCH_URL_LATESTRELEASE CLASSICSPATCH_URL_PROJECT "/releases/latest"
