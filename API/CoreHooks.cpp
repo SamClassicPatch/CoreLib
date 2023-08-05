@@ -56,6 +56,11 @@ void ICoreHooks::OnTick(void)
 // Called every render frame
 void ICoreHooks::OnFrame(CDrawPort *pdp)
 {
+  // Update input values
+  for (INDEX iAxis = 0; iAxis < MAX_OVERALL_AXES; iAxis++) {
+    inp_afAxisValues[iAxis] = _pInput->GetAxisValue(iAxis);
+  }
+
   // Call frame function for each plugin
   FOREACHPLUGINHANDLER(GetPluginAPI()->cProcessors, IProcessingEvents, pEvents) {
     if ((IAbstractEvents *)pEvents == NULL) continue;

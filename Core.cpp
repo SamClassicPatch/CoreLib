@@ -40,6 +40,9 @@ CTString sam_strVersion = _SE_VER_STRING; // Use version string
 // Temporary password for connecting to some server
 CTString cli_strConnectPassword = "";
 
+// Current values of input axes
+FLOAT inp_afAxisValues[MAX_OVERALL_AXES];
+
 // Display information about the Classics patch
 static void PatchInfo(void) {
   static CTString strInfo =
@@ -103,6 +106,33 @@ void ClassicsPatch_InitCore(void) {
   }
 
   _pShell->DeclareSymbol("user void IncludeScript(CTString);", &IncludeScript);
+
+  // Current values of input axes
+  static const CTString strAxisValues(0, "user const FLOAT inp_afAxisValues[%d];", MAX_OVERALL_AXES);
+  _pShell->DeclareSymbol(strAxisValues, &inp_afAxisValues);
+
+  // Input axes constants
+  static const INDEX iAxisNone = AXIS_NONE;
+  static const INDEX iAxisMouseX = MOUSE_X_AXIS;
+  static const INDEX iAxisMouseY = MOUSE_Y_AXIS;
+  static const INDEX iAxisMouseZ = 3;
+  static const INDEX iAxisMouse2X = 4;
+  static const INDEX iAxisMouse2Y = 5;
+  static const INDEX iMaxJoysticks = MAX_JOYSTICKS;
+  static const INDEX iAxesPerJoystick = MAX_AXES_PER_JOYSTICK;
+  static const INDEX iFirstJoystickAxis = FIRST_JOYAXIS;
+  static const INDEX iMaxInputAxes = MAX_OVERALL_AXES;
+
+  _pShell->DeclareSymbol("const INDEX AXIS_NONE;",    (void *)&iAxisNone);
+  _pShell->DeclareSymbol("const INDEX AXIS_M1_X;",    (void *)&iAxisMouseX);
+  _pShell->DeclareSymbol("const INDEX AXIS_M1_Y;",    (void *)&iAxisMouseY);
+  _pShell->DeclareSymbol("const INDEX AXIS_M1_Z;",    (void *)&iAxisMouseZ);
+  _pShell->DeclareSymbol("const INDEX AXIS_M2_X;",    (void *)&iAxisMouse2X);
+  _pShell->DeclareSymbol("const INDEX AXIS_M2_Y;",    (void *)&iAxisMouse2Y);
+  _pShell->DeclareSymbol("const INDEX AXIS_JOY_CT;",  (void *)&iMaxJoysticks);
+  _pShell->DeclareSymbol("const INDEX AXIS_PER_JOY;", (void *)&iAxesPerJoystick);
+  _pShell->DeclareSymbol("const INDEX AXIS_JOY_1;",   (void *)&iFirstJoystickAxis);
+  _pShell->DeclareSymbol("const INDEX AXIS_CT;",      (void *)&iMaxInputAxes);
 
   // Config property symbols
   {

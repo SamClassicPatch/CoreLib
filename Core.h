@@ -47,6 +47,9 @@ CORE_API extern CTString sam_strVersion;
 // Temporary password for connecting to some server
 CORE_API extern CTString cli_strConnectPassword;
 
+// Current values of input axes
+CORE_API extern FLOAT inp_afAxisValues[MAX_OVERALL_AXES];
+
 // Common components
 #include <CoreLib/API/CoreAPI.h>
 #include <CoreLib/Base/GameDirectories.h>
