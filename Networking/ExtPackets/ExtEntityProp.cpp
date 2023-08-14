@@ -24,14 +24,7 @@ void CExtEntityProp::Write(CNetworkMessage &nm) {
   WriteEntity(nm);
 
   nm.WriteBits(&bName, 1);
-
-  if (bName) {
-    nm << ulProp;
-
-  } else {
-    INetCompress::Integer(nm, ulProp);
-  }
-
+  nm << ulProp;
   nm.WriteBits(&bString, 1);
 
   if (bString) {
@@ -47,12 +40,7 @@ void CExtEntityProp::Read(CNetworkMessage &nm) {
   bName = FALSE;
   nm.ReadBits(&bName, 1);
 
-  if (bName) {
-    nm >> ulProp;
-
-  } else {
-    INetDecompress::Integer(nm, ulProp);
-  }
+  nm >> ulProp;
 
   bString = FALSE;
   nm.ReadBits(&bString, 1);
@@ -89,11 +77,12 @@ void CExtEntityProp::Process(void) {
     }
 
   } else if (iType == CEntityProperty::EPT_FLOAT) {
-    IProperties::SetPropValue(pen, pep, &fValue);
+    FLOAT fFloatProp = fValue;
+    IProperties::SetPropValue(pen, pep, &fFloatProp);
 
   } else if (iType == CEntityProperty::EPT_INDEX) {
-    INDEX iValue = fValue;
-    IProperties::SetPropValue(pen, pep, &iValue);
+    INDEX iIntProp = fValue;
+    IProperties::SetPropValue(pen, pep, &iIntProp);
 
   } else {
     ExtServerReport(TRANS("Expected number property type but got %d\n"), iType);
