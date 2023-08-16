@@ -20,15 +20,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // List loaded plugin modules
 static void ListPlugins(void) {
   CPluginStock *pStock = GetPluginAPI()->pPluginStock;
+  const INDEX ctPlugins = pStock->GetTotalCount();
 
-  if (pStock->GetTotalCount() == 0) {
+  if (ctPlugins == 0) {
     CPutString(TRANS("No plugins have been loaded!\n"));
     return;
   }
 
   CPutString(TRANS("^cffffffLoaded plugins:\n"));
   
-  for (INDEX iPlugin = 0; iPlugin < pStock->GetTotalCount(); iPlugin++) {
+  for (INDEX iPlugin = 0; iPlugin < ctPlugins; iPlugin++) {
     CPluginModule *pPlugin = pStock->st_ctObjects.Pointer(iPlugin);
 
     // Light blue - ON; Red - OFF
@@ -105,6 +106,28 @@ static void DisablePlugin(SHELL_FUNC_ARGS) {
   CPrintF(TRANS("Successfully disabled '%s' plugin!\n"), strPlugin);
 };
 
+// Get plugin index by its display name
+static INDEX GetPluginIndex(SHELL_FUNC_ARGS) {
+  BEGIN_SHELL_FUNC;
+  const CTString &strName = *NEXT_ARG(CTString *);
+
+  CPluginStock *pStock = GetPluginAPI()->pPluginStock;
+  const INDEX ctPlugins = pStock->GetTotalCount();
+  
+  for (INDEX iPlugin = 0; iPlugin < ctPlugins; iPlugin++) {
+    CPluginModule *pPlugin = pStock->st_ctObjects.Pointer(iPlugin);
+
+    // Check plugin name
+    const CPluginInfo &info = pPlugin->GetInfo();
+
+    if (info.strName == strName) {
+      return iPlugin;
+    }
+  }
+
+  return -1;
+};
+
 // Constructor
 CPluginAPI::CPluginAPI() {
   // Create stock of plugin modules
@@ -114,6 +137,7 @@ CPluginAPI::CPluginAPI() {
   _pShell->DeclareSymbol("user void ListPlugins(void);",    &ListPlugins);
   _pShell->DeclareSymbol("user void EnablePlugin(INDEX);",  &EnablePlugin);
   _pShell->DeclareSymbol("user void DisablePlugin(INDEX);", &DisablePlugin);
+  _pShell->DeclareSymbol("user INDEX GetPluginIndex(CTString);", &GetPluginIndex);
 };
 
 // Obtain pointer to a plugin module of specific utility types
