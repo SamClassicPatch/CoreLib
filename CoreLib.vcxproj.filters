@@ -270,6 +270,9 @@
     <ClInclude Include="API\CoreVariables.h">
       <Filter>Header Files\API headers</Filter>
     </ClInclude>
+    <ClInclude Include="Compatibility\GameControls.h">
+      <Filter>Header Files\Compatibility headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="StdH.cpp">

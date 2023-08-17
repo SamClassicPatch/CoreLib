@@ -37,6 +37,7 @@
     <ClInclude Include="Base\GameDirectories.h" />
     <ClInclude Include="Base\Unzip.h" />
     <ClInclude Include="Compatibility\Game.h" />
+    <ClInclude Include="Compatibility\GameControls.h" />
     <ClInclude Include="Compatibility\VanillaEvents.h" />
     <ClInclude Include="Compatibility\PlayerSettings.h" />
     <ClInclude Include="Compatibility\SymbolPtr.h" />
