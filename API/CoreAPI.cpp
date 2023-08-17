@@ -304,6 +304,12 @@ const CTFileName &CCoreAPI::AppExe(void) {
   return fnmLocalPath;
 };
 
+// Get relative path to the mod's Bin directory (folder name)
+CTFileName CCoreAPI::AppModBin(void) {
+  // Use game's or mod's Bin directory
+  return (_fnmMod == "") ? AppBin() : CTString("Bin\\");
+};
+
 // Get absolute path to the game directory
 const CTFileName &CCoreAPI::AppPath(void) {
   // Use existing path

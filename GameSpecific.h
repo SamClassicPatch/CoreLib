@@ -41,12 +41,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
   // [Cecil] TEMP: Revolution support
   #if SE1_GAME == SS_REV
-    static CTFileName _fnmCDPath = CTString("");
-    static CTFileName _fnmMod = CTString("");
-    static CTString _strModName = "";
-    static CTString _strModURL = "";
-    static CTString _strModExt = "";
-
     #define GetGameSpyPlayerInfo GetGameAgentPlayerInfo
     #define LoadAnyGfxFormat_t Load_t
   #endif

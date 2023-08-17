@@ -24,6 +24,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Pointer to the Game module
 CGame *_pGame = NULL;
 
+// Revolution support
+#if SE1_GAME == SS_REV
+  // Pre-1.10 variables removed from Revolution engine
+  CTFileName _fnmCDPath = CTString("");
+  CTFileName _fnmMod = CTString("");
+  CTString _strModName = "";
+  CTString _strModURL = "";
+  CTString _strModExt = "";
+#endif
+
 // Common game variables
 #if SE1_GAME == SS_TFE
   CTString sam_strFirstLevel = "Levels\\01_Hatshepsut.wld";

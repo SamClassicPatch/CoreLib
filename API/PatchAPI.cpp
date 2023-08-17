@@ -205,6 +205,11 @@ void *CPatchAPI::GetEntitiesSymbol(const char *strSymbol) {
   return GetProcAddress(hEntities, strSymbol);
 };
 
+// Check if Entities library is from a mod
+BOOL CPatchAPI::IsEntitiesModded(void) {
+  return fnmEntities.HasPrefix(_fnmMod);
+};
+
 // Find entity property data by a variable name of a specific class
 const CEntityProperty *CPatchAPI::FindProperty(const CTString &strClass, const CTString &strVariable) {
 #if SE1_GAME != SS_REV

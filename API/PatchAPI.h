@@ -95,9 +95,7 @@ class CORE_API CPatchAPI {
     };
 
     // Check if Entities library is from a mod
-    virtual BOOL IsEntitiesModded(void) {
-      return fnmEntities.HasPrefix(_fnmMod);
-    };
+    virtual BOOL IsEntitiesModded(void);
 
     // Find entity property data by a variable name of a specific class
     virtual const CEntityProperty *FindProperty(const CTString &strClass, const CTString &strVariable);
