@@ -93,10 +93,10 @@ class CORE_API CCoreAPI : public ICoreHooks {
 
     // Get vanilla library extension after initializing the core
     // For modules that aren't utilizing Core library directly (e.g. plugins)
-    virtual CTString GetModExt(void);
+    virtual const CTString &GetModExt(void);
 
     // Get vanilla library extension before initializing the core
-    static CTString GetVanillaExt(void);
+    static const CTString &GetVanillaExt(void);
 
     // Setup the core before initializing it
     static void Setup(EAppType eSetType);

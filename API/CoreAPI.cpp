@@ -194,12 +194,12 @@ void CCoreAPI::SetCustomMod(BOOL bState) {
 
 // Get vanilla library extension after initializing the core
 // For modules that aren't utilizing Core library directly (e.g. plugins)
-CTString CCoreAPI::GetModExt(void) {
+const CTString &CCoreAPI::GetModExt(void) {
   return _strVanillaExt;
 };
 
 // Get vanilla library extension before initializing the core
-CTString CCoreAPI::GetVanillaExt(void) {
+const CTString &CCoreAPI::GetVanillaExt(void) {
   return _strVanillaExt;
 };
 
