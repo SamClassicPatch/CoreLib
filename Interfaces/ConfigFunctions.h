@@ -81,7 +81,13 @@ class CIniConfig : protected IniSections {
           if (strVal[iEnd] == '\"') iEnd--;
         }
 
-        strVal = strVal.substr(iBeg, iEnd - iBeg + 1);
+        // Empty value if nothing at all
+        if (iBeg == IniStr::npos && iEnd == IniStr::npos) {
+          strVal = "";
+
+        } else {
+          strVal = strVal.substr(iBeg, iEnd - iBeg + 1);
+        }
       }
 
       SetValue(strSection.c_str(), strKey.c_str(), strVal.c_str());
