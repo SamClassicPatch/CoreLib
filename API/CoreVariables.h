@@ -23,6 +23,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Shell symbol name
 #define CORE_VARIABLE_DATA_SYMBOL CTString("CoreVarData")
 
+// Maximum amount of difficulties the game can have
+#define MAX_GAME_DIFFICULTIES 16
+
 // Patch-independent Core data
 class CCoreVariables {
   public:
@@ -110,7 +113,7 @@ class CCoreVariables {
     GameplayExt &gex;
 
     // Modifiable data (changed by user)
-    CStaticArray<Difficulty> aGameDiffs; // Game difficulties
+    Difficulty aGameDiffs[MAX_GAME_DIFFICULTIES]; // Game difficulties
 
   public:
     // Default constructor
@@ -119,10 +122,16 @@ class CCoreVariables {
       ResetGameDiffs();
     };
 
+  public:
+    // Clear difficulty list
+    void ClearGameDiffs(INDEX iFrom = 0) {
+      for (INDEX i = iFrom; i < MAX_GAME_DIFFICULTIES; i++) {
+        aGameDiffs[i] = Difficulty();
+      }
+    };
+
     // Set default game difficulties
     void ResetGameDiffs(void) {
-      aGameDiffs.New(6);
-
       aGameDiffs[0] = Difficulty(-1, "Tourist", "for non-FPS players");
       aGameDiffs[1] = Difficulty( 0, "Easy",    "for unexperienced FPS players");
       aGameDiffs[2] = Difficulty( 1, "Normal",  "for experienced FPS players");
@@ -131,6 +140,9 @@ class CCoreVariables {
 
       aGameDiffs[5] = Difficulty( 4, "Mental",  "you are not serious!", "sam_bMentalActivated");
       aGameDiffs[5].bFlash = TRUE;
+
+      // Clear the rest
+      ClearGameDiffs(6);
     };
 
     // Get game difficulty
@@ -140,7 +152,24 @@ class CCoreVariables {
 
     // Get amount of difficulties
     INDEX CountDiffs(void) const {
-      return aGameDiffs.Count();
+      INDEX i = 0;
+
+      for (; i < MAX_GAME_DIFFICULTIES; i++) {
+        // No more difficulties
+        if (aGameDiffs[i].strName == "") break;
+      }
+
+      return i;
+    };
+
+    // Find difficulty index by its level
+    INDEX FindDiffByLevel(INDEX iLevel) const {
+      for (INDEX i = 0; i < MAX_GAME_DIFFICULTIES; i++) {
+        // Matching level
+        if (aGameDiffs[i].iLevel == iLevel) return i;
+      }
+
+      return -1;
     };
 };
 
