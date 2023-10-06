@@ -23,6 +23,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Shell symbol name
 #define CORE_VARIABLE_DATA_SYMBOL CTString("CoreVarData")
 
+// Config file
+#define CORE_VARIABLE_DATA_CONFIG_FILE CTString("Data\\ClassicsPatch\\ModData.ini")
+
 // Maximum amount of difficulties the game can have
 #define MAX_GAME_DIFFICULTIES 16
 
@@ -115,9 +118,13 @@ class CCoreVariables {
     // Modifiable data (changed by user)
     Difficulty aGameDiffs[MAX_GAME_DIFFICULTIES]; // Game difficulties
 
+    BOOL bAdjustFOV; // Let Classics Patch adjust FOV depending on aspect ratio
+    BOOL bAdjustAR; // Let Classics Patch set wide adjustment based on aspect ratio
+
   public:
     // Default constructor
-    CCoreVariables() : pAPI(NULL), gex(*new GameplayExt(TRUE))
+    CCoreVariables() : pAPI(NULL), gex(*new GameplayExt(TRUE)),
+      bAdjustFOV(TRUE), bAdjustAR(TRUE)
     {
       ResetGameDiffs();
     };

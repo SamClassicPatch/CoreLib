@@ -63,6 +63,18 @@ static void SetVanillaBinDirectory(void) {
 
 // Load user configs for customization
 void CCoreVariables::LoadConfigs(void) {
+  // Load modifiable data
+  try {
+    CIniConfig iniModData;
+    iniModData.Load_t(CORE_VARIABLE_DATA_CONFIG_FILE, TRUE);
+
+    bAdjustFOV = iniModData.GetBoolValue("", "AdjustFOV", TRUE);
+    bAdjustAR  = iniModData.GetBoolValue("", "AdjustAR", TRUE);
+
+  } catch (char *strError) {
+    (void)strError;
+  }
+
   // Load difficulties
   CFileList aDiffs;
   BOOL bLoadFromGame = TRUE;
