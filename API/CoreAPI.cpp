@@ -61,10 +61,82 @@ static void SetVanillaBinDirectory(void) {
   }
 };
 
+// Load user configs for customization
+void CCoreVariables::LoadConfigs(void) {
+  // Load difficulties
+  CFileList aDiffs;
+  BOOL bLoadFromGame = TRUE;
+
+  // Load from the mod
+  if (_fnmMod != "") {
+    IFiles::ListGameFiles(aDiffs, "Data\\ClassicsPatch\\Difficulties\\", "*.ini", IFiles::FLF_ONLYMOD);
+
+    // Don't load from the game if there are any mod difficulties
+    if (aDiffs.Count() != 0) {
+      bLoadFromGame = FALSE;
+    }
+  }
+
+  // Load from the game
+  if (bLoadFromGame) {
+    IFiles::ListGameFiles(aDiffs, "Data\\ClassicsPatch\\Difficulties\\", "*.ini", 0);
+  }
+
+  // Create new difficulties
+  const INDEX ctDiffs = ClampUp(aDiffs.Count(), INDEX(MAX_GAME_DIFFICULTIES));
+
+  // No user difficulties
+  if (ctDiffs == 0) return;
+
+  ClearGameDiffs();
+
+  for (INDEX i = 0; i < ctDiffs; i++) {
+    const CTFileName &fnm = aDiffs[i];
+    Difficulty &diff = aGameDiffs[i];
+
+    // Load difficulty properties
+    try {
+      CIniConfig iniDiff;
+      iniDiff.Load_t(fnm, TRUE);
+
+      diff.iLevel = iniDiff.GetIntValue("", "Level", i);
+      diff.strCommand = iniDiff.GetValue("", "UnlockCommand", "");
+      diff.bFlash = iniDiff.GetBoolValue("", "Flash", FALSE);
+
+    } catch (char *strError) {
+      CPrintF(TRANS("Cannot load user difficulty config '%s':\n%s"), fnm.str_String, strError);
+    }
+
+    // Get difficulty name and description
+    CTString strName = "???";
+    CTString strDesc = "";
+
+    try {
+      // Try loading text from the description file nearby
+      strName.Load_t(fnm.NoExt() + ".des");
+
+      // Separate text into name and description
+      ULONG ulLineBreak = IData::FindChar(strName, '\n');
+
+      if (ulLineBreak != -1) {
+        strName.Split(ulLineBreak + 1, strName, strDesc);
+      }
+
+    } catch (char *strError) {
+      // Just set text to the filename
+      (void)strError;
+      strName = fnm.FileName();
+    }
+
+    diff.strName = strName;
+    diff.strTip = strDesc;
+  }
+};
+
 // Constructor that sets default property states
-CCoreAPI::SConfigProps::SConfigProps()
-  : bCustomMod(TRUE), bDebugPatcher(FALSE), bDPIAware(TRUE), bExtendedFileSystem(TRUE),
-    bFullAppIntegration(FALSE), strTFEDir(""), strSSRDir(""), strSSRWorkshop("")
+CCoreAPI::SConfigProps::SConfigProps() :
+  bCustomMod(TRUE), bDebugPatcher(FALSE), bDPIAware(TRUE), bExtendedFileSystem(TRUE),
+  bFullAppIntegration(FALSE), strTFEDir(""), strSSRDir(""), strSSRWorkshop("")
 {
 };
 
@@ -136,6 +208,9 @@ CCoreAPI::CCoreAPI() :
 
   _pCoreAPI = this;
   varData.pAPI = this;
+
+  // Prepare variable data
+  varData.LoadConfigs();
 
   // Disable custom mod if it was never set
   SetCustomMod(FALSE);

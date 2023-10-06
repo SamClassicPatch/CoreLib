@@ -122,6 +122,9 @@ class CCoreVariables {
       ResetGameDiffs();
     };
 
+    // Load user configs for customization
+    void LoadConfigs(void);
+
   public:
     // Clear difficulty list
     void ClearGameDiffs(INDEX iFrom = 0) {
