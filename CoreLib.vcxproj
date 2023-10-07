@@ -111,6 +111,7 @@
     <ClCompile Include="Modules\PluginModule.cpp" />
     <ClCompile Include="Modules\PluginStock.cpp" />
     <ClCompile Include="Networking\ExtPackets.cpp" />
+    <ClCompile Include="Networking\ExtPacketsSymbols.cpp" />
     <ClCompile Include="Networking\ExtPackets\ExtEntityCopy.cpp" />
     <ClCompile Include="Networking\ExtPackets\ExtEntityCreate.cpp" />
     <ClCompile Include="Networking\ExtPackets\ExtEntityDamage.cpp" />

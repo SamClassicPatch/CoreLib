@@ -428,6 +428,9 @@
     <ClCompile Include="Networking\SessionStateServerInfo.cpp">
       <Filter>Source Files\Networking</Filter>
     </ClCompile>
+    <ClCompile Include="Networking\ExtPacketsSymbols.cpp">
+      <Filter>Source Files\Networking</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Definitions\TextureEffectsDefs.inl">
