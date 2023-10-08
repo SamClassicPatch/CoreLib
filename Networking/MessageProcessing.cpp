@@ -75,12 +75,13 @@ void IProcessPacket::RegisterCommands(void) {
 CStaticArray<IProcessPacket::CSyncCheckArray> IProcessPacket::_aClientChecks;
 
 // Should mask player GUIDs or not
-BOOL IProcessPacket::_bMaskGUIDs = TRUE;
+BOOL IProcessPacket::_bMaskGUIDs = FALSE;
 
 // Check if should use GUID masking
 BOOL IProcessPacket::ShouldMaskGUIDs(void) {
-  // Setting is on; running a server; with more than one player
-  return IProcessPacket::_bMaskGUIDs && _pNetwork->IsServer() && _pNetwork->ga_sesSessionState.ses_ctMaxPlayers > 1;
+  // Setting is on; non-local game; running a server; with more than one player
+  return IProcessPacket::_bMaskGUIDs && _pNetwork->IsNetworkEnabled() && _pNetwork->IsServer()
+    && _pNetwork->ga_sesSessionState.ses_ctMaxPlayers > 1;
 };
 
 // Clear arrays with sync checks

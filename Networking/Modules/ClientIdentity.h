@@ -28,7 +28,7 @@ class CORE_API CClientIdentity {
     // Addresses the client has played from (if detected the same characters)
     CStaticStackArray<SClientAddress> aAddresses;
 
-    // Characters the client has played as (playing in splitscreen or from the same addresses)
+    // Characters the client has played as (playing in split screen or from the same addresses)
     CStaticStackArray<CPlayerCharacter> aCharacters;
 
   public:
