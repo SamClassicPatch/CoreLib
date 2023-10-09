@@ -27,7 +27,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Report packet actions to the server
 INDEX ser_bReportExtPacketLogic = TRUE;
 
+// Send extension packet from server to all clients
 void CExtPacket::SendPacket(void) {
+  // Not running a server
+  if (!_pNetwork->IsServer()) return;
+
   CNetStreamBlock nsbExt = INetwork::CreateServerPacket(GetType());
   Write(nsbExt);
 
