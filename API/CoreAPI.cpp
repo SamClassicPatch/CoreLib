@@ -324,7 +324,7 @@ CTString CCoreAPI::FullLibPath(const CTString &strLibName, const CTString &strLi
   // 1. Mods/<mod>/Bin/<lib> (e.g. Mods/ClassicsPatchMod/Bin/Debug/Game_CustomD.dll)
   // 2. <patch bin>/<lib>    (e.g. Bin_ClassicsPatch/Debug/Game_CustomD.dll)
   // 3. Bin/<lib>            (e.g. Bin/Debug/Game_CustomD.dll)
-  static const CTFileName &fnmRootDir = AppPath();
+  const CTFileName &fnmRootDir = AppPath();
   const CTString strLibFile = GetLibFile(strLibName, strLibExt);
 
   // Check if library file exists on disk and return it

@@ -128,7 +128,7 @@ void InitWinsock(void) {
   }
 
   // Master server addresses
-  static const CTString astrIPs[E_MS_MAX] = {
+  const CTString astrIPs[E_MS_MAX] = {
     ms_strLegacyMS,
     ms_strDarkPlacesMS,
     ms_strGameAgentMS,
