@@ -32,6 +32,9 @@ class IStockCommands {
     // Remote console command
     static BOOL RemoteConsole(CTString &strResult, INDEX iClient, const CTString &strArguments);
 
+    // Save game remotely
+    static BOOL RemoteSave(CTString &strResult, INDEX iClient, const CTString &strArguments);
+
     // Display log of all clients
     static BOOL ClientLog(CTString &strResult, INDEX iClient, const CTString &strArguments);
 

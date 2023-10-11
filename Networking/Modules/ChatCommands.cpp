@@ -131,6 +131,7 @@ void IChatCommands::RegisterDefaultCommands(void) {
   Register("map",   &IStockCommands::CurrentMap);
   Register("login", &IStockCommands::PasswordLogin);
   Register("rcon",  &IStockCommands::RemoteConsole);
+  Register("save",  &IStockCommands::RemoteSave);
   Register("log",   &IStockCommands::ClientLog);
   Register("ban",   &IStockCommands::BanClient);
   Register("mute",  &IStockCommands::MuteClient);

@@ -96,6 +96,32 @@ BOOL IStockCommands::RemoteConsole(CTString &strResult, INDEX iClient, const CTS
   return TRUE;
 };
 
+// Save game remotely
+BOOL IStockCommands::RemoteSave(CTString &strResult, INDEX iClient, const CTString &strArguments) {
+  const CActiveClient &ac = _aActiveClients[iClient];
+
+  // Not a server operator
+  if (!GetComm().Server_IsClientLocal(iClient)
+   && _aActiveClients[iClient].eRole != CActiveClient::E_OPERATOR)
+  {
+    strResult = TRANS("You are not a server operator!");
+    return TRUE;
+  }
+
+  CTString strSaveFile = "SaveGame\\Network\\";
+
+  if (strArguments == "") {
+    strSaveFile += "RemoteSave.sav";
+  } else {
+    strSaveFile += strArguments + ".sav";
+  }
+
+  _pNetwork->Save_t(strSaveFile);
+  strResult.PrintF(TRANS("Saved game: %s"), strSaveFile);
+
+  return TRUE;
+};
+
 // Display information about a specific identity
 static void PrintIdentityInfo(CTString &strResult, INDEX iIdentity, BOOL bMinimal) {
   CClientIdentity &ci = _aClientIdentities[iIdentity];
