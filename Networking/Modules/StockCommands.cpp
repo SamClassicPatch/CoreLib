@@ -17,6 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "StockCommands.h"
 #include "Networking/NetworkFunctions.h"
+#include "ChatCommands.h"
 #include "ClientLogging.h"
 #include "Interfaces/DataFunctions.h"
 #include "Interfaces/WorldFunctions.h"
@@ -28,6 +29,41 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 BOOL IStockCommands::CurrentMap(CTString &strResult, INDEX, const CTString &) {
   CWorld &wo = *IWorld::GetWorld();
   strResult.PrintF("Current map: \"%s^r\"\n- %s", wo.wo_strName, wo.wo_fnmFileName.str_String);
+
+  return TRUE;
+};
+
+// Log in as administrator
+BOOL IStockCommands::PasswordLogin(CTString &strResult, INDEX iClient, const CTString &strArguments) {
+  // Server client is always an operator
+  if (GetComm().Server_IsClientLocal(iClient)) {
+    strResult = TRANS("You are already a server operator!");
+    return TRUE;
+  }
+
+  // Matches operator password
+  if (ser_strOperatorPassword != "" && ser_strOperatorPassword == strArguments) {
+    _aActiveClients[iClient].eRole = CActiveClient::E_OPERATOR;
+    strResult = TRANS("Successfully authorized as a server operator!");
+
+  // Matches admin password
+  } else if (ser_strAdminPassword != "" && ser_strAdminPassword == strArguments) {
+    _aActiveClients[iClient].eRole = CActiveClient::E_ADMIN;
+    strResult = TRANS("Successfully authorized as a server administrator!");
+
+  // No passwords set or they mismatch
+  } else {
+    strResult = TRANS("Password is incorrect! Login attempt was logged.");
+  }
+
+  // Log attempts from non-server clients
+  if (!GetComm().Server_IsClientLocal(iClient)) {
+    INDEX iIdentity = _aClientIdentities.Index(_aActiveClients[iClient].pClient);
+
+    CPrintF(TRANS("Client '%s' (identity %d) is attempting to authorize as an admin with '%s':\n"),
+            GetComm().Server_GetClientName(iClient), iIdentity, strArguments);
+    CPrintF("  %s\n", strResult);
+  }
 
   return TRUE;
 };

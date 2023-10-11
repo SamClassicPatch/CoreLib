@@ -22,6 +22,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Prefix that the chat commands start with
 CTString ser_strCommandPrefix = "!";
 
+// Passwords for authorizing as administrator and operator
+CTString ser_strAdminPassword = "";
+CTString ser_strOperatorPassword = "";
+
 // List of chat commands
 CDynamicContainer<SChatCommand> _cChatCommands;
 
@@ -124,9 +128,10 @@ void IChatCommands::Unregister(const char *strName)
 
 // Register default chat commands
 void IChatCommands::RegisterDefaultCommands(void) {
-  Register("map",  &IStockCommands::CurrentMap);
-  Register("log",  &IStockCommands::ClientLog);
-  Register("ban",  &IStockCommands::BanClient);
-  Register("mute", &IStockCommands::MuteClient);
-  Register("kick", &IStockCommands::KickClient);
+  Register("map",   &IStockCommands::CurrentMap);
+  Register("login", &IStockCommands::PasswordLogin);
+  Register("log",   &IStockCommands::ClientLog);
+  Register("ban",   &IStockCommands::BanClient);
+  Register("mute",  &IStockCommands::MuteClient);
+  Register("kick",  &IStockCommands::KickClient);
 };

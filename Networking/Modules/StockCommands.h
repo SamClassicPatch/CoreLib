@@ -26,6 +26,9 @@ class IStockCommands {
     // Display name of the current map
     static BOOL CurrentMap(CTString &strResult, INDEX iClient, const CTString &strArguments);
 
+    // Log in as administrator
+    static BOOL PasswordLogin(CTString &strResult, INDEX iClient, const CTString &strArguments);
+
     // Display log of all clients
     static BOOL ClientLog(CTString &strResult, INDEX iClient, const CTString &strArguments);
 

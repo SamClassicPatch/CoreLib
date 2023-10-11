@@ -23,6 +23,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Prefix that the chat commands start with
 extern CTString ser_strCommandPrefix;
 
+// Passwords for authorizing as administrator and operator
+extern CTString ser_strAdminPassword;
+extern CTString ser_strOperatorPassword;
+
 // Chat command structure
 struct SChatCommand {
   typedef BOOL (*CCommandFunc)(CTString &strResult, INDEX iClient, const CTString &strArguments);

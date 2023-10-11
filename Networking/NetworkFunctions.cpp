@@ -26,6 +26,9 @@ void INetwork::Initialize(void) {
   if (GetAPI()->IsModelerApp()) return;
 
   // Server commands
+  _pShell->DeclareSymbol("user CTString ser_strAdminPassword;",    &ser_strAdminPassword);
+  _pShell->DeclareSymbol("user CTString ser_strOperatorPassword;", &ser_strOperatorPassword);
+
   _pShell->DeclareSymbol("persistent user INDEX ser_bEnableAntiFlood;",      &ser_bEnableAntiFlood);
   _pShell->DeclareSymbol("persistent user INDEX ser_iPacketFloodThreshold;", &ser_iPacketFloodThreshold);
   _pShell->DeclareSymbol("persistent user INDEX ser_iMaxMessagesPerSecond;", &ser_iMaxMessagesPerSecond);
