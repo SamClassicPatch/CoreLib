@@ -68,6 +68,34 @@ BOOL IStockCommands::PasswordLogin(CTString &strResult, INDEX iClient, const CTS
   return TRUE;
 };
 
+// Remote console command
+BOOL IStockCommands::RemoteConsole(CTString &strResult, INDEX iClient, const CTString &strArguments) {
+  const CActiveClient &ac = _aActiveClients[iClient];
+
+  const CTString strClientName = GetComm().Server_GetClientName(iClient);
+  const INDEX iIdentity = _aClientIdentities.Index(ac.pClient);
+
+  if (!GetComm().Server_IsClientLocal(iClient)) {
+    // Not a server operator
+    if (ac.eRole != CActiveClient::E_OPERATOR) {
+      CPrintF(TRANS("Client '%s' (identity %d) is trying to execute a command:\n"), strClientName, iIdentity);
+      CPrintF("> %s\n", strArguments);
+
+      strResult = TRANS("You are not a server operator!");
+      return TRUE;
+    }
+
+    // Log commands from non-server clients
+    CPrintF(TRANS("Client '%s' (identity %d) is executing a command:\n"), strClientName, iIdentity);
+    CPrintF("> %s\n", strArguments);
+  }
+
+  _pShell->Execute(strArguments + ";");
+  strResult = TRANS("See server log for the command output.");
+
+  return TRUE;
+};
+
 // Display information about a specific identity
 static void PrintIdentityInfo(CTString &strResult, INDEX iIdentity, BOOL bMinimal) {
   CClientIdentity &ci = _aClientIdentities[iIdentity];

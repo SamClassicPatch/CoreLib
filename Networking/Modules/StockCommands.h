@@ -29,6 +29,9 @@ class IStockCommands {
     // Log in as administrator
     static BOOL PasswordLogin(CTString &strResult, INDEX iClient, const CTString &strArguments);
 
+    // Remote console command
+    static BOOL RemoteConsole(CTString &strResult, INDEX iClient, const CTString &strArguments);
+
     // Display log of all clients
     static BOOL ClientLog(CTString &strResult, INDEX iClient, const CTString &strArguments);
 
