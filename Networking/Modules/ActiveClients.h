@@ -28,6 +28,12 @@ class CORE_API CActiveClient {
     // List of pointers to active clients
     typedef CDynamicContainer<CActiveClient> List;
 
+    enum ClientRole {
+      E_CLIENT,   // Normal player/spectator client
+      E_ADMIN,    // Server administrator with access to admin commands
+      E_OPERATOR, // Server operator with access to server commands
+    };
+
   public:
     // Client identity that's using this client (none, if inactive)
     CClientIdentity *pClient;
@@ -38,13 +44,16 @@ class CORE_API CActiveClient {
     // Address the client is playing from
     SClientAddress addr;
 
+    // Level of client privileges
+    ClientRole eRole;
+
     // Anti-flood system
     INDEX ctLastSecPackets; // Packets sent in the past second
     INDEX ctLastSecMessages; // Chat messages sent in the past second
 
   public:
     // Default constructor
-    CActiveClient() : pClient(NULL)
+    CActiveClient() : pClient(NULL), eRole(E_CLIENT)
     {
       ResetPacketCounters();
     };
@@ -73,6 +82,9 @@ class CORE_API CActiveClient {
 
     // Reset all clients to be inactive
     static void ResetAll(void);
+
+    // Check if some client has administrator rights
+    static BOOL IsAdmin(INDEX iClient);
 };
 
 // Active clients by client IDs on the server

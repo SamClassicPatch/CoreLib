@@ -208,8 +208,8 @@ CTString CClientRestriction::BanClient(INDEX iIdentity, FLOAT fTime) {
     // Get active client index
     INDEX iBanClient = _aActiveClients.Index(itac);
 
-    // Don't disconnect server clients
-    if (GetComm().Server_IsClientLocal(iBanClient)) {
+    // Don't disconnect administrators
+    if (CActiveClient::IsAdmin(iBanClient)) {
       continue;
     }
 
@@ -252,19 +252,19 @@ CTString CClientRestriction::KickClient(INDEX iIdentity, const CTString &strReas
   // Disconnect active clients
   FOREACHINDYNAMICCONTAINER(cActive, CActiveClient, itac) {
     // Get active client index
-    INDEX iBanClient = _aActiveClients.Index(itac);
+    INDEX iKickClient = _aActiveClients.Index(itac);
 
-    // Don't disconnect server clients
-    if (GetComm().Server_IsClientLocal(iBanClient)) {
+    // Don't disconnect administrators
+    if (CActiveClient::IsAdmin(iKickClient)) {
       continue;
     }
 
     // No reason specified
     if (strReason == "") {
-      INetwork::SendDisconnectMessage(iBanClient, TRANS("You have been kicked!"), FALSE);
+      INetwork::SendDisconnectMessage(iKickClient, TRANS("You have been kicked!"), FALSE);
 
     } else {
-      INetwork::SendDisconnectMessage(iBanClient, strReason, FALSE);
+      INetwork::SendDisconnectMessage(iKickClient, strReason, FALSE);
     }
   }
 

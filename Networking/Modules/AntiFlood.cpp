@@ -75,8 +75,8 @@ BOOL IAntiFlood::HandleChatMessage(INDEX iClient)
   CClientIdentity *pci = IClientLogging::GetIdentity(iClient);
   CActiveClient &acClient = _aActiveClients[iClient];
 
-  // Ignore server clients
-  if (GetComm().Server_IsClientLocal(iClient)) {
+  // Ignore administrators
+  if (CActiveClient::IsAdmin(iClient)) {
     return FALSE;
   }
 

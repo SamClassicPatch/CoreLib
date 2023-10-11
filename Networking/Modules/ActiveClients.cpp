@@ -25,6 +25,7 @@ CStaticArray<CActiveClient> _aActiveClients;
 void CActiveClient::Set(CClientIdentity *pci, const SClientAddress &addrSet) {
   pClient = pci;
   addr = addrSet;
+  eRole = E_CLIENT;
 };
 
 // Reset the client to be inactive
@@ -32,6 +33,7 @@ void CActiveClient::Reset(void) {
   pClient = NULL;
   cPlayers.Clear();
   addr.SetIP(0);
+  eRole = E_CLIENT;
 
   ResetPacketCounters();
 };
@@ -79,4 +81,11 @@ void CActiveClient::ResetAll(void)
   FOREACHINSTATICARRAY(_aActiveClients, CActiveClient, itac) {
     itac->Reset();
   }
+};
+
+// Check if some client has administrator rights
+BOOL CActiveClient::IsAdmin(INDEX iClient) {
+  // Authorized as an admin or the operator
+  return (_aActiveClients[iClient].eRole != CActiveClient::E_CLIENT
+       || GetComm().Server_IsClientLocal(iClient));
 };

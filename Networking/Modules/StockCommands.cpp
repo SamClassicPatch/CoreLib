@@ -21,8 +21,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "Interfaces/DataFunctions.h"
 #include "Interfaces/WorldFunctions.h"
 
-// Parse command as a normal chat message for non-server clients
-#define IGNORE_CLIENTS { if (!GetComm().Server_IsClientLocal(iClient)) return FALSE; }
+// Parse command as a normal chat message for clients without administrator rights
+#define IGNORE_CLIENTS { if (!CActiveClient::IsAdmin(iClient)) return FALSE; }
 
 // Display name of the current map
 BOOL IStockCommands::CurrentMap(CTString &strResult, INDEX, const CTString &) {
