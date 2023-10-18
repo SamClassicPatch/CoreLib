@@ -212,10 +212,12 @@ class CIniConfig : protected IniSections {
       if (itPair == pairs.end()) return iDefValue;
 
       // Determine integer value from the string
-      SLONG iValue;
-      if (sscanf(itPair->second.c_str(), "%i", &iValue) == 1) return iValue;
+      char *pSuffix;
+      SLONG iValue = strtol(itPair->second.c_str(), &pSuffix, 0);
 
-      return iDefValue;
+      if (pSuffix == NULL || *pSuffix != '\0') return iDefValue;
+
+      return iValue;
     };
 
     // Get float value under a key or return a default value, if key or section doesn't exist
@@ -229,10 +231,12 @@ class CIniConfig : protected IniSections {
       if (itPair == pairs.end()) return dDefValue;
 
       // Determine float value from the string
-      DOUBLE dValue;
-      if (sscanf(itPair->second.c_str(), "%lg", &dValue) == 1) return dValue;
+      char *pSuffix;
+      DOUBLE dValue = strtod(itPair->second.c_str(), &pSuffix);
 
-      return dDefValue;
+      if (pSuffix == NULL || *pSuffix != '\0') return dDefValue;
+
+      return dValue;
     };
 
   public:
