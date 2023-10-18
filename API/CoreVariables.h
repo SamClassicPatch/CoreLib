@@ -120,11 +120,13 @@ class CCoreVariables {
 
     BOOL bAdjustFOV; // Let Classics Patch adjust FOV depending on aspect ratio
     BOOL bAdjustAR; // Let Classics Patch set wide adjustment based on aspect ratio
+    BOOL bProperTextScaling; // Adjust scaling of menu text based on screen height instead of width
+    FLOAT fMenuTextScale; // Multiply scale of menu text
 
   public:
     // Default constructor
     CCoreVariables() : pAPI(NULL), gex(*new GameplayExt(TRUE)),
-      bAdjustFOV(TRUE), bAdjustAR(TRUE)
+      bAdjustFOV(TRUE), bAdjustAR(TRUE), bProperTextScaling(TRUE), fMenuTextScale(1.0f)
     {
       ResetGameDiffs();
     };

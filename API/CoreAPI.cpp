@@ -70,6 +70,8 @@ void CCoreVariables::LoadConfigs(void) {
 
     bAdjustFOV = iniModData.GetBoolValue("", "AdjustFOV", TRUE);
     bAdjustAR  = iniModData.GetBoolValue("", "AdjustAR", TRUE);
+    bProperTextScaling = iniModData.GetBoolValue("", "ProperTextScaling", TRUE);
+    fMenuTextScale = iniModData.GetDoubleValue("", "MenuTextScale", 1.0);
 
   } catch (char *strError) {
     (void)strError;
