@@ -173,16 +173,6 @@ class CORE_API CPluginAPI {
       strDeclaration.PrintF("%s%s %s(%s);", strDeclFlags, strType, strName, strArguments);
       _pShell->DeclareSymbol(strDeclaration, pFunction);
     };
-
-    // Create a new function patch for the plugin
-    template<class FuncType1, class FuncType2> inline
-    CPatch *NewPatch(FuncType1 &funcOld, FuncType2 funcNew, const char *strName, BOOL bAddToRegistry = TRUE) {
-      // Add it to the plugin
-      CPatch *pPatch = ::NewPatch(funcOld, funcNew, strName, bAddToRegistry);
-      AddNewPatch(pPatch);
-
-      return pPatch;
-    };
 };
 
 // Define symbol registering method

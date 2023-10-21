@@ -77,6 +77,16 @@ CPatch *NewRawPatch(FuncType1 &funcOld, FuncType2 funcNew, const char *strName) 
   return pPatch;
 };
 
+// Create a new function patch for the plugin
+template<class FuncType1, class FuncType2> inline
+CPatch *NewPluginPatch(FuncType1 &funcOld, FuncType2 funcNew, const char *strName, BOOL bAddToRegistry = TRUE) {
+  // Add it to the plugin
+  CPatch *pPatch = NewPatch(funcOld, funcNew, strName, bAddToRegistry);
+  GetPluginAPI()->AddNewPatch(pPatch);
+
+  return pPatch;
+};
+
 // Check if the current function is being called from a specific address
 __forceinline BOOL CallingFrom(const ULONG ulFrom, const INDEX ctDepth) {
   // Create thread context
