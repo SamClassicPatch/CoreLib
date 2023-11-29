@@ -71,6 +71,24 @@ inline CTString ExtractSubstr(const char *str, ULONG ulFrom, ULONG ulChars) {
   return strSubstr;
 };
 
+// Fill a list of strings separated by a single delimiter from text
+inline void GetStrings(CStaticStackArray<CTString> &astrOut, const CTString &strIn, char chDelimiter) {
+  if (strIn == "") return;
+
+  const char *pch = strIn.str_String;
+  ULONG ulSep = 0;
+
+  while (ulSep != (ULONG)-1) {
+    // Extract substring until a delimiter or the end (-1)
+    ulSep = IData::FindChar(pch, chDelimiter);
+
+    CTString &strNew = astrOut.Push();
+    strNew = IData::ExtractSubstr(pch, 0, ulSep);
+
+    pch += strNew.Length() + 1;
+  }
+};
+
 // Get position of a decorated character in a decorated string (doesn't count color tags)
 inline INDEX GetDecoratedChar(const CTString &str, INDEX iChar)
 {
