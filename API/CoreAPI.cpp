@@ -44,6 +44,9 @@ CCoreVariables CCoreAPI::varData;
 static CIniConfig _iniConfig;
 static CCoreAPI::SConfigProps _cfgProps;
 
+// Current seasonal event
+static CCoreAPI::ESpecialEvent _eSpecialEvent = CCoreAPI::SPEV_NONE;
+
 // Specify vanilla Bin directory as an extra DLL directory
 static void SetVanillaBinDirectory(void) {
   // Load DLL directory method
@@ -213,6 +216,50 @@ void CCoreAPI::SConfigProps::Save(void) {
   }
 };
 
+// Determine current seasonal event
+static CCoreAPI::ESpecialEvent DetermineSpecialEvent(void) {
+  // Get current date
+  time_t iTime;
+  time(&iTime);
+  tm *tmLocal = localtime(&iTime);
+
+  const int iDay = tmLocal->tm_mday;
+
+  switch (tmLocal->tm_mon) {
+    // January
+    case 0:
+      if (iDay <= 15) return CCoreAPI::SPEV_CHRISTMAS;
+      break;
+
+    // February
+    case 1:
+      if (iDay >= 10 && iDay <= 18) return CCoreAPI::SPEV_VALENTINE;
+      break;
+
+    // March
+    case 2:
+      if (iDay >= 19 && iDay <= 23) return CCoreAPI::SPEV_BD_PARTY;
+      break;
+
+    // June
+    case 5:
+      if (iDay >= 20 && iDay <= 24) return CCoreAPI::SPEV_BD_PARTY;
+      break;
+
+    // October
+    case 9:
+      return CCoreAPI::SPEV_HALLOWEEN;
+      break;
+
+    // December
+    case 11:
+      if (iDay >= 15) return CCoreAPI::SPEV_CHRISTMAS;
+      break;
+  }
+
+  return CCoreAPI::SPEV_NONE;
+};
+
 // Constructor
 CCoreAPI::CCoreAPI() :
   apiPatches(*new CPatchAPI), apiGame(*new CGameAPI), apiPlugins(*new CPluginAPI)
@@ -228,6 +275,9 @@ CCoreAPI::CCoreAPI() :
 
   // Disable custom mod if it was never set
   SetCustomMod(FALSE);
+
+  // Determine current seasonal event
+  _eSpecialEvent = DetermineSpecialEvent();
 
   // Add core API and variable data to symbols
   CShellSymbol *pssNew = _pShell->sh_assSymbols.New(2);
@@ -424,6 +474,11 @@ const CTFileName &CCoreAPI::AppPath(void) {
 // Get config with global properties
 CCoreAPI::SConfigProps &CCoreAPI::Props(void) {
   return _cfgProps;
+};
+
+// Get current seasonal event
+CCoreAPI::ESpecialEvent CCoreAPI::GetCurrentEvent(void) {
+  return _eSpecialEvent;
 };
 
 // Disable GameSpy usage

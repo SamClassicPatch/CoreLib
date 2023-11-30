@@ -45,6 +45,15 @@ class CORE_API CCoreAPI : public ICoreHooks {
       APP_MODELER,     // Serious Modeler or Serious SKA Studio
     };
 
+    // Seasonal events triggered at specific dates
+    enum ESpecialEvent {
+      SPEV_NONE = 0,
+      SPEV_VALENTINE, // Feb 10 - Feb 18
+      SPEV_BD_PARTY,  // Mar 19 - Mar 23; Jun 20 - Jun 24 (Sam; patch)
+      SPEV_HALLOWEEN, // Oct 1 - Oct 31
+      SPEV_CHRISTMAS, // Dec 15 - Jan 15
+    };
+
     // Easily accessible properties from the global config
     struct SConfigProps {
       #define CONFIG_DEFAULT_DIR_TFE "..\\Serious Sam Classic The First Encounter\\"
@@ -167,6 +176,9 @@ class CORE_API CCoreAPI : public ICoreHooks {
 
     // Get global properties
     static SConfigProps &Props(void);
+
+    // Get current seasonal event
+    virtual ESpecialEvent GetCurrentEvent(void);
 
   public:
 

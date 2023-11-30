@@ -30,7 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 
 // Current API version
-#define CORE_API_VERSION 7
+#define CORE_API_VERSION 8
 
 // Current Classics Patch version
 #define CORE_PATCH_VERSION CCoreAPI::MakeVersion(1, 7, 1)
