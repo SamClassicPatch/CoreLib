@@ -40,6 +40,7 @@ class CCoreVariables {
       BOOL bUnlimitedAirControl; // Let players move while in air indefinitely
       FLOAT fMoveSpeed; // Movement speed multiplier
       FLOAT fJumpHeight; // Jump height multiplier
+      FLOAT fGravityAcc; // Gravity acceleration multiplier
 
       // Default constructor
       GameplayExt(BOOL bVanilla = TRUE) {
@@ -63,6 +64,7 @@ class CCoreVariables {
         bUnlimitedAirControl = FALSE;
         fMoveSpeed = 1.0f;
         fJumpHeight = 1.0f;
+        fGravityAcc = 1.0f;
       };
 
       // Assignment operator

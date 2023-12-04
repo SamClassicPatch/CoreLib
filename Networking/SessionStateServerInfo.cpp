@@ -81,6 +81,7 @@ static const CChunkID _cidAirControl0("UAC0"); // Unlimited air control = false
 static const CChunkID _cidAirControl1("UAC1"); // Unlimited air control = true
 static const CChunkID _cidMoveSpeed("MOVE"); // Movement speed multiplier
 static const CChunkID _cidJumpHeight("JUMP"); // Jump height multiplier
+static const CChunkID _cidGravityMod("GRAV"); // Gravity modifiers
 
 // Read one chunk and process its data
 static void ReadOneServerInfoChunk(CTStream &strm) {
@@ -107,6 +108,9 @@ static void ReadOneServerInfoChunk(CTStream &strm) {
 
   } else if (cid == _cidJumpHeight) {
     strm >> CoreGEX().fJumpHeight;
+
+  } else if (cid == _cidGravityMod) {
+    strm >> CoreGEX().fGravityAcc;
   }
 };
 
@@ -132,6 +136,9 @@ void IProcessPacket::WriteServerInfoToSessionState(CTStream &strm) {
 
   strm.WriteID_t(_cidJumpHeight);
   strm << CoreGEX().fJumpHeight;
+
+  strm.WriteID_t(_cidGravityMod);
+  strm << CoreGEX().fGravityAcc;
 };
 
 // Read extra info about the patched server
