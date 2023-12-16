@@ -359,7 +359,7 @@ void IProcessPacket::OnConnectRemoteSessionStateRequest(INDEX iClient, CNetworkM
   INDEX ctMaxAllowedClients = ctMaxAllowedPlayers;
 
   if (piMaxClients.GetIndex() > 0) {
-    ctMaxAllowedClients = ClampUp(piMaxClients.GetIndex(), (INDEX)NET_MAXGAMECOMPUTERS);
+    ctMaxAllowedClients = ClampUp(piMaxClients.GetIndex(), (INDEX)CORE_MAX_GAME_COMPUTERS);
   }
 
   INDEX ctMaxAllowedVIPPlayers = 0;

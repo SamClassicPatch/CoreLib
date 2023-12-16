@@ -52,10 +52,10 @@ void INetwork::Initialize(void) {
   // Register default chat commands
   IChatCommands::RegisterDefaultCommands();
 
-  _aActiveClients.New(SERVER_CLIENTS);
+  _aActiveClients.New(CORE_MAX_SERVER_CLIENTS);
 
 #if CLASSICSPATCH_GUID_MASKING
-  IProcessPacket::_aClientChecks.New(NET_MAXGAMEPLAYERS);
+  IProcessPacket::_aClientChecks.New(CORE_MAX_GAME_PLAYERS);
 #endif
 
   extern void InitHttp(void);
