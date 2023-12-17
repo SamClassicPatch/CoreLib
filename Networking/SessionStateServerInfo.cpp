@@ -123,7 +123,7 @@ void IProcessPacket::WriteServerInfoToSessionState(CTStream &strm) {
   IProcessPacket::WritePatchTag(strm);
 
   // Write amount of info chunks
-  strm << (INDEX)4;
+  strm << (INDEX)5;
 
   // Fix logic timers
   strm.WriteID_t(CoreGEX().bFixTimers ? _cidTimers1 : _cidTimers0);
