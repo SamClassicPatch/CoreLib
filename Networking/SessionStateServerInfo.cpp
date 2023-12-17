@@ -84,7 +84,7 @@ static const CChunkID _cidJumpHeight("JUMP"); // Jump height multiplier
 static const CChunkID _cidGravityMod("GRAV"); // Gravity modifiers
 
 // Read one chunk and process its data
-static void ReadOneServerInfoChunk(CTStream &strm) {
+static BOOL ReadOneServerInfoChunk(CTStream &strm) {
   // Get chunk ID and compare it
   CChunkID cid = strm.GetID_t();
 
@@ -111,7 +111,13 @@ static void ReadOneServerInfoChunk(CTStream &strm) {
 
   } else if (cid == _cidGravityMod) {
     strm >> CoreGEX().fGravityAcc;
+
+  // Invalid chunk
+  } else {
+    return FALSE;
   }
+
+  return TRUE;
 };
 
 // Append extra info about the patched server
@@ -155,6 +161,7 @@ void IProcessPacket::ReadServerInfoFromSessionState(CTStream &strm) {
 
   // Read chunks themselves
   while (--ctChunks >= 0) {
-    ReadOneServerInfoChunk(strm);
+    // Break the loop upon encountering an invalid chunk
+    if (!ReadOneServerInfoChunk(strm)) break;
   }
 };
