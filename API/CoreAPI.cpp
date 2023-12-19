@@ -153,7 +153,7 @@ void CCoreVariables::LoadConfigs(void) {
 // Constructor that sets default property states
 CCoreAPI::SConfigProps::SConfigProps() :
   bCustomMod(TRUE), bDebugPatcher(FALSE), bDPIAware(TRUE), bExtendedFileSystem(TRUE),
-  bFullAppIntegration(FALSE), strTFEDir(""), strSSRDir(""), strSSRWorkshop("")
+  bFullAppIntegration(FALSE), bSteam(TRUE), strTFEDir(""), strSSRDir(""), strSSRWorkshop("")
 {
 };
 
@@ -183,6 +183,7 @@ void CCoreAPI::SConfigProps::Load(void) {
   bDPIAware           = _iniConfig.GetBoolValue("", "DPIAware", TRUE);
   bExtendedFileSystem = _iniConfig.GetBoolValue("", "ExtendedFileSystem", TRUE);
   bFullAppIntegration = _iniConfig.GetBoolValue("", "FullAppIntegration", FALSE);
+  bSteam              = _iniConfig.GetBoolValue("", "Steam", TRUE);
   strTFEDir           = _iniConfig.GetValue("", "TFEDir", CONFIG_DEFAULT_DIR_TFE);
   strSSRDir           = _iniConfig.GetValue("", "SSRDir", CONFIG_DEFAULT_DIR_SSR);
   strSSRWorkshop      = _iniConfig.GetValue("", "SSRWorkshop", CONFIG_DEFAULT_DIR_WORKSHOP);
@@ -199,6 +200,7 @@ void CCoreAPI::SConfigProps::Save(void) {
   _iniConfig.SetValue("", "DPIAware", TO_STR(bDPIAware));
   _iniConfig.SetValue("", "ExtendedFileSystem", TO_STR(bExtendedFileSystem));
   _iniConfig.SetValue("", "FullAppIntegration", TO_STR(bFullAppIntegration));
+  _iniConfig.SetValue("", "Steam", TO_STR(bSteam));
   _iniConfig.SetValue("", "TFEDir", strTFEDir);
   _iniConfig.SetValue("", "SSRDir", strSSRDir);
   _iniConfig.SetValue("", "SSRWorkshop", strSSRWorkshop);
@@ -262,7 +264,7 @@ static CCoreAPI::ESpecialEvent DetermineSpecialEvent(void) {
 
 // Constructor
 CCoreAPI::CCoreAPI() :
-  apiPatches(*new CPatchAPI), apiGame(*new CGameAPI), apiPlugins(*new CPluginAPI)
+  apiPatches(*new CPatchAPI), apiGame(*new CGameAPI), apiPlugins(*new CPluginAPI), apiSteam(*new CSteamAPI)
 {
   // Make sure that this is the only API class
   ASSERT(_pCoreAPI == NULL);

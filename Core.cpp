@@ -156,6 +156,7 @@ void ClassicsPatch_InitCore(void) {
     DEFINE_PROP_SYMBOL(INDEX, bDPIAware);
     DEFINE_PROP_SYMBOL(INDEX, bExtendedFileSystem);
     DEFINE_PROP_SYMBOL(INDEX, bFullAppIntegration);
+    DEFINE_PROP_SYMBOL(INDEX, bSteam);
     DEFINE_PROP_SYMBOL(CTString, strTFEDir);
     DEFINE_PROP_SYMBOL(CTString, strSSRDir);
     DEFINE_PROP_SYMBOL(CTString, strSSRWorkshop);
@@ -173,6 +174,9 @@ void ClassicsPatch_InitCore(void) {
   // Load client log
   IClientLogging::LoadLog();
 
+  // Initialize Steam API
+  GetSteamAPI()->Init();
+
   // Load Core plugins
   GetAPI()->LoadPlugins(PLF_ENGINE);
 };
@@ -184,6 +188,9 @@ void ClassicsPatch_EndCore(void) {
 
   // Release all loaded plugins
   GetAPI()->ReleasePlugins(PLF_ALL);
+
+  // Shutdown Steam API
+  GetSteamAPI()->End();
 
   _pTimer->RemHandler(_pTimerHandler);
   delete _pTimerHandler;

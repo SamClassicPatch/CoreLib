@@ -273,6 +273,9 @@
     <ClInclude Include="Compatibility\GameControls.h">
       <Filter>Header Files\Compatibility headers</Filter>
     </ClInclude>
+    <ClInclude Include="API\SteamAPI.h">
+      <Filter>Header Files\API headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="StdH.cpp">
@@ -430,6 +433,9 @@
     </ClCompile>
     <ClCompile Include="Networking\ExtPacketsSymbols.cpp">
       <Filter>Source Files\Networking</Filter>
+    </ClCompile>
+    <ClCompile Include="API\SteamAPI.cpp">
+      <Filter>Source Files\API</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -32,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class CPatchAPI;
 class CGameAPI;
 class CPluginAPI;
+class CSteamAPI;
 
 // Core API class (inherit hooks for backwards compatibility)
 class CORE_API CCoreAPI : public ICoreHooks {
@@ -65,6 +66,7 @@ class CORE_API CCoreAPI : public ICoreHooks {
       BOOL bDPIAware;
       BOOL bExtendedFileSystem;
       BOOL bFullAppIntegration;
+      BOOL bSteam;
       CTString strTFEDir;
       CTString strSSRDir;
       CTString strSSRWorkshop;
@@ -82,6 +84,7 @@ class CORE_API CCoreAPI : public ICoreHooks {
     CPatchAPI &apiPatches;
     CGameAPI &apiGame;
     CPluginAPI &apiPlugins;
+    CSteamAPI &apiSteam;
 
   public:
     // Constructor
@@ -304,9 +307,15 @@ inline CPluginAPI *GetPluginAPI(void) {
   return &GetAPI()->apiPlugins;
 };
 
+// Get Steam API module
+inline CSteamAPI *GetSteamAPI(void) {
+  return &GetAPI()->apiSteam;
+};
+
 // Define API submodules
 #include "PatchAPI.h"
 #include "GameAPI.h"
 #include "PluginAPI.h"
+#include "SteamAPI.h"
 
 #endif

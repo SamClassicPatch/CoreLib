@@ -32,6 +32,7 @@
     <ClInclude Include="API\PluginAPI.h" />
     <ClInclude Include="API\Plugins\PluginEvents.h" />
     <ClInclude Include="API\Plugins\PluginSymbols.h" />
+    <ClInclude Include="API\SteamAPI.h" />
     <ClInclude Include="Base\CommonCore.h" />
     <ClInclude Include="Base\CoreTimerHandler.h" />
     <ClInclude Include="Base\GameDirectories.h" />
@@ -102,6 +103,7 @@
     <ClCompile Include="API\CoreAPI.cpp" />
     <ClCompile Include="API\PatchAPI.cpp" />
     <ClCompile Include="API\PluginAPI.cpp" />
+    <ClCompile Include="API\SteamAPI.cpp" />
     <ClCompile Include="Base\CoreTimerHandler.cpp" />
     <ClCompile Include="Base\GameDirectories.cpp" />
     <ClCompile Include="Base\Unzip.cpp" />
