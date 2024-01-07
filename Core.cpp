@@ -1,4 +1,4 @@
-/* Copyright (c) 2022-2023 Dreamy Cecil
+/* Copyright (c) 2022-2024 Dreamy Cecil
 This program is free software; you can redistribute it and/or modify
 it under the terms of version 2 of the GNU General Public License as published by
 the Free Software Foundation
@@ -61,7 +61,7 @@ static void PatchInfo(void) {
     "\n"
     "\n- Engine version: " + CTString(_SE_VER_STRING)
   + "\n- Patch version: " + GetAPI()->GetVersion()
-  + "\n\n(c) Dreamy Cecil, 2022-2023\n";
+  + "\n\n(c) Dreamy Cecil, 2022-2024\n";
 
   CPutString(strInfo);
 };
