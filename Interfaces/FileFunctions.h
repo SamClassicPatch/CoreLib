@@ -142,7 +142,7 @@ inline void SetFullDirectory(CTString &strDir) {
   INDEX iLength = strDir.Length();
 
   // Add missing backslash at the end
-  if (strDir[iLength - 1] != '\\') {
+  if (iLength > 0 && strDir[iLength - 1] != '\\') {
     strDir += CTString("\\");
   }
 
