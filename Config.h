@@ -34,6 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
   // Networking
   #define CLASSICSPATCH_EXT_PACKETS  (1 && CORECONFIG_NOT_REV) // Support for custom extension packets
+  #define CLASSICSPATCH_GAMEPLAY_EXT (1 && CORECONFIG_NOT_REV) // Implement gameplay extensions
   #define CLASSICSPATCH_GUID_MASKING (1 && CORECONFIG_NOT_REV) // System for masking GUIDs of player characters separately for each server client
 
   // Query

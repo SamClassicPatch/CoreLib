@@ -33,8 +33,24 @@ INDEX IProcessPacket::_bReportSyncBadToClients = FALSE;
 // Prevent clients from joining unless they have the same patch installed
 INDEX IProcessPacket::_bForbidVanilla = FALSE;
 
+#if CLASSICSPATCH_GAMEPLAY_EXT
+
 // Gameplay extensions (reset to recommended settings)
 CCoreVariables::GameplayExt IProcessPacket::_gexSetup(FALSE);
+
+// Check if gameplay extensions are enabled for the server
+BOOL IProcessPacket::GameplayExtEnabled(void) {
+  return _gexSetup.bGameplayExt;
+};
+
+#else
+
+// Gameplay extensions don't exist
+BOOL IProcessPacket::GameplayExtEnabled(void) {
+  return FALSE;
+};
+
+#endif // CLASSICSPATCH_GAMEPLAY_EXT
 
 // Allow changing value of a symbol unless currently running a server
 BOOL IProcessPacket::UpdateSymbolValue(void *pSymbol) {
@@ -55,6 +71,8 @@ void IProcessPacket::RegisterCommands(void) {
   _pShell->DeclareSymbol("persistent user INDEX ser_bReportSyncBadToClients;", &_bReportSyncBadToClients);
   _pShell->DeclareSymbol("persistent user INDEX ser_bForbidVanilla pre:UpdateServerSymbolValue;", &_bForbidVanilla);
 
+#if CLASSICSPATCH_GAMEPLAY_EXT
+
   // Gameplay extensions
   #define GAMEPLAY_EXT_SYMBOL(_Type, _Command, _Variable) \
     _pShell->DeclareSymbol("persistent user " #_Type " " _Command " pre:UpdateServerSymbolValue;", &_Variable)
@@ -68,6 +86,8 @@ void IProcessPacket::RegisterCommands(void) {
   GAMEPLAY_EXT_SYMBOL(FLOAT, "gex_fGravityAcc", _gexSetup.fGravityAcc);
 
   #undef GAMEPLAY_EXT_SYMBOL
+
+#endif // CLASSICSPATCH_GAMEPLAY_EXT
 };
 
 #if CLASSICSPATCH_GUID_MASKING
@@ -328,7 +348,7 @@ void IProcessPacket::OnConnectRemoteSessionStateRequest(INDEX iClient, CNetworkM
   nmMessage >> sspClient;
 
   // [Cecil] Check if vanilla clients are forbidden or using incompatible gameplay extensions
-  const BOOL bForbid = (_bForbidVanilla || _gexSetup.bGameplayExt);
+  const BOOL bForbid = (_bForbidVanilla || GameplayExtEnabled());
 
   // [Cecil] Disconnect unless the client has the right patch version installed
   if (bForbid && !CheckClientPatch(iClient, nmMessage)) {

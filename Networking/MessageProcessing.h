@@ -48,8 +48,15 @@ class CORE_API IProcessPacket {
     // Prevent clients from joining unless they have the same patch installed
     static INDEX _bForbidVanilla;
 
+  #if CLASSICSPATCH_GAMEPLAY_EXT
+
     // Gameplay extensions
     static CCoreVariables::GameplayExt _gexSetup;
+
+  #endif // CLASSICSPATCH_GAMEPLAY_EXT
+
+    // Check if gameplay extensions are enabled for the server
+    static BOOL GameplayExtEnabled(void);
 
     // Allow changing value of a symbol unless currently running a server
     static BOOL UpdateSymbolValue(void *pSymbol);

@@ -62,10 +62,12 @@ BOOL IProcessPacket::ReadPatchTag(CTStream &strm, ULONG *pulReadVersion) {
   return TRUE;
 };
 
+#if CLASSICSPATCH_GAMEPLAY_EXT
+
 // Reset data before starting any session
 void IProcessPacket::ResetSessionData(BOOL bNewSetup) {
   // Set new data
-  if (bNewSetup && _gexSetup.bGameplayExt) {
+  if (bNewSetup && GameplayExtEnabled()) {
     CoreGEX() = _gexSetup;
 
   // Reset to vanilla
@@ -165,3 +167,27 @@ void IProcessPacket::ReadServerInfoFromSessionState(CTStream &strm) {
     if (!ReadOneServerInfoChunk(strm)) break;
   }
 };
+
+#else
+
+// Reset data before starting any session
+void IProcessPacket::ResetSessionData(BOOL bNewSetup)
+{
+};
+
+// Append extra info about the patched server
+void IProcessPacket::WriteServerInfoToSessionState(CTStream &strm)
+{
+};
+
+// Read extra info about the patched server
+void IProcessPacket::ReadServerInfoFromSessionState(CTStream &strm) {
+  // Skip if patch tag cannot be verified
+  if (!ReadPatchTag(strm, NULL)) return;
+
+  // No data to read after the tag
+  ASSERTALWAYS("CLASSICSPATCH_GAMEPLAY_EXT is turned off in this build!");
+  ThrowF_t("Server info reading is unavailable in this build!");
+};
+
+#endif // CLASSICSPATCH_GAMEPLAY_EXT

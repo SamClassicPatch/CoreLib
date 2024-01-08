@@ -287,10 +287,14 @@ inline CCoreVariables &CoreVarData(void) {
   return CCoreAPI::varData;
 };
 
+#if CLASSICSPATCH_GAMEPLAY_EXT
+
 // Get gameplay extensions
 inline CCoreVariables::GameplayExt &CoreGEX(void) {
   return CoreVarData().gex;
 };
+
+#endif // CLASSICSPATCH_GAMEPLAY_EXT
 
 // Get patch API module
 inline CPatchAPI *GetPatchAPI(void) {
