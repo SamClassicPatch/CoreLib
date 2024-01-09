@@ -25,6 +25,9 @@ CSteamAPI::CSteamAPI() : hApiLib(NULL)
 
 // Initialize Steam API
 void CSteamAPI::Init(void) {
+  // [Cecil] TEMP: Initialize Steam only for the game
+  if (!GetAPI()->IsGameApp()) return;
+
   // Steam disabled, already hooked or unavailable
   if (!CCoreAPI::Props().bSteam || hApiLib != NULL || _bUnavailable) return;
 
