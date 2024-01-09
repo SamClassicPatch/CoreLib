@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <Engine/Base/Console_internal.h>
 #include <Engine/GameShell.h>
 #include "Interfaces/FileFunctions.h"
+#include "Query/QueryManager.h"
 
 #include <STLIncludesBegin.h>
 #include <string>
@@ -483,29 +484,44 @@ CCoreAPI::ESpecialEvent CCoreAPI::GetCurrentEvent(void) {
   return _eSpecialEvent;
 };
 
-// Disable GameSpy usage
+// Toggle vanilla query manager
 void CCoreAPI::DisableGameSpy(void) {
 #if CLASSICSPATCH_NEW_QUERY
 
-  static BOOL bDisabled = FALSE;
+  // Symbol for accessing GameSpy master server
+  static CSymbolPtr pbHeartbeatGameSpy;
 
-  if (bDisabled) return;
+  // Update only when vanilla query is toggled
+  static INDEX iLastVanillaQuery = -1;
+  if (iLastVanillaQuery == ms_bVanillaQuery) return;
 
-  // Get symbol for accessing GameSpy master server
-  CShellSymbol *pssGameSpy = _pShell->GetSymbol("ser_bHeartbeatGameSpy", TRUE);
+  // Find the symbol
+  if (!pbHeartbeatGameSpy.Exists()) {
+    pbHeartbeatGameSpy.Find("ser_bHeartbeatGameSpy");
 
-  if (pssGameSpy != NULL) {
-    // Store last value
-    INDEX *piValue = (INDEX *)pssGameSpy->ss_pvValue;
-    static INDEX iDummyValue = *piValue;
+    // Better luck next time
+    if (!pbHeartbeatGameSpy.Exists()) return;
+  }
+
+  iLastVanillaQuery = ms_bVanillaQuery;
+
+  // Remember pointer to the original value
+  static INDEX *piValue = &pbHeartbeatGameSpy.GetIndex();
+
+  if (!ms_bVanillaQuery) {
+    // Update last value
+    static INDEX iDummyValue;
+    iDummyValue = *piValue;
 
     // Forcefully disable it
     *piValue = FALSE;
 
     // Make it inaccessible
-    pssGameSpy->ss_pvValue = &iDummyValue;
+    pbHeartbeatGameSpy._pss->ss_pvValue = &iDummyValue;
 
-    bDisabled = TRUE;
+  } else {
+    // Make it accessible again
+    pbHeartbeatGameSpy._pss->ss_pvValue = piValue;
   }
 
 #endif // CLASSICSPATCH_NEW_QUERY
@@ -594,6 +610,12 @@ void CCoreAPI::LoadGameLib(const CTString &strSettingsFile) {
 
     // Hook default fields
     GetGameAPI()->HookFields();
+
+  #if CLASSICSPATCH_NEW_QUERY
+    // Update internal master server
+    extern void UpdateInternalGameSpyMS(INDEX);
+    UpdateInternalGameSpyMS(0);
+  #endif
   }
 };
 

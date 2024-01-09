@@ -35,6 +35,9 @@ enum EMasterServers {
 // Debug output for query
 CORE_API extern INDEX ms_bDebugOutput;
 
+// Hook old master server address instead of replacing entire query manager
+CORE_API extern INDEX ms_bVanillaQuery;
+
 // Commonly used symbols
 extern CSymbolPtr _piNetPort;
 extern CSymbolPtr _pstrLocalHost;

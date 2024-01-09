@@ -28,8 +28,8 @@ static sockaddr_in *_sinLocal = NULL;
 static SOCKET _socket = NULL;
 
 // Master server addresses
-extern CTString ms_strLegacyMS = "master.333networks.com";
-static CTString ms_strGameAgentMS = "master.333networks.com";
+extern CTString ms_strLegacyMS = "333networks.com";
+static CTString ms_strGameAgentMS = "333networks.com";
 static CTString ms_strDarkPlacesMS = "192.168.1.4";
 
 // Current master server protocol
@@ -38,18 +38,41 @@ extern INDEX ms_iProtocol = E_MS_LEGACY;
 // Debug output for query
 INDEX ms_bDebugOutput = FALSE;
 
+// Hook old master server address instead of replacing entire query manager
+INDEX ms_bVanillaQuery = FALSE;
+
 // Commonly used symbols
 CSymbolPtr _piNetPort;
 CSymbolPtr _pstrLocalHost;
 
+// Replace internal GameSpy master server addresses with Legacy ones
+extern void UpdateInternalGameSpyMS(INDEX)
+{
+  static char *astrAddresses[3] = {
+    (char *)ADDR_GAMESPY_MS_1,
+    (char *)ADDR_GAMESPY_MS_2,
+    (char *)ADDR_GAMESPY_MS_3,
+  };
+
+  // Maximum address length
+  static const size_t ctAddress = strlen("master.gamespy.com");
+
+  for (INDEX i = 0; i < 3; i++) {
+    strncpy(astrAddresses[i], ms_strLegacyMS.str_String, ctAddress);
+  }
+};
+
 // Initialize query manager
 extern void InitQuery(void) {
   // Custom symbols
-  _pShell->DeclareSymbol("persistent user CTString ms_strLegacyMS;",     &ms_strLegacyMS);
+  _pShell->DeclareSymbol("void UpdateInternalGameSpyMS(INDEX);", &UpdateInternalGameSpyMS);
+  _pShell->DeclareSymbol("persistent user CTString ms_strLegacyMS post:UpdateInternalGameSpyMS;", &ms_strLegacyMS);
   _pShell->DeclareSymbol("persistent user CTString ms_strDarkPlacesMS;", &ms_strDarkPlacesMS);
   _pShell->DeclareSymbol("persistent user CTString ms_strGameAgentMS;",  &ms_strGameAgentMS);
   _pShell->DeclareSymbol("persistent user INDEX ms_iProtocol;",          &ms_iProtocol);
   _pShell->DeclareSymbol("persistent user INDEX ms_bDebugOutput;",       &ms_bDebugOutput);
+
+  _pShell->DeclareSymbol("persistent user INDEX ms_bVanillaQuery pre:UpdateServerSymbolValue;", &ms_bVanillaQuery);
 
   // Master server protocol types
   static const INDEX iLegacyMS     = E_MS_LEGACY;

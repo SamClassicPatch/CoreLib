@@ -74,6 +74,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   // InitStreams()
   #define ADDR_INITSTREAMS (ADDR_ENGINE + CHOOSE_FOR_GAME(0x1A2C0, 0x1A2C0, 0x265F0))
 
+  // Strings with the master server address
+  #define ADDR_GAMESPY_MS_1 (ADDR_ENGINE + CHOOSE_FOR_GAME(0x1BD1CC, 0x1BD20C, 0x1ED9FC))
+  #define ADDR_GAMESPY_MS_2 (ADDR_ENGINE + CHOOSE_FOR_GAME(0x1BD300, 0x1BD340, 0x1EDB30))
+  #define ADDR_GAMESPY_MS_3 (ADDR_ENGINE + CHOOSE_FOR_GAME(0x1BD314, 0x1BD354, 0x1EDB44))
+
   // Static variables from Unzip.cpp
   #define ADDR_UNZIP_CRITSEC  (ADDR_ENGINE + CHOOSE_FOR_GAME(0x1E0388, 0x1E03C8, 0x2131C8)) // &zip_csLock
   #define ADDR_UNZIP_HANDLES  (ADDR_ENGINE + CHOOSE_FOR_GAME(0x1C5030, 0x1C5070, 0x1F6298)) // &_azhHandles
@@ -92,6 +97,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #elif SE1_VER == SE1_107 // Debug addresses
   // InitStreams()
   #define ADDR_INITSTREAMS (ADDR_ENGINE + 0x7B49)
+
+  // Strings with the master server address
+  #define ADDR_GAMESPY_MS_1 (ADDR_ENGINE + 0x413D14)
+  #define ADDR_GAMESPY_MS_2 (ADDR_ENGINE + 0x4140FC)
+  #define ADDR_GAMESPY_MS_3 (ADDR_ENGINE + 0x414110)
 
   // Static variables from Unzip.cpp
   #define ADDR_UNZIP_CRITSEC  (ADDR_ENGINE + 0x446BC8) // &zip_csLock

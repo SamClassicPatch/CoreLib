@@ -202,7 +202,7 @@ class CORE_API CCoreAPI : public ICoreHooks {
       return GetCoreVersion();
     };
 
-    // Disable GameSpy usage
+    // Toggle vanilla query manager
     void DisableGameSpy(void);
 
     // Create a series of directories within the game folder

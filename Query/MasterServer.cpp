@@ -30,6 +30,9 @@ namespace IMasterServer {
 
 // Get current master server protocol
 INDEX GetProtocol(void) {
+  // Old query manager is just like Legacy
+  if (ms_bVanillaQuery) return E_MS_LEGACY;
+
   if (ms_iProtocol < E_MS_LEGACY || ms_iProtocol >= E_MS_MAX) {
     return E_MS_LEGACY;
   }
@@ -39,6 +42,9 @@ INDEX GetProtocol(void) {
 
 // Start the server
 void OnServerStart(void) {
+  // Keep using old query manager
+  if (ms_bVanillaQuery) return;
+
   if (ms_bDebugOutput) {
     CPutString("  IMasterServer::OnServerStart()\n");
   }
@@ -71,6 +77,9 @@ void OnServerStart(void) {
 
 // Stop the server
 void OnServerEnd(void) {
+  // Keep using old query manager
+  if (ms_bVanillaQuery) return;
+
   // Not initialized
   if (!IQuery::bInitialized) {
     return;
@@ -105,6 +114,9 @@ void OnServerEnd(void) {
 
 // Server update step
 void OnServerUpdate(void) {
+  // Keep using old query manager
+  if (ms_bVanillaQuery) return;
+
   // Not usable
   if (!IQuery::IsSocketUsable()) {
     return;
@@ -138,6 +150,9 @@ void OnServerUpdate(void) {
 
 // Server state has changed
 void OnServerStateChanged(void) {
+  // Keep using old query manager
+  if (ms_bVanillaQuery) return;
+
   // Not initialized
   if (!IQuery::bInitialized) {
     return;
@@ -172,6 +187,9 @@ void OnServerStateChanged(void) {
 
 // Send heartbeat to the master server
 void SendHeartbeat(INDEX iChallenge) {
+  // Keep using old query manager
+  if (ms_bVanillaQuery) return;
+
   CTString strPacket;
 
   // Build heartbeat packet for a specific master server
@@ -200,6 +218,9 @@ void SendHeartbeat(INDEX iChallenge) {
 
 // Request server list enumeration
 void EnumTrigger(BOOL bInternet) {
+  // Keep using old query manager
+  if (ms_bVanillaQuery) return;
+
   // The list has changed
   if (_pNetwork->ga_bEnumerationChange) {
     return;
@@ -217,6 +238,12 @@ void EnumTrigger(BOOL bInternet) {
 
 // Replacement for CNetworkLibrary::EnumSessions()
 void EnumSessions(BOOL bInternet) {
+  // Keep using old query manager
+  if (ms_bVanillaQuery) {
+    _pNetwork->EnumSessions(bInternet);
+    return;
+  }
+
   // Clear old sessions
   FORDELETELIST(CNetworkSession, ns_lnNode, _pNetwork->ga_lhEnumeratedSessions, itns) {
     delete &*itns;
@@ -233,6 +260,9 @@ void EnumSessions(BOOL bInternet) {
 
 // Update enumerations from the server
 void EnumUpdate(void) {
+  // Keep using old query manager
+  if (ms_bVanillaQuery) return;
+
   // Not usable
   if (!IQuery::IsSocketUsable()) {
     return;
@@ -250,6 +280,9 @@ void EnumUpdate(void) {
 
 // Cancel master server enumeration
 void EnumCancel(void) {
+  // Keep using old query manager
+  if (ms_bVanillaQuery) return;
+
   // Not initialized
   if (!IQuery::bInitialized) {
     return;
