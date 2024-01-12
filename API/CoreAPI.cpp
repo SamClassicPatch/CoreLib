@@ -606,10 +606,16 @@ void CCoreAPI::LoadGameLib(const CTString &strSettingsFile) {
 
   // Initialize Game, if needed
   if (strSettingsFile != "") {
-    _pGame->Initialize(strSettingsFile);
-
     // Hook default fields
     GetGameAPI()->HookFields();
+
+    // Can be used to hook new fields
+    _pGame->Initialize(strSettingsFile);
+
+    // Set mod URL to the latest patch release
+    if (_strModURL == "" || _strModURL.FindSubstr("croteam.com") != -1) {
+      _strModURL = CLASSICSPATCH_URL_LATESTRELEASE;
+    }
 
   #if CLASSICSPATCH_NEW_QUERY
     // Update internal master server
