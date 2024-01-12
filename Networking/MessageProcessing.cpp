@@ -748,7 +748,12 @@ void IProcessPacket::OnPlayerAction(INDEX iClient, CNetworkMessage &nmMessage)
   CSessionSocket &sso = srv.srv_assoSessions[iClient];
 
   // For each possible player on that client
-  for (INDEX i = 0; i < NET_MAXLOCALPLAYERS; i++) {
+  for (INDEX i = 0; i < CORE_MAX_LOCAL_PLAYERS; i++) {
+    // [Cecil] Stop reading actions if there are less than 4 bytes of data left
+    // 15 bits / 2 bytes for bSaved, iPlayer and plb_iPing and then CPlayerAction (more than 2 extra bytes)
+    const INDEX ctBytesLeft = nmMessage.nm_slSize - INDEX(nmMessage.nm_pubPointer - nmMessage.nm_pubMessage);
+    if (ctBytesLeft < 4) break;
+
     // See if saved in the message
     BOOL bSaved = 0;
     nmMessage.ReadBits(&bSaved, 1);
@@ -764,7 +769,7 @@ void IProcessPacket::OnPlayerAction(INDEX iClient, CNetworkMessage &nmMessage)
     // If there is no player on that client
     if (plb.plb_iClient != iClient) {
       // Consider the entire message invalid
-      CPrintF("Wrong Client!\n");
+      CPrintF("Wrong Client! (expected: %d, got: %d from srv_aplbPlayers[%d])\n", iClient, plb.plb_iClient, iPlayer);
       break;
     }
 
