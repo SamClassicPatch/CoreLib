@@ -33,7 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define CORE_API_VERSION 8
 
 // Current Classics Patch version
-#define CORE_PATCH_VERSION CCoreAPI::MakeVersion(1, 7, 1)
+#define CORE_PATCH_VERSION CCoreAPI::MakeVersion(1, 7, 2)
 
 // Indication of a build under active development (disabled for releases)
 #define CORE_DEV_BUILD 1
