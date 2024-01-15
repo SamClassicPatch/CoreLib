@@ -60,6 +60,10 @@ void INetwork::Initialize(void) {
 
   extern void InitHttp(void);
   InitHttp();
+
+  // Make sure there is enough space for local players
+  _pNetwork->ga_aplsPlayers.Clear();
+  _pNetwork->ga_aplsPlayers.New(CORE_MAX_LOCAL_PLAYERS);
 };
 
 // Handle packets coming from a client
