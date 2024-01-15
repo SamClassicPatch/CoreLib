@@ -95,6 +95,7 @@ class CORE_API CPluginAPI {
     CPluginInterfaces cDemoEvents;
     CPluginInterfaces cWorldEvents;
     CPluginInterfaces cListenerEvents;
+    CPluginInterfaces cTimerEvents;
 
   public:
     // Constructor

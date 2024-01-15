@@ -113,10 +113,10 @@ class INetworkEvents : public IAbstractEvents {
       return &GetPluginAPI()->cNetworkEvents;
     };
 
-    // Upon receiving a packet as a server (returns TRUE if the packet was handled)
+    // Upon receiving an extension packet as a server (returns TRUE if the packet was handled)
     virtual BOOL OnServerPacket(CNetworkMessage &nmMessage, const ULONG ulType);
 
-    // Upon receiving a packet as a client (returns TRUE if the packet was handled)
+    // Upon receiving an extension packet as a client (returns TRUE if the packet was handled)
     virtual BOOL OnClientPacket(CNetworkMessage &nmMessage, const ULONG ulType);
 
     // Upon adding a new player to the game
@@ -196,6 +196,21 @@ class IListenerEvents : public IAbstractEvents {
 
     // Upon calling an internal subautomation within entity logic
     virtual void OnCallProcedure(CEntity *pen, const CEntityEvent &ee);
+};
+
+// Timer events
+class ITimerEvents : public IAbstractEvents {
+  public:
+    // Return handlers container
+    virtual CPluginInterfaces *GetContainer(void) {
+      return &GetPluginAPI()->cTimerEvents;
+    };
+
+    // Executed each tick (simulation-independent)
+    virtual void OnTick(void);
+
+    // Executed each second (simulation-independent)
+    virtual void OnSecond(void);
 };
 
 // Iteration through specific plugin event handlers

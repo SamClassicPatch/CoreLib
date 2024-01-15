@@ -45,6 +45,13 @@ void CCoreTimerHandler::OnTick(void)
 {
   // Update client restriction records
   CClientRestriction::UpdateExpirations();
+
+  // Call per-tick function for each plugin
+  FOREACHPLUGINHANDLER(GetPluginAPI()->cTimerEvents, ITimerEvents, pEvents) {
+    if ((IAbstractEvents *)pEvents == NULL) continue;
+
+    pEvents->OnTick();
+  }
 };
 
 // Called every game second
@@ -52,4 +59,11 @@ void CCoreTimerHandler::OnSecond(void)
 {
   // Reset anti-flood counters
   IAntiFlood::ResetCounters();
+
+  // Call per-second function for each plugin
+  FOREACHPLUGINHANDLER(GetPluginAPI()->cTimerEvents, ITimerEvents, pEvents) {
+    if ((IAbstractEvents *)pEvents == NULL) continue;
+
+    pEvents->OnSecond();
+  }
 };
