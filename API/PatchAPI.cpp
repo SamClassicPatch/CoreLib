@@ -115,12 +115,7 @@ CPatchAPI::CPatchAPI() {
   // Hook up the libraries
   hEngine = HMODULE_ENGINE;
 
-  // [Cecil] NOTE: Only for 1.07+ because custom entities aren't built for 1.05
-  #if SE1_VER >= SE1_107
-    fnmEntities = CCoreAPI::FullLibPath("Entities" + _strModExt);
-  #else
-    fnmEntities = "Bin\\" + CCoreAPI::GetLibFile("Entities" + CCoreAPI::GetVanillaExt());
-  #endif
+  fnmEntities = CCoreAPI::FullLibPath("Entities" + _strModExt);
   hEntities = LoadLibraryA((CCoreAPI::AppPath() + fnmEntities).str_String);
 
   // Commands for manually toggling function patches
