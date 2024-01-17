@@ -28,8 +28,8 @@ struct CORE_API SClientAddress {
 
   public:
     // Default constructor
-    SClientAddress() : ulIP(0), strHost("0.0.0.0")
-    {
+    SClientAddress() {
+      Clear();
     };
 
     // Constructor from an address
@@ -40,6 +40,12 @@ struct CORE_API SClientAddress {
     // Constructor from a host name
     SClientAddress(const CTString &strSetHost) {
       SetHost(strSetHost);
+    };
+
+    // Clear address
+    inline void Clear(void) {
+      ulIP = 0;
+      strHost = "0.0.0.0";
     };
 
     // Get IP address

@@ -18,7 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "ClientIdentity.h"
 
 // Identities of every logged client
-CStaticStackArray<CClientIdentity> _aClientIdentities;
+CDynamicStackArray<CClientIdentity> _aClientIdentities;
 
 // Find address index of some client
 INDEX CClientIdentity::FindAddress(const SClientAddress &addr) const {
@@ -96,17 +96,17 @@ void CClientIdentity::Read(CTStream *strm) {
 
   // Addresses
   *strm >> ct;
+  SClientAddress *aNewAddresses = aAddresses.Push(ct);
 
   for (i = 0; i < ct; i++) {
-    SClientAddress &addr = aAddresses.Push();
-    addr.Read(strm);
+    aNewAddresses[i].Read(strm);
   }
 
   // Characters
   *strm >> ct;
+  CPlayerCharacter *aNewChars = aCharacters.Push(ct);
 
   for (i = 0; i < ct; i++) {
-    CPlayerCharacter &pc = aCharacters.Push();
-    *strm >> pc;
+    *strm >> aNewChars[i];
   }
 };

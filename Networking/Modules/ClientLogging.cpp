@@ -149,9 +149,10 @@ void IClientLogging::LoadLog(void) {
     INDEX ctClients;
     strm >> ctClients;
 
+    CClientIdentity *aci = _aClientIdentities.Push(ctClients);
+
     for (INDEX i = 0; i < ctClients; i++) {
-      CClientIdentity &ci = _aClientIdentities.Push();
-      ci.Read(&strm);
+      aci[i].Read(&strm);
     }
 
     strm.Close();

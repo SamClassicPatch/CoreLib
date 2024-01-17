@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "ChatCommands.h"
 #include "Networking/NetworkFunctions.h"
 #include "StockCommands.h"
+#include "ClientLogging.h"
 
 // Prefix that the chat commands start with
 CTString ser_strCommandPrefix = "!";
@@ -126,6 +127,60 @@ void IChatCommands::Unregister(const char *strName)
   }
 };
 
+// Output log of a specific identity and optionally a character
+static void ClientLogInConsole(SHELL_FUNC_ARGS) {
+  BEGIN_SHELL_FUNC;
+  INDEX iIdentity = NEXT_ARG(INDEX);
+  INDEX iCharacter = NEXT_ARG(INDEX);
+
+  CTString strLog;
+
+  extern void PrintClientLog(CTString &strResult, INDEX iIdentity, INDEX iCharacter);
+  PrintClientLog(strLog, iIdentity, iCharacter);
+
+  CPutString(strLog + "\n");
+};
+
+// Delete specific character or an identity as a whole from the log
+static void ClientLogDelete(SHELL_FUNC_ARGS) {
+  BEGIN_SHELL_FUNC;
+  INDEX iIdentity = NEXT_ARG(INDEX);
+  INDEX iCharacter = NEXT_ARG(INDEX);
+
+  if (iIdentity < 0 || iIdentity >= _aClientIdentities.Count()) {
+    CPutString("Invalid client index!\n");
+    return;
+  }
+
+  CClientIdentity &ci = _aClientIdentities[iIdentity];
+
+  // Delete entire identity
+  if (iCharacter == -1) {
+    _aClientIdentities.Delete(&ci);
+    return;
+  }
+
+  if (iCharacter <= 0 || iCharacter > ci.aCharacters.Count()) {
+    CPutString("Invalid character index!\n");
+    return;
+  }
+
+  // Delete character
+  CPlayerCharacter &pc = ci.aCharacters[iCharacter - 1];
+  ci.aCharacters.Delete(&pc);
+};
+
+// Resave client log
+static void ClientLogSave(void) {
+  IClientLogging::SaveLog();
+};
+
+// Reload client log
+static void ClientLogLoad(void) {
+  _aClientIdentities.Clear();
+  IClientLogging::LoadLog();
+};
+
 // Register default chat commands
 void IChatCommands::RegisterDefaultCommands(void) {
   Register("map",   &IStockCommands::CurrentMap);
@@ -136,4 +191,10 @@ void IChatCommands::RegisterDefaultCommands(void) {
   Register("ban",   &IStockCommands::BanClient);
   Register("mute",  &IStockCommands::MuteClient);
   Register("kick",  &IStockCommands::KickClient);
+
+  // Local interaction with the client log
+  _pShell->DeclareSymbol("user void ClientLog(INDEX, INDEX);", &ClientLogInConsole);
+  _pShell->DeclareSymbol("user void ClientLogDelete(INDEX, INDEX);", &ClientLogDelete);
+  _pShell->DeclareSymbol("user void ClientLogSave(void);", &ClientLogSave);
+  _pShell->DeclareSymbol("user void ClientLogLoad(void);", &ClientLogLoad);
 };

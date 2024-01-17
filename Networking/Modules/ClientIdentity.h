@@ -22,14 +22,19 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "ClientLogging.h"
 
+// Clear method for CDynamicStackArray
+inline void Clear(CPlayerCharacter &pc) {
+  pc = CPlayerCharacter();
+};
+
 // A unique client
 class CORE_API CClientIdentity {
   public:
     // Addresses the client has played from (if detected the same characters)
-    CStaticStackArray<SClientAddress> aAddresses;
+    CDynamicStackArray<SClientAddress> aAddresses;
 
     // Characters the client has played as (playing in split screen or from the same addresses)
-    CStaticStackArray<CPlayerCharacter> aCharacters;
+    CDynamicStackArray<CPlayerCharacter> aCharacters;
 
   public:
     // Find address index of this client
@@ -42,6 +47,12 @@ class CORE_API CClientIdentity {
     BOOL AddNewCharacter(const CPlayerCharacter &pc);
 
   public:
+    // Clear method for CDynamicStackArray
+    inline void Clear(void) {
+      aAddresses.Clear();
+      aCharacters.Clear();
+    };
+
     // Write client identity data
     void Write(CTStream *strm);
 
@@ -50,6 +61,6 @@ class CORE_API CClientIdentity {
 };
 
 // Identities of every logged client
-extern CStaticStackArray<CClientIdentity> _aClientIdentities;
+extern CDynamicStackArray<CClientIdentity> _aClientIdentities;
 
 #endif
