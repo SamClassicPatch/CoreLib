@@ -25,11 +25,21 @@ CSteamAPI::CSteamAPI() : hApiLib(NULL)
 
 // Initialize Steam API
 void CSteamAPI::Init(void) {
-  // [Cecil] TEMP: Initialize Steam only for the game
-  if (!GetAPI()->IsGameApp()) return;
+  // Skip for dedicated servers
+  if (GetAPI()->IsServerApp()) {
+    if (!CCoreAPI::Props().bSteamForServers) return;
+
+  // Skip for tools
+  } else if (GetAPI()->IsEditorApp() || GetAPI()->IsModelerApp()) {
+    if (!CCoreAPI::Props().bSteamForTools) return;
+
+  // Skip for unknown non-game applications
+  } else if (!GetAPI()->IsGameApp()) {
+    return;
+  }
 
   // Steam disabled, already hooked or unavailable
-  if (!CCoreAPI::Props().bSteam || hApiLib != NULL || _bUnavailable) return;
+  if (!CCoreAPI::Props().bSteamEnable || hApiLib != NULL || _bUnavailable) return;
 
   // Hook library
   hApiLib = LoadLibraryA("steam_api.dll");
@@ -83,7 +93,7 @@ void CSteamAPI::Init(void) {
 // Shutdown Steam API
 void CSteamAPI::End(void) {
   // Steam disabled or isn't hooked
-  if (!CCoreAPI::Props().bSteam || hApiLib == NULL) return;
+  if (!CCoreAPI::Props().bSteamEnable || hApiLib == NULL) return;
 
   // Hook shutdown method
   void (*pSteamShutdownFunc)(void) = (void (*)(void))GetProcAddress(hApiLib, "SteamAPI_Shutdown");

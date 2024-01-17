@@ -66,10 +66,14 @@ class CORE_API CCoreAPI : public ICoreHooks {
       BOOL bDPIAware;
       BOOL bExtendedFileSystem;
       BOOL bFullAppIntegration;
-      BOOL bSteam;
       CTString strTFEDir;
       CTString strSSRDir;
       CTString strSSRWorkshop;
+
+      // Steam API
+      BOOL bSteamEnable;     // Initialize and use Steamworks API
+      BOOL bSteamForServers; // Initialize for dedicated servers
+      BOOL bSteamForTools;   // Initialize for tool applications
 
       SConfigProps(); // Constructor that sets default property states
       void Load(void); // Load properties from the config

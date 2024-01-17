@@ -154,7 +154,9 @@ void CCoreVariables::LoadConfigs(void) {
 // Constructor that sets default property states
 CCoreAPI::SConfigProps::SConfigProps() :
   bCustomMod(TRUE), bDebugPatcher(FALSE), bDPIAware(TRUE), bExtendedFileSystem(TRUE),
-  bFullAppIntegration(FALSE), bSteam(TRUE), strTFEDir(""), strSSRDir(""), strSSRWorkshop("")
+  bFullAppIntegration(FALSE), strTFEDir(""), strSSRDir(""), strSSRWorkshop(""),
+  // Steam API
+  bSteamEnable(TRUE), bSteamForServers(FALSE), bSteamForTools(FALSE)
 {
 };
 
@@ -184,10 +186,13 @@ void CCoreAPI::SConfigProps::Load(void) {
   bDPIAware           = _iniConfig.GetBoolValue("", "DPIAware", TRUE);
   bExtendedFileSystem = _iniConfig.GetBoolValue("", "ExtendedFileSystem", TRUE);
   bFullAppIntegration = _iniConfig.GetBoolValue("", "FullAppIntegration", FALSE);
-  bSteam              = _iniConfig.GetBoolValue("", "Steam", TRUE);
   strTFEDir           = _iniConfig.GetValue("", "TFEDir", CONFIG_DEFAULT_DIR_TFE);
   strSSRDir           = _iniConfig.GetValue("", "SSRDir", CONFIG_DEFAULT_DIR_SSR);
   strSSRWorkshop      = _iniConfig.GetValue("", "SSRWorkshop", CONFIG_DEFAULT_DIR_WORKSHOP);
+
+  bSteamEnable        = _iniConfig.GetBoolValue("Steam", "Enable", TRUE);
+  bSteamForServers    = _iniConfig.GetBoolValue("Steam", "ForServers", FALSE);
+  bSteamForTools      = _iniConfig.GetBoolValue("Steam", "ForTools", FALSE);
 };
 
 // Save properties into the config
@@ -201,10 +206,13 @@ void CCoreAPI::SConfigProps::Save(void) {
   _iniConfig.SetValue("", "DPIAware", TO_STR(bDPIAware));
   _iniConfig.SetValue("", "ExtendedFileSystem", TO_STR(bExtendedFileSystem));
   _iniConfig.SetValue("", "FullAppIntegration", TO_STR(bFullAppIntegration));
-  _iniConfig.SetValue("", "Steam", TO_STR(bSteam));
   _iniConfig.SetValue("", "TFEDir", strTFEDir);
   _iniConfig.SetValue("", "SSRDir", strSSRDir);
   _iniConfig.SetValue("", "SSRWorkshop", strSSRWorkshop);
+
+  _iniConfig.SetValue("Steam", "Enable",     TO_STR(bSteamEnable));
+  _iniConfig.SetValue("Steam", "ForServers", TO_STR(bSteamForServers));
+  _iniConfig.SetValue("Steam", "ForTools",   TO_STR(bSteamForTools));
 
   #undef TO_STR
 

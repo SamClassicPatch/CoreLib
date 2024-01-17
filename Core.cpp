@@ -156,10 +156,13 @@ void ClassicsPatch_InitCore(void) {
     DEFINE_PROP_SYMBOL(INDEX, bDPIAware);
     DEFINE_PROP_SYMBOL(INDEX, bExtendedFileSystem);
     DEFINE_PROP_SYMBOL(INDEX, bFullAppIntegration);
-    DEFINE_PROP_SYMBOL(INDEX, bSteam);
     DEFINE_PROP_SYMBOL(CTString, strTFEDir);
     DEFINE_PROP_SYMBOL(CTString, strSSRDir);
     DEFINE_PROP_SYMBOL(CTString, strSSRWorkshop);
+
+    DEFINE_PROP_SYMBOL(INDEX, bSteamEnable);
+    DEFINE_PROP_SYMBOL(INDEX, bSteamForServers);
+    DEFINE_PROP_SYMBOL(INDEX, bSteamForTools);
 
     #undef DEFINE_PROP_SYMBOL
   }
