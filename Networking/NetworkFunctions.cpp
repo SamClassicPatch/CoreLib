@@ -52,6 +52,9 @@ void INetwork::Initialize(void) {
   // Register default chat commands
   IChatCommands::RegisterDefaultCommands();
 
+  // Initialize voting system
+  IVotingSystem::Initialize();
+
   _aActiveClients.New(CORE_MAX_SERVER_CLIENTS);
 
 #if CLASSICSPATCH_GUID_MASKING

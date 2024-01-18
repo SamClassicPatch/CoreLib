@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "ChatCommands.h"
 #include "Networking/NetworkFunctions.h"
 #include "StockCommands.h"
+#include "VotingSystem.h"
 #include "ClientLogging.h"
 
 // Prefix that the chat commands start with
@@ -191,6 +192,10 @@ void IChatCommands::RegisterDefaultCommands(void) {
   Register("ban",   &IStockCommands::BanClient);
   Register("mute",  &IStockCommands::MuteClient);
   Register("kick",  &IStockCommands::KickClient);
+
+  // Voting
+  Register("y",       &IVotingSystem::Chat::VoteYes);
+  Register("n",       &IVotingSystem::Chat::VoteNo);
 
   // Local interaction with the client log
   _pShell->DeclareSymbol("user void ClientLog(INDEX, INDEX);", &ClientLogInConsole);

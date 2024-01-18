@@ -276,6 +276,9 @@
     <ClInclude Include="API\SteamAPI.h">
       <Filter>Header Files\API headers</Filter>
     </ClInclude>
+    <ClInclude Include="Networking\Modules\VotingSystem.h">
+      <Filter>Header Files\Networking headers\Modules headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="StdH.cpp">
@@ -436,6 +439,9 @@
     </ClCompile>
     <ClCompile Include="API\SteamAPI.cpp">
       <Filter>Source Files\API</Filter>
+    </ClCompile>
+    <ClCompile Include="Networking\Modules\VotingSystem.cpp">
+      <Filter>Source Files\Networking\Modules</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

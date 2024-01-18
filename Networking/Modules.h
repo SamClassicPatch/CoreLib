@@ -24,5 +24,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "Modules/ChatCommands.h"
 #include "Modules/SplitScreenClients.h"
 #include "Modules/ClientLogging.h"
+#include "Modules/VotingSystem.h"
 
 #endif
