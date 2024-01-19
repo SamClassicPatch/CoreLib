@@ -73,6 +73,9 @@ class CORE_API CActiveClient {
     // Add a new player
     void AddPlayer(CPlayerBuffer *pplb);
 
+    // List players of this client
+    CTString ListPlayers(void) const;
+
   public:
     // Get active clients with a specific identity
     static void GetActiveClients(CActiveClient::List &cClients, CClientIdentity *pci);

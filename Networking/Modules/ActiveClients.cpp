@@ -55,6 +55,24 @@ void CActiveClient::AddPlayer(CPlayerBuffer *pplb) {
   cPlayers.Add(pplb);
 };
 
+// List players of this client
+CTString CActiveClient::ListPlayers(void) const {
+  const INDEX ct = cPlayers.Count();
+  if (ct == 0) return "";
+
+  CTString str = "";
+
+  for (INDEX i = 0; i < ct; i++) {
+    if (i != 0) {
+      str += ", ";
+    }
+
+    str += cPlayers[i].plb_pcCharacter.GetNameForPrinting();
+  }
+
+  return str;
+};
+
 // Get active clients with a specific identity
 void CActiveClient::GetActiveClients(CActiveClient::List &cClients, CClientIdentity *pci) {
   // Go through active clients

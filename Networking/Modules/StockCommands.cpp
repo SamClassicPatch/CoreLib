@@ -163,7 +163,6 @@ static void PrintIdentityInfoMinimal(CTString &strResult, INDEX iIdentity) {
   FOREACHINDYNAMICCONTAINER(cClients, CActiveClient, itac) {
     FOREACHINDYNAMICCONTAINER(itac->cPlayers, CPlayerBuffer, itplb) {
       const CPlayerCharacter &pc = itplb->plb_pcCharacter;
-      const UBYTE *pGUID = pc.pc_aubGUID;
 
       // Add color in the beginning and a comma later on
       if (bNoActivePlayers) {
@@ -246,7 +245,6 @@ static void PrintIdentityInfoFull(CTString &strResult, INDEX iIdentity, INDEX iC
     // List active characters
     FOREACHINDYNAMICCONTAINER(aPlayers, CPlayerBuffer, itplb) {
       const CPlayerCharacter &pc = itplb->plb_pcCharacter;
-      const UBYTE *pGUID = pc.pc_aubGUID;
 
       // Find index of this character
       for (INDEX iCompare = 0; iCompare < ci.aCharacters.Count(); iCompare++) {
