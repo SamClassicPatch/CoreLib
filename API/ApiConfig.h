@@ -30,10 +30,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 
 // Current API version
-#define CORE_API_VERSION 8
+#define CORE_API_VERSION 9
 
 // Current Classics Patch version
-#define CORE_PATCH_VERSION CCoreAPI::MakeVersion(1, 7, 2)
+#define CORE_PATCH_VERSION CCoreAPI::MakeVersion(1, 8, 0)
 
 // Indication of a build under active development (disabled for releases)
 #define CORE_DEV_BUILD 1
