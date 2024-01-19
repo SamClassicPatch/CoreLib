@@ -139,7 +139,7 @@ class CORE_API CKickVote : public CGenericVote {
     CKickVote(CActiveClient &ac) : CGenericVote(), vt_pciIdentity(ac.pClient)
     {
       if (ac.cPlayers.Count() == 0) {
-        vt_strPlayers.PrintF(TRANS("client %d"), _aActiveClients.Index(&ac));
+        vt_strPlayers.PrintF(TRANS("Client %d"), _aActiveClients.Index(&ac));
       } else {
         vt_strPlayers = ac.ListPlayers().Undecorated();
       }

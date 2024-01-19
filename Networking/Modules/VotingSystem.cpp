@@ -31,6 +31,9 @@ static INDEX ser_bPlayersCanVote     = TRUE;  // Allow players to vote
 static INDEX ser_bObserversStartVote = FALSE; // Allow spectators to initiate voting
 static INDEX ser_bObserversCanVote   = FALSE; // Allow spectators to vote
 static FLOAT ser_fVotingTime = 30.0f; // How long to vote for
+
+static INDEX ser_bVoteMap  = TRUE; // Allow voting to change a map
+static INDEX ser_bVoteKick = TRUE; // Allow voting to kick a client
 FLOAT ser_fVoteKickTime = 300.0f; // How long to kick clients for (5 minutes)
 
 namespace IVotingSystem {
@@ -88,6 +91,9 @@ void Initialize(void) {
   _pShell->DeclareSymbol("persistent user INDEX ser_bObserversStartVote;", &ser_bObserversStartVote);
   _pShell->DeclareSymbol("persistent user INDEX ser_bObserversCanVote;",   &ser_bObserversCanVote);
   _pShell->DeclareSymbol("persistent user FLOAT ser_fVotingTime;",         &ser_fVotingTime);
+
+  _pShell->DeclareSymbol("persistent user INDEX ser_bVoteMap;",            &ser_bVoteMap);
+  _pShell->DeclareSymbol("persistent user INDEX ser_bVoteKick;",           &ser_bVoteKick);
   _pShell->DeclareSymbol("persistent user FLOAT ser_fVoteKickTime;",       &ser_fVoteKickTime);
 
   _pShell->DeclareSymbol("user void VoteMapPool(void);",     &VoteMapPool);
@@ -127,7 +133,16 @@ static BOOL InitiateVoting(INDEX iClient, CGenericVote *pvt) {
   DOUBLE dTimeLeft = ceil(_pvtCurrentVote->GetTimeLeft().GetSeconds());
 
   // Notify everyone about the voting
-  CTString strChatMessage(0, TRANS("Client %d has initiated a vote:\n"), iClient);
+  CTString strPlayers;
+  CActiveClient &ac = _aActiveClients[iClient];
+
+  if (ac.cPlayers.Count() == 0) {
+    strPlayers.PrintF(TRANS("Client %d"), iClient);
+  } else {
+    strPlayers = ac.ListPlayers().Undecorated();
+  }
+
+  CTString strChatMessage(0, TRANS("%s has initiated a vote:\n"), strPlayers);
   strChatMessage += "  " + _pvtCurrentVote->VoteMessage() + "\n";
 
   strChatMessage += CTString(0, TRANS("^CYou have ^cffffff%d^C seconds to vote. Type %s^C or %s^C to vote for or against it!"),
@@ -347,6 +362,9 @@ static BOOL CanInitiateVoting(CTString &strResult, INDEX iClient) {
 
 // Initiate voting to change a map
 BOOL Chat::VoteMap(CTString &strResult, INDEX iClient, const CTString &strArguments) {
+  // Disabled
+  if (!ser_bVoteMap) return FALSE;
+
   // Can't vote (reply to the client if there's a message)
   if (!CanInitiateVoting(strResult, iClient)) {
     return (strResult != "");
@@ -388,6 +406,9 @@ BOOL Chat::VoteMap(CTString &strResult, INDEX iClient, const CTString &strArgume
 
 // Initiate voting to kick a client
 BOOL Chat::VoteKick(CTString &strResult, INDEX iClient, const CTString &strArguments) {
+  // Disabled
+  if (!ser_bVoteKick) return FALSE;
+
   // Can't vote (reply to the client if there's a message)
   if (!CanInitiateVoting(strResult, iClient)) {
     return (strResult != "");
