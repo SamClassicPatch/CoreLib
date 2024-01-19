@@ -279,6 +279,9 @@
     <ClInclude Include="Networking\Modules\VotingSystem.h">
       <Filter>Header Files\Networking headers\Modules headers</Filter>
     </ClInclude>
+    <ClInclude Include="Networking\Modules\VoteTypes.h">
+      <Filter>Header Files\Networking headers\Modules headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="StdH.cpp">
@@ -441,6 +444,9 @@
       <Filter>Source Files\API</Filter>
     </ClCompile>
     <ClCompile Include="Networking\Modules\VotingSystem.cpp">
+      <Filter>Source Files\Networking\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="Networking\Modules\VoteTypes.cpp">
       <Filter>Source Files\Networking\Modules</Filter>
     </ClCompile>
   </ItemGroup>

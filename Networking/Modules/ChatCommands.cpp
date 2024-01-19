@@ -194,6 +194,7 @@ void IChatCommands::RegisterDefaultCommands(void) {
   Register("kick",  &IStockCommands::KickClient);
 
   // Voting
+  Register("votemap", &IVotingSystem::Chat::VoteMap);
   Register("y",       &IVotingSystem::Chat::VoteYes);
   Register("n",       &IVotingSystem::Chat::VoteNo);
 

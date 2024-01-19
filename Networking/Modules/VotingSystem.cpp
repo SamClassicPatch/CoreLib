@@ -16,29 +16,84 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "StdH.h"
 
 #include "VotingSystem.h"
+#include "VoteTypes.h"
 #include "ChatCommands.h"
 #include "ClientLogging.h"
 #include "Interfaces/FileFunctions.h"
 
 namespace IVotingSystem {
 
-// Current voting in progress
-static CVote *_pvtCurrentVote = NULL;
+// Current map pool
+static CDynamicStackArray<SVoteMap> _aVoteMapPool;
 
+// Current voting in progress
+static CGenericVote *_pvtCurrentVote = NULL;
+
+#define NO_MAPS_MESSAGE            TRANS("There are no maps in the current pool!")
+#define INVALID_MAP_MESSAGE        TRANS("Invalid map index!")
+#define VOTING_IN_PROGRESS_MESSAGE TRANS("There is already voting in progress!")
+
+static INDEX ser_bVotingSystem       = FALSE; // Enable voting system
 static INDEX ser_bPlayersStartVote   = TRUE;  // Allow players to initiate voting
 static INDEX ser_bPlayersCanVote     = TRUE;  // Allow players to vote
 static INDEX ser_bObserversStartVote = FALSE; // Allow spectators to initiate voting
 static INDEX ser_bObserversCanVote   = FALSE; // Allow spectators to vote
 static FLOAT ser_fVotingTime = 30.0f; // How long to vote for
 
+// Display current map pool
+static void VoteMapPool(void) {
+  CTString strPool;
+  PrintMapPool(strPool);
+  CPutString(strPool + "\n");
+};
+
+// Add map to the pool
+static void VoteMapAdd(SHELL_FUNC_ARGS) {
+  BEGIN_SHELL_FUNC;
+  const CTString &strMap = *NEXT_ARG(CTString *);
+  AddMapToPool(strMap);
+};
+
+// Remove map from the pool
+static void VoteMapRemove(SHELL_FUNC_ARGS) {
+  BEGIN_SHELL_FUNC;
+  INDEX iMap = NEXT_ARG(INDEX);
+
+  if (iMap < 1 || iMap > _aVoteMapPool.Count()) {
+    CPutString(INVALID_MAP_MESSAGE);
+    CPutString("\n");
+    return;
+  }
+
+  SVoteMap &map = _aVoteMapPool[iMap - 1];
+  CPrintF(TRANS("Removed '%s' from the map pool!\n"), map.strName.Undecorated());
+
+  _aVoteMapPool.Delete(&map);
+};
+
+// Load map pool from a file
+static void VoteMapLoad(SHELL_FUNC_ARGS) {
+  BEGIN_SHELL_FUNC;
+  const CTString &strMap = *NEXT_ARG(CTString *);
+  LoadMapPool(strMap);
+};
+
 // Initialize voting system
 void Initialize(void) {
   // Custom symbols
+  _pShell->DeclareSymbol("persistent user INDEX ser_bVotingSystem;",       &ser_bVotingSystem);
   _pShell->DeclareSymbol("persistent user INDEX ser_bPlayersStartVote;",   &ser_bPlayersStartVote);
   _pShell->DeclareSymbol("persistent user INDEX ser_bPlayersCanVote;",     &ser_bPlayersCanVote);
   _pShell->DeclareSymbol("persistent user INDEX ser_bObserversStartVote;", &ser_bObserversStartVote);
   _pShell->DeclareSymbol("persistent user INDEX ser_bObserversCanVote;",   &ser_bObserversCanVote);
   _pShell->DeclareSymbol("persistent user FLOAT ser_fVotingTime;",         &ser_fVotingTime);
+
+  _pShell->DeclareSymbol("user void VoteMapPool(void);",     &VoteMapPool);
+  _pShell->DeclareSymbol("user void VoteMapAdd(CTString);",  &VoteMapAdd);
+  _pShell->DeclareSymbol("user void VoteMapRemove(INDEX);",  &VoteMapRemove);
+  _pShell->DeclareSymbol("user void VoteMapLoad(CTString);", &VoteMapLoad);
+
+  LoadMapPool(CTString("Data\\ClassicsPatch\\VoteMapPool.lst"));
 };
 
 static CTString VoteYesCommand(void) {
@@ -49,14 +104,20 @@ static CTString VoteNoCommand(void) {
   return "^cff0000" + ser_strCommandPrefix + "n";
 };
 
-// Check if voting is available
-static BOOL IsVotingAvailable(void) {
+// Check if current server is running
+static BOOL IsServerRunning(void) {
   // Non-local game; running a server; with more than one player
   return _pNetwork->IsNetworkEnabled() && _pNetwork->IsServer() && _pNetwork->ga_sesSessionState.ses_ctMaxPlayers > 1;
 };
 
+// Check if voting is available
+static BOOL IsVotingAvailable(void) {
+  // Setting is on; server is running
+  return ser_bVotingSystem && IsServerRunning();
+};
+
 // Initiate voting for a specific thing by some client
-static BOOL InitiateVoting(INDEX iClient, CVote *pvt) {
+static BOOL InitiateVoting(INDEX iClient, CGenericVote *pvt) {
   // Unavailable or already voting in progress
   if (!IsVotingAvailable() || _pvtCurrentVote != NULL) return FALSE;
 
@@ -74,28 +135,54 @@ static BOOL InitiateVoting(INDEX iClient, CVote *pvt) {
   return TRUE;
 };
 
-// Update current vote
+// Update current vote (needs to be synced with the game loop)
 void UpdateVote(void) {
-  // Unavailable or no voting in progress
-  if (!IsVotingAvailable() || _pvtCurrentVote == NULL) return;
+  // No voting in progress
+  if (_pvtCurrentVote == NULL) return;
+
+  // Terminate voting if the server isn't running anymore
+  if (!IsServerRunning()) {
+    delete _pvtCurrentVote;
+    _pvtCurrentVote = NULL;
+    return;
+  }
 
   DOUBLE dTimeLeft = ceil(_pvtCurrentVote->GetTimeLeft().GetSeconds());
-  DOUBLE dNextReport = ceil(_pvtCurrentVote->GetReportLeft().GetSeconds());
+  DOUBLE dNextReport = ceil(_pvtCurrentVote->GetReportTimeLeft().GetSeconds());
 
   const INDEX ctYes = _pvtCurrentVote->vt_Yes.Count();
   const INDEX ctNo = _pvtCurrentVote->vt_No.Count();
+  const BOOL bVotePassed = (ctYes > 0 && ctYes > ctNo);
+
+  // Wait after voting ends
+  if (_pvtCurrentVote->vt_bOver)
+  {
+    if (dTimeLeft <= 0.0) {
+      // Perform an action
+      if (bVotePassed) {
+        _pvtCurrentVote->VotingOver();
+      }
+
+      delete _pvtCurrentVote;
+      _pvtCurrentVote = NULL;
+    }
+    return;
+  }
 
   // Voting time expired
   if (dTimeLeft <= 0.0) {
     CTString strChatMessage(0, TRANS("Voting is over! ^c00ff00Yes: %d^C / ^cff0000No: %d"), ctYes, ctNo);
-    _pNetwork->SendChat(0, -1, strChatMessage);
 
-    if (ctYes > 0 && ctYes > ctNo) {
-      _pvtCurrentVote->VotingOver();
+    // Describe action that's about to be performed
+    if (bVotePassed) {
+      strChatMessage += "\n  " + _pvtCurrentVote->ResultMessage();
     }
 
-    delete _pvtCurrentVote;
-    _pvtCurrentVote = NULL;
+    _pNetwork->SendChat(0, -1, strChatMessage);
+
+    // Wait before performing an action
+    _pvtCurrentVote->vt_bOver = TRUE;
+    _pvtCurrentVote->SetTime(3.0);
     return;
   }
 
@@ -106,10 +193,162 @@ void UpdateVote(void) {
     _pNetwork->SendChat(0, -1, strChatMessage);
 
     // Set next report
-    _pvtCurrentVote->SetNextReport();
+    _pvtCurrentVote->SetReportTime();
   }
 };
 
+// Load map pool from a file
+void LoadMapPool(const CTFileName &fnmMapPool) {
+  // Load new pool list
+  CFileList aMapPool;
+  if (!IFiles::LoadStringList(aMapPool, fnmMapPool)) return;
+
+  // Clear current pool
+  _aVoteMapPool.Clear();
+
+  const INDEX ct = aMapPool.Count();
+
+  for (INDEX i = 0; i < ct; i++) {
+    CTFileName &fnm = aMapPool[i];
+
+    // TFE-specific maps
+    if (fnm.RemovePrefix("TFE:")) {
+      #if SE1_GAME == SS_TFE
+        AddMapToPool(fnm);
+      #endif
+      continue;
+
+    // TSE-specific maps
+    } else if (fnm.RemovePrefix("TSE:")) {
+      #if SE1_GAME == SS_TSE
+        AddMapToPool(fnm);
+      #endif
+      continue;
+    }
+
+    AddMapToPool(fnm);
+  }
+};
+
+// Add world file to the map pool
+BOOL AddMapToPool(const CTFileName &fnmWorldFile) {
+  SVoteMap map;
+  map.fnmWorld = fnmWorldFile;
+
+  try {
+    // Open the world file
+    CTFileStream strm;
+    strm.Open_t(fnmWorldFile);
+
+    // Skip a bunch of initial chunks
+    strm.ExpectID_t("BUIV");
+
+    INDEX iDummy;
+    strm >> iDummy;
+
+    strm.ExpectID_t("WRLD");
+    strm.ExpectID_t("WLIF");
+
+    static const CChunkID chnkDTRS(CTString("DT") + "RS");
+
+    if (strm.PeekID_t() == chnkDTRS) {
+      strm.ExpectID_t(chnkDTRS);
+    }
+
+    // Two SSR chunks
+    if (strm.PeekID_t() == CChunkID("LDRB")) {
+      strm.ExpectID_t("LDRB");
+
+      CTString strDummy;
+      strm >> strDummy;
+    }
+
+    if (strm.PeekID_t() == CChunkID("Plv0")) {
+      strm.ExpectID_t("Plv0");
+
+      UBYTE aDummy[12];
+      strm.Read_t(aDummy, sizeof(aDummy));
+    }
+
+    // Read the name
+    strm >> map.strName;
+
+    // Add map to the pool
+    _aVoteMapPool.Push() = map;
+    return TRUE;
+
+  } catch (char *strError) {
+    CPrintF(TRANS("Cannot add '%s' to the map pool:\n%s\n"), fnmWorldFile.str_String, strError);
+  }
+
+  return FALSE;
+};
+
+// Print current map pool
+void PrintMapPool(CTString &str) {
+  str = TRANS("^cffffffAvailable maps:");
+  const INDEX ct = _aVoteMapPool.Count();
+
+  for (INDEX i = 0; i < ct; i++) {
+    const CTString &strMap = _aVoteMapPool[i].strName;
+    str += CTString(0, "\n%d. %s", i + 1, strMap.Undecorated());
+  }
+};
+
+// Initiate voting to change a map
+BOOL Chat::VoteMap(CTString &strResult, INDEX iClient, const CTString &strArguments) {
+  // Unavailable
+  if (!IsVotingAvailable()) return FALSE;
+
+  CActiveClient &ac = _aActiveClients[iClient];
+  const BOOL bRealPlayer = ac.cPlayers.Count() != 0;
+
+  // Players can't initiate voting
+  if (bRealPlayer && !ser_bPlayersStartVote) {
+    strResult = TRANS("Players aren't allowed to initiate voting!");
+    return TRUE;
+
+  // Spectators can't initiate voting
+  } else if (!bRealPlayer && !ser_bObserversStartVote) {
+    strResult = TRANS("Observers aren't allowed to initiate voting!");
+    return TRUE;
+  }
+
+  const INDEX ct = _aVoteMapPool.Count();
+
+  // No maps
+  if (ct == 0) {
+    strResult = NO_MAPS_MESSAGE;
+    return TRUE;
+  }
+
+  INDEX iMap = -1;
+  INDEX iScan = const_cast<CTString &>(strArguments).ScanF("%d", &iMap);
+
+  // Display current map pool
+  if (iScan != 1) {
+    PrintMapPool(strResult);
+    strResult += "\n\n" + CTString(0, TRANS("To initiate a vote, type \"%svotemap <map index>\""), ser_strCommandPrefix);
+    return TRUE;
+  }
+
+  if (iMap < 1 || iMap > ct) {
+    strResult = INVALID_MAP_MESSAGE;
+    return TRUE;
+  }
+
+  // Create map vote
+  CMapVote vt(_aVoteMapPool[iMap - 1]);
+  vt.SetTime((DOUBLE)ser_fVotingTime);
+
+  if (!InitiateVoting(iClient, &vt)) {
+    strResult = VOTING_IN_PROGRESS_MESSAGE;
+  }
+
+  return TRUE;
+};
+
+// Make a vote as a client
 static BOOL CheckVote(CTString &strResult, INDEX iClient, BOOL bVoteYes) {
   // Unavailable or no voting in progress
   if (!IsVotingAvailable() || _pvtCurrentVote == NULL) return FALSE;
@@ -128,7 +367,7 @@ static BOOL CheckVote(CTString &strResult, INDEX iClient, BOOL bVoteYes) {
     return TRUE;
   }
 
-  CVote &vt = *_pvtCurrentVote;
+  CGenericVote &vt = *_pvtCurrentVote;
 
   // Already voted
   if (vt.vt_Yes.IsMember(&ac) || vt.vt_No.IsMember(&ac)) {

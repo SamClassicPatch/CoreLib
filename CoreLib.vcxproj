@@ -83,6 +83,7 @@
     <ClInclude Include="Networking\Modules\PacketCommands.h" />
     <ClInclude Include="Networking\Modules\SplitScreenClients.h" />
     <ClInclude Include="Networking\Modules\StockCommands.h" />
+    <ClInclude Include="Networking\Modules\VoteTypes.h" />
     <ClInclude Include="Networking\Modules\VotingSystem.h" />
     <ClInclude Include="Networking\NetworkFunctions.h" />
     <ClInclude Include="Networking\Modules.h" />
@@ -139,6 +140,7 @@
     <ClCompile Include="Networking\Modules\PacketCommands.cpp" />
     <ClCompile Include="Networking\Modules\SplitScreenClients.cpp" />
     <ClCompile Include="Networking\Modules\StockCommands.cpp" />
+    <ClCompile Include="Networking\Modules\VoteTypes.cpp" />
     <ClCompile Include="Networking\Modules\VotingSystem.cpp" />
     <ClCompile Include="Networking\NetworkFunctions.cpp" />
     <ClCompile Include="Networking\SessionStateServerInfo.cpp" />
