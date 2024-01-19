@@ -242,7 +242,7 @@ inline void PrintDetailedTime(CTString &strOut, CTimerValue tvTime) {
   const ULONG ulMin = (iSeconds / 60) % 60;
 
   if (ulMin > 0) {
-    strOut.PrintF("%um %s", ulMin, strOut);
+    strOut.PrintF("%umin %s", ulMin, strOut);
   }
 
   // Display hours
@@ -263,7 +263,7 @@ inline void PrintDetailedTime(CTString &strOut, CTimerValue tvTime) {
   const ULONG ulYearsTotal = (ulDaysTotal / 365);
 
   if (ulYearsTotal > 0) {
-    strOut.PrintF("%uy %s", ulYearsTotal, strOut);
+    strOut.PrintF("%uyrs %s", ulYearsTotal, strOut);
   }
 };
 
