@@ -21,16 +21,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "ClientLogging.h"
 #include "Interfaces/FileFunctions.h"
 
-namespace IVotingSystem {
-
-// Current map pool
-static CDynamicStackArray<SVoteMap> _aVoteMapPool;
-
-// Current voting in progress
-static CGenericVote *_pvtCurrentVote = NULL;
-
-#define NO_MAPS_MESSAGE            TRANS("There are no maps in the current pool!")
 #define INVALID_MAP_MESSAGE        TRANS("Invalid map index!")
+#define INVALID_CLIENT_MESSAGE     TRANS("Invalid client index!")
 #define VOTING_IN_PROGRESS_MESSAGE TRANS("There is already voting in progress!")
 
 static INDEX ser_bVotingSystem       = FALSE; // Enable voting system
@@ -39,6 +31,15 @@ static INDEX ser_bPlayersCanVote     = TRUE;  // Allow players to vote
 static INDEX ser_bObserversStartVote = FALSE; // Allow spectators to initiate voting
 static INDEX ser_bObserversCanVote   = FALSE; // Allow spectators to vote
 static FLOAT ser_fVotingTime = 30.0f; // How long to vote for
+FLOAT ser_fVoteKickTime = 300.0f; // How long to kick clients for (5 minutes)
+
+namespace IVotingSystem {
+
+// Current map pool
+static CDynamicStackArray<SVoteMap> _aVoteMapPool;
+
+// Current voting in progress
+static CGenericVote *_pvtCurrentVote = NULL;
 
 // Display current map pool
 static void VoteMapPool(void) {
@@ -87,6 +88,7 @@ void Initialize(void) {
   _pShell->DeclareSymbol("persistent user INDEX ser_bObserversStartVote;", &ser_bObserversStartVote);
   _pShell->DeclareSymbol("persistent user INDEX ser_bObserversCanVote;",   &ser_bObserversCanVote);
   _pShell->DeclareSymbol("persistent user FLOAT ser_fVotingTime;",         &ser_fVotingTime);
+  _pShell->DeclareSymbol("persistent user FLOAT ser_fVoteKickTime;",       &ser_fVoteKickTime);
 
   _pShell->DeclareSymbol("user void VoteMapPool(void);",     &VoteMapPool);
   _pShell->DeclareSymbol("user void VoteMapAdd(CTString);",  &VoteMapAdd);
@@ -125,7 +127,7 @@ static BOOL InitiateVoting(INDEX iClient, CGenericVote *pvt) {
   DOUBLE dTimeLeft = ceil(_pvtCurrentVote->GetTimeLeft().GetSeconds());
 
   // Notify everyone about the voting
-  CTString strChatMessage(0, TRANS("Client %d has initiated a vote for:\n"), iClient);
+  CTString strChatMessage(0, TRANS("Client %d has initiated a vote:\n"), iClient);
   strChatMessage += "  " + _pvtCurrentVote->VoteMessage() + "\n";
 
   strChatMessage += CTString(0, TRANS("^CYou have ^cffffff%d^C seconds to vote. Type %s^C or %s^C to vote for or against it!"),
@@ -295,10 +297,36 @@ void PrintMapPool(CTString &str) {
   }
 };
 
-// Initiate voting to change a map
-BOOL Chat::VoteMap(CTString &strResult, INDEX iClient, const CTString &strArguments) {
+// Print current clients
+void PrintClientList(CTString &str) {
+  str = TRANS("^cffffffAvailable clients:");
+  const INDEX ct = _aActiveClients.Count();
+
+  for (INDEX i = 0; i < ct; i++) {
+    CActiveClient &ac = _aActiveClients[i];
+
+    // Inactive
+    if (ac.pClient == NULL) continue;
+
+    str += CTString(0, "\n%d. ", i);
+
+    // No active players
+    if (ac.cPlayers.Count() == 0) {
+      str += "<observer>";
+
+    } else {
+      str += ac.ListPlayers();
+    }
+  }
+};
+
+// Check if can initiate voting
+static BOOL CanInitiateVoting(CTString &strResult, INDEX iClient) {
   // Unavailable
-  if (!IsVotingAvailable()) return FALSE;
+  if (!IsVotingAvailable()) {
+    strResult = "";
+    return FALSE;
+  }
 
   CActiveClient &ac = _aActiveClients[iClient];
   const BOOL bRealPlayer = ac.cPlayers.Count() != 0;
@@ -306,19 +334,29 @@ BOOL Chat::VoteMap(CTString &strResult, INDEX iClient, const CTString &strArgume
   // Players can't initiate voting
   if (bRealPlayer && !ser_bPlayersStartVote) {
     strResult = TRANS("Players aren't allowed to initiate voting!");
-    return TRUE;
+    return FALSE;
 
   // Spectators can't initiate voting
   } else if (!bRealPlayer && !ser_bObserversStartVote) {
     strResult = TRANS("Observers aren't allowed to initiate voting!");
-    return TRUE;
+    return FALSE;
+  }
+
+  return TRUE;
+};
+
+// Initiate voting to change a map
+BOOL Chat::VoteMap(CTString &strResult, INDEX iClient, const CTString &strArguments) {
+  // Can't vote (reply to the client if there's a message)
+  if (!CanInitiateVoting(strResult, iClient)) {
+    return (strResult != "");
   }
 
   const INDEX ct = _aVoteMapPool.Count();
 
   // No maps
   if (ct == 0) {
-    strResult = NO_MAPS_MESSAGE;
+    strResult = TRANS("There are no maps in the current pool!");
     return TRUE;
   }
 
@@ -339,6 +377,48 @@ BOOL Chat::VoteMap(CTString &strResult, INDEX iClient, const CTString &strArgume
 
   // Create map vote
   CMapVote vt(_aVoteMapPool[iMap - 1]);
+  vt.SetTime((DOUBLE)ser_fVotingTime);
+
+  if (!InitiateVoting(iClient, &vt)) {
+    strResult = VOTING_IN_PROGRESS_MESSAGE;
+  }
+
+  return TRUE;
+};
+
+// Initiate voting to kick a client
+BOOL Chat::VoteKick(CTString &strResult, INDEX iClient, const CTString &strArguments) {
+  // Can't vote (reply to the client if there's a message)
+  if (!CanInitiateVoting(strResult, iClient)) {
+    return (strResult != "");
+  }
+
+  const INDEX ct = _aActiveClients.Count();
+
+  INDEX iKick = -1;
+  INDEX iScan = const_cast<CTString &>(strArguments).ScanF("%d", &iKick);
+
+  // Display current clients
+  if (iScan != 1) {
+    PrintClientList(strResult);
+    strResult += "\n\n" + CTString(0, TRANS("To initiate a vote, type \"%svotekick <client index>\""), ser_strCommandPrefix);
+    return TRUE;
+  }
+
+  if (iKick < 0 || iKick >= ct) {
+    strResult = INVALID_CLIENT_MESSAGE;
+    return TRUE;
+  }
+
+  CActiveClient &acKick = _aActiveClients[iKick];
+
+  if (acKick.pClient == NULL) {
+    strResult = INVALID_CLIENT_MESSAGE;
+    return TRUE;
+  }
+
+  // Create kick vote
+  CKickVote vt(acKick);
   vt.SetTime((DOUBLE)ser_fVotingTime);
 
   if (!InitiateVoting(iClient, &vt)) {

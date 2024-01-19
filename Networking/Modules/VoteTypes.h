@@ -128,4 +128,42 @@ class CORE_API CMapVote : public CGenericVote {
     virtual void VotingOver(void);
 };
 
+// Current kick vote
+class CORE_API CKickVote : public CGenericVote {
+  public:
+    CClientIdentity *vt_pciIdentity; // Client identity to ban
+    CTString vt_strPlayers; // Client's players
+
+  public:
+    // Constructor from an active client
+    CKickVote(CActiveClient &ac) : CGenericVote(), vt_pciIdentity(ac.pClient)
+    {
+      if (ac.cPlayers.Count() == 0) {
+        vt_strPlayers.PrintF(TRANS("client %d"), _aActiveClients.Index(&ac));
+      } else {
+        vt_strPlayers = ac.ListPlayers().Undecorated();
+      }
+    };
+
+    // Copy constructor
+    CKickVote(const CKickVote &vtOther) : CGenericVote(vtOther),
+      vt_pciIdentity(vtOther.vt_pciIdentity), vt_strPlayers(vtOther.vt_strPlayers)
+    {
+    };
+
+    // Make copy of this class
+    virtual CGenericVote *MakeCopy(void) const {
+      return new CKickVote(*this);
+    };
+
+    // Vote description
+    virtual CTString VoteMessage(void) const;
+
+    // Vote result
+    virtual CTString ResultMessage(void) const;
+
+    // Perform action after voting
+    virtual void VotingOver(void);
+};
+
 #endif

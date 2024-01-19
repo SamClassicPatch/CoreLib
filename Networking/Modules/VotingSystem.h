@@ -38,10 +38,16 @@ CORE_API BOOL AddMapToPool(const CTFileName &fnmWorldFile);
 // Print current map pool
 CORE_API void PrintMapPool(CTString &str);
 
+// Print current clients
+CORE_API void PrintClientList(CTString &str);
+
 // Chat commands
 struct Chat {
   // Initiate voting to change a map
   static BOOL VoteMap(CTString &strResult, INDEX iClient, const CTString &strArguments);
+
+  // Initiate voting to kick a client
+  static BOOL VoteKick(CTString &strResult, INDEX iClient, const CTString &strArguments);
 
   // Vote yes in the current vote
   static BOOL VoteYes(CTString &strResult, INDEX iClient, const CTString &strArguments);

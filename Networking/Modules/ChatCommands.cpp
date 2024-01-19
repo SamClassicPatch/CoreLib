@@ -194,9 +194,10 @@ void IChatCommands::RegisterDefaultCommands(void) {
   Register("kick",  &IStockCommands::KickClient);
 
   // Voting
-  Register("votemap", &IVotingSystem::Chat::VoteMap);
-  Register("y",       &IVotingSystem::Chat::VoteYes);
-  Register("n",       &IVotingSystem::Chat::VoteNo);
+  Register("votemap",  &IVotingSystem::Chat::VoteMap);
+  Register("votekick", &IVotingSystem::Chat::VoteKick);
+  Register("y", &IVotingSystem::Chat::VoteYes);
+  Register("n", &IVotingSystem::Chat::VoteNo);
 
   // Local interaction with the client log
   _pShell->DeclareSymbol("user void ClientLog(INDEX, INDEX);", &ClientLogInConsole);
