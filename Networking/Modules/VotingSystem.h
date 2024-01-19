@@ -49,6 +49,9 @@ struct Chat {
   // Initiate voting to kick a client
   static BOOL VoteKick(CTString &strResult, INDEX iClient, const CTString &strArguments);
 
+  // Initiate voting to skip current round
+  static BOOL VoteSkip(CTString &strResult, INDEX iClient, const CTString &strArguments);
+
   // Vote yes in the current vote
   static BOOL VoteYes(CTString &strResult, INDEX iClient, const CTString &strArguments);
 

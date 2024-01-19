@@ -194,6 +194,10 @@ void IChatCommands::RegisterDefaultCommands(void) {
   Register("kick",  &IStockCommands::KickClient);
 
   // Voting
+  if (GetAPI()->IsServerApp()) {
+    Register("voteskip", &IVotingSystem::Chat::VoteSkip);
+  }
+
   Register("votemap",  &IVotingSystem::Chat::VoteMap);
   Register("votekick", &IVotingSystem::Chat::VoteKick);
   Register("y", &IVotingSystem::Chat::VoteYes);

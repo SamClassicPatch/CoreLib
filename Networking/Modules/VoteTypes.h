@@ -166,4 +166,22 @@ class CORE_API CKickVote : public CGenericVote {
     virtual void VotingOver(void);
 };
 
+// Current round skip vote
+class CORE_API CSkipRoundVote : public CGenericVote {
+  public:
+    // Make copy of this class
+    virtual CGenericVote *MakeCopy(void) const {
+      return new CSkipRoundVote(*this);
+    };
+
+    // Vote description
+    virtual CTString VoteMessage(void) const;
+
+    // Vote result
+    virtual CTString ResultMessage(void) const;
+
+    // Perform action after voting
+    virtual void VotingOver(void);
+};
+
 #endif

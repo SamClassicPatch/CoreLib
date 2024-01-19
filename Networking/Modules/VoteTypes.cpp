@@ -94,3 +94,21 @@ void CKickVote::VotingOver(void) {
     CPutString(TRANS("Couldn't find client identity in the log for kicking!\n"));
   }
 };
+
+// Vote description
+CTString CSkipRoundVote::VoteMessage(void) const {
+  return TRANS("^cffff00Skip current round");
+};
+
+// Vote result
+CTString CSkipRoundVote::ResultMessage(void) const {
+  return TRANS("^cffff00Skipping current round...");
+};
+
+// Perform action after voting
+void CSkipRoundVote::VotingOver(void) {
+  // Force restart server
+  if (GetAPI()->IsServerApp()) {
+    _pShell->Execute("Restart();");
+  }
+};

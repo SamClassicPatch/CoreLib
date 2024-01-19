@@ -34,6 +34,7 @@ static FLOAT ser_fVotingTime = 30.0f; // How long to vote for
 
 static INDEX ser_bVoteMap  = TRUE; // Allow voting to change a map
 static INDEX ser_bVoteKick = TRUE; // Allow voting to kick a client
+static INDEX ser_bVoteSkip = TRUE; // Allow voting to skip current round
 FLOAT ser_fVoteKickTime = 300.0f; // How long to kick clients for (5 minutes)
 
 namespace IVotingSystem {
@@ -94,6 +95,7 @@ void Initialize(void) {
 
   _pShell->DeclareSymbol("persistent user INDEX ser_bVoteMap;",            &ser_bVoteMap);
   _pShell->DeclareSymbol("persistent user INDEX ser_bVoteKick;",           &ser_bVoteKick);
+  _pShell->DeclareSymbol("persistent user INDEX ser_bVoteSkip;",           &ser_bVoteSkip);
   _pShell->DeclareSymbol("persistent user FLOAT ser_fVoteKickTime;",       &ser_fVoteKickTime);
 
   _pShell->DeclareSymbol("user void VoteMapPool(void);",     &VoteMapPool);
@@ -440,6 +442,27 @@ BOOL Chat::VoteKick(CTString &strResult, INDEX iClient, const CTString &strArgum
 
   // Create kick vote
   CKickVote vt(acKick);
+  vt.SetTime((DOUBLE)ser_fVotingTime);
+
+  if (!InitiateVoting(iClient, &vt)) {
+    strResult = VOTING_IN_PROGRESS_MESSAGE;
+  }
+
+  return TRUE;
+};
+
+// Initiate voting to skip current round
+BOOL Chat::VoteSkip(CTString &strResult, INDEX iClient, const CTString &strArguments) {
+  // Disabled
+  if (!ser_bVoteSkip || !GetAPI()->IsServerApp()) return FALSE;
+
+  // Can't vote (reply to the client if there's a message)
+  if (!CanInitiateVoting(strResult, iClient)) {
+    return (strResult != "");
+  }
+
+  // Create skip vote
+  CSkipRoundVote vt;
   vt.SetTime((DOUBLE)ser_fVotingTime);
 
   if (!InitiateVoting(iClient, &vt)) {
