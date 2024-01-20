@@ -126,6 +126,34 @@ class INetworkEvents : public IAbstractEvents {
     virtual void OnRemovePlayer(CPlayerTarget &plt, BOOL bLocal);
 };
 
+// Network packet events
+class IPacketEvents : public IAbstractEvents {
+  public:
+    // Return handlers container
+    virtual CPluginInterfaces *GetContainer(void) {
+      return &GetPluginAPI()->cPacketEvents;
+    };
+
+    // Upon player joining the game with some player character
+    virtual void OnCharacterConnect(INDEX iClient, CPlayerCharacter &pc);
+
+    // Upon changing player character (returns TRUE if new character can be applied)
+    // iPlayer can be used in:
+    // - CServer::srv_aplbPlayers for CPlayerBuffer (currently set character)
+    // - CSessionState::ses_apltPlayers for CPlayerTarget (associated player entity)
+    virtual BOOL OnCharacterChange(INDEX iClient, INDEX iPlayer, CPlayerCharacter &pc);
+
+    // Upon receiving player actions
+    // iPlayer can be used in:
+    // - CServer::srv_aplbPlayers for CPlayerBuffer (last send action)
+    // - CSessionState::ses_apltPlayers for CPlayerTarget (associated player entity)
+    // iResent is equal to -1 for normal actions and >=0 for resent actions
+    virtual void OnPlayerAction(INDEX iClient, INDEX iPlayer, CPlayerAction &pa, INDEX iResent);
+
+    // Upon receiving a chat message (returns TRUE if it can be processed as a regular chat message afterwards)
+    virtual BOOL OnChatMessage(INDEX iClient, ULONG ulFrom, ULONG ulTo, CTString &strMessage);
+};
+
 // Game events
 class IGameEvents : public IAbstractEvents {
   public:

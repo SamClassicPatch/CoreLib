@@ -546,6 +546,13 @@ void IProcessPacket::OnPlayerConnectRequest(INDEX iClient, CNetworkMessage &nmMe
     pplbNew->Activate(iClient);
     INDEX iNewPlayer = pplbNew->plb_Index;
 
+    // Let plugins handle characters
+    FOREACHPLUGINHANDLER(GetPluginAPI()->cPacketEvents, IPacketEvents, pEvents) {
+      if ((IAbstractEvents *)pEvents == NULL) continue;
+
+      pEvents->OnCharacterConnect(iClient, pcCharacter);
+    }
+
     // Remember the character
     pplbNew->plb_pcCharacter = pcCharacter;
 
@@ -662,6 +669,16 @@ void IProcessPacket::OnCharacterChangeRequest(INDEX iClient, CNetworkMessage &nm
     return;
   }
 
+  // Let plugins handle characters
+  FOREACHPLUGINHANDLER(GetPluginAPI()->cPacketEvents, IPacketEvents, pEvents) {
+    if ((IAbstractEvents *)pEvents == NULL) continue;
+
+    // Quit if cannot change the character
+    if (!pEvents->OnCharacterChange(iClient, iPlayer, pcCharacter)) {
+      return;
+    }
+  }
+
   // Remember the character
   plb.plb_pcCharacter = pcCharacter;
 
@@ -710,23 +727,39 @@ void IProcessPacket::OnCharacterChangeRequest(INDEX iClient, CNetworkMessage &nm
 };
 
 // Receive action packet from one player of a client
-static void ReceiveActionsForPlayer(CPlayerBuffer &plb, CNetworkMessage *pnm, INDEX iMaxBuffer) {
+static void ReceiveActionsForPlayer(INDEX iClient, INDEX iPlayer, CNetworkMessage &nm, INDEX iMaxBuffer)
+{
+  CPlayerBuffer &plb = _pNetwork->ga_srvServer.srv_aplbPlayers[iPlayer];
   ASSERT(plb.plb_Active);
 
   // Receive new action
   CPlayerAction pa;
-  *pnm >> pa;
+  nm >> pa;
+
+  // Let plugins handle actions
+  FOREACHPLUGINHANDLER(GetPluginAPI()->cPacketEvents, IPacketEvents, pEvents) {
+    if ((IAbstractEvents *)pEvents == NULL) continue;
+
+    pEvents->OnPlayerAction(iClient, iPlayer, pa, -1);
+  }
 
   // Buffer it
   plb.plb_abReceived.AddAction(pa);
 
   INDEX iSendBehind = 0;
-  pnm->ReadBits(&iSendBehind, 2);
+  nm.ReadBits(&iSendBehind, 2);
 
   // Add resent actions
   for (INDEX i = 0; i < iSendBehind; i++) {
     CPlayerAction paOld;
-    *pnm >> paOld;
+    nm >> paOld;
+
+    // Let plugins handle actions
+    FOREACHPLUGINHANDLER(GetPluginAPI()->cPacketEvents, IPacketEvents, pEvents) {
+      if ((IAbstractEvents *)pEvents == NULL) continue;
+
+      pEvents->OnPlayerAction(iClient, iPlayer, pa, i);
+    }
 
     if (paOld.pa_llCreated > plb.plb_paLastAction.pa_llCreated) {
       plb.plb_abReceived.AddAction(paOld);
@@ -785,7 +818,7 @@ void IProcessPacket::OnPlayerAction(INDEX iClient, CNetworkMessage &nmMessage)
       iMaxBuffer = 1;
     }
 
-    ReceiveActionsForPlayer(plb, &nmMessage, iMaxBuffer);
+    ReceiveActionsForPlayer(iClient, iPlayer, nmMessage, iMaxBuffer);
   }
 };
 
@@ -898,6 +931,16 @@ BOOL IProcessPacket::OnChatInRequest(INDEX iClient, CNetworkMessage &nmMessage)
 
   nmMessage >> ulFrom >> ulTo >> strMessage;
   nmMessage.Rewind();
+
+  // Let plugins handle chat messages
+  FOREACHPLUGINHANDLER(GetPluginAPI()->cPacketEvents, IPacketEvents, pEvents) {
+    if ((IAbstractEvents *)pEvents == NULL) continue;
+
+    // Quit if it's not a regular chat message
+    if (!pEvents->OnChatMessage(iClient, ulFrom, ulTo, strMessage)) {
+      return FALSE;
+    }
+  }
 
   // Handle chat command if the message starts with a command prefix
   if (strMessage.HasPrefix(ser_strCommandPrefix)) {
