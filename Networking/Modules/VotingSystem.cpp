@@ -339,7 +339,7 @@ void PrintClientList(CTString &str) {
     CActiveClient &ac = _aActiveClients[i];
 
     // Inactive
-    if (ac.pClient == NULL) continue;
+    if (!ac.IsActive()) continue;
 
     str += CTString(0, "\n%d. ", i);
 
@@ -361,7 +361,10 @@ static BOOL CanInitiateVoting(CTString &strResult, INDEX iClient) {
     return FALSE;
   }
 
-  // Timeout
+  // Admins can always initiate
+  if (CActiveClient::IsAdmin(iClient)) return TRUE;
+
+  // Can't initiate voting during a timeout
   CTimerValue tvTimeout = (_tvNextVote - _pTimer->GetHighPrecisionTimer());
 
   if (tvTimeout.GetSeconds() > 0.0) {
@@ -391,8 +394,8 @@ static BOOL CanInitiateVoting(CTString &strResult, INDEX iClient) {
 
 // Initiate voting to change a map
 BOOL Chat::VoteMap(CTString &strResult, INDEX iClient, const CTString &strArguments) {
-  // Disabled
-  if (!ser_bVoteMap) return FALSE;
+  // Disabled (unless it's an admin)
+  if (!ser_bVoteMap && !CActiveClient::IsAdmin(iClient)) return FALSE;
 
   // Can't vote (reply to the client if there's a message)
   if (!CanInitiateVoting(strResult, iClient)) {
@@ -435,8 +438,8 @@ BOOL Chat::VoteMap(CTString &strResult, INDEX iClient, const CTString &strArgume
 
 // Initiate voting to kick a client
 BOOL Chat::VoteKick(CTString &strResult, INDEX iClient, const CTString &strArguments) {
-  // Disabled
-  if (!ser_bVoteKick) return FALSE;
+  // Disabled (unless it's an admin)
+  if (!ser_bVoteKick && !CActiveClient::IsAdmin(iClient)) return FALSE;
 
   // Can't vote (reply to the client if there's a message)
   if (!CanInitiateVoting(strResult, iClient)) {
@@ -462,7 +465,7 @@ BOOL Chat::VoteKick(CTString &strResult, INDEX iClient, const CTString &strArgum
 
   CActiveClient &acKick = _aActiveClients[iKick];
 
-  if (acKick.pClient == NULL) {
+  if (!acKick.IsActive()) {
     strResult = INVALID_CLIENT_MESSAGE;
     return TRUE;
   }
@@ -480,8 +483,10 @@ BOOL Chat::VoteKick(CTString &strResult, INDEX iClient, const CTString &strArgum
 
 // Initiate voting to skip current round
 BOOL Chat::VoteSkip(CTString &strResult, INDEX iClient, const CTString &strArguments) {
-  // Disabled
-  if (!ser_bVoteSkip || !GetAPI()->IsServerApp()) return FALSE;
+  if (!GetAPI()->IsServerApp()) return FALSE;
+
+  // Disabled (unless it's an admin)
+  if (!ser_bVoteSkip && !CActiveClient::IsAdmin(iClient)) return FALSE;
 
   // Can't vote (reply to the client if there's a message)
   if (!CanInitiateVoting(strResult, iClient)) {
@@ -505,17 +510,21 @@ static BOOL CheckVote(CTString &strResult, INDEX iClient, BOOL bVoteYes) {
   if (!IsVotingAvailable() || _pvtCurrentVote == NULL) return FALSE;
 
   CActiveClient &ac = _aActiveClients[iClient];
-  const BOOL bRealPlayer = ac.cPlayers.Count() != 0;
 
-  // Players can't vote
-  if (bRealPlayer && !ser_bPlayersCanVote) {
-    strResult = TRANS("Players aren't allowed to vote!");
-    return TRUE;
+  // Check for non-admins
+  if (!CActiveClient::IsAdmin(iClient)) {
+    const BOOL bRealPlayer = ac.cPlayers.Count() != 0;
 
-  // Spectators can't vote
-  } else if (!bRealPlayer && !ser_bObserversCanVote) {
-    strResult = TRANS("Observers aren't allowed to vote!");
-    return TRUE;
+    // Players can't vote
+    if (bRealPlayer && !ser_bPlayersCanVote) {
+      strResult = TRANS("Players aren't allowed to vote!");
+      return TRUE;
+
+    // Spectators can't vote
+    } else if (!bRealPlayer && !ser_bObserversCanVote) {
+      strResult = TRANS("Observers aren't allowed to vote!");
+      return TRUE;
+    }
   }
 
   CGenericVote &vt = *_pvtCurrentVote;
