@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "Interfaces/DataFunctions.h"
 
 // Records of all client restrictions
-CDynamicContainer<CClientRestriction> _cClientRestrictions;
+static CDynamicContainer<CClientRestriction> _cClientRestrictions;
 
 // Set new ban time
 void CClientRestriction::SetBanTime(CTimerValue tvTime) {

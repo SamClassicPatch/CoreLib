@@ -21,9 +21,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 
 // How many local players are allowed per client
-extern INDEX ser_iMaxPlayersPerClient;
+CORE_API extern INDEX ser_iMaxPlayersPerClient;
 
 // Check for connecting clients with split-screen
-BOOL CheckSplitScreenClients(INDEX iClient, INDEX ctWantedPlayers);
+CORE_API BOOL CheckSplitScreenClients(INDEX iClient, INDEX ctWantedPlayers);
 
 #endif

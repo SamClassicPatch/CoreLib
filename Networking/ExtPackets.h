@@ -26,7 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #if CLASSICSPATCH_EXT_PACKETS
 
 // Report packet actions to the server
-extern INDEX ser_bReportExtPacketLogic;
+CORE_API extern INDEX ser_bReportExtPacketLogic;
 
 // Base class for each extension packet
 class CORE_API CExtPacket {

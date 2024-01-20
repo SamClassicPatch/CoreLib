@@ -16,8 +16,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "StdH.h"
 
 #include "VotingSystem.h"
-#include "VoteTypes.h"
-#include "ChatCommands.h"
 #include "ClientLogging.h"
 #include "Interfaces/FileFunctions.h"
 #include "Networking/NetworkFunctions.h"
@@ -26,17 +24,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define INVALID_CLIENT_MESSAGE     TRANS("Invalid client index!")
 #define VOTING_IN_PROGRESS_MESSAGE TRANS("There is already voting in progress!")
 
-static INDEX ser_bVotingSystem       = FALSE; // Enable voting system
-static INDEX ser_bPlayersStartVote   = TRUE;  // Allow players to initiate voting
-static INDEX ser_bPlayersCanVote     = TRUE;  // Allow players to vote
-static INDEX ser_bObserversStartVote = FALSE; // Allow spectators to initiate voting
-static INDEX ser_bObserversCanVote   = FALSE; // Allow spectators to vote
-static FLOAT ser_fVotingTime = 30.0f; // How long to vote for
-static FLOAT ser_fVotingTimeout = 30.0f; // Timeout between voting processes
+INDEX ser_bVotingSystem       = FALSE; // Enable voting system
+INDEX ser_bPlayersStartVote   = TRUE;  // Allow players to initiate voting
+INDEX ser_bPlayersCanVote     = TRUE;  // Allow players to vote
+INDEX ser_bObserversStartVote = FALSE; // Allow spectators to initiate voting
+INDEX ser_bObserversCanVote   = FALSE; // Allow spectators to vote
+FLOAT ser_fVotingTime = 30.0f; // How long to vote for
+FLOAT ser_fVotingTimeout = 30.0f; // Timeout between voting processes
 
-static INDEX ser_bVoteMap  = TRUE; // Allow voting to change a map
-static INDEX ser_bVoteKick = TRUE; // Allow voting to kick a client
-static INDEX ser_bVoteSkip = TRUE; // Allow voting to skip current round
+INDEX ser_bVoteMap  = TRUE; // Allow voting to change a map
+INDEX ser_bVoteKick = TRUE; // Allow voting to kick a client
+INDEX ser_bVoteSkip = TRUE; // Allow voting to skip current round
 FLOAT ser_fVoteKickTime = 300.0f; // How long to kick clients for (5 minutes)
 
 namespace IVotingSystem {
@@ -115,22 +113,14 @@ void Initialize(void) {
   _tvNextVote = -100.0;
 };
 
-static CTString VoteYesCommand(void) {
-  return "^c00ff00" + ser_strCommandPrefix + "y";
-};
-
-static CTString VoteNoCommand(void) {
-  return "^cff0000" + ser_strCommandPrefix + "n";
-};
-
 // Check if voting is available
-static BOOL IsVotingAvailable(void) {
+BOOL IsVotingAvailable(void) {
   // Setting is on; server is running
   return ser_bVotingSystem && INetwork::IsHostingMultiplayer();
 };
 
 // Terminate current vote
-static void EndVote(BOOL bTimeout) {
+void EndVote(BOOL bTimeout) {
   delete _pvtCurrentVote;
   _pvtCurrentVote = NULL;
 
@@ -141,7 +131,7 @@ static void EndVote(BOOL bTimeout) {
 };
 
 // Initiate voting for a specific thing by some client
-static BOOL InitiateVoting(INDEX iClient, CGenericVote *pvt) {
+BOOL InitiateVoting(INDEX iClient, CGenericVote *pvt) {
   // Unavailable or already voting in progress
   if (!IsVotingAvailable() || _pvtCurrentVote != NULL) return FALSE;
 
@@ -354,10 +344,10 @@ void PrintClientList(CTString &str) {
 };
 
 // Check if can initiate voting
-static BOOL CanInitiateVoting(CTString &strResult, INDEX iClient) {
+BOOL CanInitiateVoting(CTString &strWhyCannot, INDEX iClient) {
   // Unavailable
   if (!IsVotingAvailable()) {
-    strResult = "";
+    strWhyCannot = "";
     return FALSE;
   }
 
@@ -371,7 +361,7 @@ static BOOL CanInitiateVoting(CTString &strResult, INDEX iClient) {
     CTString strTime;
     IData::PrintDetailedTime(strTime, tvTimeout);
 
-    strResult.PrintF(TRANS("Please wait %s before starting another vote!"), strTime);
+    strWhyCannot.PrintF(TRANS("Please wait %s before starting another vote!"), strTime);
     return FALSE;
   }
 
@@ -380,12 +370,12 @@ static BOOL CanInitiateVoting(CTString &strResult, INDEX iClient) {
 
   // Players can't initiate voting
   if (bRealPlayer && !ser_bPlayersStartVote) {
-    strResult = TRANS("Players aren't allowed to initiate voting!");
+    strWhyCannot = TRANS("Players aren't allowed to initiate voting!");
     return FALSE;
 
   // Spectators can't initiate voting
   } else if (!bRealPlayer && !ser_bObserversStartVote) {
-    strResult = TRANS("Observers aren't allowed to initiate voting!");
+    strWhyCannot = TRANS("Observers aren't allowed to initiate voting!");
     return FALSE;
   }
 
@@ -505,7 +495,7 @@ BOOL Chat::VoteSkip(CTString &strResult, INDEX iClient, const CTString &strArgum
 };
 
 // Make a vote as a client
-static BOOL CheckVote(CTString &strResult, INDEX iClient, BOOL bVoteYes) {
+BOOL CheckVote(CTString &strResult, INDEX iClient, BOOL bVoteYes) {
   // Unavailable or no voting in progress
   if (!IsVotingAvailable() || _pvtCurrentVote == NULL) return FALSE;
 

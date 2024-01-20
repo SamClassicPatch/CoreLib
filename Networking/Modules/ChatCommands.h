@@ -21,11 +21,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 
 // Prefix that the chat commands start with
-extern CTString ser_strCommandPrefix;
+CORE_API extern CTString ser_strCommandPrefix;
 
 // Passwords for authorizing as administrator and operator
-extern CTString ser_strAdminPassword;
-extern CTString ser_strOperatorPassword;
+CORE_API extern CTString ser_strAdminPassword;
+CORE_API extern CTString ser_strOperatorPassword;
 
 // Chat command structure
 struct SChatCommand {
@@ -47,10 +47,10 @@ struct SChatCommand {
 };
 
 // List of chat commands
-extern CDynamicContainer<SChatCommand> _cChatCommands;
+CORE_API extern CDynamicContainer<SChatCommand> _cChatCommands;
 
 // Interface for chat commands
-class IChatCommands {
+class CORE_API IChatCommands {
   public:
     // Handle chat command from a client
     static BOOL HandleCommand(INDEX iClient, const CTString &strCommand);

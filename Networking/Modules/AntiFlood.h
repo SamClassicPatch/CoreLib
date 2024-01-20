@@ -21,13 +21,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 
 // Kick clients for attempted packet flood
-extern INDEX ser_bEnableAntiFlood;
+CORE_API extern INDEX ser_bEnableAntiFlood;
 
 // Allowed messages threshold before treating it as packet flood
-extern INDEX ser_iPacketFloodThreshold;
+CORE_API extern INDEX ser_iPacketFloodThreshold;
 
 // Allowed messages from client per second
-extern INDEX ser_iMaxMessagesPerSecond;
+CORE_API extern INDEX ser_iMaxMessagesPerSecond;
 
 // Interface for anti-flood system
 class IAntiFlood {

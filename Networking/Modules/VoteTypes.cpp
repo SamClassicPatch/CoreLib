@@ -87,7 +87,6 @@ void CKickVote::VotingOver(void) {
   INDEX iIdentity = _aClientIdentities.GetIndex(vt_pciIdentity);
 
   if (iIdentity != -1) {
-    extern FLOAT ser_fVoteKickTime;
     CClientRestriction::BanClient(iIdentity, ser_fVoteKickTime);
 
   } else {

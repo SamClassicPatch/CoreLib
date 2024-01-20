@@ -92,7 +92,4 @@ class CORE_API CClientRestriction {
     static CTString KickClient(INDEX iIdentity, const CTString &strReason);
 };
 
-// Records of all client restrictions
-extern CDynamicContainer<CClientRestriction> _cClientRestrictions;
-
 #endif

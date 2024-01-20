@@ -21,7 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 
 // Interface with built-in chat commands
-class IStockCommands {
+class CORE_API IStockCommands {
   public:
     // Display name of the current map
     static BOOL CurrentMap(CTString &strResult, INDEX iClient, const CTString &strArguments);

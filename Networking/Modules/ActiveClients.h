@@ -91,6 +91,6 @@ class CORE_API CActiveClient {
 };
 
 // Active clients by client IDs on the server
-extern CStaticArray<CActiveClient> _aActiveClients;
+CORE_API extern CStaticArray<CActiveClient> _aActiveClients;
 
 #endif

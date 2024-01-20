@@ -61,6 +61,6 @@ class CORE_API CClientIdentity {
 };
 
 // Identities of every logged client
-extern CDynamicStackArray<CClientIdentity> _aClientIdentities;
+CORE_API extern CDynamicStackArray<CClientIdentity> _aClientIdentities;
 
 #endif
