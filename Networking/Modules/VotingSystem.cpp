@@ -31,6 +31,7 @@ static INDEX ser_bPlayersCanVote     = TRUE;  // Allow players to vote
 static INDEX ser_bObserversStartVote = FALSE; // Allow spectators to initiate voting
 static INDEX ser_bObserversCanVote   = FALSE; // Allow spectators to vote
 static FLOAT ser_fVotingTime = 30.0f; // How long to vote for
+static FLOAT ser_fVotingTimeout = 30.0f; // Timeout between voting processes
 
 static INDEX ser_bVoteMap  = TRUE; // Allow voting to change a map
 static INDEX ser_bVoteKick = TRUE; // Allow voting to kick a client
@@ -44,6 +45,9 @@ static CDynamicStackArray<SVoteMap> _aVoteMapPool;
 
 // Current voting in progress
 static CGenericVote *_pvtCurrentVote = NULL;
+
+// When the next vote is available
+static CTimerValue _tvNextVote;
 
 // Display current map pool
 static void VoteMapPool(void) {
@@ -92,6 +96,7 @@ void Initialize(void) {
   _pShell->DeclareSymbol("persistent user INDEX ser_bObserversStartVote;", &ser_bObserversStartVote);
   _pShell->DeclareSymbol("persistent user INDEX ser_bObserversCanVote;",   &ser_bObserversCanVote);
   _pShell->DeclareSymbol("persistent user FLOAT ser_fVotingTime;",         &ser_fVotingTime);
+  _pShell->DeclareSymbol("persistent user FLOAT ser_fVotingTimeout;",      &ser_fVotingTimeout);
 
   _pShell->DeclareSymbol("persistent user INDEX ser_bVoteMap;",            &ser_bVoteMap);
   _pShell->DeclareSymbol("persistent user INDEX ser_bVoteKick;",           &ser_bVoteKick);
@@ -104,6 +109,9 @@ void Initialize(void) {
   _pShell->DeclareSymbol("user void VoteMapLoad(CTString);", &VoteMapLoad);
 
   LoadMapPool(CTString("Data\\ClassicsPatch\\VoteMapPool.lst"));
+
+  // [Cecil] NOTE: Global scope initialization requires _pTimer to be already created, so it crashes
+  _tvNextVote = -100.0;
 };
 
 static CTString VoteYesCommand(void) {
@@ -124,6 +132,17 @@ static BOOL IsServerRunning(void) {
 static BOOL IsVotingAvailable(void) {
   // Setting is on; server is running
   return ser_bVotingSystem && IsServerRunning();
+};
+
+// Terminate current vote
+static void EndVote(BOOL bTimeout) {
+  delete _pvtCurrentVote;
+  _pvtCurrentVote = NULL;
+
+  // Set timeout before next vote
+  if (bTimeout && ser_fVotingTimeout > 0.0f) {
+    _tvNextVote = _pTimer->GetHighPrecisionTimer() + DOUBLE(ser_fVotingTimeout);
+  }
 };
 
 // Initiate voting for a specific thing by some client
@@ -161,8 +180,7 @@ void UpdateVote(void) {
 
   // Terminate voting if the server isn't running anymore
   if (!IsServerRunning()) {
-    delete _pvtCurrentVote;
-    _pvtCurrentVote = NULL;
+    EndVote(FALSE);
     return;
   }
 
@@ -182,8 +200,7 @@ void UpdateVote(void) {
         _pvtCurrentVote->VotingOver();
       }
 
-      delete _pvtCurrentVote;
-      _pvtCurrentVote = NULL;
+      EndVote(TRUE);
     }
     return;
   }
@@ -195,13 +212,17 @@ void UpdateVote(void) {
     // Describe action that's about to be performed
     if (bVotePassed) {
       strChatMessage += "\n  " + _pvtCurrentVote->ResultMessage();
+
+      // Wait before performing an action
+      _pvtCurrentVote->vt_bOver = TRUE;
+      _pvtCurrentVote->SetTime(3.0);
+
+    // Terminate the vote
+    } else {
+      EndVote(TRUE);
     }
 
     _pNetwork->SendChat(0, -1, strChatMessage);
-
-    // Wait before performing an action
-    _pvtCurrentVote->vt_bOver = TRUE;
-    _pvtCurrentVote->SetTime(3.0);
     return;
   }
 
@@ -342,6 +363,17 @@ static BOOL CanInitiateVoting(CTString &strResult, INDEX iClient) {
   // Unavailable
   if (!IsVotingAvailable()) {
     strResult = "";
+    return FALSE;
+  }
+
+  // Timeout
+  CTimerValue tvTimeout = (_tvNextVote - _pTimer->GetHighPrecisionTimer());
+
+  if (tvTimeout.GetSeconds() > 0.0) {
+    CTString strTime;
+    IData::PrintDetailedTime(strTime, tvTimeout);
+
+    strResult.PrintF(TRANS("Please wait %s before starting another vote!"), strTime);
     return FALSE;
   }
 
