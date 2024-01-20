@@ -102,6 +102,13 @@ class CORE_API INetwork {
     // Send chat message to a client with custom name of a sender
     static void SendChatToClient(INDEX iClient, const CTString &strFromName, const CTString &strMessage);
 
+    // Check if hosting an online multiplayer game
+    static inline BOOL IsHostingMultiplayer(void) {
+      // Non-local game; running a server; with more than one player
+      return _pNetwork->IsNetworkEnabled() && _pNetwork->IsServer()
+        && _pNetwork->ga_sesSessionState.ses_ctMaxPlayers > 1;
+    };
+
   // CServer method reimplementations
   public:
 

@@ -100,9 +100,8 @@ BOOL IProcessPacket::_bMaskGUIDs = FALSE;
 
 // Check if should use GUID masking
 BOOL IProcessPacket::ShouldMaskGUIDs(void) {
-  // Setting is on; non-local game; running a server; with more than one player
-  return IProcessPacket::_bMaskGUIDs && _pNetwork->IsNetworkEnabled() && _pNetwork->IsServer()
-    && _pNetwork->ga_sesSessionState.ses_ctMaxPlayers > 1;
+  // Setting is on; multiplayer game
+  return IProcessPacket::_bMaskGUIDs && INetwork::IsHostingMultiplayer();
 };
 
 // Clear arrays with sync checks

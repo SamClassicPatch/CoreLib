@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "ChatCommands.h"
 #include "ClientLogging.h"
 #include "Interfaces/FileFunctions.h"
+#include "Networking/NetworkFunctions.h"
 
 #define INVALID_MAP_MESSAGE        TRANS("Invalid map index!")
 #define INVALID_CLIENT_MESSAGE     TRANS("Invalid client index!")
@@ -122,16 +123,10 @@ static CTString VoteNoCommand(void) {
   return "^cff0000" + ser_strCommandPrefix + "n";
 };
 
-// Check if current server is running
-static BOOL IsServerRunning(void) {
-  // Non-local game; running a server; with more than one player
-  return _pNetwork->IsNetworkEnabled() && _pNetwork->IsServer() && _pNetwork->ga_sesSessionState.ses_ctMaxPlayers > 1;
-};
-
 // Check if voting is available
 static BOOL IsVotingAvailable(void) {
   // Setting is on; server is running
-  return ser_bVotingSystem && IsServerRunning();
+  return ser_bVotingSystem && INetwork::IsHostingMultiplayer();
 };
 
 // Terminate current vote
@@ -179,7 +174,7 @@ void UpdateVote(void) {
   if (_pvtCurrentVote == NULL) return;
 
   // Terminate voting if the server isn't running anymore
-  if (!IsServerRunning()) {
+  if (!INetwork::IsHostingMultiplayer()) {
     EndVote(FALSE);
     return;
   }
