@@ -23,6 +23,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Plugin configuration files
 #include <CoreLib/Interfaces/ConfigFunctions.h>
 
+// Chat command function type
+#include <CoreLib/Networking/Modules/ChatCommands.h>
+
 // Define plugin symbols
 #include "Plugins/PluginSymbols.h"
 
@@ -114,7 +117,7 @@ class CORE_API CPluginAPI {
     virtual void AddNewPatch(CPatch *pPatch);
 
     // Register a custom chat command
-    virtual void RegisterChatCommand(const char *strName, void *pHandler);
+    virtual void RegisterChatCommand(const char *strName, SChatCommand::CCommandFunc pHandler);
 
     // Unregister a custom chat command
     virtual void UnregisterChatCommand(const char *strName);
