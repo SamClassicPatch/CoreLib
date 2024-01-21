@@ -43,6 +43,9 @@ void CCoreTimerHandler::HandleTimer(void) {
 // Called every game tick
 void CCoreTimerHandler::OnTick(void)
 {
+  // Check on annoying clients
+  CActiveClient::CheckAnnoyingClients();
+
   // Update client restriction records
   CClientRestriction::UpdateExpirations();
 

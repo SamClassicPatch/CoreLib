@@ -17,6 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "ActiveClients.h"
 #include "Networking/CommInterface.h"
+#include "Networking/NetworkFunctions.h"
 
 // Active clients by client IDs on the server
 CStaticArray<CActiveClient> _aActiveClients;
@@ -42,6 +43,7 @@ void CActiveClient::Reset(void) {
 void CActiveClient::ResetPacketCounters(void) {
   ctLastSecPackets = 0;
   ctLastSecMessages = 0;
+  ctAnnoyanceLevel = 0;
 };
 
 // Check if client is active right now
@@ -91,6 +93,22 @@ void CActiveClient::DeactivateClient(INDEX iClient) {
   // Make sure the server client isn't being deactivated
   ASSERT(!GetComm().Server_IsClientLocal(iClient));
   _aActiveClients[iClient].Reset();
+};
+
+// Check on annoying clients
+void CActiveClient::CheckAnnoyingClients(void)
+{
+  const INDEX ct = _aActiveClients.Count();
+
+  for (INDEX i = 0; i < ct; i++) {
+    const CActiveClient &ac = _aActiveClients[i];
+
+    // Not quite annoying
+    if (ac.ctAnnoyanceLevel < 100 || IsAdmin(i)) continue;
+
+    // Kick for being annoying
+    INetwork::SendDisconnectMessage(i, TRANS("Stop being annoying!"), FALSE);
+  }
 };
 
 // Reset all clients to be inactive

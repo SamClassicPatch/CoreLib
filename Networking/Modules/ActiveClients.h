@@ -50,6 +50,7 @@ class CORE_API CActiveClient {
     // Anti-flood system
     INDEX ctLastSecPackets; // Packets sent in the past second
     INDEX ctLastSecMessages; // Chat messages sent in the past second
+    INDEX ctAnnoyanceLevel; // For kicking clients deemed too annoying in the past second (set by user; up to 100)
 
   public:
     // Default constructor
@@ -82,6 +83,9 @@ class CORE_API CActiveClient {
 
     // Deactivate some client
     static void DeactivateClient(INDEX iClient);
+
+    // Check on annoying clients
+    static void CheckAnnoyingClients(void);
 
     // Reset all clients to be inactive
     static void ResetAll(void);
