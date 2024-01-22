@@ -27,6 +27,9 @@ class CControls;       // #include <Game/Game.h>
 // Engine-compatible replacement for CUniversalSessionProperties
 typedef UBYTE CSesPropsContainer[NET_MAXSESSIONPROPERTIES];
 
+// Common controls file
+#define GAME_COMMON_CONTROLS_PATH CTString("Controls\\System\\Common.ctl")
+
 // API class for the Game library
 class CORE_API CGameAPI {
   public:
@@ -83,7 +86,10 @@ class CORE_API CGameAPI {
     INDEX    *aiMenuLocalPlayers;  // gm_aiMenuLocalPlayers[0]
     INDEX    *aiStartLocalPlayers; // gm_aiStartLocalPlayers[0]
     UBYTE    *aLocalPlayers;       // gm_lpLocalPlayers[0]
-    
+
+    // Only usable after the CGame loads the common controls (inside CGame::InitInternal)
+    CControls *pctrlCommon; // _ctrlCommonControls from global scope
+
   public:
     // Constructor
     CGameAPI();
@@ -102,17 +108,17 @@ class CORE_API CGameAPI {
     };
 
     // Get game mode index
-    virtual INDEX GetGameMode(INDEX i) const {
+    virtual INDEX GetGameMode(INDEX i) {
       return sp_aiGameModes[i];
     };
 
     // Get amount of available local players
-    virtual INDEX GetLocalPlayerCount(void) const {
+    virtual INDEX GetLocalPlayerCount(void) {
       return ctLocalPlayers;
     };
 
     // Get amount of available player profiles
-    virtual INDEX GetProfileCount(void) const {
+    virtual INDEX GetProfileCount(void) {
       return ctPlayerProfiles;
     };
 
@@ -138,7 +144,7 @@ class CORE_API CGameAPI {
   public:
 
     // Get console state
-    virtual INDEX GetConState(void) const {
+    virtual INDEX GetConState(void) {
       return *piConsoleState;
     };
 
@@ -153,7 +159,7 @@ class CORE_API CGameAPI {
     };
 
     // Get computer state
-    virtual INDEX GetCompState(void) const {
+    virtual INDEX GetCompState(void) {
       return *piComputerState;
     };
 
@@ -163,7 +169,7 @@ class CORE_API CGameAPI {
     };
     
     // Get custom level filename
-    virtual const CTString &GetCustomLevel(void) const {
+    virtual const CTString &GetCustomLevel(void) {
       return *pstrCustomLevel;
     };
     
@@ -173,7 +179,7 @@ class CORE_API CGameAPI {
     };
     
     // Get session name
-    virtual const CTString &GetSessionName(void) const {
+    virtual const CTString &GetSessionName(void) {
       return *pstrSessionName;
     };
     
@@ -183,7 +189,7 @@ class CORE_API CGameAPI {
     };
     
     // Get address for joining
-    virtual const CTString &GetJoinAddress(void) const {
+    virtual const CTString &GetJoinAddress(void) {
       return *pstrJoinAddress;
     };
     
@@ -193,7 +199,7 @@ class CORE_API CGameAPI {
     };
 
     // Get name of some axis
-    virtual const CTString &GetAxisName(INDEX iAxis) const {
+    virtual const CTString &GetAxisName(INDEX iAxis) {
       return astrAxisNames[iAxis];
     };
 
@@ -203,10 +209,10 @@ class CORE_API CGameAPI {
     };
 
     // Get one of the high score entries
-    virtual CHighScoreEntry *GetHighScore(INDEX iEntry) const;
+    virtual CHighScoreEntry *GetHighScore(INDEX iEntry);
 
     // Get index of the last set high score
-    virtual INDEX GetLastSetHighScore(void) const {
+    virtual INDEX GetLastSetHighScore(void) {
       #if SE1_GAME != SS_REV
         return *piLastSetHighScore;
       #else
@@ -222,20 +228,20 @@ class CORE_API CGameAPI {
     };
 
     // Get player character for some profile
-    virtual CPlayerCharacter *GetPlayerCharacter(INDEX iPlayer) const {
+    virtual CPlayerCharacter *GetPlayerCharacter(INDEX iPlayer) {
       return &apcPlayers[iPlayer];
     };
 
-    // Get extra controls
-    virtual CControls *GetControls(void) const {
+    // Get controls used for storing changes made through the game menu
+    virtual CControls *GetControls(void) {
       return pctrlControlsExtra;
     };
 
-    // Get actions of extra controls
-    virtual const CListHead &GetControlsActions(void) const;
+    // Get actions for changing controls through the game menu
+    virtual CListHead &GetActions(CControls *pctrl);
 
     // Get player index for singleplayer
-    virtual INDEX GetPlayerForSP(void) const {
+    virtual INDEX GetPlayerForSP(void) {
       return *piSinglePlayer;
     };
 
@@ -245,7 +251,7 @@ class CORE_API CGameAPI {
     };
 
     // Get menu split screen configuration
-    virtual INDEX GetMenuSplitCfg(void) const {
+    virtual INDEX GetMenuSplitCfg(void) {
       return *piMenuSplitCfg;
     };
 
@@ -255,7 +261,7 @@ class CORE_API CGameAPI {
     };
 
     // Get start split screen configuration
-    virtual INDEX GetStartSplitCfg(void) const {
+    virtual INDEX GetStartSplitCfg(void) {
       return *piStartSplitCfg;
     };
 
@@ -265,7 +271,7 @@ class CORE_API CGameAPI {
     };
 
     // Get current split screen configuration
-    virtual INDEX GetCurrentSplitCfg(void) const {
+    virtual INDEX GetCurrentSplitCfg(void) {
       return *piCurrentSplitCfg;
     };
 
@@ -275,7 +281,7 @@ class CORE_API CGameAPI {
     };
 
     // Get game state
-    virtual BOOL IsGameOn(void) const {
+    virtual BOOL IsGameOn(void) {
       return *pbGameOn;
     };
 
@@ -285,7 +291,7 @@ class CORE_API CGameAPI {
     };
 
     // Get menu state
-    virtual BOOL IsMenuOn(void) const {
+    virtual BOOL IsMenuOn(void) {
       return *pbMenuOn;
     };
 
@@ -295,7 +301,7 @@ class CORE_API CGameAPI {
     };
 
     // Get first loading state
-    virtual BOOL GetFirstLoading(void) const {
+    virtual BOOL GetFirstLoading(void) {
       return *pbFirstLoading;
     };
 
@@ -314,7 +320,7 @@ class CORE_API CGameAPI {
     };
 
     // Get menu player index
-    virtual INDEX GetMenuPlayer(INDEX i) const {
+    virtual INDEX GetMenuPlayer(INDEX i) {
       return aiMenuLocalPlayers[i];
     };
 
@@ -324,7 +330,7 @@ class CORE_API CGameAPI {
     };
 
     // Get start player index
-    virtual INDEX GetStartPlayer(INDEX i) const {
+    virtual INDEX GetStartPlayer(INDEX i) {
       return aiStartLocalPlayers[i];
     };
 
@@ -348,7 +354,7 @@ class CORE_API CGameAPI {
     };
 
     // Check if local player is active
-    virtual BOOL IsLocalPlayerActive(INDEX iPlayer) const {
+    virtual BOOL IsLocalPlayerActive(INDEX iPlayer) {
       UBYTE *pLocalPlayer = aLocalPlayers + (lpOffsets.ctSize * iPlayer);
       BOOL *pbActive = (BOOL *)(pLocalPlayer + lpOffsets.slActive);
 
@@ -356,7 +362,7 @@ class CORE_API CGameAPI {
     };
 
     // Get index of a local player
-    virtual INDEX GetLocalPlayerIndex(INDEX iPlayer) const {
+    virtual INDEX GetLocalPlayerIndex(INDEX iPlayer) {
       UBYTE *pLocalPlayer = aLocalPlayers + (lpOffsets.ctSize * iPlayer);
       INDEX *piPlayer = (INDEX *)(pLocalPlayer + lpOffsets.slPlayer);
 

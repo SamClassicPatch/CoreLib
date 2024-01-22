@@ -16,7 +16,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "StdH.h"
 
 // Constructor
-CGameAPI::CGameAPI() {
+CGameAPI::CGameAPI() : pctrlCommon(NULL) {
   // Session properties game modes used by the patch
   sp_aiGameModes.New(2);
   sp_aiGameModes[0] = -1; // Flyover - for intro screen
@@ -24,6 +24,34 @@ CGameAPI::CGameAPI() {
 
   // Fields are not hooked yet
   bGameHooked = FALSE;
+};
+
+// Controls patch
+class CControlsPatch : public CControls {
+  public:
+    // Load_t() pointer
+    typedef void (CControls::*CLoadFunc)(CTFileName);
+
+  public:
+    void P_Load(CTFileName fnFile);
+};
+
+// Original function pointer
+static CControlsPatch::CLoadFunc pLoadControls = NULL;
+static CPatch *_pLoadControlsPatch = NULL;
+
+void CControlsPatch::P_Load(CTFileName fnFile) {
+  // Proceed to the original function
+  (this->*pLoadControls)(fnFile);
+
+  // Identify common controls and hook them
+  if (GetGameAPI()->pctrlCommon == NULL && fnFile == GAME_COMMON_CONTROLS_PATH) {
+    GetGameAPI()->pctrlCommon = this;
+
+    // Unpatch controls method
+    delete _pLoadControlsPatch;
+    _pLoadControlsPatch = NULL;
+  }
 };
 
 // Hook default fields from CGame
@@ -68,6 +96,21 @@ void CGameAPI::HookFields(void) {
   aiMenuLocalPlayers  = &_pGame->gm_aiMenuLocalPlayers[0];
   aiStartLocalPlayers = &_pGame->gm_aiStartLocalPlayers[0];
   aLocalPlayers       = (UBYTE *)&_pGame->gm_lpLocalPlayers[0];
+
+  // Patch controls loading method to identify common controls structure
+  static BOOL _bCreateControlsHook = TRUE;
+
+  // [Cecil] NOTE: If 'gm_ctrlControlsExtra' field is misplaced in a mod for some reason, this patching
+  // will crash, so will normal game because of incorrect offset. If this ever happens, it's not my fault.
+  if (_bCreateControlsHook) {
+    _bCreateControlsHook = FALSE;
+
+    // Pointer to the virtual table of CControls
+    size_t *pVFTable = *(size_t **)pctrlControlsExtra;
+
+    pLoadControls = *(CControlsPatch::CLoadFunc *)(pVFTable + 11);
+    _pLoadControlsPatch = NewRawPatch(pLoadControls, &CControlsPatch::P_Load, "CControls::Load_t(...)");
+  }
 
   // Mark as hooked
   SetHooked(TRUE);
@@ -175,7 +218,7 @@ BOOL CGameAPI::IsMenuEnabledSS(const CTString &strMenu)
 };
 
 // Get one of the high score entries
-CHighScoreEntry *CGameAPI::GetHighScore(INDEX iEntry) const {
+CHighScoreEntry *CGameAPI::GetHighScore(INDEX iEntry) {
   #if SE1_GAME != SS_REV
     return &ahseHighScores[iEntry];
 
@@ -193,7 +236,7 @@ CHighScoreEntry *CGameAPI::GetHighScore(INDEX iEntry) const {
   #endif
 };
 
-// Get actions of extra controls
-const CListHead &CGameAPI::GetControlsActions(void) const {
-  return GetControls()->ctrl_lhButtonActions;
+// Get actions for changing controls through the game menu
+CListHead &CGameAPI::GetActions(CControls *pctrl) {
+  return pctrl->ctrl_lhButtonActions;
 };
