@@ -151,14 +151,18 @@ void ClassicsPatch_InitCore(void) {
     #define DEFINE_PROP_SYMBOL(_Type, _Property) \
       _pShell->DeclareSymbol(#_Type " cfg_" #_Property ";", &CCoreAPI::Props()._Property);
 
+    DEFINE_PROP_SYMBOL(INDEX, bMountTFE);
+    DEFINE_PROP_SYMBOL(CTString, strTFEDir);
+    DEFINE_PROP_SYMBOL(INDEX, bMountSSR);
+    DEFINE_PROP_SYMBOL(CTString, strSSRDir);
+    DEFINE_PROP_SYMBOL(INDEX, bMountSSRWorkshop);
+    DEFINE_PROP_SYMBOL(CTString, strSSRWorkshop);
+
     DEFINE_PROP_SYMBOL(INDEX, bCustomMod);
     DEFINE_PROP_SYMBOL(INDEX, bDebugPatcher);
     DEFINE_PROP_SYMBOL(INDEX, bDPIAware);
     DEFINE_PROP_SYMBOL(INDEX, bExtendedFileSystem);
     DEFINE_PROP_SYMBOL(INDEX, bFullAppIntegration);
-    DEFINE_PROP_SYMBOL(CTString, strTFEDir);
-    DEFINE_PROP_SYMBOL(CTString, strSSRDir);
-    DEFINE_PROP_SYMBOL(CTString, strSSRWorkshop);
 
     DEFINE_PROP_SYMBOL(INDEX, bSteamEnable);
     DEFINE_PROP_SYMBOL(INDEX, bSteamForServers);

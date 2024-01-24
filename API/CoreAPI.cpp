@@ -153,8 +153,8 @@ void CCoreVariables::LoadConfigs(void) {
 
 // Constructor that sets default property states
 CCoreAPI::SConfigProps::SConfigProps() :
-  bCustomMod(TRUE), bDebugPatcher(FALSE), bDPIAware(TRUE), bExtendedFileSystem(TRUE),
-  bFullAppIntegration(FALSE), strTFEDir(""), strSSRDir(""), strSSRWorkshop(""),
+  bMountTFE(TRUE), strTFEDir(""), bMountSSR(FALSE), strSSRDir(""), bMountSSRWorkshop(FALSE), strSSRWorkshop(""),
+  bCustomMod(TRUE), bDebugPatcher(FALSE), bDPIAware(TRUE), bExtendedFileSystem(TRUE), bFullAppIntegration(FALSE),
   // Steam API
   bSteamEnable(TRUE), bSteamForServers(FALSE), bSteamForTools(FALSE)
 {
@@ -181,14 +181,18 @@ void CCoreAPI::SConfigProps::Load(void) {
   }
 
   // Get values
+  bMountTFE           = _iniConfig.GetBoolValue("", "MountTFE", TRUE);
+  strTFEDir           = _iniConfig.GetValue("", "TFEDir", CONFIG_DEFAULT_DIR_TFE);
+  bMountSSR           = _iniConfig.GetBoolValue("", "MountSSR", FALSE);
+  strSSRDir           = _iniConfig.GetValue("", "SSRDir", CONFIG_DEFAULT_DIR_SSR);
+  bMountSSRWorkshop   = _iniConfig.GetBoolValue("", "MountSSRWorkshop", FALSE);
+  strSSRWorkshop      = _iniConfig.GetValue("", "SSRWorkshop", CONFIG_DEFAULT_DIR_WORKSHOP);
+
   bCustomMod          = _iniConfig.GetBoolValue("", "CustomMod", TRUE);
   bDebugPatcher       = _iniConfig.GetBoolValue("", "DebugPatcher", FALSE);
   bDPIAware           = _iniConfig.GetBoolValue("", "DPIAware", TRUE);
   bExtendedFileSystem = _iniConfig.GetBoolValue("", "ExtendedFileSystem", TRUE);
   bFullAppIntegration = _iniConfig.GetBoolValue("", "FullAppIntegration", FALSE);
-  strTFEDir           = _iniConfig.GetValue("", "TFEDir", CONFIG_DEFAULT_DIR_TFE);
-  strSSRDir           = _iniConfig.GetValue("", "SSRDir", CONFIG_DEFAULT_DIR_SSR);
-  strSSRWorkshop      = _iniConfig.GetValue("", "SSRWorkshop", CONFIG_DEFAULT_DIR_WORKSHOP);
 
   bSteamEnable        = _iniConfig.GetBoolValue("Steam", "Enable", TRUE);
   bSteamForServers    = _iniConfig.GetBoolValue("Steam", "ForServers", FALSE);
@@ -197,24 +201,23 @@ void CCoreAPI::SConfigProps::Load(void) {
 
 // Save properties into the config
 void CCoreAPI::SConfigProps::Save(void) {
-  // Macro for quickly converting any non-string value into string
-  #define TO_STR(_Expr) static_cast<std::ostringstream &>((std::ostringstream() << std::dec << _Expr)).str().c_str()
-
   // Set new values
-  _iniConfig.SetValue("", "CustomMod", TO_STR(bCustomMod));
-  _iniConfig.SetValue("", "DebugPatcher", TO_STR(bDebugPatcher));
-  _iniConfig.SetValue("", "DPIAware", TO_STR(bDPIAware));
-  _iniConfig.SetValue("", "ExtendedFileSystem", TO_STR(bExtendedFileSystem));
-  _iniConfig.SetValue("", "FullAppIntegration", TO_STR(bFullAppIntegration));
+  _iniConfig.SetBoolValue("", "MountTFE", bMountTFE);
   _iniConfig.SetValue("", "TFEDir", strTFEDir);
+  _iniConfig.SetBoolValue("", "MountSSR", bMountSSR);
   _iniConfig.SetValue("", "SSRDir", strSSRDir);
+  _iniConfig.SetBoolValue("", "MountSSRWorkshop", bMountSSRWorkshop);
   _iniConfig.SetValue("", "SSRWorkshop", strSSRWorkshop);
 
-  _iniConfig.SetValue("Steam", "Enable",     TO_STR(bSteamEnable));
-  _iniConfig.SetValue("Steam", "ForServers", TO_STR(bSteamForServers));
-  _iniConfig.SetValue("Steam", "ForTools",   TO_STR(bSteamForTools));
+  _iniConfig.SetBoolValue("", "CustomMod", bCustomMod);
+  _iniConfig.SetBoolValue("", "DebugPatcher", bDebugPatcher);
+  _iniConfig.SetBoolValue("", "DPIAware", bDPIAware);
+  _iniConfig.SetBoolValue("", "ExtendedFileSystem", bExtendedFileSystem);
+  _iniConfig.SetBoolValue("", "FullAppIntegration", bFullAppIntegration);
 
-  #undef TO_STR
+  _iniConfig.SetBoolValue("Steam", "Enable",     bSteamEnable);
+  _iniConfig.SetBoolValue("Steam", "ForServers", bSteamForServers);
+  _iniConfig.SetBoolValue("Steam", "ForTools",   bSteamForTools);
 
   // Save into a file
   GetAPI()->CreateDir(CORE_CONFIG_FILE);

@@ -61,14 +61,20 @@ class CORE_API CCoreAPI : public ICoreHooks {
       #define CONFIG_DEFAULT_DIR_SSR "..\\Serious Sam Revolution\\"
       #define CONFIG_DEFAULT_DIR_WORKSHOP "..\\..\\workshop\\content\\227780\\"
 
+      // Game mounting
+      BOOL bMountTFE;
+      CTString strTFEDir;
+      BOOL bMountSSR;
+      CTString strSSRDir;
+      BOOL bMountSSRWorkshop;
+      CTString strSSRWorkshop;
+
+      // Common options
       BOOL bCustomMod;
       BOOL bDebugPatcher;
       BOOL bDPIAware;
       BOOL bExtendedFileSystem;
       BOOL bFullAppIntegration;
-      CTString strTFEDir;
-      CTString strSSRDir;
-      CTString strSSRWorkshop;
 
       // Steam API
       BOOL bSteamEnable;     // Initialize and use Steamworks API
