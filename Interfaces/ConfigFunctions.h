@@ -154,6 +154,25 @@ class CIniConfig : protected IniSections {
       }
     };
 
+    // Set boolean value under a key under some section
+    inline void SetBoolValue(const char *strSection, const char *strKey, BOOL bValue) {
+      SetValue(strSection, strKey, bValue ? "1" : "0");
+    };
+
+    // Set integer value under a key under some section
+    inline void SetIntValue(const char *strSection, const char *strKey, SLONG iValue) {
+      char strValue[256];
+      sprintf(strValue, "%d", iValue);
+      SetValue(strSection, strKey, strValue);
+    };
+
+    // Set float value under a key under some section
+    inline void SetDoubleValue(const char *strSection, const char *strKey, DOUBLE dValue) {
+      char strValue[256];
+      sprintf(strValue, "%f", dValue);
+      SetValue(strSection, strKey, strValue);
+    };
+
     // Get value under a key or return a default value, if key or section doesn't exist
     CTString GetValue(const char *strSection, const char *strKey, const char *strDefValue = "") const {
       const_iterator it = find(strSection);
