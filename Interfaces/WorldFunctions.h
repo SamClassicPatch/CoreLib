@@ -273,20 +273,28 @@ inline void FindClassesByID(CEntities &cInput, CEntities &cOutput, INDEX iClassI
   }
 };
 
+// Check if there are any local players
+inline BOOL AnyLocalPlayers(void)
+{
+  FOREACHINSTATICARRAY(_pNetwork->ga_aplsPlayers, CPlayerSource, itpls) {
+    // At least one player has been added
+    if (itpls->pls_Index >= 0) return TRUE;
+  }
+
+  // No local players (observers may be present)
+  return FALSE;
+};
+
 // Get pointers to local player entities
 inline void GetLocalPlayers(CPlayerEntities &cOutput) {
   ASSERT(cOutput.Count() == 0);
 
-  const INDEX ctPlayers = _pNetwork->ga_aplsPlayers.Count();
-
   // Go through all local players
-  for (INDEX iLocalPlayer = 0; iLocalPlayer < ctPlayers; iLocalPlayer++) {
-    INDEX iPlayer = _pNetwork->ga_aplsPlayers[iLocalPlayer].pls_Index;
+  FOREACHINSTATICARRAY(_pNetwork->ga_aplsPlayers, CPlayerSource, itpls) {
+    INDEX iPlayer = itpls->pls_Index;
 
     // Player hasn't been added
-    if (iPlayer < 0) {
-      continue;
-    }
+    if (iPlayer < 0) continue;
 
     // Add player entity
     CPlayerTarget &plt = _pNetwork->ga_sesSessionState.ses_apltPlayers[iPlayer];
