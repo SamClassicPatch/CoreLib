@@ -184,11 +184,8 @@ SFuncPatch *CPatchAPI::FindFuncPatch(const CTString &strName, CPatch *pPatch) {
 
 // Retrieve address from the engine by a symbol name (before Core initialization)
 void *CPatchAPI::GetEngineSymbolPortable(const char *strSymbol) {
-  #ifdef NDEBUG
-    return GetProcAddress(GetModuleHandleA("Engine.dll"), strSymbol);
-  #else
-    return GetProcAddress(GetModuleHandleA("EngineD.dll"), strSymbol);
-  #endif
+  static HMODULE hPortableEngine = HMODULE_ENGINE;
+  return GetProcAddress(hPortableEngine, strSymbol);
 };
 
 // Retrieve address from the engine by a symbol name
