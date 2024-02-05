@@ -128,7 +128,7 @@ CHttpResponse HttpRequest(LPCWSTR wstrServer, LPCWSTR wstrVerb, LPCWSTR wstrObje
     bResults = WinHttpReceiveResponse(hRequest, NULL);
   }
 
-  CHttpResponse aResponse;
+  char *aResponse = (char *)calloc(1, sizeof(char));
 
   // Keep checking for data until there is nothing left
   if (bResults) {
@@ -146,8 +146,9 @@ CHttpResponse HttpRequest(LPCWSTR wstrServer, LPCWSTR wstrVerb, LPCWSTR wstrObje
       }
 
       // Allocate space for new data
-      size_t iCount = aResponse.length();
-      aResponse.append(iCount + ulSize, '\0');
+      size_t iCount = strlen(aResponse);
+      aResponse = (char *)realloc(aResponse, iCount + ulSize);
+      memset(&aResponse[iCount], 0, ulSize);
 
       // Read the data
       ULONG ulDownloaded = 0;
@@ -175,7 +176,10 @@ CHttpResponse HttpRequest(LPCWSTR wstrServer, LPCWSTR wstrVerb, LPCWSTR wstrObje
     pCallback(aResponse);
   }
 
-  return aResponse;
+  CHttpResponse strReturn(aResponse);
+  free(aResponse);
+
+  return strReturn;
 };
 
 void InitHttp(void) {
