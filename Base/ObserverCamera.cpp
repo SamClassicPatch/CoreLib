@@ -81,6 +81,8 @@ void CObserverCamera::Init(void)
   _pShell->DeclareSymbol("user INDEX ocam_bSnapshot;",         &cam_ctl.bSnapshot);
 
   _pShell->DeclareSymbol("persistent user FLOAT ocam_fSpeed;", &cam_fSpeed);
+  _pShell->DeclareSymbol("persistent user FLOAT ocam_fSmoothMovement;", &cam_fSmoothMovement);
+  _pShell->DeclareSymbol("persistent user FLOAT ocam_fSmoothRotation;", &cam_fSmoothRotation);
 };
 
 // Start camera for a game (or a currently playing demo)
@@ -174,6 +176,9 @@ CObserverCamera::CameraPos &CObserverCamera::FreeFly(CPlayerEntity *penObserving
 
   // Camera rotation
   {
+    cam_fSmoothRotation = Clamp(cam_fSmoothRotation, 0.0f, 1.0f);
+    const BOOL bInstantRotation = (cam_fSmoothRotation == 1.0f);
+
     // Input rotation
     ANGLE3D aRotate;
 
@@ -183,14 +188,22 @@ CObserverCamera::CameraPos &CObserverCamera::FreeFly(CPlayerEntity *penObserving
     aRotate(3) = (cam_ctl.bBankingL - cam_ctl.bBankingR) * 0.5f;
 
     // Set immediately
-    cam_aRotation = aRotate;
-    cam_aRotation(3) *= dTicks;
-    cam_ctl.bBankingL = cam_ctl.bBankingR = 0;
+    if (bInstantRotation) {
+      cam_aRotation = aRotate;
+      cam_aRotation(3) *= dTicks;
+      cam_ctl.bBankingL = cam_ctl.bBankingR = 0;
+
+    // Smooth rotation
+    } else {
+      // Use cosine in order to make real values slightly lower than they are (e.g. 0.5 -> ~0.3)
+      const FLOAT fSpeedMul = 1.0f - Cos(cam_fSmoothRotation * 90);
+      cam_aRotation += (aRotate - cam_aRotation) * dTimeMul * fSpeedMul;
+    }
 
     cp.aRot += cam_aRotation;
 
     // Snap banking angle on sharp movement
-    if (Abs(cam_aRotation(3)) > 0.0f) {
+    if (bInstantRotation && Abs(cam_aRotation(3)) > 0.0f) {
       Snap(cp.aRot(3), 10.0f);
     }
   }
@@ -210,7 +223,15 @@ CObserverCamera::CameraPos &CObserverCamera::FreeFly(CPlayerEntity *penObserving
     }
 
     // Set immediately
-    cam_vMovement = vMoveDir;
+    if (cam_fSmoothMovement >= 1.0f) {
+      cam_vMovement = vMoveDir;
+
+    // Smooth movement
+    } else {
+      // Use cosine in order to make real values slightly lower than they are (e.g. 0.5 -> ~0.3)
+      const FLOAT fSpeedMul = 1.0f - Cos(ClampDn(cam_fSmoothMovement, 0.0f) * 90);
+      cam_vMovement += (vMoveDir - cam_vMovement) * dTimeMul * fSpeedMul;
+    }
 
     cp.vPos += cam_vMovement * dTimeMul;
   }

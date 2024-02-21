@@ -63,6 +63,8 @@ class CORE_API CObserverCamera {
     CameraControl cam_ctl;
     BOOL cam_bActive; // Dynamic camera toggle
     FLOAT cam_fSpeed; // Movement speed multiplier
+    FLOAT cam_fSmoothMovement; // Factor for smooth camera movement
+    FLOAT cam_fSmoothRotation; // Factor for smooth camera rotation
 
     BOOL cam_bPlayback; // Currently playing back the recording
     CTFileName cam_fnmDemo; // Currently playing demo
@@ -84,6 +86,8 @@ class CORE_API CObserverCamera {
     // Constructor
     CObserverCamera() : cam_bActive(FALSE) {
       cam_fSpeed = 1.0f;
+      cam_fSmoothMovement = 1.0f;
+      cam_fSmoothRotation = 1.0f;
       Reset();
     };
 
