@@ -118,7 +118,7 @@ void CObserverCamera::Init(void)
   _pShell->DeclareSymbol("user INDEX ocam_bTurnBankingRight;", &cam_ctl.bBankingR);
   _pShell->DeclareSymbol("user INDEX ocam_bZoomIn;",           &cam_ctl.bZoomIn);
   _pShell->DeclareSymbol("user INDEX ocam_bZoomOut;",          &cam_ctl.bZoomOut);
-  _pShell->DeclareSymbol("user INDEX ocam_bZoomDefault;",      &cam_ctl.bZoomDefault);
+  _pShell->DeclareSymbol("user FLOAT ocam_fFOV;",              &cam_ctl.fFOV);
   _pShell->DeclareSymbol("user INDEX ocam_bResetToPlayer;",    &cam_ctl.bResetToPlayer);
   _pShell->DeclareSymbol("user INDEX ocam_bFollowPlayer;",     &cam_ctl.bFollowPlayer);
   _pShell->DeclareSymbol("user INDEX ocam_bSnapshot;",         &cam_ctl.bSnapshot);
@@ -320,11 +320,8 @@ CObserverCamera::CameraPos &CObserverCamera::FreeFly(CPlayerEntity *penObserving
     cp.vPos += cam_vMovement * dTimeMul;
   }
 
-  if (cam_ctl.bZoomDefault) {
-    cp.fFOV = 90.0f;
-  } else {
-    cp.fFOV = Clamp(FLOAT(cp.fFOV + (cam_ctl.bZoomOut - cam_ctl.bZoomIn) * dTimeMul), 10.0f, 170.0f);
-  }
+  cam_ctl.fFOV = Clamp(FLOAT(cam_ctl.fFOV + (cam_ctl.bZoomOut - cam_ctl.bZoomIn) * dTimeMul), 10.0f, 170.0f);
+  cp.fFOV = cam_ctl.fFOV;
 
   // Snap back to view of the current player
   if (cam_ctl.bResetToPlayer && penObserving != NULL)
