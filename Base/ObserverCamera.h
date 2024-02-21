@@ -27,7 +27,7 @@ class CORE_API CObserverCamera {
     struct CameraControl {
       INDEX bMoveF, bMoveB, bMoveL, bMoveR, bMoveU, bMoveD;
       INDEX bBankingL, bBankingR, bZoomIn, bZoomOut;
-      INDEX bZoomDefault, bResetToPlayer, bSnapshot;
+      INDEX bZoomDefault, bResetToPlayer, bFollowPlayer, bSnapshot;
 
       CameraControl() {
         Reset();
@@ -37,7 +37,7 @@ class CORE_API CObserverCamera {
       void Reset(void) {
         bMoveF = bMoveB = bMoveL = bMoveR = bMoveU = bMoveD = FALSE;
         bBankingL = bBankingR = bZoomIn = bZoomOut = FALSE;
-        bZoomDefault = bResetToPlayer = bSnapshot = FALSE;
+        bZoomDefault = bResetToPlayer = bFollowPlayer = bSnapshot = FALSE;
       };
     };
 

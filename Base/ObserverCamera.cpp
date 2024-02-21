@@ -78,6 +78,7 @@ void CObserverCamera::Init(void)
   _pShell->DeclareSymbol("user INDEX ocam_bZoomOut;",          &cam_ctl.bZoomOut);
   _pShell->DeclareSymbol("user INDEX ocam_bZoomDefault;",      &cam_ctl.bZoomDefault);
   _pShell->DeclareSymbol("user INDEX ocam_bResetToPlayer;",    &cam_ctl.bResetToPlayer);
+  _pShell->DeclareSymbol("user INDEX ocam_bFollowPlayer;",     &cam_ctl.bFollowPlayer);
   _pShell->DeclareSymbol("user INDEX ocam_bSnapshot;",         &cam_ctl.bSnapshot);
 
   _pShell->DeclareSymbol("persistent user FLOAT ocam_fSpeed;", &cam_fSpeed);
@@ -178,13 +179,30 @@ CObserverCamera::CameraPos &CObserverCamera::FreeFly(CPlayerEntity *penObserving
   {
     cam_fSmoothRotation = Clamp(cam_fSmoothRotation, 0.0f, 1.0f);
     const BOOL bInstantRotation = (cam_fSmoothRotation == 1.0f);
+    const BOOL bFollowing = (cam_ctl.bFollowPlayer && penObserving != NULL);
 
     // Input rotation
     ANGLE3D aRotate;
 
+    // Focus on the current player
+    if (bFollowing) {
+      // Direction towards the player
+      CPlacement3D plView = IWorld::GetViewpoint(penObserving, TRUE);
+      const FLOAT3D vDir = (plView.pl_PositionVector - cp.vPos).SafeNormalize();
+
+      // Relative angle towards the player
+      DirectionVectorToAnglesNoSnap(vDir, aRotate);
+      aRotate -= cp.aRot;
+
+      aRotate(1) = NormalizeAngle(aRotate(1));
+      aRotate(2) = NormalizeAngle(aRotate(2));
+
     // Manual mouse input
-    aRotate(1) = _pInput->GetAxisValue(MOUSE_X_AXIS) * -0.5f;
-    aRotate(2) = _pInput->GetAxisValue(MOUSE_Y_AXIS) * +0.5f;
+    } else {
+      aRotate(1) = _pInput->GetAxisValue(MOUSE_X_AXIS) * -0.5f;
+      aRotate(2) = _pInput->GetAxisValue(MOUSE_Y_AXIS) * +0.5f;
+    }
+
     aRotate(3) = (cam_ctl.bBankingL - cam_ctl.bBankingR) * 0.5f;
 
     // Set immediately
@@ -198,6 +216,12 @@ CObserverCamera::CameraPos &CObserverCamera::FreeFly(CPlayerEntity *penObserving
       // Use cosine in order to make real values slightly lower than they are (e.g. 0.5 -> ~0.3)
       const FLOAT fSpeedMul = 1.0f - Cos(cam_fSmoothRotation * 90);
       cam_aRotation += (aRotate - cam_aRotation) * dTimeMul * fSpeedMul;
+
+      // Override directional rotation while following
+      if (bFollowing) {
+        cam_aRotation(1) = aRotate(1) * dTimeMul * cam_fSmoothRotation;
+        cam_aRotation(2) = aRotate(2) * dTimeMul * cam_fSmoothRotation;
+      }
     }
 
     cp.aRot += cam_aRotation;
