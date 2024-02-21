@@ -17,10 +17,52 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "ObserverCamera.h"
 
+// Clamp distance from number difference
+__forceinline DOUBLE ClampDistDn(DOUBLE dDiff, DOUBLE dDown) {
+  DOUBLE d = Abs(dDiff);
+  return (d < dDown ? dDown : d);
+};
+
+// Clamp distance from vector difference
+__forceinline DOUBLE ClampDistDn(FLOAT3D vDiff, DOUBLE dDown) {
+  DOUBLE d = vDiff.Length();
+  return (d < dDown ? dDown : d);
+};
+
+// Calculate position within a Catmull-Rom spline using four points
+// Source: https://qroph.github.io/2018/07/30/smooth-paths-using-catmull-rom-splines.html
+template<class Type> __forceinline
+Type CatmullRom(const Type pt0, const Type pt1, const Type pt2, const Type pt3, DOUBLE dR, DOUBLE dTension)
+{
+  // [Cecil] FIXME: Other values make movement less smooth between points, possibly due
+  // to the fact that it's using a small segment at a time instead of the entire path.
+  static const DOUBLE fAlpha = 0.0;
+  DOUBLE t01 = pow(ClampDistDn(pt0 - pt1, 0.01), fAlpha);
+  DOUBLE t12 = pow(ClampDistDn(pt1 - pt2, 0.01), fAlpha);
+  DOUBLE t23 = pow(ClampDistDn(pt2 - pt3, 0.01), fAlpha);
+
+  Type m1 = (pt2 - pt1 + ((pt1 - pt0) / t01 - (pt2 - pt0) / (t01 + t12)) * t12) * (1.0 - dTension);
+  Type m2 = (pt2 - pt1 + ((pt3 - pt2) / t23 - (pt3 - pt1) / (t12 + t23)) * t12) * (1.0 - dTension);
+
+  Type a = (pt1 - pt2) * +2.0 + m1 + m2;
+  Type b = (pt1 - pt2) * -3.0 - m1 - m1 - m2;
+  Type c = m1;
+  Type d = pt1;
+
+  return a * dR * dR * dR + b * dR * dR + c * dR + d;
+};
+
 void CObserverCamera::ReadPos(CameraPos &cp) {
   // Playback config exhausted
   if (cam_strmScript.AtEOF()) {
-    Reset(TRUE);
+    // Buffer last position so it plays until that one as well
+    if (!cam_acpCurve[3].bLast) {
+      cam_acpCurve[3].bLast = TRUE;
+
+    // Otherwise reset playback
+    } else {
+      Reset(TRUE);
+    }
     return;
   }
 
@@ -81,6 +123,8 @@ void CObserverCamera::Init(void)
   _pShell->DeclareSymbol("user INDEX ocam_bFollowPlayer;",     &cam_ctl.bFollowPlayer);
   _pShell->DeclareSymbol("user INDEX ocam_bSnapshot;",         &cam_ctl.bSnapshot);
 
+  _pShell->DeclareSymbol("persistent user INDEX ocam_bSmoothPlayback;", &cam_bSmoothPlayback);
+  _pShell->DeclareSymbol("persistent user FLOAT ocam_fSmoothTension;", &cam_fSmoothTension);
   _pShell->DeclareSymbol("persistent user FLOAT ocam_fSpeed;", &cam_fSpeed);
   _pShell->DeclareSymbol("persistent user FLOAT ocam_fSmoothMovement;", &cam_fSmoothMovement);
   _pShell->DeclareSymbol("persistent user FLOAT ocam_fSmoothRotation;", &cam_fSmoothRotation);
@@ -109,8 +153,10 @@ void CObserverCamera::Start(const CTFileName &fnmDemo) {
   cam_bPlayback = TRUE;
 
   // Read the first positions immediately
-  ReadPos(cam_acpCurve[0]);
   ReadPos(cam_acpCurve[1]);
+  ReadPos(cam_acpCurve[2]);
+  ReadPos(cam_acpCurve[3]);
+  cam_acpCurve[0] = cam_acpCurve[1]; // Skip point 0 since the curve goes from 1 to 2
 
   SetSpeed(cam_acpCurve[0].fSpeed);
 };
@@ -129,7 +175,7 @@ void CObserverCamera::Reset(BOOL bPlayback) {
   cam_bPlayback = FALSE;
   cam_strmScript.Close();
 
-  for (INDEX i = 0; i < 2; i++) {
+  for (INDEX i = 0; i < 4; i++) {
     cam_acpCurve[i] = CameraPos();
   }
   cam_cpCurrent = CameraPos();
@@ -340,24 +386,36 @@ BOOL CObserverCamera::Update(CEntity *pen, CDrawPort *pdp) {
     TIME tmNow = _pTimer->GetLerpedCurrentTick() - cam_tmStartTime;
 
     // Skip around
-    while (cam_bPlayback && tmNow > cam_acpCurve[1].tmTick) {
+    while (cam_bPlayback && tmNow > cam_acpCurve[2].tmTick) {
       // Advance positions
-      cam_acpCurve[0] = cam_acpCurve[1];
+      INDEX i;
+      for (i = 0; i < 3; i++) {
+        cam_acpCurve[i] = cam_acpCurve[i + 1];
+      }
 
       // Read the next one
-      ReadPos(cam_acpCurve[1]);
+      ReadPos(cam_acpCurve[i]);
 
       SetSpeed(cam_acpCurve[1].fSpeed);
     }
 
     // Interpolate between two positions
-    const CameraPos &cpSrc = cam_acpCurve[1];
-    const CameraPos &cpDst = cam_acpCurve[0];
-    FLOAT fRatio = (tmNow - cpSrc.tmTick) / (cpDst.tmTick - cpSrc.tmTick);
+    const CameraPos *acp = cam_acpCurve;
+    FLOAT fRatio = (tmNow - acp[1].tmTick) / (acp[2].tmTick - acp[1].tmTick);
 
-    cp.vPos = Lerp(cpSrc.vPos, cpDst.vPos, fRatio);
-    cp.aRot = Lerp(cpSrc.aRot, cpDst.aRot, fRatio);
-    cp.fFOV = Lerp(cpSrc.fFOV, cpDst.fFOV, fRatio);
+    // Move through a curve between two points
+    if (cam_bSmoothPlayback) {
+      cam_fSmoothTension = Clamp(cam_fSmoothTension, 0.0f, 1.0f);
+      cp.vPos = CatmullRom(acp[0].vPos, acp[1].vPos, acp[2].vPos, acp[3].vPos, fRatio, cam_fSmoothTension);
+      cp.aRot = CatmullRom(acp[0].aRot, acp[1].aRot, acp[2].aRot, acp[3].aRot, fRatio, cam_fSmoothTension);
+      cp.fFOV = CatmullRom(acp[0].fFOV, acp[1].fFOV, acp[2].fFOV, acp[3].fFOV, fRatio, cam_fSmoothTension);
+
+    // Linear movement from one point to another
+    } else {
+      cp.vPos = Lerp(acp[1].vPos, acp[2].vPos, fRatio);
+      cp.aRot = Lerp(acp[1].aRot, acp[2].aRot, fRatio);
+      cp.fFOV = Lerp(acp[1].fFOV, acp[2].fFOV, fRatio);
+    }
 
   // Free fly movement
   } else {

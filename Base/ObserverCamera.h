@@ -48,8 +48,9 @@ class CORE_API CObserverCamera {
       FLOAT3D vPos;
       ANGLE3D aRot;
       FLOAT fFOV;
+      BOOL bLast; // Internal flag
 
-      CameraPos() : vPos(0, 0, 0), aRot(0, 0, 0), fFOV(90), fSpeed(1), tmTick(0)
+      CameraPos() : vPos(0, 0, 0), aRot(0, 0, 0), fFOV(90), fSpeed(1), tmTick(0), bLast(FALSE)
       {
       };
 
@@ -62,6 +63,9 @@ class CORE_API CObserverCamera {
     // Camera control (fields outside cam_ctl aren't reset between camera activations)
     CameraControl cam_ctl;
     BOOL cam_bActive; // Dynamic camera toggle
+
+    BOOL cam_bSmoothPlayback; // Smooth camera movement during playback
+    FLOAT cam_fSmoothTension; // Camera movement tension during smooth playback
     FLOAT cam_fSpeed; // Movement speed multiplier
     FLOAT cam_fSmoothMovement; // Factor for smooth camera movement
     FLOAT cam_fSmoothRotation; // Factor for smooth camera rotation
@@ -74,7 +78,7 @@ class CORE_API CObserverCamera {
     TIME cam_tmStartTime; // Simulation time when camera started
     CTimerValue cam_tvDelta; // Time since last render frame
 
-    CameraPos cam_acpCurve[2]; // Camera positions for a curve (playback mode)
+    CameraPos cam_acpCurve[4]; // Camera positions for a curve (playback mode)
     CameraPos cam_cpCurrent; // Current camera position (freecam mode)
 
     // Absolute movement & rotation speed
@@ -85,7 +89,8 @@ class CORE_API CObserverCamera {
 
   public:
     // Constructor
-    CObserverCamera() : cam_bActive(FALSE) {
+    CObserverCamera() : cam_bActive(FALSE), cam_bSmoothPlayback(FALSE) {
+      cam_fSmoothTension = 0.0f;
       cam_fSpeed = 1.0f;
       cam_fSmoothMovement = 1.0f;
       cam_fSmoothRotation = 1.0f;
