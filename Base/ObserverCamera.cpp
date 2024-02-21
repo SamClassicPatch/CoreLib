@@ -84,6 +84,7 @@ void CObserverCamera::Init(void)
   _pShell->DeclareSymbol("persistent user FLOAT ocam_fSpeed;", &cam_fSpeed);
   _pShell->DeclareSymbol("persistent user FLOAT ocam_fSmoothMovement;", &cam_fSmoothMovement);
   _pShell->DeclareSymbol("persistent user FLOAT ocam_fSmoothRotation;", &cam_fSmoothRotation);
+  _pShell->DeclareSymbol("persistent user FLOAT ocam_fFollowDist;", &cam_fFollowDist);
 };
 
 // Start camera for a game (or a currently playing demo)
@@ -235,15 +236,28 @@ CObserverCamera::CameraPos &CObserverCamera::FreeFly(CPlayerEntity *penObserving
   // Camera movement
   if (cam_fSpeed != 0.0f) {
     // Movement vector
-    FLOAT3D vMoveDir(cam_ctl.bMoveR - cam_ctl.bMoveL, cam_ctl.bMoveU - cam_ctl.bMoveD, cam_ctl.bMoveB - cam_ctl.bMoveF);
-    const FLOAT fMoveLength = vMoveDir.Length();
+    FLOAT3D vMoveDir(0, 0, 0);
 
-    if (fMoveLength > 0.01f) {
+    // Follow the player and always stay close enough
+    if (cam_fFollowDist >= 0.0f && penObserving != NULL) {
+      CPlacement3D plView = IWorld::GetViewpoint(penObserving, TRUE);
+      FLOAT3D vToPlayer = (plView.pl_PositionVector - cp.vPos);
+
+      if (vToPlayer.Length() > cam_fFollowDist) {
+        vMoveDir = vToPlayer.SafeNormalize() * cam_fSpeed;
+      }
+    }
+
+    // Add input vector to the any current movement
+    FLOAT3D vInputDir(cam_ctl.bMoveR - cam_ctl.bMoveL, cam_ctl.bMoveU - cam_ctl.bMoveD, cam_ctl.bMoveB - cam_ctl.bMoveF);
+    const FLOAT fInputLength = vInputDir.Length();
+
+    if (fInputLength > 0.01f) {
       FLOATmatrix3D mRot;
       MakeRotationMatrixFast(mRot, ANGLE3D(cp.aRot(1), 0, 0)); // Only heading direction
 
       // Normalize vector, apply current rotation and speed
-      vMoveDir = (vMoveDir / fMoveLength) * mRot * cam_fSpeed;
+      vMoveDir += (vInputDir / fInputLength) * mRot * cam_fSpeed;
     }
 
     // Set immediately

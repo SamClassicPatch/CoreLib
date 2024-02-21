@@ -65,6 +65,7 @@ class CORE_API CObserverCamera {
     FLOAT cam_fSpeed; // Movement speed multiplier
     FLOAT cam_fSmoothMovement; // Factor for smooth camera movement
     FLOAT cam_fSmoothRotation; // Factor for smooth camera rotation
+    FLOAT cam_fFollowDist; // Close in on the player if they're far enough from the camera
 
     BOOL cam_bPlayback; // Currently playing back the recording
     CTFileName cam_fnmDemo; // Currently playing demo
@@ -88,6 +89,7 @@ class CORE_API CObserverCamera {
       cam_fSpeed = 1.0f;
       cam_fSmoothMovement = 1.0f;
       cam_fSmoothRotation = 1.0f;
+      cam_fFollowDist = -1.0f;
       Reset();
     };
 
