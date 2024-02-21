@@ -127,6 +127,9 @@ void ICoreHooks::OnChangeLevel(void)
 // Called before stopping world simulation
 void ICoreHooks::OnGameStop(void)
 {
+  // Reset CAM for the next start
+  GetGameAPI()->GetCamera().Reset();
+
   // Call game stop function for each plugin
   FOREACHPLUGINHANDLER(GetPluginAPI()->cGameEvents, IGameEvents, pEvents) {
     if ((IAbstractEvents *)pEvents == NULL) continue;
@@ -209,6 +212,9 @@ void ICoreHooks::OnRemovePlayer(CPlayerTarget &plt, BOOL bLocal)
 // Called after starting demo playback
 void ICoreHooks::OnDemoPlay(const CTFileName &fnmDemo)
 {
+  // Start CAM for the demo
+  GetGameAPI()->GetCamera().Start(fnmDemo);
+
   // Call demo play function for each plugin
   FOREACHPLUGINHANDLER(GetPluginAPI()->cDemoEvents, IDemoEvents, pEvents) {
     if ((IAbstractEvents *)pEvents == NULL) continue;

@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Declare certain classes | Which files to include to define classes
 class CHighScoreEntry; // #include <Game/Game.h>
 class CControls;       // #include <Game/Game.h>
+class CObserverCamera; // #include <CoreLib/Base/ObserverCamera.h>
 
 // Engine-compatible replacement for CUniversalSessionProperties
 typedef UBYTE CSesPropsContainer[NET_MAXSESSIONPROPERTIES];
@@ -124,6 +125,9 @@ class CORE_API CGameAPI {
 
     // Start new game
     BOOL NewGame(const CTString &strSession, const CTFileName &fnmWorld, class CSessionProperties &sp);
+
+    // Get observer camera
+    virtual CObserverCamera &GetCamera(void);
 
   // Shell symbol wrappers
   public:

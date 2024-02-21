@@ -15,6 +15,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "StdH.h"
 
+// Common observer camera
+static CObserverCamera *_pObserverCam = NULL;
+
 // Constructor
 CGameAPI::CGameAPI() : pctrlCommon(NULL) {
   // Session properties game modes used by the patch
@@ -24,6 +27,10 @@ CGameAPI::CGameAPI() : pctrlCommon(NULL) {
 
   // Fields are not hooked yet
   bGameHooked = FALSE;
+
+  // Initialize camera
+  _pObserverCam = new CObserverCamera;
+  _pObserverCam->Init();
 };
 
 // Controls patch
@@ -136,6 +143,11 @@ BOOL CGameAPI::NewGame(const CTString &strSession, const CTFileName &fnmWorld, C
   }
 
   return bResult;
+};
+
+// Get observer camera
+CObserverCamera &CGameAPI::GetCamera(void) {
+  return *_pObserverCam;
 };
 
 // Get name of a specific gamemode

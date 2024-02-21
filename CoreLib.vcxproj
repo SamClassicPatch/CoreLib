@@ -36,6 +36,7 @@
     <ClInclude Include="Base\CommonCore.h" />
     <ClInclude Include="Base\CoreTimerHandler.h" />
     <ClInclude Include="Base\GameDirectories.h" />
+    <ClInclude Include="Base\ObserverCamera.h" />
     <ClInclude Include="Base\Unzip.h" />
     <ClInclude Include="Compatibility\Game.h" />
     <ClInclude Include="Compatibility\GameControls.h" />
@@ -108,6 +109,7 @@
     <ClCompile Include="API\SteamAPI.cpp" />
     <ClCompile Include="Base\CoreTimerHandler.cpp" />
     <ClCompile Include="Base\GameDirectories.cpp" />
+    <ClCompile Include="Base\ObserverCamera.cpp" />
     <ClCompile Include="Base\Unzip.cpp" />
     <ClCompile Include="Core.cpp" />
     <ClCompile Include="Definitions\InlineDefinitions.cpp" />

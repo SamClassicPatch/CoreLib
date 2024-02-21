@@ -68,6 +68,7 @@ CORE_API extern FLOAT inp_afAxisValues[MAX_OVERALL_AXES];
 
 // Common components
 #include <CoreLib/API/CoreAPI.h>
+#include <CoreLib/Base/ObserverCamera.h>
 #include <CoreLib/Base/GameDirectories.h>
 #include <CoreLib/Modules/PluginStock.h>
 
