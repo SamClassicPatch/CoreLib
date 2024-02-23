@@ -92,7 +92,9 @@ void CObserverCamera::WritePos(CameraPos &cp) {
   }
 };
 
-static inline void SetSpeed(FLOAT fSpeed) {
+void CObserverCamera::SetSpeed(FLOAT fSpeed) {
+  if (!cam_bPlaybackSpeedControl) return;
+
   static CSymbolPtr pfRealTimeFactor("dem_fRealTimeFactor");
 
   if (!pfRealTimeFactor.Exists()) {
@@ -123,6 +125,7 @@ void CObserverCamera::Init(void)
   _pShell->DeclareSymbol("user INDEX ocam_bFollowPlayer;",     &cam_ctl.bFollowPlayer);
   _pShell->DeclareSymbol("user INDEX ocam_bSnapshot;",         &cam_ctl.bSnapshot);
 
+  _pShell->DeclareSymbol("persistent user INDEX ocam_bPlaybackSpeedControl;", &cam_bPlaybackSpeedControl);
   _pShell->DeclareSymbol("persistent user INDEX ocam_bSmoothPlayback;", &cam_bSmoothPlayback);
   _pShell->DeclareSymbol("persistent user FLOAT ocam_fSmoothTension;", &cam_fSmoothTension);
   _pShell->DeclareSymbol("persistent user FLOAT ocam_fSpeed;", &cam_fSpeed);

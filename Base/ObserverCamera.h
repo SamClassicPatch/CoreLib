@@ -66,6 +66,7 @@ class CORE_API CObserverCamera {
     CameraControl cam_ctl;
     BOOL cam_bActive; // Dynamic camera toggle
 
+    BOOL cam_bPlaybackSpeedControl; // Let camera playback control demo speed
     BOOL cam_bSmoothPlayback; // Smooth camera movement during playback
     FLOAT cam_fSmoothTension; // Camera movement tension during smooth playback
     FLOAT cam_fSpeed; // Movement speed multiplier
@@ -91,7 +92,10 @@ class CORE_API CObserverCamera {
 
   public:
     // Constructor
-    CObserverCamera() : cam_bActive(FALSE), cam_bSmoothPlayback(FALSE) {
+    CObserverCamera() {
+      cam_bActive = FALSE;
+      cam_bPlaybackSpeedControl = FALSE;
+      cam_bSmoothPlayback = FALSE;
       cam_fSmoothTension = 0.0f;
       cam_fSpeed = 1.0f;
       cam_fSmoothMovement = 1.0f;
@@ -105,6 +109,9 @@ class CORE_API CObserverCamera {
 
     void ReadPos(CameraPos &cp);
     void WritePos(CameraPos &cp);
+
+    // Change demo playback speed
+    void SetSpeed(FLOAT fSpeed);
 
     // Start camera for a game (or a currently playing demo)
     void Start(const CTFileName &fnmDemo);
