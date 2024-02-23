@@ -24,6 +24,14 @@ CCoreTimerHandler *_pTimerHandler = NULL;
 
 // This is called every CTimer::TickQuantum seconds
 void CCoreTimerHandler::HandleTimer(void) {
+  // Update observer camera controls during the game
+  BOOL bInput = _pInput->IsInputEnabled() && GetGameAPI()->IsHooked()
+             && !GetGameAPI()->IsMenuOn() && GetGameAPI()->IsGameOn();
+
+  if (bInput) {
+    GetGameAPI()->GetCamera().UpdateControls();
+  }
+
   // Called every game tick, even if no session was started and while in pause
   static CTimerValue _tvLastSecCheck(-1.0f);
 

@@ -64,8 +64,9 @@ class CORE_API CObserverCamera {
   public:
     // Camera control (fields outside cam_ctl aren't reset between camera activations)
     CameraControl cam_ctl;
-    BOOL cam_bActive; // Dynamic camera toggle
 
+    BOOL cam_bActive; // Dynamic camera toggle
+    BOOL cam_bDefaultControls; // Use internal controls instead of manually binding the commands
     BOOL cam_bPlaybackSpeedControl; // Let camera playback control demo speed
     BOOL cam_bSmoothPlayback; // Smooth camera movement during playback
     FLOAT cam_fSmoothTension; // Camera movement tension during smooth playback
@@ -94,6 +95,7 @@ class CORE_API CObserverCamera {
     // Constructor
     CObserverCamera() {
       cam_bActive = FALSE;
+      cam_bDefaultControls = TRUE;
       cam_bPlaybackSpeedControl = FALSE;
       cam_bSmoothPlayback = FALSE;
       cam_fSmoothTension = 0.0f;
@@ -124,6 +126,9 @@ class CORE_API CObserverCamera {
 
     // Start recording into a file
     virtual BOOL StartRecording(void);
+
+    // Direct button input using default controls
+    void UpdateControls(void);
 
     // Free fly camera movement during the game
     CameraPos &FreeFly(CPlayerEntity *penObserving);

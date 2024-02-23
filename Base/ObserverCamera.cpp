@@ -108,8 +108,7 @@ void CObserverCamera::SetSpeed(FLOAT fSpeed) {
 // Initialize camera interface
 void CObserverCamera::Init(void)
 {
-  _pShell->DeclareSymbol("user INDEX ocam_bActive;", &cam_bActive);
-
+  // Bindable camera controls
   _pShell->DeclareSymbol("user INDEX ocam_bMoveForward;",      &cam_ctl.bMoveF);
   _pShell->DeclareSymbol("user INDEX ocam_bMoveBackward;",     &cam_ctl.bMoveB);
   _pShell->DeclareSymbol("user INDEX ocam_bMoveLeft;",         &cam_ctl.bMoveL);
@@ -125,13 +124,16 @@ void CObserverCamera::Init(void)
   _pShell->DeclareSymbol("user INDEX ocam_bFollowPlayer;",     &cam_ctl.bFollowPlayer);
   _pShell->DeclareSymbol("user INDEX ocam_bSnapshot;",         &cam_ctl.bSnapshot);
 
+  // Camera properties
+  _pShell->DeclareSymbol("           user INDEX ocam_bActive;",               &cam_bActive);
+  _pShell->DeclareSymbol("persistent user INDEX ocam_bDefaultControls;",      &cam_bDefaultControls);
   _pShell->DeclareSymbol("persistent user INDEX ocam_bPlaybackSpeedControl;", &cam_bPlaybackSpeedControl);
-  _pShell->DeclareSymbol("persistent user INDEX ocam_bSmoothPlayback;", &cam_bSmoothPlayback);
-  _pShell->DeclareSymbol("persistent user FLOAT ocam_fSmoothTension;", &cam_fSmoothTension);
-  _pShell->DeclareSymbol("persistent user FLOAT ocam_fSpeed;", &cam_fSpeed);
-  _pShell->DeclareSymbol("persistent user FLOAT ocam_fSmoothMovement;", &cam_fSmoothMovement);
-  _pShell->DeclareSymbol("persistent user FLOAT ocam_fSmoothRotation;", &cam_fSmoothRotation);
-  _pShell->DeclareSymbol("persistent user FLOAT ocam_fFollowDist;", &cam_fFollowDist);
+  _pShell->DeclareSymbol("persistent user INDEX ocam_bSmoothPlayback;",       &cam_bSmoothPlayback);
+  _pShell->DeclareSymbol("persistent user FLOAT ocam_fSmoothTension;",        &cam_fSmoothTension);
+  _pShell->DeclareSymbol("persistent user FLOAT ocam_fSpeed;",                &cam_fSpeed);
+  _pShell->DeclareSymbol("persistent user FLOAT ocam_fSmoothMovement;",       &cam_fSmoothMovement);
+  _pShell->DeclareSymbol("persistent user FLOAT ocam_fSmoothRotation;",       &cam_fSmoothRotation);
+  _pShell->DeclareSymbol("persistent user FLOAT ocam_fFollowDist;",           &cam_fFollowDist);
 };
 
 // Start camera for a game (or a currently playing demo)
@@ -222,6 +224,66 @@ BOOL CObserverCamera::StartRecording(void) {
   }
 
   return FALSE;
+};
+
+// Direct button input using default controls
+void CObserverCamera::UpdateControls(void) {
+  // Camera or default controls are disabled
+  if (!cam_bDefaultControls || !IsActive()) return;
+
+  _pInput->SetJoyPolling(FALSE);
+  _pInput->GetInput(FALSE);
+
+  // Button states for some controls
+  const BOOL bQ = _pInput->GetButtonState(KID_Q);
+  const BOOL bE = _pInput->GetButtonState(KID_E);
+  const BOOL bF = _pInput->GetButtonState(KID_F);
+  const BOOL bTab = _pInput->GetButtonState(KID_TAB);
+
+  // Turn left
+  static BOOL _bLeft = FALSE;
+
+  if (!_bLeft && bQ) cam_ctl.bBankingL = TRUE;
+  else
+  if (_bLeft && !bQ) cam_ctl.bBankingL = FALSE;
+
+  _bLeft = bQ;
+
+  // Turn right
+  static BOOL _bRight = FALSE;
+
+  if (!_bRight && bE) cam_ctl.bBankingR = TRUE;
+  else
+  if (_bRight && !bE) cam_ctl.bBankingR = FALSE;
+
+  _bRight = bE;
+
+  // Toggle following
+  static BOOL _bFollow = FALSE;
+  if (!_bFollow && bF) cam_ctl.bFollowPlayer = !cam_ctl.bFollowPlayer;
+  _bFollow = bF;
+
+  // Take snapshot
+  static BOOL _bSnap = FALSE;
+  if (!_bSnap && bTab) cam_ctl.bSnapshot = TRUE;
+  _bSnap = bTab;
+
+  // Movement and zoom
+  cam_ctl.bMoveF = _pInput->GetButtonState(KID_W) || _pInput->GetButtonState(KID_ARROWUP);
+  cam_ctl.bMoveB = _pInput->GetButtonState(KID_S) || _pInput->GetButtonState(KID_ARROWDOWN);
+  cam_ctl.bMoveL = _pInput->GetButtonState(KID_A) || _pInput->GetButtonState(KID_ARROWLEFT);
+  cam_ctl.bMoveR = _pInput->GetButtonState(KID_D) || _pInput->GetButtonState(KID_ARROWRIGHT);
+  cam_ctl.bMoveU = _pInput->GetButtonState(KID_LSHIFT)   || _pInput->GetButtonState(KID_RSHIFT);
+  cam_ctl.bMoveD = _pInput->GetButtonState(KID_LCONTROL) || _pInput->GetButtonState(KID_RCONTROL);
+  cam_ctl.bZoomIn = _pInput->GetButtonState(KID_MOUSEWHEELUP);
+  cam_ctl.bZoomOut = _pInput->GetButtonState(KID_MOUSEWHEELDOWN);
+  cam_ctl.bResetToPlayer = _pInput->GetButtonState(KID_X);
+
+  // Reset FOV and banking angle
+  if (_pInput->GetButtonState(KID_Z)) {
+    cam_ctl.fFOV = 90.0f;
+    cam_cpCurrent.aRot(3) = 0.0f;
+  }
 };
 
 // Free fly camera movement during the game
