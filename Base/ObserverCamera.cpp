@@ -153,12 +153,19 @@ void CObserverCamera::Start(const CTFileName &fnmDemo) {
   cam_bPlayback = TRUE;
 
   // Read the first positions immediately
-  ReadPos(cam_acpCurve[1]);
-  ReadPos(cam_acpCurve[2]);
-  ReadPos(cam_acpCurve[3]);
-  cam_acpCurve[0] = cam_acpCurve[1]; // Skip point 0 since the curve goes from 1 to 2
+  ReadPos(cam_acpCurve[2]); // Upcoming first point
+  ReadPos(cam_acpCurve[3]); // Buffered next point
+  SetSpeed(cam_acpCurve[2].fSpeed);
 
-  SetSpeed(cam_acpCurve[0].fSpeed);
+  // [Cecil] NOTE: Code below is needed in case the very first point in the recording doesn't begin
+  // at 0 seconds. But if it does, it will just immediately skip to it. This is simply a fail-safe.
+
+  // Wait from the very beginning before reaching the first point
+  cam_acpCurve[1] = cam_acpCurve[2];
+  cam_acpCurve[1].tmTick = 0.0f;
+
+  // Skip point 0 since the curve goes from 1 to 2
+  cam_acpCurve[0] = cam_acpCurve[1];
 };
 
 // Stop playback or camera altogether
