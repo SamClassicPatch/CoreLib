@@ -53,6 +53,9 @@ class CORE_API CExtPacket {
       EXT_ENTITY_RADDMG,   // Inflict damage at some point
       EXT_ENTITY_BOXDMG,   // Inflict damage in some area
 
+      EXT_CHANGE_LEVEL, // Force level change by creating vanilla WorldLink entity, if possible
+      EXT_CHANGE_WORLD, // Force immediate world change regardless of gameplay
+
       // Maximum amount of built-in packets
       EXT_MAX_PACKETS,
     };
@@ -582,6 +585,39 @@ class CORE_API CExtEntityBoxDamage : public CExtEntityDamage {
 
     virtual void Write(CNetworkMessage &nm);
     virtual void Read(CNetworkMessage &nm);
+    virtual void Process(void);
+};
+
+class CORE_API CExtChangeLevel : public CExtPacket {
+  public:
+    CTString strWorld; // World file to change to
+
+  public:
+    CExtChangeLevel()
+    {
+    };
+
+  public:
+    virtual EType GetType(void) const {
+      return EXT_CHANGE_LEVEL;
+    };
+
+    virtual void Write(CNetworkMessage &nm);
+    virtual void Read(CNetworkMessage &nm);
+    virtual void Process(void);
+};
+
+class CORE_API CExtChangeWorld : public CExtChangeLevel {
+  public:
+    CExtChangeWorld() : CExtChangeLevel()
+    {
+    };
+
+  public:
+    virtual EType GetType(void) const {
+      return EXT_CHANGE_WORLD;
+    };
+
     virtual void Process(void);
 };
 

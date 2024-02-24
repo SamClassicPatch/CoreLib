@@ -84,6 +84,9 @@ CExtPacket *CExtPacket::CreatePacket(EType ePacket, BOOL bClient) {
       case EXT_ENTITY_DIRDMG:   return new CExtEntityDirectDamage();
       case EXT_ENTITY_RADDMG:   return new CExtEntityRangeDamage();
       case EXT_ENTITY_BOXDMG:   return new CExtEntityBoxDamage();
+
+      case EXT_CHANGE_LEVEL:    return new CExtChangeLevel();
+      case EXT_CHANGE_WORLD:    return new CExtChangeWorld();
     }
   }
 
@@ -164,6 +167,10 @@ void CExtPacket::RegisterExtPackets(void)
   _pShell->DeclareSymbol("user void pck_SetBoxDamage(FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT);", &IPacketCommands::SetBoxDamage);
 
   _pShell->DeclareSymbol("user void pck_EntityDamage(void);", &IPacketCommands::EntityDamage);
+
+  // World change
+  _pShell->DeclareSymbol("user void pck_ChangeLevel(CTString);", &IPacketCommands::ChangeLevel);
+  _pShell->DeclareSymbol("user void pck_ChangeWorld(CTString);", &IPacketCommands::ChangeWorld);
 };
 
 // Write event into a network packet

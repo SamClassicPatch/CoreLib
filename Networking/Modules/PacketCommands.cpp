@@ -476,6 +476,26 @@ void EntityDamage(void) {
   }
 };
 
+// Change level using WorldLink
+void ChangeLevel(SHELL_FUNC_ARGS) {
+  BEGIN_SHELL_FUNC;
+  const CTString &strWorld = *NEXT_ARG(CTString *);
+
+  CExtChangeLevel pck;
+  pck.strWorld = strWorld;
+  pck.SendPacket();
+};
+
+// Force immediate world change
+void ChangeWorld(SHELL_FUNC_ARGS) {
+  BEGIN_SHELL_FUNC;
+  const CTString &strWorld = *NEXT_ARG(CTString *);
+
+  CExtChangeWorld pck;
+  pck.strWorld = strWorld;
+  pck.SendPacket();
+};
+
 }; // namespace
 
 #endif // CLASSICSPATCH_EXT_PACKETS

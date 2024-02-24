@@ -71,6 +71,10 @@ void SetBoxDamage(SHELL_FUNC_ARGS);
 
 void EntityDamage(void);
 
+// World change
+void ChangeLevel(SHELL_FUNC_ARGS);
+void ChangeWorld(SHELL_FUNC_ARGS);
+
 }; // namespace
 
 #endif // CLASSICSPATCH_EXT_PACKETS
