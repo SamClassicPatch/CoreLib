@@ -441,6 +441,14 @@ BOOL CObserverCamera::Update(CEntity *pen, CDrawPort *pdp) {
 
   // Camera is currently disabled
   if (!IsActive()) {
+    // Remember player view position for the next activation
+    if (IsDerivedFromID(pen, CPlayerEntity_ClassID)) {
+      CPlacement3D plView = IWorld::GetViewpoint((CPlayerEntity *)pen, TRUE);
+
+      cam_cpCurrent.vPos = plView.pl_PositionVector;
+      cam_cpCurrent.aRot = plView.pl_OrientationAngle;
+    }
+
     cam_vMovement = FLOAT3D(0, 0, 0);
     cam_aRotation = ANGLE3D(0, 0, 0);
     return FALSE;
