@@ -51,30 +51,35 @@ void CExtChangeLevel::Process(void) {
     return;
   }
 
-  CEntity *pen = IWorld::GetWorld()->CreateEntity_t(CPlacement3D(), CTFILENAME("Classes\\WorldLink.ecl"));
+  try {
+    CEntity *pen = IWorld::GetWorld()->CreateEntity_t(CPlacement3D(), CTFILENAME("Classes\\WorldLink.ecl"));
 
-  // Retrieve CWorldLink::m_strWorld and CWorldLink::m_EwltType
-  static CPropertyPtr pptrWorld(pen);
-  static CPropertyPtr pptrType(pen);
+    // Retrieve CWorldLink::m_strWorld and CWorldLink::m_EwltType
+    static CPropertyPtr pptrWorld(pen);
+    static CPropertyPtr pptrType(pen);
 
-  // Change type
-  if (pptrType.ByVariable("CWorldLink", "m_EwltType")) {
-    INDEX &iType = ENTITYPROPERTY(pen, pptrType.Offset(), INDEX);
-    iType = 1; // WLT_FIXED
-  }
+    // Change type
+    if (pptrType.ByVariable("CWorldLink", "m_EwltType")) {
+      INDEX &iType = ENTITYPROPERTY(pen, pptrType.Offset(), INDEX);
+      iType = 1; // WLT_FIXED
+    }
 
-  // Set world and change to it
-  if (pptrWorld.ByVariable("CWorldLink", "m_strWorld")) {
-    CTFileNameNoDep &strProp = ENTITYPROPERTY(pen, pptrWorld.Offset(), CTFileNameNoDep);
-    strProp = strWorld;
+    // Set world and change to it
+    if (pptrWorld.ByVariable("CWorldLink", "m_strWorld")) {
+      CTFileNameNoDep &strProp = ENTITYPROPERTY(pen, pptrWorld.Offset(), CTFileNameNoDep);
+      strProp = strWorld;
 
-    pen->Initialize();
-    pen->SendEvent(VNL_ETrigger());
+      pen->Initialize();
+      pen->SendEvent(VNL_ETrigger());
 
-  // Discard entity
-  } else {
-    pen->Initialize();
-    pen->Destroy();
+    // Discard entity
+    } else {
+      pen->Initialize();
+      pen->Destroy();
+    }
+
+  } catch (char *strError) {
+    ExtServerReport(TRANS("Cannot load %s class:\n%s"), "WorldLink", strError);
   }
 };
 
