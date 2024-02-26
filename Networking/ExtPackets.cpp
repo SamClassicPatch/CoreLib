@@ -87,6 +87,7 @@ CExtPacket *CExtPacket::CreatePacket(EType ePacket, BOOL bClient) {
 
       case EXT_CHANGE_LEVEL:    return new CExtChangeLevel();
       case EXT_CHANGE_WORLD:    return new CExtChangeWorld();
+      case EXT_SESSION_PROPS:   return new CExtSessionProps();
     }
   }
 
@@ -171,6 +172,14 @@ void CExtPacket::RegisterExtPackets(void)
   // World change
   _pShell->DeclareSymbol("user void pck_ChangeLevel(CTString);", &IPacketCommands::ChangeLevel);
   _pShell->DeclareSymbol("user void pck_ChangeWorld(CTString);", &IPacketCommands::ChangeWorld);
+
+  // Session properties
+  _pShell->DeclareSymbol("user void pck_StartSesProps(INDEX);",    &IPacketCommands::StartSesProps);
+  _pShell->DeclareSymbol("user void pck_SesPropIndex(INDEX);",     &IPacketCommands::SesPropIndex);
+  _pShell->DeclareSymbol("user void pck_SesPropFloat(FLOAT);",     &IPacketCommands::SesPropFloat);
+  _pShell->DeclareSymbol("user void pck_SesPropString(CTString);", &IPacketCommands::SesPropString);
+  _pShell->DeclareSymbol("user void pck_SeekSesProp(INDEX);",      &IPacketCommands::SeekSesProp);
+  _pShell->DeclareSymbol("user void pck_SendSesProps(void);",      &IPacketCommands::SendSesProps);
 };
 
 // Write event into a network packet

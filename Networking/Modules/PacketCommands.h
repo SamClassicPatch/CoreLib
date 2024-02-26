@@ -75,6 +75,14 @@ void EntityDamage(void);
 void ChangeLevel(SHELL_FUNC_ARGS);
 void ChangeWorld(SHELL_FUNC_ARGS);
 
+// Session properties
+void StartSesProps(SHELL_FUNC_ARGS);
+void SesPropIndex(SHELL_FUNC_ARGS);
+void SesPropFloat(SHELL_FUNC_ARGS);
+void SesPropString(SHELL_FUNC_ARGS);
+void SeekSesProp(SHELL_FUNC_ARGS);
+void SendSesProps(void);
+
 }; // namespace
 
 #endif // CLASSICSPATCH_EXT_PACKETS

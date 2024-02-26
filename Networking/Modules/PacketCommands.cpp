@@ -496,6 +496,49 @@ void ChangeWorld(SHELL_FUNC_ARGS) {
   pck.SendPacket();
 };
 
+// Preconfigured session properties to change
+static CExtSessionProps _pckSesProps;
+
+// Begin session properties setup from specific offset
+void StartSesProps(SHELL_FUNC_ARGS) {
+  BEGIN_SHELL_FUNC;
+  _pckSesProps.slOffset = NEXT_ARG(INDEX);
+  _pckSesProps.slSize = 0;
+};
+
+// Set integer in session properties
+void SesPropIndex(SHELL_FUNC_ARGS) {
+  BEGIN_SHELL_FUNC;
+  INDEX iValue = NEXT_ARG(INDEX);
+  _pckSesProps.AddData(&iValue, sizeof(iValue));
+};
+
+// Set float number in session properties
+void SesPropFloat(SHELL_FUNC_ARGS) {
+  BEGIN_SHELL_FUNC;
+  FLOAT fValue = NEXT_ARG(FLOAT);
+  _pckSesProps.AddData(&fValue, sizeof(fValue));
+};
+
+// Set string characters in session properties
+void SesPropString(SHELL_FUNC_ARGS) {
+  BEGIN_SHELL_FUNC;
+  const CTString &strValue = *NEXT_ARG(CTString *);
+  _pckSesProps.AddData(strValue.str_String, strValue.Length());
+};
+
+// Skip setting specific bytes
+void SeekSesProp(SHELL_FUNC_ARGS) {
+  BEGIN_SHELL_FUNC;
+  INDEX iBytes = NEXT_ARG(INDEX);
+  _pckSesProps.slSize = ClampDn(_pckSesProps.slSize + iBytes, (SLONG)0);
+};
+
+// Send previously set session properties
+void SendSesProps(void) {
+  _pckSesProps.SendPacket();
+};
+
 }; // namespace
 
 #endif // CLASSICSPATCH_EXT_PACKETS

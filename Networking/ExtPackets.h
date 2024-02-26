@@ -53,8 +53,9 @@ class CORE_API CExtPacket {
       EXT_ENTITY_RADDMG,   // Inflict damage at some point
       EXT_ENTITY_BOXDMG,   // Inflict damage in some area
 
-      EXT_CHANGE_LEVEL, // Force level change by creating vanilla WorldLink entity, if possible
-      EXT_CHANGE_WORLD, // Force immediate world change regardless of gameplay
+      EXT_CHANGE_LEVEL,  // Force level change by creating vanilla WorldLink entity, if possible
+      EXT_CHANGE_WORLD,  // Force immediate world change regardless of gameplay
+      EXT_SESSION_PROPS, // Change data in session properties
 
       // Maximum amount of built-in packets
       EXT_MAX_PACKETS,
@@ -618,6 +619,30 @@ class CORE_API CExtChangeWorld : public CExtChangeLevel {
       return EXT_CHANGE_WORLD;
     };
 
+    virtual void Process(void);
+};
+
+class CORE_API CExtSessionProps : public CExtPacket {
+  public:
+    CSesPropsContainer sp; // Session properties to set (data that's not processed isn't being zeroed!)
+    SLONG slSize; // Amount of bytes to set
+    SLONG slOffset; // Starting byte (up to NET_MAXSESSIONPROPERTIES - 1)
+
+  public:
+    CExtSessionProps() : slSize(0), slOffset(0)
+    {
+    };
+
+    // Set new data at the current end and expand session properties size
+    BOOL AddData(const void *pData, size_t ctBytes);
+
+  public:
+    virtual EType GetType(void) const {
+      return EXT_SESSION_PROPS;
+    };
+
+    virtual void Write(CNetworkMessage &nm);
+    virtual void Read(CNetworkMessage &nm);
     virtual void Process(void);
 };
 
