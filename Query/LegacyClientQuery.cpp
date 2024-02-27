@@ -223,8 +223,7 @@ static void StartInternetSearch(void) {
   }
 
   // Connect to the master server
-  extern CTString ms_strLegacyMS;
-  char *strMasterServer = ms_strLegacyMS.str_String;
+  char *strMasterServer = _aProtocols[E_MS_LEGACY]->GetMS().str_String;
 
   sockaddr_in addr;
   addr.sin_addr.s_addr = resolv(strMasterServer);
@@ -734,10 +733,7 @@ static DWORD WINAPI LocalNetworkThread(LPVOID lpParam) {
   return 0;
 };
 
-namespace IQuery {
-namespace Legacy {
-
-void EnumTrigger(BOOL bInternet)
+void ILegacy::EnumTrigger(BOOL bInternet)
 {
   if (bInternet) {
     StartInternetSearch();
@@ -746,7 +742,7 @@ void EnumTrigger(BOOL bInternet)
   }
 };
 
-void EnumUpdate(void) {
+void ILegacy::EnumUpdate(void) {
   DWORD dwThreadId;
 
   // Start master server thread
@@ -771,8 +767,5 @@ void EnumUpdate(void) {
     _bActivatedLocal = FALSE;
   }
 };
-
-}; // namespace
-}; // namespace
 
 #endif // CLASSICSPATCH_NEW_QUERY

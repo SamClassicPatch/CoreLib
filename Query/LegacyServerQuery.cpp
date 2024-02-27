@@ -32,14 +32,11 @@ static const char *_strStatusResponseFormat =
   "\\healthandarmorstays\\%d\\allowhealth\\%d\\allowarmor\\%d\\infiniteammo\\%d\\respawninplace\\%d"
   "\\password\\0\\vipplayers\\1";
 
-namespace IQuery {
-namespace Legacy {
-
-void BuildHearthbeatPacket(CTString &strPacket) {
+void ILegacy::BuildHearthbeatPacket(CTString &strPacket, INDEX iChallenge) {
   strPacket.PrintF("\\heartbeat\\%hu\\gamename\\%s", (_piNetPort.GetIndex() + 1), SAM_MS_NAME);
 };
 
-void ServerParsePacket(INDEX iLength) {
+void ILegacy::ServerParsePacket(INDEX iLength) {
   // End with a null terminator
   IQuery::pBuffer[iLength] = '\0';
 
@@ -213,8 +210,5 @@ void ServerParsePacket(INDEX iLength) {
             "Data (%d bytes): %s\n", iLength, strData);
   }
 };
-
-}; // namespace
-}; // namespace
 
 #endif // CLASSICSPATCH_NEW_QUERY

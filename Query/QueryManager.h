@@ -32,6 +32,73 @@ enum EMasterServers {
   E_MS_MAX,
 };
 
+// Abstract protocol base
+class IAbstractProtocol {
+  public:
+    CTString m_strMS; // Configurable master server address
+
+  public:
+    // Get master server address
+    inline const CTString &GetMS(void) const {
+      return m_strMS;
+    };
+
+    virtual UWORD GetPort(void) = 0;
+
+    virtual void BuildHearthbeatPacket(CTString &strPacket, INDEX iChallenge) = 0;
+    virtual void EnumTrigger(BOOL bInternet) = 0;
+    virtual void EnumUpdate(void) = 0;
+    virtual void ServerParsePacket(INDEX iLength) = 0;
+};
+
+// Legacy protocol
+class ILegacy : public IAbstractProtocol {
+  public:
+    ILegacy();
+
+    virtual UWORD GetPort(void) {
+      return 27900;
+    };
+
+    virtual void BuildHearthbeatPacket(CTString &strPacket, INDEX iChallenge);
+    virtual void EnumTrigger(BOOL bInternet);
+    virtual void EnumUpdate(void);
+    virtual void ServerParsePacket(INDEX iLength);
+};
+
+// DarkPlaces protocol
+class IDarkPlaces : public IAbstractProtocol {
+  public:
+    IDarkPlaces();
+
+    virtual UWORD GetPort(void) {
+      return 27950;
+    };
+
+    virtual void BuildHearthbeatPacket(CTString &strPacket, INDEX iChallenge);
+    virtual void EnumTrigger(BOOL bInternet);
+    virtual void EnumUpdate(void);
+    virtual void ServerParsePacket(INDEX iLength);
+};
+
+// GameAgent protocol
+class IGameAgent : public IAbstractProtocol {
+  public:
+    IGameAgent();
+
+    virtual UWORD GetPort(void) {
+      return 9005;
+    };
+
+    virtual void BuildHearthbeatPacket(CTString &strPacket, INDEX iChallenge);
+    virtual void EnumTrigger(BOOL bInternet);
+    virtual void EnumUpdate(void);
+    virtual void ServerParsePacket(INDEX iLength);
+};
+
+// Available protocols
+extern IAbstractProtocol *_aProtocols[E_MS_MAX];
+
 // Debug output for query
 CORE_API extern INDEX ms_bDebugOutput;
 
@@ -92,30 +159,6 @@ int ReceivePacket(void);
 
 // Set enumeration status
 void SetStatus(const CTString &strStatus);
-
-// GameAgent protocol
-namespace GameAgent {
-  void BuildHearthbeatPacket(CTString &strPacket, INDEX iChallenge);
-  void EnumTrigger(BOOL bInternet);
-  void EnumUpdate(void);
-  void ServerParsePacket(INDEX iLength);
-};
-
-// Legacy protocol
-namespace Legacy {
-  void BuildHearthbeatPacket(CTString &strPacket);
-  void EnumTrigger(BOOL bInternet);
-  void EnumUpdate(void);
-  void ServerParsePacket(INDEX iLength);
-};
-
-// DarkPlaces protocol
-namespace DarkPlaces {
-  void BuildHearthbeatPacket(CTString &strPacket);
-  void EnumTrigger(BOOL bInternet);
-  void EnumUpdate(void);
-  void ServerParsePacket(INDEX iLength);
-};
 
 }; // namespace
 

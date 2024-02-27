@@ -133,13 +133,7 @@ void OnServerUpdate(void) {
     }
 
     // Parse received packet
-    static void (*apParsePacket[E_MS_MAX])(INDEX) = {
-      &IQuery::Legacy::ServerParsePacket,
-      &IQuery::DarkPlaces::ServerParsePacket,
-      &IQuery::GameAgent::ServerParsePacket,
-    };
-
-    (*apParsePacket[GetProtocol()])(iLength);
+    _aProtocols[GetProtocol()]->ServerParsePacket(iLength);
   }
 
   // Send a heartbeat every 150 seconds
@@ -193,19 +187,7 @@ void SendHeartbeat(INDEX iChallenge) {
   CTString strPacket;
 
   // Build heartbeat packet for a specific master server
-  switch (GetProtocol()) {
-    case E_MS_LEGACY:
-      IQuery::Legacy::BuildHearthbeatPacket(strPacket);
-      break;
-
-    case E_MS_DARKPLACES:
-      IQuery::DarkPlaces::BuildHearthbeatPacket(strPacket);
-      break;
-
-    case E_MS_GAMEAGENT:
-      IQuery::GameAgent::BuildHearthbeatPacket(strPacket, iChallenge);
-      break;
-  }
+  _aProtocols[GetProtocol()]->BuildHearthbeatPacket(strPacket, iChallenge);
 
   if (ms_bDebugOutput) {
     CPrintF("Sending heartbeat:\n%s\n", strPacket);
@@ -227,13 +209,7 @@ void EnumTrigger(BOOL bInternet) {
   }
 
   // Request for a specific master server
-  static void (*apEnumTrigger[E_MS_MAX])(BOOL) = {
-    &IQuery::Legacy::EnumTrigger,
-    &IQuery::DarkPlaces::EnumTrigger,
-    &IQuery::GameAgent::EnumTrigger,
-  };
-
-  (*apEnumTrigger[GetProtocol()])(bInternet);
+  _aProtocols[GetProtocol()]->EnumTrigger(bInternet);
 };
 
 // Replacement for CNetworkLibrary::EnumSessions()
@@ -269,13 +245,7 @@ void EnumUpdate(void) {
   }
 
   // Call update method for a specific master server
-  static void (*apEnumUpdate[E_MS_MAX])(void) = {
-    &IQuery::Legacy::EnumUpdate,
-    &IQuery::DarkPlaces::EnumUpdate,
-    &IQuery::GameAgent::EnumUpdate,
-  };
-
-  (*apEnumUpdate[GetProtocol()])();
+  _aProtocols[GetProtocol()]->EnumUpdate();
 };
 
 // Cancel master server enumeration

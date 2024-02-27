@@ -27,13 +27,11 @@ static sockaddr_in *_sinLocal = NULL;
 
 static SOCKET _socket = NULL;
 
-// Master server addresses
-extern CTString ms_strLegacyMS = "333networks.com";
-static CTString ms_strGameAgentMS = "333networks.com";
-static CTString ms_strDarkPlacesMS = "192.168.1.4";
-
 // Current master server protocol
 extern INDEX ms_iProtocol = E_MS_LEGACY;
+
+// Available protocols
+IAbstractProtocol *_aProtocols[E_MS_MAX];
 
 // Debug output for query
 INDEX ms_bDebugOutput = FALSE;
@@ -58,17 +56,33 @@ extern void UpdateInternalGameSpyMS(INDEX)
   static const size_t ctAddress = strlen("master.gamespy.com");
 
   for (INDEX i = 0; i < 3; i++) {
-    strncpy(astrAddresses[i], ms_strLegacyMS.str_String, ctAddress);
+    const CTString &strMS = _aProtocols[E_MS_LEGACY]->GetMS();
+    strncpy(astrAddresses[i], strMS.str_String, ctAddress);
   }
+};
+
+ILegacy::ILegacy() {
+  // Register master server address
+  m_strMS = "333networks.com";
+  _pShell->DeclareSymbol("persistent user CTString ms_strLegacyMS post:UpdateInternalGameSpyMS;", &m_strMS);
+};
+
+IDarkPlaces::IDarkPlaces() {
+  // Register master server address
+  m_strMS = "192.168.1.4";
+  _pShell->DeclareSymbol("persistent user CTString ms_strDarkPlacesMS;", &m_strMS);
+};
+
+IGameAgent::IGameAgent() {
+  // Register master server address
+  m_strMS = "333networks.com";
+  _pShell->DeclareSymbol("persistent user CTString ms_strGameAgentMS;", &m_strMS);
 };
 
 // Initialize query manager
 extern void InitQuery(void) {
   // Custom symbols
   _pShell->DeclareSymbol("void UpdateInternalGameSpyMS(INDEX);", &UpdateInternalGameSpyMS);
-  _pShell->DeclareSymbol("persistent user CTString ms_strLegacyMS post:UpdateInternalGameSpyMS;", &ms_strLegacyMS);
-  _pShell->DeclareSymbol("persistent user CTString ms_strDarkPlacesMS;", &ms_strDarkPlacesMS);
-  _pShell->DeclareSymbol("persistent user CTString ms_strGameAgentMS;",  &ms_strGameAgentMS);
   _pShell->DeclareSymbol("persistent user INDEX ms_iProtocol;",          &ms_iProtocol);
   _pShell->DeclareSymbol("persistent user INDEX ms_bDebugOutput;",       &ms_bDebugOutput);
 
@@ -81,6 +95,11 @@ extern void InitQuery(void) {
   _pShell->DeclareSymbol("const INDEX MS_LEGACY;",     (void *)&iLegacyMS);
   _pShell->DeclareSymbol("const INDEX MS_DARKPLACES;", (void *)&iDarkPlacesMS);
   _pShell->DeclareSymbol("const INDEX MS_GAMEAGENT;",  (void *)&iGameAgentMS);
+
+  // Create protocol interfaces
+  _aProtocols[E_MS_LEGACY]     = new ILegacy;
+  _aProtocols[E_MS_DARKPLACES] = new IDarkPlaces;
+  _aProtocols[E_MS_GAMEAGENT]  = new IGameAgent;
 
   // Retrieve commonly used symbols
   _piNetPort.Find("net_iPort");
@@ -150,15 +169,8 @@ void InitWinsock(void) {
     return;
   }
 
-  // Master server addresses
-  const CTString astrIPs[E_MS_MAX] = {
-    ms_strLegacyMS,
-    ms_strDarkPlacesMS,
-    ms_strGameAgentMS,
-  };
-
   // Get host from the address
-  const CTString &strMasterServerIP = astrIPs[IMasterServer::GetProtocol()];
+  const CTString &strMasterServerIP = _aProtocols[IMasterServer::GetProtocol()]->GetMS();
   hostent* phe = gethostbyname(strMasterServerIP);
 
   // Couldn't resolve the hostname
@@ -173,15 +185,9 @@ void InitWinsock(void) {
   _sin->sin_family = AF_INET;
   _sin->sin_addr.s_addr = *(ULONG *)phe->h_addr_list[0];
 
-  // Master server ports
-  static const UWORD aiPorts[E_MS_MAX] = {
-    27900,
-    27950,
-    9005,
-  };
-
   // Select master server port
-  _sin->sin_port = htons(aiPorts[IMasterServer::GetProtocol()]);
+  const UWORD uwPort = _aProtocols[IMasterServer::GetProtocol()]->GetPort();
+  _sin->sin_port = htons(uwPort);
 
   // Create the socket
   _socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);

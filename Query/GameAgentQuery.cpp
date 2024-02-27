@@ -158,17 +158,14 @@ static void ClientParsePacket(INDEX iLength) {
   CPrintF("Unknown enumeration packet ID: 0x%X\n", *strData);
 };
 
-namespace IQuery {
-namespace GameAgent {
-
-void BuildHearthbeatPacket(CTString &strPacket, INDEX iChallenge)
+void IGameAgent::BuildHearthbeatPacket(CTString &strPacket, INDEX iChallenge)
 {
   strPacket.PrintF("0;challenge;%d;players;%d;maxplayers;%d;level;%s;gametype;%s;version;%s;product;%s",
     iChallenge, INetwork::CountPlayers(FALSE), _pNetwork->ga_sesSessionState.ses_ctMaxPlayers,
     IWorld::GetWorld()->wo_strName, GetGameAPI()->GetCurrentGameTypeNameSS(), _SE_VER_STRING, sam_strGameName);
 };
 
-void EnumTrigger(BOOL bInternet) {
+void IGameAgent::EnumTrigger(BOOL bInternet) {
   // Reset requests
   IQuery::aRequests.Clear();
 
@@ -181,7 +178,7 @@ void EnumTrigger(BOOL bInternet) {
   IQuery::SetStatus(".");
 };
 
-void EnumUpdate(void) {
+void IGameAgent::EnumUpdate(void) {
   int iLength = IQuery::ReceivePacket();
 
   if (iLength == -1) {
@@ -193,7 +190,7 @@ void EnumUpdate(void) {
   ClientParsePacket(iLength);
 };
 
-void ServerParsePacket(INDEX iLength) {
+void IGameAgent::ServerParsePacket(INDEX iLength) {
   // Data buffer and player count
   const char *pData = IQuery::pBuffer;
   const INDEX ctPlayers = INetwork::CountPlayers(FALSE);
@@ -262,8 +259,5 @@ void ServerParsePacket(INDEX iLength) {
     } break;
   }
 };
-
-}; // namespace
-}; // namespace
 
 #endif // CLASSICSPATCH_NEW_QUERY

@@ -262,14 +262,11 @@ static void ComposeStatusPacket(CTString &strPacket, const char *strChallenge, B
   }
 };
 
-namespace IQuery {
-namespace DarkPlaces {
-
-void BuildHearthbeatPacket(CTString &strPacket) {
+void IDarkPlaces::BuildHearthbeatPacket(CTString &strPacket, INDEX iChallenge) {
   strPacket.PrintF("\xFF\xFF\xFF\xFFheartbeat DarkPlaces\x0A");
 };
 
-void EnumTrigger(BOOL bInternet) {
+void IDarkPlaces::EnumTrigger(BOOL bInternet) {
   // Reset requests
   IQuery::aRequests.Clear();
 
@@ -285,7 +282,7 @@ void EnumTrigger(BOOL bInternet) {
   IQuery::SetStatus(".");
 };
 
-void EnumUpdate(void) {
+void IDarkPlaces::EnumUpdate(void) {
   int iLength = IQuery::ReceivePacket();
 
   if (iLength == -1) {
@@ -295,7 +292,7 @@ void EnumUpdate(void) {
   ClientParsePacket(iLength);
 };
 
-void ServerParsePacket(INDEX iLength) {
+void IDarkPlaces::ServerParsePacket(INDEX iLength) {
   // String of data
   const char *strData = IQuery::pBuffer;
 
@@ -364,8 +361,5 @@ void ServerParsePacket(INDEX iLength) {
     CPrintF("Data (%d bytes): %s\n", iLength, strData);
   }
 };
-
-}; // namespace
-}; // namespace
 
 #endif // CLASSICSPATCH_NEW_QUERY
