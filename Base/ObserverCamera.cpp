@@ -185,7 +185,10 @@ void CObserverCamera::Reset(BOOL bPlayback) {
   }
 
   cam_bPlayback = FALSE;
-  cam_strmScript.Close();
+
+  if (cam_strmScript.GetDescription() != "") {
+    cam_strmScript.Close();
+  }
 
   for (INDEX i = 0; i < 4; i++) {
     cam_acpCurve[i] = CameraPos();
@@ -479,9 +482,12 @@ BOOL CObserverCamera::Update(CEntity *pen, CDrawPort *pdp) {
       SetSpeed(cam_acpCurve[1].fSpeed);
     }
 
+    // Playback is over
+    if (!cam_bPlayback) return TRUE;
+
     // Interpolate between two positions
     const CameraPos *acp = cam_acpCurve;
-    FLOAT fRatio = (tmNow - acp[1].tmTick) / (acp[2].tmTick - acp[1].tmTick);
+    FLOAT fRatio = Clamp((tmNow - acp[1].tmTick) / (acp[2].tmTick - acp[1].tmTick), 0.0f, 1.0f);
 
     // Move through a curve between two points
     if (cam_bSmoothPlayback) {
