@@ -203,7 +203,8 @@ BOOL CObserverCamera::IsActive(void) {
   // Camera can only be used during observing or in demos
   const BOOL bObserver = (GetGameAPI()->GetCurrentSplitCfg() == CGame::SSC_OBSERVER);
 
-  if (bObserver || _pNetwork->IsPlayingDemo()) {
+  // Or if it needs to be used externally
+  if (cam_bExternalUsage || bObserver || _pNetwork->IsPlayingDemo()) {
     return cam_bActive || cam_bPlayback;
   }
 
@@ -441,6 +442,8 @@ BOOL CObserverCamera::Update(CEntity *pen, CDrawPort *pdp) {
 
   // Camera is currently disabled
   if (!IsActive()) {
+    cam_bActive = FALSE; // Prevent it from suddenly switching if the conditions are met
+
     // Remember player view position for the next activation
     if (IsDerivedFromID(pen, CPlayerEntity_ClassID)) {
       CPlacement3D plView = IWorld::GetViewpoint((CPlayerEntity *)pen, TRUE);

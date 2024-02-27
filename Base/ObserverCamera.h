@@ -90,6 +90,7 @@ class CORE_API CObserverCamera {
     ANGLE3D cam_aRotation;
 
     CSoundListener cam_sliWorld; // Listener for world sounds
+    BOOL cam_bExternalUsage; // Check whether or not the camera is usable from the outside
 
   public:
     // Constructor
@@ -103,6 +104,7 @@ class CORE_API CObserverCamera {
       cam_fSmoothMovement = 1.0f;
       cam_fSmoothRotation = 1.0f;
       cam_fFollowDist = -1.0f;
+      cam_bExternalUsage = FALSE;
       Reset();
     };
 
