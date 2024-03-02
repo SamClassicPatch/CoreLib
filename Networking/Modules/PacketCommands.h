@@ -83,6 +83,10 @@ void SesPropString(SHELL_FUNC_ARGS);
 void SeekSesProp(SHELL_FUNC_ARGS);
 void SendSesProps(void);
 
+// Gameplay extensions
+void GameplayExtNumber(SHELL_FUNC_ARGS);
+void GameplayExtString(SHELL_FUNC_ARGS);
+
 }; // namespace
 
 #endif // CLASSICSPATCH_EXT_PACKETS

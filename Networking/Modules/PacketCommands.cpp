@@ -539,6 +539,28 @@ void SendSesProps(void) {
   _pckSesProps.SendPacket();
 };
 
+// Change number value of some gameplay extension
+void GameplayExtNumber(SHELL_FUNC_ARGS) {
+  BEGIN_SHELL_FUNC;
+  const CTString &strVar = *NEXT_ARG(CTString *);
+  FLOAT fValue = NEXT_ARG(FLOAT);
+
+  CExtGameplayExt pck;
+  pck.SetValue(strVar, fValue);
+  pck.SendPacket();
+};
+
+// Change string value of some gameplay extension
+void GameplayExtString(SHELL_FUNC_ARGS) {
+  BEGIN_SHELL_FUNC;
+  const CTString &strVar = *NEXT_ARG(CTString *);
+  const CTString &strValue = *NEXT_ARG(CTString *);
+
+  CExtGameplayExt pck;
+  pck.SetValue(strVar, strValue);
+  pck.SendPacket();
+};
+
 }; // namespace
 
 #endif // CLASSICSPATCH_EXT_PACKETS

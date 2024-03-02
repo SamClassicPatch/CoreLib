@@ -56,6 +56,7 @@ class CORE_API CExtPacket {
       EXT_CHANGE_LEVEL,  // Force level change by creating vanilla WorldLink entity, if possible
       EXT_CHANGE_WORLD,  // Force immediate world change regardless of gameplay
       EXT_SESSION_PROPS, // Change data in session properties
+      EXT_GAMEPLAY_EXT,  // Change data in gameplay extensions
 
       // Maximum amount of built-in packets
       EXT_MAX_PACKETS,
@@ -639,6 +640,37 @@ class CORE_API CExtSessionProps : public CExtPacket {
   public:
     virtual EType GetType(void) const {
       return EXT_SESSION_PROPS;
+    };
+
+    virtual void Write(CNetworkMessage &nm);
+    virtual void Read(CNetworkMessage &nm);
+    virtual void Process(void);
+};
+
+class CORE_API CExtGameplayExt : public CExtPacket {
+  private:
+    UWORD iVar; // Variable in the structure (0 is invalid, starts from 1)
+    BOOL bString; // Using a string value
+    CTString strValue;
+    DOUBLE fValue;
+
+  public:
+    CExtGameplayExt() : iVar(0), bString(FALSE), fValue(0.0)
+    {
+    };
+
+    // Find variable index by its name
+    UWORD FindVar(const CTString &strVar);
+
+    // Set string value
+    void SetValue(const CTString &strVar, const CTString &str);
+
+    // Set number value
+    void SetValue(const CTString &strVar, DOUBLE f);
+
+  public:
+    virtual EType GetType(void) const {
+      return EXT_GAMEPLAY_EXT;
     };
 
     virtual void Write(CNetworkMessage &nm);

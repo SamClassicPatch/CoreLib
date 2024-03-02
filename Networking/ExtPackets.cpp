@@ -88,6 +88,7 @@ CExtPacket *CExtPacket::CreatePacket(EType ePacket, BOOL bClient) {
       case EXT_CHANGE_LEVEL:    return new CExtChangeLevel();
       case EXT_CHANGE_WORLD:    return new CExtChangeWorld();
       case EXT_SESSION_PROPS:   return new CExtSessionProps();
+      case EXT_GAMEPLAY_EXT:    return new CExtGameplayExt();
     }
   }
 
@@ -180,6 +181,10 @@ void CExtPacket::RegisterExtPackets(void)
   _pShell->DeclareSymbol("user void pck_SesPropString(CTString);", &IPacketCommands::SesPropString);
   _pShell->DeclareSymbol("user void pck_SeekSesProp(INDEX);",      &IPacketCommands::SeekSesProp);
   _pShell->DeclareSymbol("user void pck_SendSesProps(void);",      &IPacketCommands::SendSesProps);
+
+  // Gameplay extensions
+  _pShell->DeclareSymbol("user void pck_GameplayExtNumber(CTString, FLOAT);",    &IPacketCommands::GameplayExtNumber);
+  _pShell->DeclareSymbol("user void pck_GameplayExtString(CTString, CTString);", &IPacketCommands::GameplayExtString);
 };
 
 // Write event into a network packet

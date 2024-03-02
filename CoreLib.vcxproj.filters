@@ -461,6 +461,9 @@
     <ClCompile Include="Networking\ExtPackets\ExtSessionProps.cpp">
       <Filter>Source Files\Networking\ExtPackets</Filter>
     </ClCompile>
+    <ClCompile Include="Networking\ExtPackets\ExtGameplayExt.cpp">
+      <Filter>Source Files\Networking\ExtPackets</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Definitions\TextureEffectsDefs.inl">
