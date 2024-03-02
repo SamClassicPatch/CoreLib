@@ -63,6 +63,9 @@ class CORE_API CExtPacket {
     };
 
   public:
+    // Report packet actions to the server
+    void ExtServerReport(const char *strFormat, ...);
+
     // Extension packet index
     virtual EType GetType(void) const = 0;
 
@@ -653,21 +656,6 @@ inline CEntity *FindExtEntity(ULONG ulID) {
   }
 
   return pen;
-};
-
-// Report packet actions to the server
-inline void ExtServerReport(const char *strFormat, ...) {
-  // Ignore reports
-  if (!_pNetwork->IsServer() || !ser_bReportExtPacketLogic) return;
-
-  va_list arg;
-  va_start(arg, strFormat);
-
-  CTString str;
-  str.VPrintF(strFormat, arg);
-
-  CPutString(str);
-  va_end(arg);
 };
 
 #endif // CLASSICSPATCH_EXT_PACKETS

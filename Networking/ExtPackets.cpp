@@ -27,6 +27,22 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Report packet actions to the server
 INDEX ser_bReportExtPacketLogic = TRUE;
 
+// Report packet actions to the server
+void CExtPacket::ExtServerReport(const char *strFormat, ...) {
+  // Ignore reports
+  if (!_pNetwork->IsServer() || !ser_bReportExtPacketLogic) return;
+
+  va_list arg;
+  va_start(arg, strFormat);
+
+  CTString str;
+  str.VPrintF(strFormat, arg);
+
+  // Append packet name in the beginning
+  CPrintF("[%s] %s", GetName(), str);
+  va_end(arg);
+};
+
 // Send extension packet from server to all clients
 void CExtPacket::SendPacket(void) {
   // Not running a server
@@ -41,14 +57,14 @@ void CExtPacket::SendPacket(void) {
 // Make sure to return some entity from the ID
 CEntity *CExtEntityPacket::GetEntity(void) {
   if (!IsEntityValid()) {
-    CPutString(TRANS("Received invalid entity ID!\n"));
+    ExtServerReport(TRANS("Received invalid entity ID!\n"));
     return NULL;
   }
 
   CEntity *pen = FindExtEntity(ulEntity);
 
   if (pen == NULL) {
-    CPutString(TRANS("Received invalid entity ID!\n"));
+    ExtServerReport(TRANS("Received invalid entity ID!\n"));
     return NULL;
   }
 

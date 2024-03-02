@@ -36,16 +36,16 @@ void CExtEntityCopy::Process(void) {
 
   if (!EntityExists(pen)) return;
 
-  ExtServerReport(TRANS("Copied %u entity: "), pen->en_ulID);
+  CTString strReport(0, TRANS("Copied %u entity: "), pen->en_ulID);
 
   for (UBYTE i = 0; i < ubCopies; i++) {
     // Update last created entity
     CExtEntityCreate::penLast = IWorld::GetWorld()->CopyEntityInWorld(*pen, pen->GetPlacement(), TRUE);
 
-    ExtServerReport((i == 0) ? "%u" : ", %u", CExtEntityCreate::penLast->en_ulID);
+    strReport += CTString(0, (i == 0) ? "%u" : ", %u", CExtEntityCreate::penLast->en_ulID);
   }
 
-  ExtServerReport("\n");
+  ExtServerReport("%s\n", strReport.str_String);
 };
 
 #endif // CLASSICSPATCH_EXT_PACKETS
