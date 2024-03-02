@@ -125,7 +125,7 @@ static BOOL ReadOneServerInfoChunk(CTStream &strm) {
 // Append extra info about the patched server
 void IProcessPacket::WriteServerInfoToSessionState(CTStream &strm) {
   // No gameplay extensions
-  if (!CoreGEX().bGameplayExt) return;
+  if (!CoreGEX().bEnable) return;
 
   // Write patch tag
   IProcessPacket::WritePatchTag(strm);
@@ -155,7 +155,7 @@ void IProcessPacket::ReadServerInfoFromSessionState(CTStream &strm) {
   if (!ReadPatchTag(strm, NULL)) return;
 
   // Gameplay extensions are active
-  CoreGEX().bGameplayExt = TRUE;
+  CoreGEX().bEnable = TRUE;
 
   // Read amount of written chunks
   INDEX ctChunks;

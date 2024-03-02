@@ -33,7 +33,7 @@ struct GexOffset {
 
 static const GexOffset _aVarOffsets[] = {
   { -1, "", -1 }, // Invalid
-  GEX_OFFSET(0, bGameplayExt),
+  GEX_OFFSET(0, bEnable),
   GEX_OFFSET(0, bFixTimers),
   GEX_OFFSET(0, bUnlimitedAirControl),
   GEX_OFFSET(1, fMoveSpeed),

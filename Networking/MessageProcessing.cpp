@@ -40,7 +40,7 @@ CCoreVariables::GameplayExt IProcessPacket::_gexSetup(FALSE);
 
 // Check if gameplay extensions are enabled for the server
 BOOL IProcessPacket::GameplayExtEnabled(void) {
-  return _gexSetup.bGameplayExt;
+  return _gexSetup.bEnable;
 };
 
 #else
@@ -77,7 +77,7 @@ void IProcessPacket::RegisterCommands(void) {
   #define GAMEPLAY_EXT_SYMBOL(_Type, _Command, _Variable) \
     _pShell->DeclareSymbol("persistent user " #_Type " " _Command " pre:UpdateServerSymbolValue;", &_Variable)
 
-  GAMEPLAY_EXT_SYMBOL(INDEX, "gex_bEnable", _gexSetup.bGameplayExt);
+  GAMEPLAY_EXT_SYMBOL(INDEX, "gex_bEnable", _gexSetup.bEnable);
   GAMEPLAY_EXT_SYMBOL(INDEX, "gex_bFixTimers", _gexSetup.bFixTimers);
 
   GAMEPLAY_EXT_SYMBOL(INDEX, "gex_bUnlimitedAirControl", _gexSetup.bUnlimitedAirControl);

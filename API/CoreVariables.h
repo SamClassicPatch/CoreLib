@@ -34,7 +34,7 @@ class CCoreVariables {
   public:
     // Gameplay extensions
     struct GameplayExt {
-      BOOL bGameplayExt; // Utilize gameplay extensions (resets other settings to vanilla, if disabled)
+      BOOL bEnable; // Utilize gameplay extensions (resets other settings to vanilla, if disabled)
       BOOL bFixTimers; // Fix timers for entity logic to delay slowdown bug
 
       BOOL bUnlimitedAirControl; // Let players move while in air indefinitely
@@ -51,12 +51,12 @@ class CCoreVariables {
       void Reset(BOOL bVanilla) {
         // Vanilla-compatible settings
         if (bVanilla) {
-          bGameplayExt = FALSE;
+          bEnable = FALSE;
           bFixTimers = FALSE;
 
         // Recommended settings
         } else {
-          bGameplayExt = TRUE;
+          bEnable = TRUE;
           bFixTimers = TRUE;
         }
 
