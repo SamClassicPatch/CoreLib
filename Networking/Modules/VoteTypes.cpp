@@ -46,17 +46,14 @@ void CGenericVote::SetReportTime(void) {
   }
 };
 
-// Vote description
 CTString CMapVote::VoteMessage(void) const {
   return CTString(0, TRANS("^cffff00Change current map to: %s^r"), vt_map.strName);
 };
 
-// Vote result
 CTString CMapVote::ResultMessage(void) const {
   return CTString(0, TRANS("^cffff00Changing current map to: %s^r"), vt_map.strName);
 };
 
-// Perform action after voting
 void CMapVote::VotingOver(void) {
   // Force server to switch to another map
   if (GetAPI()->IsServerApp()) {
@@ -72,17 +69,14 @@ void CMapVote::VotingOver(void) {
   }
 };
 
-// Vote description
 CTString CKickVote::VoteMessage(void) const {
   return CTString(0, TRANS("^cffff00Kick %s from the server"), vt_strPlayers);
 };
 
-// Vote result
 CTString CKickVote::ResultMessage(void) const {
   return CTString(0, TRANS("^cffff00Kicking %s from the server..."), vt_strPlayers);
 };
 
-// Perform action after voting
 void CKickVote::VotingOver(void) {
   INDEX iIdentity = _aClientIdentities.GetIndex(vt_pciIdentity);
 
@@ -94,17 +88,14 @@ void CKickVote::VotingOver(void) {
   }
 };
 
-// Vote description
 CTString CSkipRoundVote::VoteMessage(void) const {
   return TRANS("^cffff00Skip current round");
 };
 
-// Vote result
 CTString CSkipRoundVote::ResultMessage(void) const {
   return TRANS("^cffff00Skipping current round...");
 };
 
-// Perform action after voting
 void CSkipRoundVote::VotingOver(void) {
   // Force restart server
   if (GetAPI()->IsServerApp()) {

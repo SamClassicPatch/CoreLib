@@ -97,7 +97,7 @@ class CORE_API CGenericVote {
     virtual void VotingOver(void) = 0;
 };
 
-// Current map vote
+// Vote to change current map
 class CORE_API CMapVote : public CGenericVote {
   public:
     SVoteMap vt_map; // Voting for this map from the pool
@@ -113,30 +113,24 @@ class CORE_API CMapVote : public CGenericVote {
     {
     };
 
-    // Make copy of this class
     virtual CGenericVote *MakeCopy(void) const {
       return new CMapVote(*this);
     };
 
-    // Vote description
     virtual CTString VoteMessage(void) const;
-
-    // Vote result
     virtual CTString ResultMessage(void) const;
-
-    // Perform action after voting
     virtual void VotingOver(void);
 };
 
-// Current kick vote
-class CORE_API CKickVote : public CGenericVote {
+// Vote to perform some action on a client
+class CORE_API IClientVote : public CGenericVote {
   public:
-    CClientIdentity *vt_pciIdentity; // Client identity to ban
+    CClientIdentity *vt_pciIdentity; // Client identity to perform an action on
     CTString vt_strPlayers; // Client's players
 
   public:
     // Constructor from an active client
-    CKickVote(CActiveClient &ac) : CGenericVote(), vt_pciIdentity(ac.pClient)
+    IClientVote(CActiveClient &ac) : CGenericVote(), vt_pciIdentity(ac.pClient)
     {
       if (ac.cPlayers.Count() == 0) {
         vt_strPlayers.PrintF(TRANS("Client %d"), _aActiveClients.Index(&ac));
@@ -146,41 +140,41 @@ class CORE_API CKickVote : public CGenericVote {
     };
 
     // Copy constructor
-    CKickVote(const CKickVote &vtOther) : CGenericVote(vtOther),
+    IClientVote(const IClientVote &vtOther) : CGenericVote(vtOther),
       vt_pciIdentity(vtOther.vt_pciIdentity), vt_strPlayers(vtOther.vt_strPlayers)
     {
     };
+};
 
-    // Make copy of this class
+// Vote to kick a client
+class CORE_API CKickVote : public IClientVote {
+  public:
+    __forceinline CKickVote(CActiveClient &ac) : IClientVote(ac)
+    {
+    };
+
+    __forceinline CKickVote(const IClientVote &vtOther) : IClientVote(vtOther)
+    {
+    };
+
     virtual CGenericVote *MakeCopy(void) const {
       return new CKickVote(*this);
     };
 
-    // Vote description
     virtual CTString VoteMessage(void) const;
-
-    // Vote result
     virtual CTString ResultMessage(void) const;
-
-    // Perform action after voting
     virtual void VotingOver(void);
 };
 
-// Current round skip vote
+// Vote to skip current round on a dedicated server
 class CORE_API CSkipRoundVote : public CGenericVote {
   public:
-    // Make copy of this class
     virtual CGenericVote *MakeCopy(void) const {
       return new CSkipRoundVote(*this);
     };
 
-    // Vote description
     virtual CTString VoteMessage(void) const;
-
-    // Vote result
     virtual CTString ResultMessage(void) const;
-
-    // Perform action after voting
     virtual void VotingOver(void);
 };
 

@@ -426,6 +426,33 @@ BOOL Chat::VoteMap(CTString &strResult, INDEX iClient, const CTString &strArgume
   return TRUE;
 };
 
+// Find client to perform an action on
+static INDEX FindClientToVoteFor(const CTString &strChatCommand, CTString &strResult, const CTString &strArguments) {
+  INDEX iReturn = -1;
+  INDEX iScan = const_cast<CTString &>(strArguments).ScanF("%d", &iReturn);
+
+  // Display current clients
+  if (iScan != 1) {
+    PrintClientList(strResult);
+    strResult += "\n\n" + CTString(0, TRANS("To initiate a vote, type \"%s%s <client index>\""), ser_strCommandPrefix, strChatCommand);
+    return -1;
+  }
+
+  // Invalid index
+  if (iReturn < 0 || iReturn >= _aActiveClients.Count()) {
+    strResult = INVALID_CLIENT_MESSAGE;
+    return -1;
+  }
+
+  // Inactive client
+  if (!_aActiveClients[iReturn].IsActive()) {
+    strResult = INVALID_CLIENT_MESSAGE;
+    return -1;
+  }
+
+  return iReturn;
+};
+
 // Initiate voting to kick a client
 BOOL Chat::VoteKick(CTString &strResult, INDEX iClient, const CTString &strArguments) {
   // Disabled (unless it's an admin)
@@ -436,32 +463,14 @@ BOOL Chat::VoteKick(CTString &strResult, INDEX iClient, const CTString &strArgum
     return (strResult != "");
   }
 
-  const INDEX ct = _aActiveClients.Count();
+  // Find client to kick
+  INDEX iKick = FindClientToVoteFor("votekick", strResult, strArguments);
 
-  INDEX iKick = -1;
-  INDEX iScan = const_cast<CTString &>(strArguments).ScanF("%d", &iKick);
-
-  // Display current clients
-  if (iScan != 1) {
-    PrintClientList(strResult);
-    strResult += "\n\n" + CTString(0, TRANS("To initiate a vote, type \"%svotekick <client index>\""), ser_strCommandPrefix);
-    return TRUE;
-  }
-
-  if (iKick < 0 || iKick >= ct) {
-    strResult = INVALID_CLIENT_MESSAGE;
-    return TRUE;
-  }
-
-  CActiveClient &acKick = _aActiveClients[iKick];
-
-  if (!acKick.IsActive()) {
-    strResult = INVALID_CLIENT_MESSAGE;
-    return TRUE;
-  }
+  // Display an error
+  if (iKick == -1) return TRUE;
 
   // Create kick vote
-  CKickVote vt(acKick);
+  CKickVote vt(_aActiveClients[iKick]);
   vt.SetTime((DOUBLE)ser_fVotingTime);
 
   if (!InitiateVoting(iClient, &vt)) {
