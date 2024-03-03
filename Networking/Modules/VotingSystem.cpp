@@ -34,8 +34,10 @@ FLOAT ser_fVotingTimeout = 30.0f; // Timeout between voting processes
 
 INDEX ser_bVoteMap  = TRUE; // Allow voting to change a map
 INDEX ser_bVoteKick = TRUE; // Allow voting to kick a client
+INDEX ser_bVoteMute = TRUE; // Allow voting to mute a client
 INDEX ser_bVoteSkip = TRUE; // Allow voting to skip current round
 FLOAT ser_fVoteKickTime = 300.0f; // How long to kick clients for (5 minutes)
+FLOAT ser_fVoteMuteTime = 300.0f; // How long to mute clients for (5 minutes)
 
 namespace IVotingSystem {
 
@@ -99,8 +101,10 @@ void Initialize(void) {
 
   _pShell->DeclareSymbol("persistent user INDEX ser_bVoteMap;",            &ser_bVoteMap);
   _pShell->DeclareSymbol("persistent user INDEX ser_bVoteKick;",           &ser_bVoteKick);
+  _pShell->DeclareSymbol("persistent user INDEX ser_bVoteMute;",           &ser_bVoteMute);
   _pShell->DeclareSymbol("persistent user INDEX ser_bVoteSkip;",           &ser_bVoteSkip);
   _pShell->DeclareSymbol("persistent user FLOAT ser_fVoteKickTime;",       &ser_fVoteKickTime);
+  _pShell->DeclareSymbol("persistent user FLOAT ser_fVoteMuteTime;",       &ser_fVoteMuteTime);
 
   _pShell->DeclareSymbol("user void VoteMapPool(void);",     &VoteMapPool);
   _pShell->DeclareSymbol("user void VoteMapAdd(CTString);",  &VoteMapAdd);
@@ -471,6 +475,33 @@ BOOL Chat::VoteKick(CTString &strResult, INDEX iClient, const CTString &strArgum
 
   // Create kick vote
   CKickVote vt(_aActiveClients[iKick]);
+  vt.SetTime((DOUBLE)ser_fVotingTime);
+
+  if (!InitiateVoting(iClient, &vt)) {
+    strResult = VOTING_IN_PROGRESS_MESSAGE;
+  }
+
+  return TRUE;
+};
+
+// Initiate voting to mute a client
+BOOL Chat::VoteMute(CTString &strResult, INDEX iClient, const CTString &strArguments) {
+  // Disabled (unless it's an admin)
+  if (!ser_bVoteMute && !CActiveClient::IsAdmin(iClient)) return FALSE;
+
+  // Can't vote (reply to the client if there's a message)
+  if (!CanInitiateVoting(strResult, iClient)) {
+    return (strResult != "");
+  }
+
+  // Find client to mute
+  INDEX iMute = FindClientToVoteFor("votemute", strResult, strArguments);
+
+  // Display an error
+  if (iMute == -1) return TRUE;
+
+  // Create mute vote
+  CMuteVote vt(_aActiveClients[iMute]);
   vt.SetTime((DOUBLE)ser_fVotingTime);
 
   if (!InitiateVoting(iClient, &vt)) {

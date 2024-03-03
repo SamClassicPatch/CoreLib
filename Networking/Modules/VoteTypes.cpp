@@ -88,6 +88,25 @@ void CKickVote::VotingOver(void) {
   }
 };
 
+CTString CMuteVote::VoteMessage(void) const {
+  return CTString(0, TRANS("^cffff00Prevent %s from chatting"), vt_strPlayers);
+};
+
+CTString CMuteVote::ResultMessage(void) const {
+  return CTString(0, TRANS("^cffff00Muting %s..."), vt_strPlayers);
+};
+
+void CMuteVote::VotingOver(void) {
+  INDEX iIdentity = _aClientIdentities.GetIndex(vt_pciIdentity);
+
+  if (iIdentity != -1) {
+    CClientRestriction::MuteClient(iIdentity, ser_fVoteMuteTime);
+
+  } else {
+    CPutString(TRANS("Couldn't find client identity in the log for muting!\n"));
+  }
+};
+
 CTString CSkipRoundVote::VoteMessage(void) const {
   return TRANS("^cffff00Skip current round");
 };

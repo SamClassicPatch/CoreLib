@@ -200,6 +200,7 @@ void IChatCommands::RegisterDefaultCommands(void) {
 
   Register("votemap",  &IVotingSystem::Chat::VoteMap);
   Register("votekick", &IVotingSystem::Chat::VoteKick);
+  Register("votemute", &IVotingSystem::Chat::VoteMute);
   Register("y", &IVotingSystem::Chat::VoteYes);
   Register("n", &IVotingSystem::Chat::VoteNo);
 

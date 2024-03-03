@@ -33,8 +33,10 @@ CORE_API extern FLOAT ser_fVotingTimeout;
 
 CORE_API extern INDEX ser_bVoteMap;
 CORE_API extern INDEX ser_bVoteKick;
+CORE_API extern INDEX ser_bVoteMute;
 CORE_API extern INDEX ser_bVoteSkip;
 CORE_API extern FLOAT ser_fVoteKickTime;
+CORE_API extern FLOAT ser_fVoteMuteTime;
 
 // Interface for voting via chat
 namespace IVotingSystem {
@@ -87,6 +89,9 @@ struct CORE_API Chat {
 
   // Initiate voting to kick a client
   static BOOL VoteKick(CTString &strResult, INDEX iClient, const CTString &strArguments);
+
+  // Initiate voting to mute a client
+  static BOOL VoteMute(CTString &strResult, INDEX iClient, const CTString &strArguments);
 
   // Initiate voting to skip current round
   static BOOL VoteSkip(CTString &strResult, INDEX iClient, const CTString &strArguments);

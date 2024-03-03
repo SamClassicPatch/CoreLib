@@ -166,6 +166,26 @@ class CORE_API CKickVote : public IClientVote {
     virtual void VotingOver(void);
 };
 
+// Vote to mute a client
+class CORE_API CMuteVote : public IClientVote {
+  public:
+    __forceinline CMuteVote(CActiveClient &ac) : IClientVote(ac)
+    {
+    };
+
+    __forceinline CMuteVote(const IClientVote &vtOther) : IClientVote(vtOther)
+    {
+    };
+
+    virtual CGenericVote *MakeCopy(void) const {
+      return new CMuteVote(*this);
+    };
+
+    virtual CTString VoteMessage(void) const;
+    virtual CTString ResultMessage(void) const;
+    virtual void VotingOver(void);
+};
+
 // Vote to skip current round on a dedicated server
 class CORE_API CSkipRoundVote : public CGenericVote {
   public:
