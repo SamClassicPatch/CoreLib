@@ -487,7 +487,7 @@ BOOL CObserverCamera::Update(CEntity *pen, CDrawPort *pdp) {
 
     // Interpolate between two positions
     const CameraPos *acp = cam_acpCurve;
-    FLOAT fRatio = Clamp((tmNow - acp[1].tmTick) / (acp[2].tmTick - acp[1].tmTick), 0.0f, 1.0f);
+    FLOAT fRatio = Clamp((tmNow - acp[1].tmTick) / (acp[2].tmTick - acp[1].tmTick), (TIME)0.0, (TIME)1.0);
 
     // Move through a curve between two points
     if (cam_bSmoothPlayback) {
