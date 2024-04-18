@@ -64,7 +64,7 @@ class map : public std::list<std::pair<_T1, _T2> > {
     };
 
     // Get pair under some key
-    value_type &at(const _T1 &key) {
+    _T2 &at(const _T1 &key) {
       iterator it = find(key);
       if (it != end()) return it->second;
 
@@ -72,7 +72,7 @@ class map : public std::list<std::pair<_T1, _T2> > {
     };
 
     // Get constant pair under some key
-    const value_type &at(const _T1 &key) const {
+    const _T2 &at(const _T1 &key) const {
       const_iterator it = find(key);
       if (it != end()) return it->second;
 
@@ -80,15 +80,15 @@ class map : public std::list<std::pair<_T1, _T2> > {
     };
 
     // Get pair under some key or create it, if there's none
-    value_type &operator[](const _T1 &key) {
+    _T2 &operator[](const _T1 &key) {
       iterator it = find(key);
-      if (it == end()) it = insert(end(), value_type(key, _T2()));
+      if (it == end()) it = _Myt::insert(end(), value_type(key, _T2()));
 
       return it->second;
     };
 
     // Get constant pair under some key
-    inline const value_type &operator[](const _T1 &key) const {
+    inline const _T2 &operator[](const _T1 &key) const {
       return at(key);
     };
 };
