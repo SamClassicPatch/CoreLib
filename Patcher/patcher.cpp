@@ -5,8 +5,7 @@
 #define __DO_NOT_SHOW_PATCHER_WARNINGS__
 
 #ifdef  __DO_NOT_SHOW_PATCHER_WARNINGS__
-  #pragma warning(disable : 4309 4310 4311 4312)
-  #pragma comment(linker, "/IGNORE:4786")
+  #pragma warning(disable : 4309 4310 4311 4312 4786)
 #endif
 
 // [Cecil] Define extensions
