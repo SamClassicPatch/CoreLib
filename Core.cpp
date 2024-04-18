@@ -55,13 +55,15 @@ FLOAT inp_afAxisValues[MAX_OVERALL_AXES];
 
 // Display information about the Classics patch
 static void PatchInfo(void) {
-  static CTString strInfo =
+  static CTString strInfo(0,
     "\nSerious Sam Classics Patch"
     "\n" CLASSICSPATCH_URL_SHORT
     "\n"
-    "\n- Engine version: " + CTString(_SE_VER_STRING)
-  + "\n- Patch version: " + GetAPI()->GetVersion()
-  + "\n\n(c) Dreamy Cecil, 2022-2024\n";
+    "\n- Compiler version: %d"
+    "\n- Engine version: %s"
+    "\n- Patch version: %s"
+    "\n\n(c) Dreamy Cecil, 2022-2024\n",
+  _MSC_FULL_VER, _SE_VER_STRING, GetAPI()->GetVersion());
 
   CPutString(strInfo);
 };
