@@ -126,6 +126,7 @@ void CObserverCamera::Init(void)
 
   // Camera properties
   _pShell->DeclareSymbol("           user INDEX ocam_bActive;",               &cam_bActive);
+  _pShell->DeclareSymbol("persistent user INDEX ocam_iShowInfo;",             &cam_iShowInfo);
   _pShell->DeclareSymbol("persistent user INDEX ocam_bDefaultControls;",      &cam_bDefaultControls);
   _pShell->DeclareSymbol("persistent user INDEX ocam_bPlaybackSpeedControl;", &cam_bPlaybackSpeedControl);
   _pShell->DeclareSymbol("persistent user INDEX ocam_bSmoothPlayback;",       &cam_bSmoothPlayback);
@@ -230,6 +231,31 @@ BOOL CObserverCamera::StartRecording(void) {
   return FALSE;
 };
 
+// Default control buttons
+#define OCAM_KID_BANKINGL KID_Q
+#define OCAM_KID_BANKINGR KID_E
+#define OCAM_KID_FOLLOW   KID_F
+#define OCAM_KID_SNAPSHOT KID_TAB
+
+#define OCAM_KID_MOVEF_1  KID_W
+#define OCAM_KID_MOVEB_1  KID_S
+#define OCAM_KID_MOVEL_1  KID_A
+#define OCAM_KID_MOVER_1  KID_D
+#define OCAM_KID_MOVEU_1  KID_LSHIFT
+#define OCAM_KID_MOVED_1  KID_LCONTROL
+
+#define OCAM_KID_MOVEF_2  KID_ARROWUP
+#define OCAM_KID_MOVEB_2  KID_ARROWDOWN
+#define OCAM_KID_MOVEL_2  KID_ARROWLEFT
+#define OCAM_KID_MOVER_2  KID_ARROWRIGHT
+#define OCAM_KID_MOVEU_2  KID_RSHIFT
+#define OCAM_KID_MOVED_2  KID_RCONTROL
+
+#define OCAM_KID_ZOOMIN   KID_MOUSEWHEELUP
+#define OCAM_KID_ZOOMOUT  KID_MOUSEWHEELDOWN
+#define OCAM_KID_TELEPORT KID_X
+#define OCAM_KID_RESET    KID_Z
+
 // Direct button input using default controls
 void CObserverCamera::UpdateControls(void) {
   // Camera or default controls are disabled
@@ -239,10 +265,10 @@ void CObserverCamera::UpdateControls(void) {
   _pInput->GetInput(FALSE);
 
   // Button states for some controls
-  const BOOL bQ = _pInput->GetButtonState(KID_Q);
-  const BOOL bE = _pInput->GetButtonState(KID_E);
-  const BOOL bF = _pInput->GetButtonState(KID_F);
-  const BOOL bTab = _pInput->GetButtonState(KID_TAB);
+  const BOOL bQ = _pInput->GetButtonState(OCAM_KID_BANKINGL);
+  const BOOL bE = _pInput->GetButtonState(OCAM_KID_BANKINGR);
+  const BOOL bF = _pInput->GetButtonState(OCAM_KID_FOLLOW);
+  const BOOL bTab = _pInput->GetButtonState(OCAM_KID_SNAPSHOT);
 
   // Turn left
   static BOOL _bLeft = FALSE;
@@ -273,20 +299,92 @@ void CObserverCamera::UpdateControls(void) {
   _bSnap = bTab;
 
   // Movement and zoom
-  cam_ctl.bMoveF = _pInput->GetButtonState(KID_W) || _pInput->GetButtonState(KID_ARROWUP);
-  cam_ctl.bMoveB = _pInput->GetButtonState(KID_S) || _pInput->GetButtonState(KID_ARROWDOWN);
-  cam_ctl.bMoveL = _pInput->GetButtonState(KID_A) || _pInput->GetButtonState(KID_ARROWLEFT);
-  cam_ctl.bMoveR = _pInput->GetButtonState(KID_D) || _pInput->GetButtonState(KID_ARROWRIGHT);
-  cam_ctl.bMoveU = _pInput->GetButtonState(KID_LSHIFT)   || _pInput->GetButtonState(KID_RSHIFT);
-  cam_ctl.bMoveD = _pInput->GetButtonState(KID_LCONTROL) || _pInput->GetButtonState(KID_RCONTROL);
-  cam_ctl.bZoomIn = _pInput->GetButtonState(KID_MOUSEWHEELUP);
-  cam_ctl.bZoomOut = _pInput->GetButtonState(KID_MOUSEWHEELDOWN);
-  cam_ctl.bResetToPlayer = _pInput->GetButtonState(KID_X);
+  cam_ctl.bMoveF = _pInput->GetButtonState(OCAM_KID_MOVEF_1) || _pInput->GetButtonState(OCAM_KID_MOVEF_2);
+  cam_ctl.bMoveB = _pInput->GetButtonState(OCAM_KID_MOVEB_1) || _pInput->GetButtonState(OCAM_KID_MOVEB_2);
+  cam_ctl.bMoveL = _pInput->GetButtonState(OCAM_KID_MOVEL_1) || _pInput->GetButtonState(OCAM_KID_MOVEL_2);
+  cam_ctl.bMoveR = _pInput->GetButtonState(OCAM_KID_MOVER_1) || _pInput->GetButtonState(OCAM_KID_MOVER_2);
+  cam_ctl.bMoveU = _pInput->GetButtonState(OCAM_KID_MOVEU_1) || _pInput->GetButtonState(OCAM_KID_MOVEU_2);
+  cam_ctl.bMoveD = _pInput->GetButtonState(OCAM_KID_MOVED_1) || _pInput->GetButtonState(OCAM_KID_MOVED_2);
+  cam_ctl.bZoomIn = _pInput->GetButtonState(OCAM_KID_ZOOMIN);
+  cam_ctl.bZoomOut = _pInput->GetButtonState(OCAM_KID_ZOOMOUT);
+  cam_ctl.bResetToPlayer = _pInput->GetButtonState(OCAM_KID_TELEPORT);
 
   // Reset FOV and banking angle
-  if (_pInput->GetButtonState(KID_Z)) {
+  if (_pInput->GetButtonState(OCAM_KID_RESET)) {
     cam_ctl.fFOV = 90.0f;
     cam_cpCurrent.aRot(3) = 0.0f;
+    cam_aRotation(3) = 0.0f;
+  }
+};
+
+// Print info and default controls for the camera
+void CObserverCamera::PrintCameraInfo(CDrawPort *pdp) {
+  if (cam_iShowInfo <= 0) return;
+
+  const FLOAT fScaling = HEIGHT_SCALING(pdp);
+  const FLOAT fTextScaling = fScaling * 0.8f;
+  const PIX pixLineHeight = (_pfdDisplayFont->GetLineSpacing() + _pfdDisplayFont->GetHeight()) * fTextScaling;
+
+  pdp->SetFont(_pfdDisplayFont);
+  pdp->SetTextScaling(fScaling);
+
+  // Info header
+  PIX pixInfoY = 16 * fScaling;
+  pdp->PutText(TRANS("Observer camera info (ocam_iShowInfo)"), 8 * fScaling, pixInfoY, 0xFFFFFF9F);
+
+  // Relevant camera properties
+  pdp->SetTextScaling(fTextScaling);
+
+  pixInfoY += pixLineHeight * 2;
+  pdp->PutText(TRANS("Camera properties"), 8 * fScaling, pixInfoY, 0xFFD700FF);
+
+  CTString strProps = "";
+
+  if (cam_bPlayback && !cam_bActive) {
+    strProps += CTString(0, "ocam_bPlaybackSpeedControl = %d\n", cam_bPlaybackSpeedControl);
+    strProps += CTString(0, "ocam_bSmoothPlayback = %d\n", cam_bSmoothPlayback);
+    strProps += CTString(0, "ocam_fSmoothTension = %g\n", cam_fSmoothTension);
+
+  } else {
+    strProps += CTString(0, "ocam_bDefaultControls = %d\n", cam_bDefaultControls);
+    strProps += CTString(0, "ocam_fSpeed = %g\n", cam_fSpeed);
+    strProps += CTString(0, "ocam_fSmoothMovement = %g\n", cam_fSmoothMovement);
+    strProps += CTString(0, "ocam_fSmoothRotation = %g\n", cam_fSmoothRotation);
+    strProps += CTString(0, "ocam_fFOV = %g\n", cam_ctl.fFOV);
+    strProps += CTString(0, "ocam_bFollowPlayer = %d\n", cam_ctl.bFollowPlayer);
+    strProps += CTString(0, "ocam_fFollowDist = %g\n", cam_fFollowDist);
+  }
+
+  pixInfoY += pixLineHeight;
+  pdp->PutText(strProps, 16 * fScaling, pixInfoY, 0xFFFFFFFF);
+
+  // Default controls for free fly camera
+  if (cam_bActive && cam_iShowInfo > 1) {
+    pixInfoY += pixLineHeight * 7;
+    pdp->PutText(TRANS("Default camera controls"), 8 * fScaling, pixInfoY, 0xFFD700FF);
+
+    CTString strControls = TRANS("Disabled");
+
+    if (cam_bDefaultControls) {
+      strControls = CTString(0, TRANS("Movement: %s / %s\n"), "WASD", TRANS("Arrow keys"));
+      strControls += CTString(0, TRANS("Move up: %s / %s\n"),
+        _pInput->GetButtonTransName(OCAM_KID_MOVEU_1), _pInput->GetButtonTransName(OCAM_KID_MOVEU_2));
+      strControls += CTString(0, TRANS("Move down: %s / %s\n"),
+        _pInput->GetButtonTransName(OCAM_KID_MOVED_1), _pInput->GetButtonTransName(OCAM_KID_MOVED_2));
+      strControls += CTString(0, TRANS("Tilt left/right: %s / %s\n"),
+        _pInput->GetButtonTransName(OCAM_KID_BANKINGL), _pInput->GetButtonTransName(OCAM_KID_BANKINGR));
+      strControls += CTString(0, TRANS("Zoom in/out: %s\n"), TRANS("Mouse Wheel"));
+      strControls += CTString(0, TRANS("Follow current player: %s\n"), _pInput->GetButtonTransName(OCAM_KID_FOLLOW));
+      strControls += CTString(0, TRANS("Teleport to current player: %s\n"), _pInput->GetButtonTransName(OCAM_KID_TELEPORT));
+      strControls += CTString(0, TRANS("Reset tilt and zoom: %s\n"), _pInput->GetButtonTransName(OCAM_KID_RESET));
+
+      if (cam_fnmDemo != "") {
+        strControls += CTString(0, TRANS("Take position snapshot: %s\n"), _pInput->GetButtonTransName(OCAM_KID_SNAPSHOT));
+      }
+    }
+
+    pixInfoY += pixLineHeight;
+    pdp->PutText(strControls, 16 * fScaling, pixInfoY, 0xFFFFFFFF);
   }
 };
 
@@ -528,6 +626,8 @@ BOOL CObserverCamera::Update(CEntity *pen, CDrawPort *pdp) {
 
   CWorld &wo = _pNetwork->ga_World;
   RenderView(wo, *(CEntity *)NULL, apr, *pdp);
+
+  PrintCameraInfo(pdp);
 
   // Listen to world sounds
   cam_sliWorld.sli_vPosition = cp.vPos;

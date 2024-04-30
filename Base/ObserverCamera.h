@@ -66,6 +66,7 @@ class CORE_API CObserverCamera {
     CameraControl cam_ctl;
 
     BOOL cam_bActive; // Dynamic camera toggle
+    INDEX cam_iShowInfo; // Display current camera properties and default controls for free fly mode
     BOOL cam_bDefaultControls; // Use internal controls instead of manually binding the commands
     BOOL cam_bPlaybackSpeedControl; // Let camera playback control demo speed
     BOOL cam_bSmoothPlayback; // Smooth camera movement during playback
@@ -96,6 +97,7 @@ class CORE_API CObserverCamera {
     // Constructor
     CObserverCamera() {
       cam_bActive = FALSE;
+      cam_iShowInfo = 2;
       cam_bDefaultControls = TRUE;
       cam_bPlaybackSpeedControl = FALSE;
       cam_bSmoothPlayback = FALSE;
@@ -131,6 +133,9 @@ class CORE_API CObserverCamera {
 
     // Direct button input using default controls
     void UpdateControls(void);
+
+    // Print info and default controls for the camera
+    void PrintCameraInfo(CDrawPort *pdp);
 
     // Free fly camera movement during the game
     CameraPos &FreeFly(CPlayerEntity *penObserving);
