@@ -96,17 +96,23 @@ void CClientIdentity::Read(CTStream *strm) {
 
   // Addresses
   *strm >> ct;
-  SClientAddress *aNewAddresses = aAddresses.Push(ct);
 
-  for (i = 0; i < ct; i++) {
-    aNewAddresses[i].Read(strm);
+  if (ct != 0) {
+    SClientAddress *aNewAddresses = aAddresses.Push(ct);
+
+    for (i = 0; i < ct; i++) {
+      aNewAddresses[i].Read(strm);
+    }
   }
 
   // Characters
   *strm >> ct;
-  CPlayerCharacter *aNewChars = aCharacters.Push(ct);
 
-  for (i = 0; i < ct; i++) {
-    *strm >> aNewChars[i];
+  if (ct != 0) {
+    CPlayerCharacter *aNewChars = aCharacters.Push(ct);
+
+    for (i = 0; i < ct; i++) {
+      *strm >> aNewChars[i];
+    }
   }
 };

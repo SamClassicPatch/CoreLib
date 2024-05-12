@@ -149,6 +149,11 @@ void IClientLogging::LoadLog(void) {
     INDEX ctClients;
     strm >> ctClients;
 
+    // Warning for safety
+    if (ctClients == 0) {
+      ThrowF_t(TRANS("Client count is zero"));
+    }
+
     CClientIdentity *aci = _aClientIdentities.Push(ctClients);
 
     for (INDEX i = 0; i < ctClients; i++) {

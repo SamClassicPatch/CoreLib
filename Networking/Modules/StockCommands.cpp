@@ -193,9 +193,9 @@ static void PrintIdentityInfoMinimal(CTString &strResult, INDEX iIdentity) {
 // Display full information about a specific identity
 static void PrintIdentityInfoFull(CTString &strResult, INDEX iIdentity, INDEX iCharacter) {
   CClientIdentity &ci = _aClientIdentities[iIdentity];
+  iCharacter = ClampUp(iCharacter, ci.aCharacters.Count());
 
   if (iCharacter > 0) {
-    iCharacter = ClampUp(iCharacter, ci.aCharacters.Count());
     strResult = CTString(0, "\nClient %d, Character %d: ", iIdentity, iCharacter);
 
     const CPlayerCharacter &pc = ci.aCharacters[iCharacter - 1];
