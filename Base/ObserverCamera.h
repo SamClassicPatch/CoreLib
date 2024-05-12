@@ -72,6 +72,7 @@ class CORE_API CObserverCamera {
     BOOL cam_bSmoothPlayback; // Smooth camera movement during playback
     FLOAT cam_fSmoothTension; // Camera movement tension during smooth playback
     FLOAT cam_fSpeed; // Movement speed multiplier
+    FLOAT cam_fTiltAngleMul; // Multiplier for banking rotation speed/angle
     FLOAT cam_fSmoothMovement; // Factor for smooth camera movement
     FLOAT cam_fSmoothRotation; // Factor for smooth camera rotation
     FLOAT cam_fFollowDist; // Close in on the player if they're far enough from the camera
@@ -103,6 +104,7 @@ class CORE_API CObserverCamera {
       cam_bSmoothPlayback = FALSE;
       cam_fSmoothTension = 0.0f;
       cam_fSpeed = 1.0f;
+      cam_fTiltAngleMul = 1.0f;
       cam_fSmoothMovement = 1.0f;
       cam_fSmoothRotation = 1.0f;
       cam_fFollowDist = -1.0f;

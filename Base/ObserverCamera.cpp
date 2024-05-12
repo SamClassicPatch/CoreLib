@@ -132,6 +132,7 @@ void CObserverCamera::Init(void)
   _pShell->DeclareSymbol("persistent user INDEX ocam_bSmoothPlayback;",       &cam_bSmoothPlayback);
   _pShell->DeclareSymbol("persistent user FLOAT ocam_fSmoothTension;",        &cam_fSmoothTension);
   _pShell->DeclareSymbol("persistent user FLOAT ocam_fSpeed;",                &cam_fSpeed);
+  _pShell->DeclareSymbol("persistent user FLOAT ocam_fTiltAngleMul;",         &cam_fTiltAngleMul);
   _pShell->DeclareSymbol("persistent user FLOAT ocam_fSmoothMovement;",       &cam_fSmoothMovement);
   _pShell->DeclareSymbol("persistent user FLOAT ocam_fSmoothRotation;",       &cam_fSmoothRotation);
   _pShell->DeclareSymbol("persistent user FLOAT ocam_fFollowDist;",           &cam_fFollowDist);
@@ -348,6 +349,7 @@ void CObserverCamera::PrintCameraInfo(CDrawPort *pdp) {
   } else {
     strProps += CTString(0, "ocam_bDefaultControls = %d\n", cam_bDefaultControls);
     strProps += CTString(0, "ocam_fSpeed = %g\n", cam_fSpeed);
+    strProps += CTString(0, "ocam_fTiltAngleMul = %g\n", cam_fTiltAngleMul);
     strProps += CTString(0, "ocam_fSmoothMovement = %g\n", cam_fSmoothMovement);
     strProps += CTString(0, "ocam_fSmoothRotation = %g\n", cam_fSmoothRotation);
     strProps += CTString(0, "ocam_fFOV = %g\n", cam_ctl.fFOV);
@@ -360,7 +362,7 @@ void CObserverCamera::PrintCameraInfo(CDrawPort *pdp) {
 
   // Default controls for free fly camera
   if (cam_bActive && cam_iShowInfo > 1) {
-    pixInfoY += pixLineHeight * 7;
+    pixInfoY += pixLineHeight * 8;
     pdp->PutText(TRANS("Default camera controls"), 8 * fScaling, pixInfoY, 0xFFD700FF);
 
     CTString strControls = TRANS("Disabled");
@@ -424,7 +426,7 @@ CObserverCamera::CameraPos &CObserverCamera::FreeFly(CPlayerEntity *penObserving
       aRotate(2) = _pInput->GetAxisValue(MOUSE_Y_AXIS) * +0.5f;
     }
 
-    aRotate(3) = (cam_ctl.bBankingL - cam_ctl.bBankingR) * 0.5f;
+    aRotate(3) = FLOAT(cam_ctl.bBankingL - cam_ctl.bBankingR) * cam_fTiltAngleMul * 0.5f;
 
     // Set immediately
     if (bInstantRotation) {
@@ -449,7 +451,7 @@ CObserverCamera::CameraPos &CObserverCamera::FreeFly(CPlayerEntity *penObserving
 
     // Snap banking angle on sharp movement
     if (bInstantRotation && Abs(cam_aRotation(3)) > 0.0f) {
-      Snap(cp.aRot(3), 10.0f);
+      Snap(cp.aRot(3), cam_fTiltAngleMul * 10.0f);
     }
   }
 
