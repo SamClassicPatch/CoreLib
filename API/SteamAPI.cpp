@@ -18,9 +18,21 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // [Cecil] NOTE: Delay loaded, meaning that the library is actually hooked upon calling any function for the first time
 #pragma comment(lib, "../Extras/Steamworks/redistributable_bin/steam_api.lib")
 
+// Display debug information about interactions with Steam
+// 0 - Disabled
+// 1 - Only callbacks/single actions
+// 2 - All interactions in real time
+static INDEX steam_iDebugOutput = 0;
+
+// Debug output macros
+#define STEAM_DEBUG1 if (steam_iDebugOutput >= 1) CPrintF
+#define STEAM_DEBUG2 if (steam_iDebugOutput >= 2) CPrintF
+
 // Constructor
 CSteamAPI::CSteamAPI() {
   Reset();
+
+  _pShell->DeclareSymbol("user INDEX steam_iDebugOutput;", &steam_iDebugOutput);
 };
 
 // Reset the API
@@ -130,6 +142,8 @@ void CSteamAPI::Update(void) {
   if ((tvNow - _tvLastCheck).GetSeconds() < 0.05f) return;
   _tvLastCheck = tvNow;
 
+  STEAM_DEBUG2("CSteamAPI::Update() - %fs\n", tvNow.GetSeconds());
+
   // Update Steam callbacks
   GetSteamAPI()->UpdateCallbacks();
 
@@ -150,9 +164,12 @@ void CSteamAPI::Update(void) {
 void CSteamAPI::SetJoinAddress(const CTString &strAddress) {
   if (!IsUsable()) return;
 
+  STEAM_DEBUG2("CSteamAPI::SetJoinAddress(\"%s\") - ", strAddress);
+
   // Reset
   if (strAddress == "") {
     SteamFriends()->SetRichPresence("connect", NULL);
+    STEAM_DEBUG2("reset\n");
     return;
   }
 
@@ -169,6 +186,7 @@ void CSteamAPI::SetJoinAddress(const CTString &strAddress) {
   }
 
   SteamFriends()->SetRichPresence("connect", strArgs);
+  STEAM_DEBUG2("set to '%s'\n", strArgs);
 };
 
 // Activate Steam Overlay web browser directly to the specified URL
@@ -176,6 +194,8 @@ BOOL CSteamAPI::OpenWebPage(const char *strURL) {
   if (!IsUsable()) return FALSE;
 
   SteamFriends()->ActivateGameOverlayToWebPage(strURL);
+  STEAM_DEBUG1("CSteamAPI::OpenWebPage(\"%s\") - opened webpage\n", strURL);
+
   return TRUE;
 };
 
@@ -183,13 +203,16 @@ BOOL CSteamAPI::OpenWebPage(const char *strURL) {
 void CSteamAPI::UpdateCallbacks(void) {
   if (!IsUsable()) return;
 
+  STEAM_DEBUG2("CSteamAPI::UpdateCallbacks() - running callbacks\n");
   SteamAPI_RunCallbacks();
 };
 
 void CSteamAPI::OnGameOverlayActivated(GameOverlayActivated_t *pCallback) {
   bSteamOverlay = pCallback->m_bActive;
+  STEAM_DEBUG1("CSteamAPI::OnGameOverlayActivated() - %s\n", bSteamOverlay ? "activated" : "deactivated");
 };
 
 void CSteamAPI::OnGameJoinRequested(GameRichPresenceJoinRequested_t *pCallback) {
   strJoinCommandMidGame = pCallback->m_rgchConnect;
+  STEAM_DEBUG1("CSteamAPI::OnGameJoinRequested() - received '%s'\n", strJoinCommandMidGame);
 };
