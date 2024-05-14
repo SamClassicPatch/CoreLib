@@ -35,6 +35,8 @@ class CORE_API CSteamAPI {
     BOOL bInitialized;
     ESteamAPIInitResult eApiState;
 
+    BOOL bSteamOverlay;
+
   public:
     // Constructor
     CSteamAPI();
@@ -48,9 +50,23 @@ class CORE_API CSteamAPI {
     // Check if Steam has been initialized and can be used
     BOOL IsUsable(void);
 
+  private:
+    // Reset the API
+    void Reset(void);
+
   public:
+
+    // Check if Steam overlay is currently active
+    inline BOOL IsOverlayOn(void) {
+      return bSteamOverlay;
+    };
+
+  public:
+
     // Update Steam callbacks (should be called each frame/timer tick)
     void UpdateCallbacks(void);
+
+    STEAM_CALLBACK_MANUAL(CSteamAPI, OnGameOverlayActivated, GameOverlayActivated_t, cbOnGameOverlayActivated);
 };
 
 #endif

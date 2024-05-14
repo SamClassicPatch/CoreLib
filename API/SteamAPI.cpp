@@ -19,8 +19,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma comment(lib, "../Extras/Steamworks/redistributable_bin/steam_api.lib")
 
 // Constructor
-CSteamAPI::CSteamAPI() : bInitialized(FALSE), eApiState(k_ESteamAPIInitResult_NoSteamClient)
-{
+CSteamAPI::CSteamAPI() {
+  Reset();
+};
+
+// Reset the API
+void CSteamAPI::Reset(void) {
+  bInitialized = FALSE;
+  eApiState = k_ESteamAPIInitResult_NoSteamClient;
+
+  bSteamOverlay = FALSE;
 };
 
 // Initialize Steam API
@@ -84,19 +92,24 @@ void CSteamAPI::Init(void) {
   }
 
   CPutString("OK!\n");
+
+  // Register callbacks
+  cbOnGameOverlayActivated.Register(this, OnGameOverlayActivated);
 };
 
 // Shutdown Steam API
 void CSteamAPI::End(void) {
   if (!IsUsable()) return;
 
+  // Unregister callbacks
+  cbOnGameOverlayActivated.Unregister();
+
   // Shut down Steam API
   CPutString("Shutting down Steam API... ");
   SteamAPI_Shutdown();
   CPutString("OK!\n");
 
-  bInitialized = FALSE;
-  eApiState = k_ESteamAPIInitResult_NoSteamClient;
+  Reset();
 };
 
 // Check if Steam has been initialized and can be used
@@ -110,4 +123,8 @@ void CSteamAPI::UpdateCallbacks(void) {
   if (!IsUsable()) return;
 
   SteamAPI_RunCallbacks();
+};
+
+void CSteamAPI::OnGameOverlayActivated(GameOverlayActivated_t *pCallback) {
+  bSteamOverlay = pCallback->m_bActive;
 };
