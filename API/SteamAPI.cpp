@@ -15,11 +15,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "StdH.h"
 
-// Set if Steam API is unavailable for whatever reason
-static BOOL _bUnavailable = FALSE;
+// [Cecil] NOTE: Delay loaded, meaning that the library is actually hooked upon calling any function for the first time
+#pragma comment(lib, "../Extras/Steamworks/redistributable_bin/steam_api.lib")
 
 // Constructor
-CSteamAPI::CSteamAPI() : hApiLib(NULL)
+CSteamAPI::CSteamAPI() : bInitialized(FALSE), eApiState(k_ESteamAPIInitResult_NoSteamClient)
 {
 };
 
@@ -38,20 +38,19 @@ void CSteamAPI::Init(void) {
     return;
   }
 
-  // Steam disabled, already hooked or unavailable
-  if (!CCoreAPI::Props().bSteamEnable || hApiLib != NULL || _bUnavailable) return;
+  // Steam disabled or already initialized
+  if (!CCoreAPI::Props().bSteamEnable || bInitialized) return;
+  bInitialized = TRUE;
 
-  // Hook library
-  hApiLib = LoadLibraryA("steam_api.dll");
+  // Check if the module is even available
+  HINSTANCE hApiLib = LoadLibraryA("steam_api.dll");
 
   if (hApiLib == NULL) {
-    CPrintF(TRANS("Failed to load 'steam_api.dll': %s\n"), GetWindowsError(GetLastError()));
-
-    _bUnavailable = TRUE;
+    CPrintF("Failed to load 'steam_api.dll': %s\n", GetWindowsError(GetLastError()));
     return;
   }
 
-  CPutString(TRANS("Successfully loaded 'steam_api.dll'!\n"));
+  CPutString("Successfully loaded 'steam_api.dll'!\n");
 
   // Create file with Steam application ID
   static BOOL bAppIdFile = TRUE;
@@ -73,40 +72,35 @@ void CSteamAPI::Init(void) {
     }
   }
 
-  // Hook initialization method
-  bool (*pSteamInitFunc)(void) = (bool (*)(void))GetProcAddress(hApiLib, "SteamAPI_InitSafe");
-  CPutString(TRANS("Initializing Steam API...\n"));
+  // Try to initialize Steam API
+  CPutString("Initializing Steam API... ");
 
-  // If method isn't available or cannot initialize
-  if (pSteamInitFunc == NULL || !pSteamInitFunc()) {
-    CPutString(TRANS("  failed!\n"));
+  SteamErrMsg strError;
+  eApiState = SteamAPI_InitEx(&strError);
 
-    // Unhook the library
-    End();
-    _bUnavailable = TRUE;
+  if (eApiState != k_ESteamAPIInitResult_OK) {
+    CPrintF("Failed:\n  %s\n", strError);
     return;
   }
 
-  CPutString(TRANS("  done!\n"));
+  CPutString("OK!\n");
 };
 
 // Shutdown Steam API
 void CSteamAPI::End(void) {
-  // Steam disabled or isn't hooked
-  if (!CCoreAPI::Props().bSteamEnable || hApiLib == NULL) return;
+  if (!IsUsable()) return;
 
-  // Hook shutdown method
-  void (*pSteamShutdownFunc)(void) = (void (*)(void))GetProcAddress(hApiLib, "SteamAPI_Shutdown");
-  CPutString(TRANS("Shutting down Steam API...\n"));
+  // Shut down Steam API
+  CPutString("Shutting down Steam API... ");
+  SteamAPI_Shutdown();
+  CPutString("OK!\n");
 
-  if (pSteamShutdownFunc != NULL) {
-    pSteamShutdownFunc();
-    CPutString(TRANS("  done!\n"));
+  bInitialized = FALSE;
+  eApiState = k_ESteamAPIInitResult_NoSteamClient;
+};
 
-  } else {
-    CPutString(TRANS("  failed!\n"));
-  }
-
-  FreeLibrary(hApiLib);
-  hApiLib = NULL;
+// Check if Steam has been initialized and can be used
+BOOL CSteamAPI::IsUsable(void) {
+  // Enabled and initialized correctly
+  return (CCoreAPI::Props().bSteamEnable && bInitialized && eApiState == k_ESteamAPIInitResult_OK);
 };

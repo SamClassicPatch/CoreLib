@@ -20,10 +20,20 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #pragma once
 #endif
 
-// API for handling function patches
+// Compatibility with C++11
+#define nullptr NULL
+#define snprintf _snprintf
+typedef int int32_t;
+typedef __int64 int64_t;
+typedef size_t intptr_t;
+#include <Extras/Steamworks/public/steam/steam_api.h>
+
+// API for interacting with the Steam client
 class CORE_API CSteamAPI {
-  public:
-    HINSTANCE hApiLib;
+  private:
+    // Current Steam API state
+    BOOL bInitialized;
+    ESteamAPIInitResult eApiState;
 
   public:
     // Constructor
@@ -34,6 +44,9 @@ class CORE_API CSteamAPI {
 
     // Shutdown Steam API
     void End(void);
+
+    // Check if Steam has been initialized and can be used
+    BOOL IsUsable(void);
 };
 
 #endif
