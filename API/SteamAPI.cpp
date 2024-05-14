@@ -29,6 +29,7 @@ void CSteamAPI::Reset(void) {
   eApiState = k_ESteamAPIInitResult_NoSteamClient;
 
   bSteamOverlay = FALSE;
+  strJoinCommandMidGame = "";
 };
 
 // Initialize Steam API
@@ -95,6 +96,7 @@ void CSteamAPI::Init(void) {
 
   // Register callbacks
   cbOnGameOverlayActivated.Register(this, OnGameOverlayActivated);
+  cbOnGameJoinRequested.Register(this, OnGameJoinRequested);
 };
 
 // Shutdown Steam API
@@ -103,6 +105,7 @@ void CSteamAPI::End(void) {
 
   // Unregister callbacks
   cbOnGameOverlayActivated.Unregister();
+  cbOnGameJoinRequested.Unregister();
 
   // Shut down Steam API
   CPutString("Shutting down Steam API... ");
@@ -118,6 +121,31 @@ BOOL CSteamAPI::IsUsable(void) {
   return (CCoreAPI::Props().bSteamEnable && bInitialized && eApiState == k_ESteamAPIInitResult_OK);
 };
 
+// Set server address to be used in "Join game" option
+void CSteamAPI::SetJoinAddress(const CTString &strAddress) {
+  if (!IsUsable()) return;
+
+  // Reset
+  if (strAddress == "") {
+    SteamFriends()->SetRichPresence("connect", NULL);
+    return;
+  }
+
+  CTString strArgs(0, "+connect %s", strAddress);
+
+  // Add mod argument
+  if (_fnmMod != "") {
+    // Get mod directory name by removing last slash and "Mods\\"
+    CTString strCurrentMod = _fnmMod;
+    strCurrentMod.str_String[strCurrentMod.Length() - 1] = '\0';
+    strCurrentMod.RemovePrefix("Mods\\");
+
+    strArgs += " +game " + strCurrentMod;
+  }
+
+  SteamFriends()->SetRichPresence("connect", strArgs);
+};
+
 // Update Steam callbacks (should be called each frame/timer tick)
 void CSteamAPI::UpdateCallbacks(void) {
   if (!IsUsable()) return;
@@ -127,4 +155,8 @@ void CSteamAPI::UpdateCallbacks(void) {
 
 void CSteamAPI::OnGameOverlayActivated(GameOverlayActivated_t *pCallback) {
   bSteamOverlay = pCallback->m_bActive;
+};
+
+void CSteamAPI::OnGameJoinRequested(GameRichPresenceJoinRequested_t *pCallback) {
+  strJoinCommandMidGame = pCallback->m_rgchConnect;
 };

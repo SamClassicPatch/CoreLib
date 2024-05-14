@@ -133,6 +133,9 @@ void ICoreHooks::OnGameStop(void)
   // Reset CAM for the next start
   GetGameAPI()->GetCamera().Reset();
 
+  // Reset join address
+  GetSteamAPI()->SetJoinAddress("");
+
   // Call game stop function for each plugin
   FOREACHPLUGINHANDLER(GetPluginAPI()->cGameEvents, IGameEvents, pEvents) {
     if ((IAbstractEvents *)pEvents == NULL) continue;
@@ -187,10 +190,15 @@ void ICoreHooks::OnAddPlayer(CPlayerTarget &plt, BOOL bLocal)
     pEvents->OnAddPlayer(plt, bLocal);
   }
 
-  // Update shadow maps for connecting players
+  // Logic for connecting players
   if (bLocal && !_pNetwork->IsServer())
   {
-    // Only if queued
+    // Set address of the joined server
+    CSymbolPtr piNetPort("net_iPort");
+    CTString strAddress(0, "%s:%d", GetGameAPI()->GetJoinAddress(), piNetPort.GetIndex());
+    GetSteamAPI()->SetJoinAddress(strAddress);
+
+    // Update shadow maps only if queued
     if (_bQueueShadowUpdate) {
       _bQueueShadowUpdate = FALSE;
 

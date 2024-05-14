@@ -38,6 +38,9 @@ class CORE_API CSteamAPI {
     BOOL bSteamOverlay;
 
   public:
+    CTString strJoinCommandMidGame;
+
+  public:
     // Constructor
     CSteamAPI();
 
@@ -61,12 +64,16 @@ class CORE_API CSteamAPI {
       return bSteamOverlay;
     };
 
+    // Set server address to be used in "Join game" option
+    void SetJoinAddress(const CTString &strAddress);
+
   public:
 
     // Update Steam callbacks (should be called each frame/timer tick)
     void UpdateCallbacks(void);
 
     STEAM_CALLBACK_MANUAL(CSteamAPI, OnGameOverlayActivated, GameOverlayActivated_t, cbOnGameOverlayActivated);
+    STEAM_CALLBACK_MANUAL(CSteamAPI, OnGameJoinRequested, GameRichPresenceJoinRequested_t, cbOnGameJoinRequested);
 };
 
 #endif
