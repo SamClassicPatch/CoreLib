@@ -104,3 +104,10 @@ BOOL CSteamAPI::IsUsable(void) {
   // Enabled and initialized correctly
   return (CCoreAPI::Props().bSteamEnable && bInitialized && eApiState == k_ESteamAPIInitResult_OK);
 };
+
+// Update Steam callbacks (should be called each frame/timer tick)
+void CSteamAPI::UpdateCallbacks(void) {
+  if (!IsUsable()) return;
+
+  SteamAPI_RunCallbacks();
+};

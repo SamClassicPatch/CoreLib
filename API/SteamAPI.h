@@ -47,6 +47,10 @@ class CORE_API CSteamAPI {
 
     // Check if Steam has been initialized and can be used
     BOOL IsUsable(void);
+
+  public:
+    // Update Steam callbacks (should be called each frame/timer tick)
+    void UpdateCallbacks(void);
 };
 
 #endif

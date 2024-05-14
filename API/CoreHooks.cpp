@@ -56,6 +56,9 @@ void ICoreHooks::OnTick(void)
 // Called every render frame
 void ICoreHooks::OnFrame(CDrawPort *pdp)
 {
+  // Update Steam callbacks
+  GetSteamAPI()->UpdateCallbacks();
+
   // Update input values
   for (INDEX iAxis = 0; iAxis < MAX_OVERALL_AXES; iAxis++) {
     inp_afAxisValues[iAxis] = _pInput->GetAxisValue(iAxis);
