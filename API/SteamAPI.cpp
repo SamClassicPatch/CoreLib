@@ -18,6 +18,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // [Cecil] NOTE: Delay loaded, meaning that the library is actually hooked upon calling any function for the first time
 #pragma comment(lib, "../Extras/Steamworks/redistributable_bin/steam_api.lib")
 
+static INDEX steam_bAllowJoin = TRUE; // Allow friends to join the same game
+static INDEX steam_bUseWebBrowser = TRUE; // Allow using web browser in Steam overlay
+
 // Display debug information about interactions with Steam
 // 0 - Disabled
 // 1 - Only callbacks/single actions
@@ -31,6 +34,10 @@ static INDEX steam_iDebugOutput = 0;
 // Constructor
 CSteamAPI::CSteamAPI() {
   Reset();
+
+  // Commands for dynamically toggling Steam features
+  _pShell->DeclareSymbol("persistent user INDEX steam_bAllowJoin;",     &steam_bAllowJoin);
+  _pShell->DeclareSymbol("persistent user INDEX steam_bUseWebBrowser;", &steam_bUseWebBrowser);
 
   _pShell->DeclareSymbol("user INDEX steam_iDebugOutput;", &steam_iDebugOutput);
 };
@@ -166,8 +173,8 @@ void CSteamAPI::SetJoinAddress(const CTString &strAddress) {
 
   STEAM_DEBUG2("CSteamAPI::SetJoinAddress(\"%s\") - ", strAddress);
 
-  // Reset
-  if (strAddress == "") {
+  // Reset if needed
+  if (!steam_bAllowJoin || strAddress == "") {
     SteamFriends()->SetRichPresence("connect", NULL);
     STEAM_DEBUG2("reset\n");
     return;
@@ -191,7 +198,7 @@ void CSteamAPI::SetJoinAddress(const CTString &strAddress) {
 
 // Activate Steam Overlay web browser directly to the specified URL
 BOOL CSteamAPI::OpenWebPage(const char *strURL) {
-  if (!IsUsable()) return FALSE;
+  if (!steam_bUseWebBrowser || !IsUsable()) return FALSE;
 
   SteamFriends()->ActivateGameOverlayToWebPage(strURL);
   STEAM_DEBUG1("CSteamAPI::OpenWebPage(\"%s\") - opened webpage\n", strURL);
