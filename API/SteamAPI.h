@@ -53,6 +53,9 @@ class CORE_API CSteamAPI {
     // Check if Steam has been initialized and can be used
     BOOL IsUsable(void);
 
+    // Interact with Steam once in a while
+    void Update(void);
+
   private:
     // Reset the API
     void Reset(void);

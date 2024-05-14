@@ -121,6 +121,31 @@ BOOL CSteamAPI::IsUsable(void) {
   return (CCoreAPI::Props().bSteamEnable && bInitialized && eApiState == k_ESteamAPIInitResult_OK);
 };
 
+// Interact with Steam once in a while
+void CSteamAPI::Update(void) {
+  // Update every 1/20 of a second
+  static CTimerValue _tvLastCheck(-1.0f);
+  CTimerValue tvNow = _pTimer->GetHighPrecisionTimer();
+
+  if ((tvNow - _tvLastCheck).GetSeconds() < 0.05f) return;
+  _tvLastCheck = tvNow;
+
+  // Update Steam callbacks
+  GetSteamAPI()->UpdateCallbacks();
+
+  // While connected to a server
+  if (!_pNetwork->IsServer() && GetGameAPI()->IsHooked() && GetGameAPI()->IsGameOn()) {
+    // Set address of the joined server
+    CSymbolPtr piNetPort("net_iPort");
+    CTString strAddress(0, "%s:%d", GetGameAPI()->GetJoinAddress(), piNetPort.GetIndex());
+    GetSteamAPI()->SetJoinAddress(strAddress);
+
+  } else {
+    // Reset join address
+    GetSteamAPI()->SetJoinAddress("");
+  }
+};
+
 // Set server address to be used in "Join game" option
 void CSteamAPI::SetJoinAddress(const CTString &strAddress) {
   if (!IsUsable()) return;
