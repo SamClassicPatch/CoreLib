@@ -146,6 +146,14 @@ void CSteamAPI::SetJoinAddress(const CTString &strAddress) {
   SteamFriends()->SetRichPresence("connect", strArgs);
 };
 
+// Activate Steam Overlay web browser directly to the specified URL
+BOOL CSteamAPI::OpenWebPage(const char *strURL) {
+  if (!IsUsable()) return FALSE;
+
+  SteamFriends()->ActivateGameOverlayToWebPage(strURL);
+  return TRUE;
+};
+
 // Update Steam callbacks (should be called each frame/timer tick)
 void CSteamAPI::UpdateCallbacks(void) {
   if (!IsUsable()) return;

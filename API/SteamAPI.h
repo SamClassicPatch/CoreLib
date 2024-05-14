@@ -67,6 +67,9 @@ class CORE_API CSteamAPI {
     // Set server address to be used in "Join game" option
     void SetJoinAddress(const CTString &strAddress);
 
+    // Activate Steam Overlay web browser directly to the specified URL
+    BOOL OpenWebPage(const char *strURL);
+
   public:
 
     // Update Steam callbacks (should be called each frame/timer tick)
