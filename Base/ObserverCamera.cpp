@@ -549,7 +549,7 @@ BOOL CObserverCamera::Update(CEntity *pen, CDrawPort *pdp) {
 
     // Remember player view position for the next activation
     if (IsDerivedFromID(pen, CPlayerEntity_ClassID)) {
-      CPlacement3D plView = IWorld::GetViewpoint((CPlayerEntity *)pen, TRUE);
+      CPlacement3D plView = IWorld::GetViewpoint((CPlayerEntity *)pen, FALSE);
 
       cam_cpCurrent.vPos = plView.pl_PositionVector;
       cam_cpCurrent.aRot = plView.pl_OrientationAngle;
