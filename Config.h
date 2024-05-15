@@ -28,6 +28,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 // CoreLib
 
+  // API
+  #define CLASSICSPATCH_STEAM_API (1 && CORECONFIG_NOT_REV) // Enable interactions with Steam
+
   // Definitions
   #define CLASSICSPATCH_CLASS_DEFINITIONS (1) // Define classes that aren't exported from the engine
   #define CLASSICSPATCH_FUNC_DEFINITIONS  (1) // Define methods that aren't exported from the engine

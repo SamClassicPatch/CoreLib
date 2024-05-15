@@ -15,8 +15,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "StdH.h"
 
+#if CLASSICSPATCH_STEAM_API
+
 // [Cecil] NOTE: Delay loaded, meaning that the library is actually hooked upon calling any function for the first time
 #pragma comment(lib, "../Extras/Steamworks/redistributable_bin/steam_api.lib")
+
+#endif // CLASSICSPATCH_STEAM_API
 
 static INDEX steam_bAllowJoin = TRUE; // Allow friends to join the same game
 static INDEX steam_bUseWebBrowser = TRUE; // Allow using web browser in Steam overlay
@@ -53,6 +57,8 @@ void CSteamAPI::Reset(void) {
 
 // Initialize Steam API
 void CSteamAPI::Init(void) {
+#if CLASSICSPATCH_STEAM_API
+
   // Skip for dedicated servers
   if (GetAPI()->IsServerApp()) {
     if (!CCoreAPI::Props().bSteamForServers) return;
@@ -116,11 +122,17 @@ void CSteamAPI::Init(void) {
   // Register callbacks
   cbOnGameOverlayActivated.Register(this, OnGameOverlayActivated);
   cbOnGameJoinRequested.Register(this, OnGameJoinRequested);
+
+#else
+  CPutString("Steam API is disabled in this build!\n");
+#endif // CLASSICSPATCH_STEAM_API
 };
 
 // Shutdown Steam API
 void CSteamAPI::End(void) {
   if (!IsUsable()) return;
+
+#if CLASSICSPATCH_STEAM_API
 
   // Unregister callbacks
   cbOnGameOverlayActivated.Unregister();
@@ -131,17 +143,26 @@ void CSteamAPI::End(void) {
   SteamAPI_Shutdown();
   CPutString("OK!\n");
 
+#endif // CLASSICSPATCH_STEAM_API
+
   Reset();
 };
 
 // Check if Steam has been initialized and can be used
 BOOL CSteamAPI::IsUsable(void) {
+#if CLASSICSPATCH_STEAM_API
   // Enabled and initialized correctly
   return (CCoreAPI::Props().bSteamEnable && bInitialized && eApiState == k_ESteamAPIInitResult_OK);
+
+#else
+  return FALSE;
+#endif
 };
 
 // Interact with Steam once in a while
 void CSteamAPI::Update(void) {
+#if CLASSICSPATCH_STEAM_API
+
   // Update every 1/20 of a second
   static CTimerValue _tvLastCheck(-1.0f);
   CTimerValue tvNow = _pTimer->GetHighPrecisionTimer();
@@ -165,11 +186,15 @@ void CSteamAPI::Update(void) {
     // Reset join address
     GetSteamAPI()->SetJoinAddress("");
   }
+
+#endif // CLASSICSPATCH_STEAM_API
 };
 
 // Set server address to be used in "Join game" option
 void CSteamAPI::SetJoinAddress(const CTString &strAddress) {
   if (!IsUsable()) return;
+
+#if CLASSICSPATCH_STEAM_API
 
   STEAM_DEBUG2("CSteamAPI::SetJoinAddress(\"%s\") - ", strAddress);
 
@@ -194,17 +219,23 @@ void CSteamAPI::SetJoinAddress(const CTString &strAddress) {
 
   SteamFriends()->SetRichPresence("connect", strArgs);
   STEAM_DEBUG2("set to '%s'\n", strArgs);
+
+#endif // CLASSICSPATCH_STEAM_API
 };
 
 // Activate Steam Overlay web browser directly to the specified URL
 BOOL CSteamAPI::OpenWebPage(const char *strURL) {
   if (!steam_bUseWebBrowser || !IsUsable()) return FALSE;
 
+#if CLASSICSPATCH_STEAM_API
   SteamFriends()->ActivateGameOverlayToWebPage(strURL);
   STEAM_DEBUG1("CSteamAPI::OpenWebPage(\"%s\") - opened webpage\n", strURL);
+#endif
 
   return TRUE;
 };
+
+#if CLASSICSPATCH_STEAM_API
 
 // Update Steam callbacks (should be called each frame/timer tick)
 void CSteamAPI::UpdateCallbacks(void) {
@@ -223,3 +254,5 @@ void CSteamAPI::OnGameJoinRequested(GameRichPresenceJoinRequested_t *pCallback) 
   strJoinCommandMidGame = pCallback->m_rgchConnect;
   STEAM_DEBUG1("CSteamAPI::OnGameJoinRequested() - received '%s'\n", strJoinCommandMidGame);
 };
+
+#endif // CLASSICSPATCH_STEAM_API

@@ -20,6 +20,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #pragma once
 #endif
 
+#if CLASSICSPATCH_STEAM_API
+
 // Compatibility with C++11
 #define nullptr NULL
 #define snprintf _snprintf
@@ -27,6 +29,15 @@ typedef int int32_t;
 typedef __int64 int64_t;
 typedef size_t intptr_t;
 #include <Extras/Steamworks/public/steam/steam_api.h>
+
+#else
+
+// For compatibility
+enum ESteamAPIInitResult {
+  k_ESteamAPIInitResult_NoSteamClient = 2,
+};
+
+#endif // CLASSICSPATCH_STEAM_API
 
 // API for interacting with the Steam client
 class CORE_API CSteamAPI {
@@ -74,12 +85,15 @@ class CORE_API CSteamAPI {
     BOOL OpenWebPage(const char *strURL);
 
   public:
+  #if CLASSICSPATCH_STEAM_API
 
     // Update Steam callbacks (should be called each frame/timer tick)
     void UpdateCallbacks(void);
 
     STEAM_CALLBACK_MANUAL(CSteamAPI, OnGameOverlayActivated, GameOverlayActivated_t, cbOnGameOverlayActivated);
     STEAM_CALLBACK_MANUAL(CSteamAPI, OnGameJoinRequested, GameRichPresenceJoinRequested_t, cbOnGameJoinRequested);
+
+  #endif // CLASSICSPATCH_STEAM_API
 };
 
 #endif
