@@ -47,9 +47,11 @@ class CORE_API CSteamAPI {
     ESteamAPIInitResult eApiState;
 
     BOOL bSteamOverlay;
+    BOOL bScreenshotRequested; // Requested to take a new screenshot
 
   public:
     CTString strJoinCommandMidGame;
+    CImageInfo iiScreenshot; // Custom screenshot to write (can be modified externally)
 
   public:
     // Constructor
@@ -84,6 +86,13 @@ class CORE_API CSteamAPI {
     // Activate Steam Overlay web browser directly to the specified URL
     BOOL OpenWebPage(const char *strURL);
 
+    // Set drawport that will be used for making Steam screenshots from within the game
+    // This makes Steam send screenshot requests instead of capturing the entire game window automatically
+    void SetScreenshotHook(CDrawPort *pdpScreenshotSurface);
+
+    // Make a custom Steam screenshot by manually writing a bitmap from image info
+    void WriteScreenshot(CImageInfo &ii);
+
   public:
   #if CLASSICSPATCH_STEAM_API
 
@@ -92,6 +101,8 @@ class CORE_API CSteamAPI {
 
     STEAM_CALLBACK_MANUAL(CSteamAPI, OnGameOverlayActivated, GameOverlayActivated_t, cbOnGameOverlayActivated);
     STEAM_CALLBACK_MANUAL(CSteamAPI, OnGameJoinRequested, GameRichPresenceJoinRequested_t, cbOnGameJoinRequested);
+    STEAM_CALLBACK_MANUAL(CSteamAPI, OnScreenshotRequested, ScreenshotRequested_t, cbOnScreenshotRequested);
+    STEAM_CALLBACK_MANUAL(CSteamAPI, OnScreenshotReady, ScreenshotReady_t, cbOnScreenshotReady);
 
   #endif // CLASSICSPATCH_STEAM_API
 };
