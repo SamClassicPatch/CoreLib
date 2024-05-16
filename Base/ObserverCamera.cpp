@@ -347,6 +347,7 @@ void CObserverCamera::UpdateControls(void) {
   cam_ctl.bMoveR = _pInput->GetButtonState(OCAM_KID_MOVER_1) || _pInput->GetButtonState(OCAM_KID_MOVER_2);
   cam_ctl.bMoveU = _pInput->GetButtonState(OCAM_KID_MOVEU_1) || _pInput->GetButtonState(OCAM_KID_MOVEU_2);
   cam_ctl.bMoveD = _pInput->GetButtonState(OCAM_KID_MOVED_1) || _pInput->GetButtonState(OCAM_KID_MOVED_2);
+  // [Cecil] FIXME: Scroll wheel isn't being updated when the game is paused
   cam_ctl.bZoomIn = _pInput->GetButtonState(OCAM_KID_ZOOMIN);
   cam_ctl.bZoomOut = _pInput->GetButtonState(OCAM_KID_ZOOMOUT);
   cam_ctl.bResetToPlayer = _pInput->GetButtonState(OCAM_KID_TELEPORT);
@@ -470,6 +471,12 @@ CObserverCamera::CameraPos &CObserverCamera::FreeFly(CPlayerEntity *penObserving
 
     // Manual mouse input
     } else {
+      // Need to do it here in case the game is paused, otherwise axis values aren't updated
+      if (_pNetwork->IsPaused() || _pNetwork->GetLocalPause()) {
+        _pInput->SetJoyPolling(FALSE);
+        _pInput->GetInput(FALSE);
+      }
+
       aRotate(1) = _pInput->GetAxisValue(MOUSE_X_AXIS) * -0.5f;
       aRotate(2) = _pInput->GetAxisValue(MOUSE_Y_AXIS) * +0.5f;
     }
