@@ -312,6 +312,18 @@ void CSteamAPI::WriteScreenshot(CImageInfo &ii) {
 #endif // CLASSICSPATCH_STEAM_API
 };
 
+// Force Steam to take a screenshot (equivalent to manually pressing a screenshot button, e.g. F12)
+void CSteamAPI::TriggerScreenshot(void) {
+#if CLASSICSPATCH_STEAM_API
+
+  if (!IsUsable()) return;
+  STEAM_DEBUG1("CSteamAPI::TriggerScreenshot()\n");
+
+  SteamScreenshots()->TriggerScreenshot();
+
+#endif
+};
+
 #if CLASSICSPATCH_STEAM_API
 
 // Update Steam callbacks (should be called each frame/timer tick)
@@ -334,6 +346,15 @@ void CSteamAPI::OnGameJoinRequested(GameRichPresenceJoinRequested_t *pCallback) 
 
 void CSteamAPI::OnScreenshotRequested(ScreenshotRequested_t *pCallback) {
   STEAM_DEBUG1("CSteamAPI::OnScreenshotRequested() - ");
+
+  // Trust observer camera to take the actual screenshot
+  if (GetGameAPI()->GetCamera().IsActive()) {
+    // [Cecil] FIXME: If Steam screenshot button differs from the observer camera (either one is rebound)
+    // and Steam's button is used, no screenshot will be made here because observer camera is never called
+    bScreenshotRequested = TRUE;
+    STEAM_DEBUG1("OK: Requested a screenshot from observer camera\n");
+    return;
+  }
 
   if (_pdpScreenshot == NULL) {
     STEAM_DEBUG1("ERROR: No drawport to make a screenshot from\n");

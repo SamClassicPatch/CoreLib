@@ -734,7 +734,8 @@ void CObserverCamera::TakeScreenshot(void) {
   _pGfx->CreateWorkCanvas(cam_iScreenshotW, cam_iScreenshotH, &pdpScreenshot);
   if (pdpScreenshot == NULL) return;
 
-  CImageInfo iiScreenshot;
+  // Use Steam's screenshot bitmap
+  CImageInfo &iiScreenshot = GetSteamAPI()->iiScreenshot;
 
   if (pdpScreenshot->Lock()) {
     // Prepare view projection
@@ -756,6 +757,9 @@ void CObserverCamera::TakeScreenshot(void) {
     pdpScreenshot->GrabScreen(iiScreenshot, 0);
     pdpScreenshot->Unlock();
   }
+
+  // Request a screenshot from Steam, if it didn't do it automatically
+  GetSteamAPI()->TriggerScreenshot();
 
   // Save screenshot as TGA
   try {

@@ -93,6 +93,9 @@ class CORE_API CSteamAPI {
     // Make a custom Steam screenshot by manually writing a bitmap from image info
     void WriteScreenshot(CImageInfo &ii);
 
+    // Force Steam to take a screenshot (equivalent to manually pressing a screenshot button, e.g. F12)
+    void TriggerScreenshot(void);
+
   public:
   #if CLASSICSPATCH_STEAM_API
 
