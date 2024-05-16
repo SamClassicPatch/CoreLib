@@ -27,7 +27,7 @@ class CORE_API CObserverCamera {
     struct CameraControl {
       INDEX bMoveF, bMoveB, bMoveL, bMoveR, bMoveU, bMoveD;
       INDEX bBankingL, bBankingR, bZoomIn, bZoomOut;
-      INDEX bResetToPlayer, bFollowPlayer, bSnapshot;
+      INDEX bResetToPlayer, bFollowPlayer, bSnapshot, bScreenshot;
       FLOAT fFOV;
 
       CameraControl() {
@@ -38,7 +38,7 @@ class CORE_API CObserverCamera {
       void Reset(void) {
         bMoveF = bMoveB = bMoveL = bMoveR = bMoveU = bMoveD = FALSE;
         bBankingL = bBankingR = bZoomIn = bZoomOut = FALSE;
-        bResetToPlayer = bFollowPlayer = bSnapshot = FALSE;
+        bResetToPlayer = bFollowPlayer = bSnapshot = bScreenshot = FALSE;
         fFOV = 90.0f;
       };
     };
@@ -65,6 +65,7 @@ class CORE_API CObserverCamera {
     // Camera control (fields outside cam_ctl aren't reset between camera activations)
     CameraControl cam_ctl;
 
+    // Camera properties
     BOOL cam_bActive; // Dynamic camera toggle
     INDEX cam_iShowInfo; // Display current camera properties and default controls for free fly mode
     BOOL cam_bDefaultControls; // Use internal controls instead of manually binding the commands
@@ -77,6 +78,8 @@ class CORE_API CObserverCamera {
     FLOAT cam_fSmoothRotation; // Factor for smooth camera rotation
     FLOAT cam_fFollowDist; // Close in on the player if they're far enough from the camera
 
+    INDEX cam_iScreenshotW, cam_iScreenshotH; // Screenshot resolution (limited to 1x1 .. 20000x20000)
+
     BOOL cam_bPlayback; // Currently playing back the recording
     CTFileName cam_fnmDemo; // Currently playing demo
     CTFileStream cam_strmScript;
@@ -86,6 +89,7 @@ class CORE_API CObserverCamera {
 
     CameraPos cam_acpCurve[4]; // Camera positions for a curve (playback mode)
     CameraPos cam_cpCurrent; // Current camera position (freecam mode)
+    CameraPos cam_cpView; // Camera position for the current frame
 
     // Absolute movement & rotation speed
     FLOAT3D cam_vMovement;
@@ -108,6 +112,10 @@ class CORE_API CObserverCamera {
       cam_fSmoothMovement = 1.0f;
       cam_fSmoothRotation = 1.0f;
       cam_fFollowDist = -1.0f;
+
+      cam_iScreenshotW = 1920;
+      cam_iScreenshotH = 1080;
+
       cam_bExternalUsage = FALSE;
       Reset();
     };
@@ -121,6 +129,7 @@ class CORE_API CObserverCamera {
     // Change demo playback speed
     void SetSpeed(FLOAT fSpeed);
 
+  public:
     // Start camera for a game (or a currently playing demo)
     void Start(const CTFileName &fnmDemo);
 
@@ -133,6 +142,7 @@ class CORE_API CObserverCamera {
     // Start recording into a file
     virtual BOOL StartRecording(void);
 
+  public:
     // Direct button input using default controls
     void UpdateControls(void);
 
@@ -144,6 +154,9 @@ class CORE_API CObserverCamera {
 
     // Update the camera and render the world through it
     BOOL Update(CEntity *pen, CDrawPort *pdp);
+
+    // Take a high quality screenshot of the current view
+    void TakeScreenshot(void);
 };
 
 #endif

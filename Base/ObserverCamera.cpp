@@ -123,6 +123,7 @@ void CObserverCamera::Init(void)
   _pShell->DeclareSymbol("user INDEX ocam_bResetToPlayer;",    &cam_ctl.bResetToPlayer);
   _pShell->DeclareSymbol("user INDEX ocam_bFollowPlayer;",     &cam_ctl.bFollowPlayer);
   _pShell->DeclareSymbol("user INDEX ocam_bSnapshot;",         &cam_ctl.bSnapshot);
+  _pShell->DeclareSymbol("user INDEX ocam_bScreenshot;",       &cam_ctl.bScreenshot);
 
   // Camera properties
   _pShell->DeclareSymbol("           user INDEX ocam_bActive;",               &cam_bActive);
@@ -136,6 +137,9 @@ void CObserverCamera::Init(void)
   _pShell->DeclareSymbol("persistent user FLOAT ocam_fSmoothMovement;",       &cam_fSmoothMovement);
   _pShell->DeclareSymbol("persistent user FLOAT ocam_fSmoothRotation;",       &cam_fSmoothRotation);
   _pShell->DeclareSymbol("persistent user FLOAT ocam_fFollowDist;",           &cam_fFollowDist);
+
+  _pShell->DeclareSymbol("persistent user INDEX ocam_iScreenshotW;", &cam_iScreenshotW);
+  _pShell->DeclareSymbol("persistent user INDEX ocam_iScreenshotH;", &cam_iScreenshotH);
 };
 
 // Start camera for a game (or a currently playing demo)
@@ -233,10 +237,12 @@ BOOL CObserverCamera::StartRecording(void) {
 };
 
 // Default control buttons
-#define OCAM_KID_BANKINGL KID_Q
-#define OCAM_KID_BANKINGR KID_E
-#define OCAM_KID_FOLLOW   KID_F
-#define OCAM_KID_SNAPSHOT KID_TAB
+#define OCAM_KID_BANKINGL   KID_Q
+#define OCAM_KID_BANKINGR   KID_E
+#define OCAM_KID_FOLLOW     KID_F
+#define OCAM_KID_SNAPSHOT   KID_TAB
+#define OCAM_KID_CHANGERES  KID_F10
+#define OCAM_KID_SCREENSHOT KID_F12
 
 #define OCAM_KID_MOVEF_1  KID_W
 #define OCAM_KID_MOVEB_1  KID_S
@@ -270,6 +276,8 @@ void CObserverCamera::UpdateControls(void) {
   const BOOL bE = _pInput->GetButtonState(OCAM_KID_BANKINGR);
   const BOOL bF = _pInput->GetButtonState(OCAM_KID_FOLLOW);
   const BOOL bTab = _pInput->GetButtonState(OCAM_KID_SNAPSHOT);
+  const BOOL bF8  = _pInput->GetButtonState(OCAM_KID_CHANGERES);
+  const BOOL bF12 = _pInput->GetButtonState(OCAM_KID_SCREENSHOT);
 
   // Turn left
   static BOOL _bLeft = FALSE;
@@ -299,6 +307,39 @@ void CObserverCamera::UpdateControls(void) {
   if (!_bSnap && bTab) cam_ctl.bSnapshot = TRUE;
   _bSnap = bTab;
 
+  // Change screenshot resolution
+  static BOOL _bRes = FALSE;
+  if (!_bRes && bF8) {
+    switch (cam_iScreenshotW)
+    {
+      case 1920: // 1080p 21:9
+        cam_iScreenshotW = 2560;
+        cam_iScreenshotH = 1080;
+        break;
+
+      case 2560: // 1440p 21:9
+        cam_iScreenshotW = 3440;
+        cam_iScreenshotH = 1440;
+        break;
+
+      case 3440: // 4K
+        cam_iScreenshotW = 3840;
+        cam_iScreenshotH = 2160;
+        break;
+
+      default: // Full HD
+        cam_iScreenshotW = 1920;
+        cam_iScreenshotH = 1080;
+        break;
+    }
+  }
+  _bRes = bF8;
+
+  // Take screenshot
+  static BOOL _bShot = FALSE;
+  if (!_bShot && bF12) cam_ctl.bScreenshot = TRUE;
+  _bShot = bF12;
+
   // Movement and zoom
   cam_ctl.bMoveF = _pInput->GetButtonState(OCAM_KID_MOVEF_1) || _pInput->GetButtonState(OCAM_KID_MOVEF_2);
   cam_ctl.bMoveB = _pInput->GetButtonState(OCAM_KID_MOVEB_1) || _pInput->GetButtonState(OCAM_KID_MOVEB_2);
@@ -324,7 +365,7 @@ void CObserverCamera::PrintCameraInfo(CDrawPort *pdp) {
 
   const FLOAT fScaling = HEIGHT_SCALING(pdp);
   const FLOAT fTextScaling = fScaling * 0.8f;
-  const PIX pixLineHeight = (_pfdDisplayFont->GetLineSpacing() + _pfdDisplayFont->GetHeight()) * fTextScaling;
+  const PIX pixLineHeight = _pfdDisplayFont->GetHeight() * fTextScaling + fTextScaling + 1;
 
   pdp->SetFont(_pfdDisplayFont);
   pdp->SetTextScaling(fScaling);
@@ -357,12 +398,14 @@ void CObserverCamera::PrintCameraInfo(CDrawPort *pdp) {
     strProps += CTString(0, "ocam_fFollowDist = %g\n", cam_fFollowDist);
   }
 
+  strProps += CTString(0, "ocam_iScreenshotW/H = %dx%d\n", cam_iScreenshotW, cam_iScreenshotH);
+
   pixInfoY += pixLineHeight;
   pdp->PutText(strProps, 16 * fScaling, pixInfoY, 0xFFFFFFFF);
 
   // Default controls for free fly camera
   if (cam_bActive && cam_iShowInfo > 1) {
-    pixInfoY += pixLineHeight * 8;
+    pixInfoY += pixLineHeight * 9;
     pdp->PutText(TRANS("Default camera controls"), 8 * fScaling, pixInfoY, 0xFFD700FF);
 
     CTString strControls = TRANS("Disabled");
@@ -383,6 +426,11 @@ void CObserverCamera::PrintCameraInfo(CDrawPort *pdp) {
       if (cam_fnmDemo != "") {
         strControls += CTString(0, TRANS("Take position snapshot: %s\n"), _pInput->GetButtonTransName(OCAM_KID_SNAPSHOT));
       }
+
+      // Screenshot controls
+      strControls += "\n";
+      strControls += CTString(0, TRANS("Select resolution preset: %s\n"), _pInput->GetButtonTransName(OCAM_KID_CHANGERES));
+      strControls += CTString(0, TRANS("Take HQ screenshot: %s\n"), _pInput->GetButtonTransName(OCAM_KID_SCREENSHOT));
     }
 
     pixInfoY += pixLineHeight;
@@ -546,6 +594,7 @@ BOOL CObserverCamera::Update(CEntity *pen, CDrawPort *pdp) {
   // Camera is currently disabled
   if (!IsActive()) {
     cam_bActive = FALSE; // Prevent it from suddenly switching if the conditions are met
+    cam_ctl.bScreenshot = FALSE; // And from making screenshots
 
     // Remember player view position for the next activation
     if (IsDerivedFromID(pen, CPlayerEntity_ClassID)) {
@@ -561,7 +610,7 @@ BOOL CObserverCamera::Update(CEntity *pen, CDrawPort *pdp) {
   }
 
   // Determine camera position for this frame
-  CameraPos cp;
+  CameraPos &cp = cam_cpView;
 
   // Camera playback
   if (cam_bPlayback && !cam_bActive) {
@@ -614,6 +663,12 @@ BOOL CObserverCamera::Update(CEntity *pen, CDrawPort *pdp) {
     cp = FreeFly(penObserving);
   }
 
+  // Screenshot command has been sent
+  if (cam_ctl.bScreenshot) {
+    cam_ctl.bScreenshot = FALSE;
+    TakeScreenshot();
+  }
+
   // Prepare view projection
   CPerspectiveProjection3D prProjection;
   prProjection.FOVL() = cp.fFOV;
@@ -645,4 +700,73 @@ BOOL CObserverCamera::Update(CEntity *pen, CDrawPort *pdp) {
 
   _pSound->Listen(cam_sliWorld);
   return TRUE;
+};
+
+// Create name for a new screenshot
+static CTFileName MakeScreenShotName(void) {
+  // Create base name from the world name
+  CTString strBase = CTString("ScreenShots\\") + _pNetwork->GetCurrentWorld().FileName();
+
+  INDEX iShot = 0;
+
+  FOREVER {
+    // Create full filename with the number
+    CTFileName fnmFull = CTString(0, "%s_shot%04d.tga", strBase, iShot);
+
+    // File doesn't exist yet, so it can be used
+    if (!FileExistsForWriting(fnmFull)) {
+      return fnmFull;
+    }
+
+    // Try the next number
+    iShot++;
+  }
+};
+
+// Take a high quality screenshot of the current view
+void CObserverCamera::TakeScreenshot(void) {
+  // Limit resolution
+  cam_iScreenshotW = Clamp(cam_iScreenshotW, (INDEX)1, (INDEX)20000);
+  cam_iScreenshotH = Clamp(cam_iScreenshotH, (INDEX)1, (INDEX)20000);
+
+  // Create canvas for the screenshot
+  CDrawPort *pdpScreenshot;
+  _pGfx->CreateWorkCanvas(cam_iScreenshotW, cam_iScreenshotH, &pdpScreenshot);
+  if (pdpScreenshot == NULL) return;
+
+  CImageInfo iiScreenshot;
+
+  if (pdpScreenshot->Lock()) {
+    // Prepare view projection
+    CPerspectiveProjection3D prProjection;
+    prProjection.FOVL() = cam_cpView.fFOV;
+    prProjection.ScreenBBoxL() = FLOATaabbox2D(FLOAT2D(0, 0), FLOAT2D(pdpScreenshot->GetWidth(), pdpScreenshot->GetHeight()));
+    prProjection.AspectRatioL() = 1.0f;
+    prProjection.FrontClipDistanceL() = 0.3f;
+
+    // Render view from the camera
+    CAnyProjection3D apr;
+    apr = prProjection;
+    apr->ViewerPlacementL() = cam_cpView.GetPlacement();
+
+    CWorld &wo = _pNetwork->ga_World;
+    RenderView(wo, *(CEntity *)NULL, apr, *pdpScreenshot);
+
+    // Take screenshot
+    pdpScreenshot->GrabScreen(iiScreenshot, 0);
+    pdpScreenshot->Unlock();
+  }
+
+  // Save screenshot as TGA
+  try {
+    CTFileName fnmScreenshot = MakeScreenShotName();
+    iiScreenshot.SaveTGA_t(fnmScreenshot);
+    CPrintF(LOCALIZE("screen shot: %s\n"), fnmScreenshot.str_String);
+
+  } catch (char *strError) {
+    CPrintF(LOCALIZE("Cannot save screenshot:\n%s\n"), strError);
+  }
+
+  // Destroy screenshot canvas
+  _pGfx->DestroyWorkCanvas(pdpScreenshot);
 };
