@@ -48,7 +48,7 @@ CSteamAPI::CSteamAPI() {
   _pShell->DeclareSymbol("persistent user INDEX steam_bUseWebBrowser;",   &steam_bUseWebBrowser);
   _pShell->DeclareSymbol("persistent user INDEX steam_bHookScreenshots;", &steam_bHookScreenshots);
 
-  _pShell->DeclareSymbol("user INDEX steam_iDebugOutput;", &steam_iDebugOutput);
+  _pShell->DeclareSymbol("persistent user INDEX steam_iDebugOutput;", &steam_iDebugOutput);
 };
 
 // Reset the API
