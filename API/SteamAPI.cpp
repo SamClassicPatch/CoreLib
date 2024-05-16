@@ -303,8 +303,20 @@ void CSteamAPI::WriteScreenshot(CImageInfo &ii) {
   ScreenshotHandle hShot = SteamScreenshots()->WriteScreenshot(ii.ii_Picture, ulSize, pixW, pixH);
 
   // Set world display name as the location
-  if (IWorld::GetWorld() != NULL) {
-    SteamScreenshots()->SetLocation(hShot, IWorld::GetWorld()->GetName().Undecorated());
+  if (GetGameAPI()->IsHooked() && GetGameAPI()->IsGameOn()) {
+    const CTString strLocation = IWorld::GetWorld()->GetName().Undecorated();
+
+    if (strLocation != "") {
+      // Convert name string in system locale (ANSI code page) to Unicode
+      wchar_t wstrUnicode[k_cubUFSTagValueMax] = { 0 };
+      MultiByteToWideChar(CP_ACP, 0, strLocation.str_String, -1, wstrUnicode, k_cubUFSTagValueMax);
+
+      // Convert Unicode string to UTF-8
+      char strUTF8[k_cubUFSTagValueMax] = { 0 };
+      WideCharToMultiByte(CP_UTF8, 0, wstrUnicode, -1, strUTF8, k_cubUFSTagValueMax, NULL, NULL);
+
+      SteamScreenshots()->SetLocation(hShot, strUTF8);
+    }
   }
 
   STEAM_DEBUG1("OK: Wrote screenshot\n");
