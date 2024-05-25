@@ -68,7 +68,8 @@ bool CPatch::CanRewriteInstructionSet(long iAddress, int &iRewriteLen)
       iInstructionLen = 5;
       bInstructionFound = true;
 
-    } else if (!memcmp(pByte, "\x8B\xFF", 2) 
+    } else if (!memcmp(pByte, "\x8B\xFF", 2)
+            || !memcmp(pByte, "\x8B\xDC", 2)
             || !memcmp(pByte, "\x8B\xEC", 2)
             || !memcmp(pByte, "\x8B\xF1", 2)
             || !memcmp(pByte, "\x8B\xF9", 2) // mov
