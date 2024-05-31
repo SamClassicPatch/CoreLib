@@ -38,11 +38,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 CORE_API extern class CGame *_pGame;
 
-// Revolution support
+// Pre-1.10 variables removed from Revolution engine
 #if SE1_GAME == SS_REV
-  // Pre-1.10 variables removed from Revolution engine
-  CORE_API extern CTFileName _fnmCDPath;
-  CORE_API extern CTFileName _fnmMod;
   CORE_API extern CTString _strModName;
   CORE_API extern CTString _strModURL;
   CORE_API extern CTString _strModExt;
@@ -71,10 +68,6 @@ CORE_API extern FLOAT inp_afAxisValues[MAX_OVERALL_AXES];
 #include <CoreLib/Base/ObserverCamera.h>
 #include <CoreLib/Base/GameDirectories.h>
 #include <CoreLib/Modules/PluginStock.h>
-
-#include <CoreLib/Interfaces/ConfigFunctions.h>
-#include <CoreLib/Interfaces/RenderFunctions.h>
-#include <CoreLib/Interfaces/WorldFunctions.h>
 
 // Initialize Core module (always after 'SE_InitEngine'!)
 CORE_API void ClassicsPatch_InitCore(void);

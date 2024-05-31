@@ -67,9 +67,6 @@
     <Filter Include="Header Files\Base headers">
       <UniqueIdentifier>{b52060bd-6184-498b-832a-c880d6837c2b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Interfaces">
-      <UniqueIdentifier>{7126ce51-6526-42d7-a3f2-40d69c1bd290}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Networking headers\Modules headers">
       <UniqueIdentifier>{d478dacd-19f8-4a3e-9b42-0db0d4cf502f}</UniqueIdentifier>
     </Filter>
@@ -123,12 +120,6 @@
     <ClInclude Include="API\PatchAPI.h">
       <Filter>Header Files\API headers</Filter>
     </ClInclude>
-    <ClInclude Include="Interfaces\RenderFunctions.h">
-      <Filter>Header Files\Interfaces headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Interfaces\WorldFunctions.h">
-      <Filter>Header Files\Interfaces headers</Filter>
-    </ClInclude>
     <ClInclude Include="API\Plugins\PluginEvents.h">
       <Filter>Header Files\API headers\Plugins</Filter>
     </ClInclude>
@@ -162,29 +153,17 @@
     <ClInclude Include="Networking\MessageProcessing.h">
       <Filter>Header Files\Networking headers</Filter>
     </ClInclude>
-    <ClInclude Include="Interfaces\PropertyFunctions.h">
-      <Filter>Header Files\Interfaces headers</Filter>
-    </ClInclude>
     <ClInclude Include="Compatibility\Game.h">
       <Filter>Header Files\Compatibility headers</Filter>
     </ClInclude>
     <ClInclude Include="Compatibility\PlayerSettings.h">
       <Filter>Header Files\Compatibility headers</Filter>
     </ClInclude>
-    <ClInclude Include="Compatibility\SymbolPtr.h">
-      <Filter>Header Files\Compatibility headers</Filter>
-    </ClInclude>
     <ClInclude Include="Base\CoreTimerHandler.h">
       <Filter>Header Files\Base headers</Filter>
     </ClInclude>
-    <ClInclude Include="Interfaces\DataFunctions.h">
-      <Filter>Header Files\Interfaces headers</Filter>
-    </ClInclude>
     <ClInclude Include="Networking\Modules.h">
       <Filter>Header Files\Networking headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Objects\StructPtr.h">
-      <Filter>Header Files\Objects headers</Filter>
     </ClInclude>
     <ClInclude Include="Query\MasterServer.h">
       <Filter>Header Files\Query headers</Filter>
@@ -197,9 +176,6 @@
     </ClInclude>
     <ClInclude Include="Base\Unzip.h">
       <Filter>Header Files\Base headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Interfaces\FileFunctions.h">
-      <Filter>Header Files\Interfaces headers</Filter>
     </ClInclude>
     <ClInclude Include="Objects\PropertyPtr.h">
       <Filter>Header Files\Objects headers</Filter>
@@ -231,9 +207,6 @@
     <ClInclude Include="Networking\Modules\StockCommands.h">
       <Filter>Header Files\Networking headers\Modules headers</Filter>
     </ClInclude>
-    <ClInclude Include="Compatibility\VanillaEvents.h">
-      <Filter>Header Files\Compatibility headers</Filter>
-    </ClInclude>
     <ClInclude Include="Networking\ExtPackets.h">
       <Filter>Header Files\Networking headers</Filter>
     </ClInclude>
@@ -246,17 +219,11 @@
     <ClInclude Include="Networking\Modules\PacketCommands.h">
       <Filter>Header Files\Networking headers\Modules headers</Filter>
     </ClInclude>
-    <ClInclude Include="Interfaces\ConfigFunctions.h">
-      <Filter>Header Files\Interfaces headers</Filter>
-    </ClInclude>
     <ClInclude Include="Base\CommonCore.h">
       <Filter>Header Files\Base headers</Filter>
     </ClInclude>
     <ClInclude Include="API\ApiConfig.h">
       <Filter>Header Files\API headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Objects\MapStructure.h">
-      <Filter>Header Files\Objects headers</Filter>
     </ClInclude>
     <ClInclude Include="Interfaces\ResourceFunctions.h">
       <Filter>Header Files\Interfaces headers</Filter>
@@ -355,9 +322,6 @@
     </ClCompile>
     <ClCompile Include="Base\Unzip.cpp">
       <Filter>Source Files\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="Interfaces\Interfaces.cpp">
-      <Filter>Source Files\Interfaces</Filter>
     </ClCompile>
     <ClCompile Include="Networking\Modules\SplitScreenClients.cpp">
       <Filter>Source Files\Networking\Modules</Filter>

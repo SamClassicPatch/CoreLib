@@ -37,6 +37,18 @@ enum ELevelFormat {
 #endif
 };
 
+enum EFileListFlags {
+  FLF_RECURSIVE   = DLI_RECURSIVE, // Look into subdirectories
+  FLF_SEARCHCD    = DLI_SEARCHCD,  // List extras from the CD
+  FLF_SEARCHMOD   = (1 << 2),      // List extras from the mod (always enabled in SE1's MakeDirList)
+  FLF_ONLYCD      = (1 << 3),      // List exclusively from the CD directory (incompatible with FLF_ONLYMOD)
+  FLF_ONLYMOD     = (1 << 4),      // List exclusively from the mod directory (incompatible with FLF_ONLYCD)
+  FLF_IGNORELISTS = (1 << 5),      // Ignore include/exclude lists if playing a mod
+  FLF_IGNOREGRO   = (1 << 6),      // Ignore contents of loaded GRO packages
+  FLF_SEARCHGAMES = (1 << 7),      // Search directories of other games (TFE, SSR etc.)
+  FLF_REUSELIST   = (1 << 8),      // Reuse existing entries in the provided list
+};
+
 // Other game directories
 #define GAME_DIRECTORIES_CT 2
 CORE_API extern CTString _astrGameDirs[GAME_DIRECTORIES_CT];
@@ -44,7 +56,20 @@ CORE_API extern CTString _astrGameDirs[GAME_DIRECTORIES_CT];
 #define GAME_DIR_TFE (_astrGameDirs[0])
 #define GAME_DIR_SSR (_astrGameDirs[1])
 
+// Include/exclude lists for base directory writing/reading
+CORE_API extern CFileList _aBaseWriteInc;
+CORE_API extern CFileList _aBaseWriteExc;
+CORE_API extern CFileList _aBaseBrowseInc;
+CORE_API extern CFileList _aBaseBrowseExc;
+
 // Check if a filename is under a specified game directory
 CORE_API BOOL IsFileFromDir(const CTString &strGameDir, const CTFileName &fnm);
+
+// List files from a specific directory on a disk
+CORE_API void ListInDir(const CTFileName &fnmBaseDir, CFileList &afnm,
+  const CTString &strDir, const CTString &strPattern, BOOL bRecursive, CFileList *paInclude, CFileList *paExclude);
+
+// List files from a specific game directory
+CORE_API void ListGameFiles(CFileList &afnmFiles, const CTString &strDir, const CTString &strPattern, ULONG ulFlags);
 
 #endif

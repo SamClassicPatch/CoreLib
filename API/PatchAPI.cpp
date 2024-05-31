@@ -115,8 +115,8 @@ CPatchAPI::CPatchAPI() {
   // Hook up the libraries
   hEngine = HMODULE_ENGINE;
 
-  fnmEntities = CCoreAPI::FullLibPath("Entities" + _strModExt);
-  hEntities = LoadLibraryA((CCoreAPI::AppPath() + fnmEntities).str_String);
+  fnmEntities = IDir::FullLibPath("Entities" + _strModExt);
+  hEntities = LoadLibraryA((IDir::AppPath() + fnmEntities).str_String);
 
   // Commands for manually toggling function patches
   _pShell->DeclareSymbol("void ListPatches(void);",   &ListFuncPatches);

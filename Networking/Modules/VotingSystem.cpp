@@ -17,7 +17,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "VotingSystem.h"
 #include "ClientLogging.h"
-#include "Interfaces/FileFunctions.h"
 #include "Networking/NetworkFunctions.h"
 
 #define INVALID_MAP_MESSAGE        TRANS("Invalid map index!")

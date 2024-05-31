@@ -101,4 +101,6 @@ class CORE_API CPatchAPI {
     virtual const CEntityProperty *FindProperty(const CTString &strClass, const CTString &strVariable);
 };
 
+#include <CoreLib/Objects/PropertyPtr.h>
+
 #endif

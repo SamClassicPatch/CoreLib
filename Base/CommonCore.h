@@ -27,12 +27,30 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <Engine/Engine.h>
 #include <Engine/CurrentVersion.h>
 
+// Dummy variables for Revolution support
+#if SE1_GAME == SS_REV
+  static CTFileName _fnmCDPath = CTString("");
+  static CTFileName _fnmMod = CTString("");
+#endif
+
+// Extras
+#include <Extras/XGizmo/Base/IniConfig.h>
+#include <Extras/XGizmo/Interfaces/Data.h>
+#include <Extras/XGizmo/Interfaces/Directories.h>
+#include <Extras/XGizmo/Interfaces/Files.h>
+#include <Extras/XGizmo/Interfaces/Libraries.h>
+#include <Extras/XGizmo/Interfaces/Properties.h>
+#include <Extras/XGizmo/Interfaces/Render.h>
+#include <Extras/XGizmo/Interfaces/World.h>
+#include <Extras/XGizmo/Objects/MapStructure.h>
+#include <Extras/XGizmo/Objects/StructPtr.h>
+#include <Extras/XGizmo/Objects/SymbolPtr.h>
+
 // Classics Patch configuration
 #include <CoreLib/Config.h>
 
 // Compatibility features
 #include <CoreLib/GameSpecific.h>
-#include <CoreLib/Compatibility/SymbolPtr.h>
 
 #if SE1_VER != SE1_110
   // Declare shell function arguments
@@ -54,9 +72,5 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 // Translate a string that has already been translated in vanilla localizations
 #define LOCALIZE(ConstString) ((char *)TranslateConst(ConstString, 0))
-
-// Useful types
-typedef CStaticStackArray<CTString> CStringStack; // Expandable array of strings
-typedef CDynamicStackArray<CTFileName> CFileList; // Listed files/paths
 
 #endif

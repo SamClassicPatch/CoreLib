@@ -110,7 +110,7 @@ static const CTString _strClientLogFile = "Data\\ClassicsPatch\\ClientLog.dat";
 // Save client log
 void IClientLogging::SaveLog(void) {
   // Make sure the directory exists
-  GetAPI()->CreateDir(_strClientLogFile);
+  IDir::CreateDir(_strClientLogFile);
 
   try {
     CTFileStream strm;

@@ -101,8 +101,6 @@ void Close(INDEX) {
 
 #else
 
-#include "Interfaces/DataFunctions.h"
-
 #include <Extras/zlib/zlib.h>
 
 // [Cecil] Pointer to 'zip_csLock' in the engine
@@ -292,7 +290,7 @@ static INDEX ArchiveDirPriority(CTFileName fnm)
   #define PRI_CD   -100 // Absolute last resort
 
   // Current game (overrides other games and CD)
-  if (fnm.RemovePrefix(CCoreAPI::AppPath())) {
+  if (fnm.RemovePrefix(IDir::AppPath())) {
     // Check for mod (overrides everything)
     return fnm.HasPrefix("Mods\\") ? PRI_MOD : PRI_GAME;
 
@@ -417,7 +415,7 @@ static void ReadZIPDirectory_t(CTFileName *pfnmZip)
   }
 
   // Check if the zip is from a mod
-  BOOL bMod = pfnmZip->HasPrefix(CCoreAPI::AppPath() + "Mods\\")
+  BOOL bMod = pfnmZip->HasPrefix(IDir::AppPath() + "Mods\\")
            || pfnmZip->HasPrefix(_fnmCDPath + "Mods\\");
 
   // Go to the beginning of the central dir
@@ -547,7 +545,7 @@ static int qsort_ArchiveCTFileName_reverse(const void *pElement1, const void *pE
   const CTFileName &fnm2 = *(const CTFileName *)pElement2;
 
   // Calculate priorities based on the location of a GRO file
-  BOOL bMod1 = fnm1.HasPrefix(CCoreAPI::AppPath() + "Mods\\");
+  BOOL bMod1 = fnm1.HasPrefix(IDir::AppPath() + "Mods\\");
   BOOL bCD1 = fnm1.HasPrefix(_fnmCDPath);
   BOOL bModCD1 = fnm1.HasPrefix(_fnmCDPath + "Mods\\");
 
@@ -563,7 +561,7 @@ static int qsort_ArchiveCTFileName_reverse(const void *pElement1, const void *pE
     iPriority1 = 0;
   }
 
-  BOOL bMod2 = fnm2.HasPrefix(CCoreAPI::AppPath() + "Mods\\");
+  BOOL bMod2 = fnm2.HasPrefix(IDir::AppPath() + "Mods\\");
   BOOL bCD2 = fnm2.HasPrefix(_fnmCDPath);
   BOOL bModCD2 = fnm2.HasPrefix(_fnmCDPath + "Mods\\");
 

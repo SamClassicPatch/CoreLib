@@ -21,7 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "Networking/ExtPackets.h"
 
 #define VANILLA_EVENTS_ENTITY_ID
-#include "Compatibility/VanillaEvents.h"
+#include <Extras/XGizmo/Vanilla/EntityEvents.h>
 
 namespace IPacketCommands {
 

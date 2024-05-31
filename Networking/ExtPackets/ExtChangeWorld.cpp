@@ -16,8 +16,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "StdH.h"
 
 #include "Networking/ExtPackets.h"
-#include "Compatibility/VanillaEvents.h"
-#include "Objects/PropertyPtr.h"
+
+#include <Extras/XGizmo/Vanilla/EntityEvents.h>
 
 #if CLASSICSPATCH_EXT_PACKETS
 

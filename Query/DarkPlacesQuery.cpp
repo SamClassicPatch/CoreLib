@@ -19,8 +19,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "QueryManager.h"
 #include "Networking/NetworkFunctions.h"
-#include "Interfaces/DataFunctions.h"
-#include "Interfaces/WorldFunctions.h"
 
 // Used DarkPlaces protocol
 static const INDEX _iProtocolVersion = 3;

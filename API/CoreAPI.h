@@ -50,8 +50,8 @@ class CORE_API CCoreAPI : public ICoreHooks {
     enum ESpecialEvent {
       SPEV_NONE = 0,
       SPEV_VALENTINE, // Feb 10 - Feb 18
-      SPEV_BD_PARTY,  // Mar 19 - Mar 23; Jun 20 - Jun 24 (Sam; patch)
-      SPEV_HALLOWEEN, // Oct 1 - Oct 31
+      SPEV_BD_PARTY,  // Mar 19 - Mar 23 (Sam); Jun 20 - Jun 24 (Classics Patch)
+      SPEV_HALLOWEEN, // Oct 01 - Oct 31
       SPEV_CHRISTMAS, // Dec 15 - Jan 15
     };
 
@@ -160,33 +160,6 @@ class CORE_API CCoreAPI : public ICoreHooks {
       return strVersion;
     };
 
-    // Get filename of some library (e.g. "Game" + _strModExt for standard Game library)
-    static inline CTString GetLibFile(const CTString &strLibName, const CTString &strLibExt = ".dll") {
-      // Construct library filename
-      #ifdef NDEBUG
-        return strLibName + strLibExt; // Release library
-      #else
-        return "Debug\\" + strLibName + "D" + strLibExt; // Debug library
-      #endif
-    };
-
-    // Get full path relative to the game to some library (mod Bin -> patch Bin -> vanilla Bin)
-    static CTString FullLibPath(const CTString &strLibName, const CTString &strLibExt = ".dll");
-
-    // Get relative path to the game executable
-    static const CTFileName &AppExe(void);
-
-    // Get relative path to the Bin directory (folder name)
-    static inline CTFileName AppBin(void) {
-      return AppExe().FileDir();
-    };
-
-    // Get relative path to the mod's Bin directory (folder name)
-    static CTFileName AppModBin(void);
-
-    // Get absolute path to the game directory
-    static const CTFileName &AppPath(void);
-
     // Get global properties
     static SConfigProps &Props(void);
 
@@ -214,12 +187,6 @@ class CORE_API CCoreAPI : public ICoreHooks {
 
     // Toggle vanilla query manager
     void DisableGameSpy(void);
-
-    // Create a series of directories within the game folder
-    virtual void CreateDir(const CTString &strPath);
-
-    // Load dynamic link library and throw exception upon any error
-    static HINSTANCE LoadLib(const char *strFileName);
 
     // Load Game library as a plugin
     void LoadGameLib(const CTString &strSettingsFile);
@@ -271,8 +238,8 @@ extern CORE_POINTER_API CCoreAPI *_pCoreAPI;
     if (_pCoreAPI != NULL) return TRUE;
 
     // Get instance of the Core library
-    const CTFileName fnmLib = CCoreAPI::AppBin() + "ClassicsCore.dll";
-    HMODULE hLib = GetModuleHandleA((CCoreAPI::AppPath() + fnmLib).str_String);
+    const CTFileName fnmLib = IDir::AppBin() + "ClassicsCore.dll";
+    HMODULE hLib = GetModuleHandleA((IDir::AppPath() + fnmLib).str_String);
 
     if (hLib != NULL) {
       // Get API pointer from the library module

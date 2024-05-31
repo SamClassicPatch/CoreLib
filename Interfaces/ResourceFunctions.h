@@ -25,8 +25,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <Engine/Templates/Stock_CAnimSet.h>
 #include <Engine/Templates/Stock_CTextureData.h>
 
-#include <CoreLib/Interfaces/DataFunctions.h>
-
 // File dialog filters
 #define FILTER_ALL "All files (*.*)\0*.*\0"
 #define FILTER_TEX "Textures (*.tex)\0*.tex\0"
@@ -39,7 +37,7 @@ namespace IRes {
 
 // Open file dialog for selecting a new file for a replacement
 inline void CallFileRequester(CTFileName &fnmReplacement, char *achrTitle, char *achrSelectedFile, char *pFilter) {
-  const CTString strLibPath = CCoreAPI::FullLibPath("EngineGUI");
+  const CTString strLibPath = IDir::FullLibPath("EngineGUI");
   fnmReplacement = CTString("");
 
   // Try loading the library

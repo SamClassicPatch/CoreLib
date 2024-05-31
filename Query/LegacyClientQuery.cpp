@@ -18,7 +18,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #if CLASSICSPATCH_NEW_QUERY
 
 #include "QueryManager.h"
-#include "Interfaces/DataFunctions.h"
 
 #include <errno.h>
 

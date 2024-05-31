@@ -132,7 +132,7 @@ void CPluginModule::Load_t(const CTFileName &fnmDLL)
   ser_FileName = fnmDLL;
 
   // Load plugin's configuration file
-  const CTString strConfig = CCoreAPI::AppModBin() + "Plugins\\" + fnmDLL.FileName() + ".ini";
+  const CTString strConfig = IDir::AppModBin() + "Plugins\\" + fnmDLL.FileName() + ".ini";
 
   try {
     GetInfo().props.Load_t(strConfig, TRUE);
@@ -146,7 +146,7 @@ void CPluginModule::Load_t(const CTFileName &fnmDLL)
   ExpandFilePath(EFP_READ | EFP_NOZIPS, fnmDLL, fnmExpanded);
 
   // Load dll
-  pm_hLibrary = CCoreAPI::LoadLib(fnmExpanded);
+  pm_hLibrary = ILib::LoadLib(fnmExpanded);
 
   // Main plugin methods
   pm_pOnStartupFunc  = (CVoidFunc)GetProcAddress(GetHandle(), "Module_Startup");

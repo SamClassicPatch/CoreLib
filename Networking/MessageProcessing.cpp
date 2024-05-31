@@ -19,10 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "NetworkFunctions.h"
 #include "Modules.h"
 
-#include "Interfaces/DataFunctions.h"
 #include "Query/QueryManager.h"
-
-#include "Objects/PropertyPtr.h"
 
 // Which client sent last packet to the server
 INDEX IProcessPacket::_iHandlingClient = IProcessPacket::CLT_NONE;

@@ -19,8 +19,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "QueryManager.h"
 #include "Networking/NetworkFunctions.h"
-#include "Interfaces/DataFunctions.h"
-#include "Interfaces/WorldFunctions.h"
 
 static void ClientParsePacket(INDEX iLength) {
   // String of data

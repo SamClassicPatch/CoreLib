@@ -17,7 +17,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <Engine/Base/Console_internal.h>
 #include <Engine/GameShell.h>
-#include "Interfaces/FileFunctions.h"
 #include "Query/QueryManager.h"
 
 #include <STLIncludesBegin.h>
@@ -61,7 +60,7 @@ static void SetVanillaBinDirectory(void) {
 
   // Set extra DLL directory
   if (pSetDirFunc != NULL) {
-    pSetDirFunc((CCoreAPI::AppPath() + "Bin\\").str_String);
+    pSetDirFunc((IDir::AppPath() + "Bin\\").str_String);
   }
 };
 
@@ -87,7 +86,7 @@ void CCoreVariables::LoadConfigs(void) {
 
   // Load from the mod
   if (_fnmMod != "") {
-    IFiles::ListGameFiles(aDiffs, "Data\\ClassicsPatch\\Difficulties\\", "*.ini", IFiles::FLF_ONLYMOD);
+    ListGameFiles(aDiffs, "Data\\ClassicsPatch\\Difficulties\\", "*.ini", FLF_ONLYMOD);
 
     // Don't load from the game if there are any mod difficulties
     if (aDiffs.Count() != 0) {
@@ -97,7 +96,7 @@ void CCoreVariables::LoadConfigs(void) {
 
   // Load from the game
   if (bLoadFromGame) {
-    IFiles::ListGameFiles(aDiffs, "Data\\ClassicsPatch\\Difficulties\\", "*.ini", 0);
+    ListGameFiles(aDiffs, "Data\\ClassicsPatch\\Difficulties\\", "*.ini", 0);
   }
 
   // Create new difficulties
@@ -220,7 +219,7 @@ void CCoreAPI::SConfigProps::Save(void) {
   _iniConfig.SetBoolValue("Steam", "ForTools",   bSteamForTools);
 
   // Save into a file
-  GetAPI()->CreateDir(CORE_CONFIG_FILE);
+  IDir::CreateDir(CORE_CONFIG_FILE);
 
   try {
     _iniConfig.Save_t(CORE_CONFIG_FILE);
@@ -368,7 +367,7 @@ void CCoreAPI::Setup(EAppType eSetType) {
   _cfgProps.Load();
 
   // Load vanilla extension
-  std::ifstream strm((CCoreAPI::AppPath() + "ModExt.txt").str_String);
+  std::ifstream strm((IDir::AppPath() + "ModExt.txt").str_String);
 
   if (!strm.fail()) {
     std::string strReadExt;
@@ -382,107 +381,6 @@ void CCoreAPI::Setup(EAppType eSetType) {
   if (Props().bDebugPatcher) {
     CPatch::SetDebug(true);
   }
-};
-
-// Get full path relative to the game to some library (mod Bin -> patch Bin -> vanilla Bin)
-CTString CCoreAPI::FullLibPath(const CTString &strLibName, const CTString &strLibExt) {
-  // Check for existence of libraries in order:
-  // 1. Mods/<mod>/Bin/<lib> (e.g. Mods/ClassicsPatchMod/Bin/Debug/Game_CustomD.dll)
-  // 2. <patch bin>/<lib>    (e.g. Bin_ClassicsPatch/Debug/Game_CustomD.dll)
-  // 3. Bin/<lib>            (e.g. Bin/Debug/Game_CustomD.dll)
-  const CTFileName &fnmRootDir = AppPath();
-  const CTString strLibFile = GetLibFile(strLibName, strLibExt);
-
-  // Check if library file exists on disk and return it
-  CTString strCheckFile;
-  #define CHECK_AND_RETURN_PATH { if (IFiles::IsReadable((fnmRootDir + strCheckFile).str_String)) return strCheckFile; }
-
-  // Check in the mod's Bin folder
-  if (_fnmMod != "") {
-    strCheckFile = _fnmMod + "Bin\\" + strLibFile;
-    CHECK_AND_RETURN_PATH;
-  }
-
-  // Check in the Bin folder of Classics Patch (from where it's currently running)
-  strCheckFile = AppBin() + strLibFile;
-  CHECK_AND_RETURN_PATH;
-
-  // Check in the vanilla Bin folder as the last resort
-  strCheckFile = "Bin\\" + strLibFile;
-  CHECK_AND_RETURN_PATH;
-
-  // No library found
-  ASSERT(FALSE);
-  return "";
-};
-
-// Get cut-off position before the Bin directory
-static inline size_t BinDirPos(std::string strExePath) {
-  // Cut off module filename to end up with Bin (e.g. "C:\SeriousSam\Bin" and "\SeriousSam_Custom.exe")
-  strExePath.erase(strExePath.rfind("\\"));
-
-  // Skip Debug directory
-  #ifdef _DEBUG
-    // If found Debug directory at the very end, cut it off
-    const size_t iDebug = strExePath.rfind("\\Debug");
-
-    if (iDebug == strExePath.length() - 6) {
-      strExePath.erase(iDebug);
-    }
-  #endif
-
-  // Go up to the root directory (e.g. "C:\SeriousSam\" and "Bin\SeriousSam_Custom.exe")
-  return strExePath.rfind("\\") + 1;
-};
-
-// Get relative path to the game executable
-const CTFileName &CCoreAPI::AppExe(void) {
-  // Use existing path
-  if (_fnmApplicationExe != "") return _fnmApplicationExe;
-
-  static CTFileName fnmLocalPath;
-
-  // Get executable path locally
-  if (fnmLocalPath == "") {
-    char strPathBuffer[1024];
-    GetModuleFileNameA(NULL, strPathBuffer, sizeof(strPathBuffer));
-
-    std::string strExePath = strPathBuffer;
-    size_t iBinDir = BinDirPos(strExePath);
-
-    // Copy relative path to the executable with the Bin directory
-    fnmLocalPath = CTString(strExePath.substr(iBinDir).c_str());
-  }
-
-  return fnmLocalPath;
-};
-
-// Get relative path to the mod's Bin directory (folder name)
-CTFileName CCoreAPI::AppModBin(void) {
-  // Use game's or mod's Bin directory
-  return (_fnmMod == "") ? AppBin() : CTString("Bin\\");
-};
-
-// Get absolute path to the game directory
-const CTFileName &CCoreAPI::AppPath(void) {
-  // Use existing path
-  if (_fnmApplicationPath != "") return _fnmApplicationPath;
-
-  static CTFileName fnmLocalPath;
-
-  // Get application path locally
-  if (fnmLocalPath == "") {
-    char strPathBuffer[1024];
-    GetModuleFileNameA(NULL, strPathBuffer, sizeof(strPathBuffer));
-
-    std::string strExePath = strPathBuffer;
-    size_t iBinDir = BinDirPos(strExePath);
-
-    // Copy absolute path to the game directory
-    fnmLocalPath = CTString(strExePath.erase(iBinDir).c_str());
-  }
-
-  return fnmLocalPath;
 };
 
 // Get config with global properties
@@ -536,64 +434,6 @@ void CCoreAPI::DisableGameSpy(void) {
   }
 
 #endif // CLASSICSPATCH_NEW_QUERY
-};
-
-// Create a series of directories within the game folder
-void CCoreAPI::CreateDir(const CTString &strPath) {
-  std::string strDirs = strPath;
-  const char *strAppPath = AppPath().str_String;
-
-  size_t iDir = 0;
-
-  // Get next directory from the last position
-  while ((iDir = strDirs.find_first_of('\\', iDir)) != std::string::npos) {
-    // Include the slash
-    iDir++;
-
-    // Create current subdirectory
-    _mkdir((strAppPath + strDirs.substr(0, iDir)).c_str());
-  }
-};
-
-// Load dynamic link library and throw exception upon any error
-HINSTANCE CCoreAPI::LoadLib(const char *strFileName) {
-  // Load plugin library
-  HINSTANCE hiDLL = ::LoadLibraryA(strFileName);
-
-  // Loaded properly
-  if (hiDLL != NULL) {
-    return hiDLL;
-  }
-
-  // Get the error code
-  DWORD dwMessageId = GetLastError();
-
-  // Format the Windows error message
-  LPVOID lpMsgBuf;
-  DWORD dwSuccess = FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-    NULL, dwMessageId, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
-    (LPSTR)&lpMsgBuf, 0, NULL);
-
-  CTString strWinError;
-
-  // If formatting succeeds
-  if (dwSuccess != 0) {
-    // Copy the result
-    strWinError = (char *)lpMsgBuf;
-
-    // Free the Windows message buffer
-    LocalFree(lpMsgBuf);
-
-  // Otherwise report failure
-  } else {
-    strWinError.PrintF(TRANS(
-      "Cannot format error message!\nOriginal error code: %d\nFormatting error code: %d\n"),
-      dwMessageId, GetLastError());
-  }
-
-  // Report error
-  ThrowF_t(TRANS("Cannot load module '%s':\n%s"), strFileName, strWinError);
-  return NULL;
 };
 
 // Load Game library as a plugin
@@ -665,7 +505,7 @@ void *CCoreAPI::LoadGameGuiLib(const CTString &strSettingsFile) {
 // Set metadata for the Game plugin
 CPluginModule *CCoreAPI::LoadGamePlugin(void) {
   // Obtain Game library
-  CPluginModule *pLib = GetPluginAPI()->LoadPlugin_t(FullLibPath("Game" + _strModExt));
+  CPluginModule *pLib = GetPluginAPI()->LoadPlugin_t(IDir::FullLibPath("Game" + _strModExt));
   CPrintF(TRANS("Loading Game library '%s'...\n"), pLib->GetName());
 
   // Set metadata for vanilla library
@@ -684,7 +524,7 @@ CPluginModule *CCoreAPI::LoadGamePlugin(void) {
 // Set metadata for the GameGUI plugin
 CPluginModule *CCoreAPI::LoadGameGuiPlugin(void) {
   // Obtain Game library
-  CPluginModule *pLib = GetPluginAPI()->LoadPlugin_t(FullLibPath("GameGUI" + _strModExt));
+  CPluginModule *pLib = GetPluginAPI()->LoadPlugin_t(IDir::FullLibPath("GameGUI" + _strModExt));
   CPrintF(TRANS("Loading Game GUI library '%s'...\n"), pLib->GetName());
 
   // Set metadata for vanilla library
@@ -705,11 +545,11 @@ void CCoreAPI::LoadPlugins(ULONG ulUtilityFlags) {
   // List all library files
   CFileList afnmGameDir;
 
-  #define LIST_PLUGINS_FLAGS (IFiles::FLF_RECURSIVE | IFiles::FLF_IGNORELISTS | IFiles::FLF_IGNOREGRO)
-  #define LIST_PLUGINS_FLAGS_MOD (LIST_PLUGINS_FLAGS | IFiles::FLF_ONLYMOD | IFiles::FLF_REUSELIST)
+  #define LIST_PLUGINS_FLAGS (FLF_RECURSIVE | FLF_IGNORELISTS | FLF_IGNOREGRO)
+  #define LIST_PLUGINS_FLAGS_MOD (LIST_PLUGINS_FLAGS | FLF_ONLYMOD | FLF_REUSELIST)
 
-  IFiles::ListGameFiles(afnmGameDir, CCoreAPI::AppBin()    + "Plugins\\", "*.dll", LIST_PLUGINS_FLAGS);
-  IFiles::ListGameFiles(afnmGameDir, CCoreAPI::AppModBin() + "Plugins\\", "*.dll", LIST_PLUGINS_FLAGS_MOD);
+  ListGameFiles(afnmGameDir, IDir::AppBin()    + "Plugins\\", "*.dll", LIST_PLUGINS_FLAGS);
+  ListGameFiles(afnmGameDir, IDir::AppModBin() + "Plugins\\", "*.dll", LIST_PLUGINS_FLAGS_MOD);
 
   CPrintF("--- Loading user plugins (flags: 0x%X) ---\n", ulUtilityFlags);
 

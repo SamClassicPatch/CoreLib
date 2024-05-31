@@ -16,7 +16,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "StdH.h"
 
 #include "Base/CoreTimerHandler.h"
-#include "Interfaces/FileFunctions.h"
 #include "Networking/NetworkFunctions.h"
 
 #include "Networking/Modules/ClientLogging.h"
@@ -24,11 +23,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Pointer to the Game module
 CGame *_pGame = NULL;
 
-// Revolution support
+// Pre-1.10 variables removed from Revolution engine
 #if SE1_GAME == SS_REV
-  // Pre-1.10 variables removed from Revolution engine
-  CTFileName _fnmCDPath = CTString("");
-  CTFileName _fnmMod = CTString("");
   CTString _strModName = "";
   CTString _strModURL = "";
   CTString _strModExt = "";
@@ -96,10 +92,10 @@ void ClassicsPatch_InitCore(void) {
 
   // Load custom include/exclude lists for mods
   if (_fnmMod != "") {
-    IFiles::LoadStringList(IFiles::aBaseWriteInc, CTString("BaseWriteInclude.lst"));
-    IFiles::LoadStringList(IFiles::aBaseWriteExc, CTString("BaseWriteExclude.lst"));
-    IFiles::LoadStringList(IFiles::aBaseBrowseInc, CTString("BaseBrowseInclude.lst"));
-    IFiles::LoadStringList(IFiles::aBaseBrowseExc, CTString("BaseBrowseExclude.lst"));
+    IFiles::LoadStringList(_aBaseWriteInc, CTString("BaseWriteInclude.lst"));
+    IFiles::LoadStringList(_aBaseWriteExc, CTString("BaseWriteExclude.lst"));
+    IFiles::LoadStringList(_aBaseBrowseInc, CTString("BaseBrowseInclude.lst"));
+    IFiles::LoadStringList(_aBaseBrowseExc, CTString("BaseBrowseExclude.lst"));
   }
 
   // Information about the patch

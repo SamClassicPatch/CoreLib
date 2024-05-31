@@ -19,8 +19,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "ActiveClients.h"
 #include "Networking/NetworkFunctions.h"
 
-#include "Interfaces/DataFunctions.h"
-
 // Records of all client restrictions
 static CDynamicContainer<CClientRestriction> _cClientRestrictions;
 

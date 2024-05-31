@@ -21,7 +21,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 
 #include "MessageCompression.h"
-#include <CoreLib/Interfaces/WorldFunctions.h>
 
 #if CLASSICSPATCH_EXT_PACKETS
 

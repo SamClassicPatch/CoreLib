@@ -28,7 +28,7 @@ void UpdateShadows(void)
 {
   FOREACHINDYNAMICCONTAINER(IWorld::GetWorld()->wo_cenEntities, CEntity, iten) {
     // CLight_ClassID
-    if (!IsDerivedFromID(iten, 200)) continue;
+    if (!IsDerivedFromID(&*iten, 200)) continue;
 
     // Update shadow layers for each light
     CLightSource *pls = iten->GetLightSource();

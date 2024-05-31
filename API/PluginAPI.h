@@ -20,9 +20,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #pragma once
 #endif
 
-// Plugin configuration files
-#include <CoreLib/Interfaces/ConfigFunctions.h>
-
 // Chat command function type
 #include <CoreLib/Networking/Modules/ChatCommands.h>
 

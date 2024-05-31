@@ -19,8 +19,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "Networking/NetworkFunctions.h"
 #include "ChatCommands.h"
 #include "ClientLogging.h"
-#include "Interfaces/DataFunctions.h"
-#include "Interfaces/WorldFunctions.h"
 
 // Parse command as a normal chat message for clients without administrator rights
 #define IGNORE_CLIENTS { if (!CActiveClient::IsAdmin(iClient)) return FALSE; }

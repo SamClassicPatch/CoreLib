@@ -21,7 +21,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 
 #include "patcher.h"
-#include <CoreLib/Objects/StructPtr.h>
 
 // Don't terminate the game in debug
 #ifndef NDEBUG

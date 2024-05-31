@@ -40,9 +40,7 @@
     <ClInclude Include="Base\Unzip.h" />
     <ClInclude Include="Compatibility\Game.h" />
     <ClInclude Include="Compatibility\GameControls.h" />
-    <ClInclude Include="Compatibility\VanillaEvents.h" />
     <ClInclude Include="Compatibility\PlayerSettings.h" />
-    <ClInclude Include="Compatibility\SymbolPtr.h" />
     <ClInclude Include="Config.h" />
     <ClInclude Include="Core.h" />
     <ClInclude Include="Definitions\BaseDefs.h" />
@@ -60,14 +58,8 @@
       <FileType>Document</FileType>
     </ClInclude>
     <ClInclude Include="GameSpecific.h" />
-    <ClInclude Include="Interfaces\ConfigFunctions.h" />
-    <ClInclude Include="Interfaces\DataFunctions.h" />
-    <ClInclude Include="Interfaces\FileFunctions.h" />
     <ClInclude Include="Interfaces\GfxFunctions.h" />
-    <ClInclude Include="Interfaces\PropertyFunctions.h" />
-    <ClInclude Include="Interfaces\RenderFunctions.h" />
     <ClInclude Include="Interfaces\ResourceFunctions.h" />
-    <ClInclude Include="Interfaces\WorldFunctions.h" />
     <ClInclude Include="Modules\PluginModule.h" />
     <ClInclude Include="Modules\PluginStock.h" />
     <ClInclude Include="Networking\ExtPackets.h" />
@@ -89,9 +81,7 @@
     <ClInclude Include="Networking\NetworkFunctions.h" />
     <ClInclude Include="Networking\Modules.h" />
     <ClInclude Include="Networking\StreamBlock.h" />
-    <ClInclude Include="Objects\MapStructure.h" />
     <ClInclude Include="Objects\PropertyPtr.h" />
-    <ClInclude Include="Objects\StructPtr.h" />
     <ClInclude Include="Patcher\FuncPatching.h" />
     <ClInclude Include="Patcher\patcher.h" />
     <ClInclude Include="Patcher\patcher_defines.h" />
@@ -113,7 +103,6 @@
     <ClCompile Include="Base\Unzip.cpp" />
     <ClCompile Include="Core.cpp" />
     <ClCompile Include="Definitions\InlineDefinitions.cpp" />
-    <ClCompile Include="Interfaces\Interfaces.cpp" />
     <ClCompile Include="Modules\PluginModule.cpp" />
     <ClCompile Include="Modules\PluginStock.cpp" />
     <ClCompile Include="Networking\ExtPackets.cpp" />

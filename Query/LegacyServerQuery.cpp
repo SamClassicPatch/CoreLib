@@ -19,7 +19,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "QueryManager.h"
 #include "Networking/NetworkFunctions.h"
-#include "Interfaces/WorldFunctions.h"
 
 extern unsigned char *gsseckey(u_char *secure, u_char *key, int enctype);
 

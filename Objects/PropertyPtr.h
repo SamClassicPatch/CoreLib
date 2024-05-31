@@ -20,66 +20,36 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #pragma once
 #endif
 
-#include <Engine/Entities/EntityClass.h>
+// Rename XGizmo class in order to reuse it
+#define CPropertyPtr CPropertyPtr_XGizmoBase
+#include <Extras/XGizmo/Objects/PropertyPtr.h>
+#undef CPropertyPtr
 
-#include <CoreLib/Interfaces/WorldFunctions.h>
-
-class CPropertyPtr {
-  public:
-    CEntityProperty *_pep; // Found property in an entity
-    IWorld::LibClassHolder _lch; // Class of entities with this property
-
+class CPropertyPtr : public CPropertyPtr_XGizmoBase {
   public:
     // Default constructor
-    CPropertyPtr() : _pep(NULL), _lch()
+    __forceinline CPropertyPtr() : CPropertyPtr_XGizmoBase()
     {
     };
 
     // Constructor from a holder
-    CPropertyPtr(IWorld::LibClassHolder lchSet) : _pep(NULL), _lch(lchSet)
+    __forceinline CPropertyPtr(LibClassHolder lchSet) : CPropertyPtr_XGizmoBase(lchSet)
     {
     };
 
-    // Get property offset
-    inline SLONG Offset(void) const {
-      return _pep->ep_slOffset;
-    };
-
   public:
-    // Get property by ID or offset
-    BOOL ByIdOrOffset(ULONG ulType, ULONG ulID, SLONG slOffset) {
-      if (_pep == NULL) {
-        _pep = IWorld::PropertyForIdOrOffset(_lch, ulType, ulID, slOffset);
-        ASSERTMSG(_pep != NULL, "Cannot find property by ID for CPropertyPtr!");
-      }
-
-      return (_pep != NULL);
-    };
-
-    // Get property by name
-    BOOL ByName(ULONG ulType, const char *strProperty) {
-      if (_pep == NULL) {
-        _pep = IWorld::PropertyForName(_lch, ulType, strProperty);
-        ASSERTMSG(_pep != NULL, "Cannot find property by name for CPropertyPtr!");
-      }
-
-      return (_pep != NULL);
-    };
-
-    // Get property by name or ID
-    BOOL ByNameOrId(ULONG ulType, const char *strProperty, ULONG ulID) {
-      if (_pep == NULL) {
-        _pep = IWorld::PropertyForNameOrId(_lch, ulType, strProperty, ulID);
-        ASSERTMSG(_pep != NULL, "Cannot find property by name or ID for CPropertyPtr!");
-      }
-
-      return (_pep != NULL);
-    };
-
     // Get property by variable
     BOOL ByVariable(const char *strClass, const char *strVariable) {
-      if (_pep == NULL) {
-        _pep = IWorld::PropertyForVariable(_lch, strClass, strVariable);
+      if (_pep == NULL)
+      {
+      #if SE1_GAME != SS_REV
+        // Find property data and try to find it by name or ID
+        const CEntityProperty *pep = GetPatchAPI()->FindProperty(strClass, strVariable);
+        _pep = IWorld::PropertyForNameOrId(_lch, pep->ep_eptType, pep->ep_strName, pep->ep_ulID);
+      #else
+        _pep = _lch->PropertyForVariable(strVariable);
+      #endif
+
         ASSERTMSG(_pep != NULL, "Cannot find property by variable for CPropertyPtr!");
       }
 
