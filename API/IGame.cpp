@@ -15,11 +15,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "StdH.h"
 
+// Pointer to the Game module
+CGame *_pGame = NULL;
+
 // Common observer camera
 static CObserverCamera *_pObserverCam = NULL;
 
 // Constructor
-CGameAPI::CGameAPI() : pctrlCommon(NULL) {
+CGameAPI::CGameAPI() : pctrlCommon(NULL)
+{
   // Session properties game modes used by the patch
   sp_aiGameModes.New(2);
   sp_aiGameModes[0] = -1; // Flyover - for intro screen
@@ -31,6 +35,13 @@ CGameAPI::CGameAPI() : pctrlCommon(NULL) {
   // Initialize camera
   _pObserverCam = new CObserverCamera;
   _pObserverCam->Init();
+};
+
+// Destructor
+CGameAPI::~CGameAPI()
+{
+  delete _pObserverCam;
+  _pObserverCam = NULL;
 };
 
 // Controls patch
@@ -45,19 +56,19 @@ class CControlsPatch : public CControls {
 
 // Original function pointer
 static CControlsPatch::CLoadFunc pLoadControls = NULL;
-static CPatch *_pLoadControlsPatch = NULL;
+static HFuncPatch _hLoadControlsPatch = NULL;
 
 void CControlsPatch::P_Load(CTFileName fnFile) {
   // Proceed to the original function
   (this->*pLoadControls)(fnFile);
 
   // Identify common controls and hook them
-  if (GetGameAPI()->pctrlCommon == NULL && fnFile == GAME_COMMON_CONTROLS_PATH) {
+  if (GetGameAPI()->pctrlCommon == NULL && fnFile == gam_strCommonControlsFile) {
     GetGameAPI()->pctrlCommon = this;
 
     // Unpatch controls method
-    delete _pLoadControlsPatch;
-    _pLoadControlsPatch = NULL;
+    DestroyPatch(_hLoadControlsPatch);
+    _hLoadControlsPatch = NULL;
   }
 };
 
@@ -116,7 +127,7 @@ void CGameAPI::HookFields(void) {
     size_t *pVFTable = *(size_t **)pctrlControlsExtra;
 
     pLoadControls = *(CControlsPatch::CLoadFunc *)(pVFTable + 11);
-    _pLoadControlsPatch = NewRawPatch(pLoadControls, &CControlsPatch::P_Load, "CControls::Load_t(...)");
+    _hLoadControlsPatch = CreatePatch(pLoadControls, &CControlsPatch::P_Load, "CControls::Load_t(...)");
   }
 
   // Mark as hooked
@@ -127,7 +138,7 @@ void CGameAPI::HookFields(void) {
 BOOL CGameAPI::NewGame(const CTString &strSession, const CTFileName &fnmWorld, CSessionProperties &sp) {
   // Stop last game for Core
   if (IsGameOn()) {
-    GetAPI()->OnGameStop();
+    IHooks::OnGameStop();
   }
 
   BOOL bResult = _pGame->NewGame(strSession, fnmWorld, sp);
@@ -139,7 +150,7 @@ BOOL CGameAPI::NewGame(const CTString &strSession, const CTFileName &fnmWorld, C
 
   if (bResult) {
     // Start game for Core
-    GetAPI()->OnGameStart();
+    IHooks::OnGameStart();
   }
 
   return bResult;
@@ -251,4 +262,34 @@ CHighScoreEntry *CGameAPI::GetHighScore(INDEX iEntry) {
 // Get actions for changing controls through the game menu
 CListHead &CGameAPI::GetActions(CControls *pctrl) {
   return pctrl->ctrl_lhButtonActions;
+};
+
+void CGameAPI::ResetStartPlayers(void)
+{
+  for (INDEX iPlayer = 0; iPlayer < GetLocalPlayerCount(); iPlayer++) {
+    SetStartPlayer(iPlayer, -1);
+  }
+};
+
+void CGameAPI::SetStartPlayersFromMenuPlayers(void)
+{
+  for (INDEX iPlayer = 0; iPlayer < GetLocalPlayerCount(); iPlayer++) {
+    SetStartPlayer(iPlayer, GetMenuPlayer(iPlayer));
+  }
+};
+
+bool CGameAPI::IsLocalPlayerActive(int iPlayer)
+{
+  UBYTE *pLocalPlayer = aLocalPlayers + (lpOffsets.ctSize * iPlayer);
+  BOOL *pbActive = (BOOL *)(pLocalPlayer + lpOffsets.slActive);
+
+  return !!*pbActive;
+};
+
+int CGameAPI::GetLocalPlayerIndex(int iPlayer)
+{
+  UBYTE *pLocalPlayer = aLocalPlayers + (lpOffsets.ctSize * iPlayer);
+  INDEX *piPlayer = (INDEX *)(pLocalPlayer + lpOffsets.slPlayer);
+
+  return *piPlayer;
 };

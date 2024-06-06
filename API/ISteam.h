@@ -13,14 +13,14 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#ifndef CECIL_INCL_STEAMAPI_H
-#define CECIL_INCL_STEAMAPI_H
+#ifndef CECIL_INCL_STEAMINTERFACE_H
+#define CECIL_INCL_STEAMINTERFACE_H
 
 #ifdef PRAGMA_ONCE
   #pragma once
 #endif
 
-#if CLASSICSPATCH_STEAM_API
+#if _PATCHCONFIG_STEAM_API
 
 // Compatibility with C++11
 #define nullptr NULL
@@ -37,7 +37,7 @@ enum ESteamAPIInitResult {
   k_ESteamAPIInitResult_NoSteamClient = 2,
 };
 
-#endif // CLASSICSPATCH_STEAM_API
+#endif // _PATCHCONFIG_STEAM_API
 
 // API for interacting with the Steam client
 class CORE_API CSteamAPI {
@@ -97,7 +97,7 @@ class CORE_API CSteamAPI {
     void TriggerScreenshot(void);
 
   public:
-  #if CLASSICSPATCH_STEAM_API
+  #if _PATCHCONFIG_STEAM_API
 
     // Update Steam callbacks (should be called each frame/timer tick)
     void UpdateCallbacks(void);
@@ -107,7 +107,10 @@ class CORE_API CSteamAPI {
     STEAM_CALLBACK_MANUAL(CSteamAPI, OnScreenshotRequested, ScreenshotRequested_t, cbOnScreenshotRequested);
     STEAM_CALLBACK_MANUAL(CSteamAPI, OnScreenshotReady, ScreenshotReady_t, cbOnScreenshotReady);
 
-  #endif // CLASSICSPATCH_STEAM_API
+  #endif // _PATCHCONFIG_STEAM_API
 };
+
+// Full interface getter
+CORE_API CSteamAPI *GetSteamAPI(void);
 
 #endif

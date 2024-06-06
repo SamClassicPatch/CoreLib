@@ -15,7 +15,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "StdH.h"
 
-#if CLASSICSPATCH_EXT_PACKETS
+#if _PATCHCONFIG_EXT_PACKETS
 
 #include "PacketCommands.h"
 #include "Networking/ExtPackets.h"
@@ -563,4 +563,4 @@ void GameplayExtString(SHELL_FUNC_ARGS) {
 
 }; // namespace
 
-#endif // CLASSICSPATCH_EXT_PACKETS
+#endif // _PATCHCONFIG_EXT_PACKETS

@@ -49,9 +49,6 @@
     <Filter Include="Header Files\Interfaces headers">
       <UniqueIdentifier>{5945bde2-51e1-4f08-aa8c-6764975d76ac}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\API headers\Plugins">
-      <UniqueIdentifier>{a4c8b8f0-4ed4-44c8-ab01-e8c0f08f43dc}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Definitions headers">
       <UniqueIdentifier>{2db3b272-e752-4781-b80d-add576249bea}</UniqueIdentifier>
     </Filter>
@@ -76,6 +73,9 @@
     <Filter Include="Source Files\Networking\ExtPackets">
       <UniqueIdentifier>{d5fe430c-2d78-400f-8e35-e9d0ac760a57}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Objects">
+      <UniqueIdentifier>{ce304848-dbd0-4512-89b8-693806287d40}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StdH.h">
@@ -90,9 +90,6 @@
     <ClInclude Include="Patcher\patcher_defines.h">
       <Filter>Header Files\Patcher headers</Filter>
     </ClInclude>
-    <ClInclude Include="API\CoreAPI.h">
-      <Filter>Header Files\API headers</Filter>
-    </ClInclude>
     <ClInclude Include="Query\QueryManager.h">
       <Filter>Header Files\Query headers</Filter>
     </ClInclude>
@@ -102,7 +99,7 @@
     <ClInclude Include="Modules\PluginStock.h">
       <Filter>Header Files\Modules headers</Filter>
     </ClInclude>
-    <ClInclude Include="API\GameAPI.h">
+    <ClInclude Include="API\IGame.h">
       <Filter>Header Files\API headers</Filter>
     </ClInclude>
     <ClInclude Include="Networking\CommInterface.h">
@@ -114,20 +111,8 @@
     <ClInclude Include="Networking\StreamBlock.h">
       <Filter>Header Files\Networking headers</Filter>
     </ClInclude>
-    <ClInclude Include="API\PluginAPI.h">
+    <ClInclude Include="API\IPlugins.h">
       <Filter>Header Files\API headers</Filter>
-    </ClInclude>
-    <ClInclude Include="API\PatchAPI.h">
-      <Filter>Header Files\API headers</Filter>
-    </ClInclude>
-    <ClInclude Include="API\Plugins\PluginEvents.h">
-      <Filter>Header Files\API headers\Plugins</Filter>
-    </ClInclude>
-    <ClInclude Include="API\Plugins\PluginSymbols.h">
-      <Filter>Header Files\API headers\Plugins</Filter>
-    </ClInclude>
-    <ClInclude Include="Patcher\FuncPatching.h">
-      <Filter>Header Files\Patcher headers</Filter>
     </ClInclude>
     <ClInclude Include="GameSpecific.h">
       <Filter>Header Files</Filter>
@@ -219,28 +204,22 @@
     <ClInclude Include="Networking\Modules\PacketCommands.h">
       <Filter>Header Files\Networking headers\Modules headers</Filter>
     </ClInclude>
-    <ClInclude Include="Base\CommonCore.h">
-      <Filter>Header Files\Base headers</Filter>
-    </ClInclude>
-    <ClInclude Include="API\ApiConfig.h">
-      <Filter>Header Files\API headers</Filter>
-    </ClInclude>
     <ClInclude Include="Interfaces\ResourceFunctions.h">
       <Filter>Header Files\Interfaces headers</Filter>
     </ClInclude>
-    <ClInclude Include="API\CoreHooks.h">
+    <ClInclude Include="API\IHooks.h">
       <Filter>Header Files\API headers</Filter>
     </ClInclude>
     <ClInclude Include="Base\GameDirectories.h">
       <Filter>Header Files\Base headers</Filter>
     </ClInclude>
-    <ClInclude Include="API\CoreVariables.h">
+    <ClInclude Include="API\IConfig.h">
       <Filter>Header Files\API headers</Filter>
     </ClInclude>
     <ClInclude Include="Compatibility\GameControls.h">
       <Filter>Header Files\Compatibility headers</Filter>
     </ClInclude>
-    <ClInclude Include="API\SteamAPI.h">
+    <ClInclude Include="API\ISteam.h">
       <Filter>Header Files\API headers</Filter>
     </ClInclude>
     <ClInclude Include="Networking\Modules\VotingSystem.h">
@@ -252,6 +231,12 @@
     <ClInclude Include="Base\ObserverCamera.h">
       <Filter>Header Files\Base headers</Filter>
     </ClInclude>
+    <ClInclude Include="API\PluginEvents.h">
+      <Filter>Header Files\API headers</Filter>
+    </ClInclude>
+    <ClInclude Include="API\ICore.h">
+      <Filter>Header Files\API headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="StdH.cpp">
@@ -260,7 +245,7 @@
     <ClCompile Include="Patcher\patcher.cpp">
       <Filter>Source Files\Patcher</Filter>
     </ClCompile>
-    <ClCompile Include="API\CoreAPI.cpp">
+    <ClCompile Include="API\ICore.cpp">
       <Filter>Source Files\API</Filter>
     </ClCompile>
     <ClCompile Include="Core.cpp">
@@ -290,7 +275,7 @@
     <ClCompile Include="Modules\PluginStock.cpp">
       <Filter>Source Files\Modules</Filter>
     </ClCompile>
-    <ClCompile Include="API\GameAPI.cpp">
+    <ClCompile Include="API\IGame.cpp">
       <Filter>Source Files\API</Filter>
     </ClCompile>
     <ClCompile Include="Networking\NetworkFunctions.cpp">
@@ -299,10 +284,10 @@
     <ClCompile Include="Networking\StreamBlock.cpp">
       <Filter>Source Files\Networking</Filter>
     </ClCompile>
-    <ClCompile Include="API\PluginAPI.cpp">
+    <ClCompile Include="API\IPlugins.cpp">
       <Filter>Source Files\API</Filter>
     </ClCompile>
-    <ClCompile Include="API\PatchAPI.cpp">
+    <ClCompile Include="API\IPatches.cpp">
       <Filter>Source Files\API</Filter>
     </ClCompile>
     <ClCompile Include="Definitions\InlineDefinitions.cpp">
@@ -395,7 +380,7 @@
     <ClCompile Include="Networking\ExtPackets\ExtEntityDamage.cpp">
       <Filter>Source Files\Networking\ExtPackets</Filter>
     </ClCompile>
-    <ClCompile Include="API\CoreHooks.cpp">
+    <ClCompile Include="API\IHooks.cpp">
       <Filter>Source Files\API</Filter>
     </ClCompile>
     <ClCompile Include="Base\GameDirectories.cpp">
@@ -407,7 +392,7 @@
     <ClCompile Include="Networking\ExtPacketsSymbols.cpp">
       <Filter>Source Files\Networking</Filter>
     </ClCompile>
-    <ClCompile Include="API\SteamAPI.cpp">
+    <ClCompile Include="API\ISteam.cpp">
       <Filter>Source Files\API</Filter>
     </ClCompile>
     <ClCompile Include="Networking\Modules\VotingSystem.cpp">
@@ -427,6 +412,12 @@
     </ClCompile>
     <ClCompile Include="Networking\ExtPackets\ExtGameplayExt.cpp">
       <Filter>Source Files\Networking\ExtPackets</Filter>
+    </ClCompile>
+    <ClCompile Include="Objects\PropertyPtr.cpp">
+      <Filter>Source Files\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="API\IConfig.cpp">
+      <Filter>Source Files\API</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

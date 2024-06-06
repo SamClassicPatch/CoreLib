@@ -23,17 +23,13 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="API\ApiConfig.h" />
-    <ClInclude Include="API\CoreHooks.h" />
-    <ClInclude Include="API\CoreVariables.h" />
-    <ClInclude Include="API\GameAPI.h" />
-    <ClInclude Include="API\CoreAPI.h" />
-    <ClInclude Include="API\PatchAPI.h" />
-    <ClInclude Include="API\PluginAPI.h" />
-    <ClInclude Include="API\Plugins\PluginEvents.h" />
-    <ClInclude Include="API\Plugins\PluginSymbols.h" />
-    <ClInclude Include="API\SteamAPI.h" />
-    <ClInclude Include="Base\CommonCore.h" />
+    <ClInclude Include="API\ICore.h" />
+    <ClInclude Include="API\IHooks.h" />
+    <ClInclude Include="API\IConfig.h" />
+    <ClInclude Include="API\IGame.h" />
+    <ClInclude Include="API\IPlugins.h" />
+    <ClInclude Include="API\ISteam.h" />
+    <ClInclude Include="API\PluginEvents.h" />
     <ClInclude Include="Base\CoreTimerHandler.h" />
     <ClInclude Include="Base\GameDirectories.h" />
     <ClInclude Include="Base\ObserverCamera.h" />
@@ -82,7 +78,6 @@
     <ClInclude Include="Networking\Modules.h" />
     <ClInclude Include="Networking\StreamBlock.h" />
     <ClInclude Include="Objects\PropertyPtr.h" />
-    <ClInclude Include="Patcher\FuncPatching.h" />
     <ClInclude Include="Patcher\patcher.h" />
     <ClInclude Include="Patcher\patcher_defines.h" />
     <ClInclude Include="Query\QueryManager.h" />
@@ -91,12 +86,13 @@
     <ClInclude Include="StdH.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="API\CoreHooks.cpp" />
-    <ClCompile Include="API\GameAPI.cpp" />
-    <ClCompile Include="API\CoreAPI.cpp" />
-    <ClCompile Include="API\PatchAPI.cpp" />
-    <ClCompile Include="API\PluginAPI.cpp" />
-    <ClCompile Include="API\SteamAPI.cpp" />
+    <ClCompile Include="API\IHooks.cpp" />
+    <ClCompile Include="API\IGame.cpp" />
+    <ClCompile Include="API\ICore.cpp" />
+    <ClCompile Include="API\IConfig.cpp" />
+    <ClCompile Include="API\IPatches.cpp" />
+    <ClCompile Include="API\IPlugins.cpp" />
+    <ClCompile Include="API\ISteam.cpp" />
     <ClCompile Include="Base\CoreTimerHandler.cpp" />
     <ClCompile Include="Base\GameDirectories.cpp" />
     <ClCompile Include="Base\ObserverCamera.cpp" />
@@ -139,6 +135,7 @@
     <ClCompile Include="Networking\NetworkFunctions.cpp" />
     <ClCompile Include="Networking\SessionStateServerInfo.cpp" />
     <ClCompile Include="Networking\StreamBlock.cpp" />
+    <ClCompile Include="Objects\PropertyPtr.cpp" />
     <ClCompile Include="Patcher\patcher.cpp" />
     <ClCompile Include="Query\DarkPlacesQuery.cpp" />
     <ClCompile Include="Query\GameAgentQuery.cpp" />

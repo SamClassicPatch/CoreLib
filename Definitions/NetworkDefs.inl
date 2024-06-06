@@ -27,7 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <CoreLib/Networking/StreamBlock.h>
 
-#if CLASSICSPATCH_FUNC_DEFINITIONS
+#if _PATCHCONFIG_FUNC_DEFINITIONS
 
 // CNetworkStream
 
@@ -155,6 +155,6 @@ CPredictedEvent::CPredictedEvent(void)
 {
 };
 
-#endif // CLASSICSPATCH_FUNC_DEFINITIONS
+#endif // _PATCHCONFIG_FUNC_DEFINITIONS
 
 #endif

@@ -63,7 +63,7 @@ inline void CallFileRequester(CTFileName &fnmReplacement, char *achrTitle, char 
 // Get replacement for some non-existing file
 inline BOOL ReplaceFile(const CTFileName &fnmSourceFile, CTFileName &fnmReplacement, char *pFilter) {
   // Peek into the base file without adding a new replacement entry in-game
-  const BOOL bReadOnly = (CCoreAPI::GetApplication() != CCoreAPI::APP_EDITOR);
+  const BOOL bReadOnly = !ClassicsCore_IsEditorApp();
 
   if (!bReadOnly) {
     static CSymbolPtr pbUseBase("wed_bUseBaseForReplacement");

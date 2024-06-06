@@ -43,7 +43,7 @@ void UpdateShadows(void)
 };
 
 // Called every simulation tick
-void ICoreHooks::OnTick(void)
+void IHooks::OnTick(void)
 {
   // Call step function for each plugin
   FOREACHPLUGINHANDLER(GetPluginAPI()->cProcessors, IProcessingEvents, pEvents) {
@@ -54,7 +54,7 @@ void ICoreHooks::OnTick(void)
 };
 
 // Called every render frame
-void ICoreHooks::OnFrame(CDrawPort *pdp)
+void IHooks::OnFrame(CDrawPort *pdp)
 {
   // Interact with Steam
   GetSteamAPI()->Update();
@@ -73,7 +73,7 @@ void ICoreHooks::OnFrame(CDrawPort *pdp)
 };
 
 // Called before redrawing game view
-void ICoreHooks::OnPreDraw(CDrawPort *pdp)
+void IHooks::OnPreDraw(CDrawPort *pdp)
 {
   // Call pre-draw function for each plugin
   FOREACHPLUGINHANDLER(GetPluginAPI()->cRenderers, IRenderingEvents, pEvents) {
@@ -84,7 +84,7 @@ void ICoreHooks::OnPreDraw(CDrawPort *pdp)
 };
 
 // Called after redrawing game view
-void ICoreHooks::OnPostDraw(CDrawPort *pdp)
+void IHooks::OnPostDraw(CDrawPort *pdp)
 {
   // Call post-draw function for each plugin
   FOREACHPLUGINHANDLER(GetPluginAPI()->cRenderers, IRenderingEvents, pEvents) {
@@ -95,7 +95,7 @@ void ICoreHooks::OnPostDraw(CDrawPort *pdp)
 };
 
 // Called after rendering the world
-void ICoreHooks::OnRenderView(CWorld &wo, CEntity *penViewer, CAnyProjection3D &apr, CDrawPort *pdp)
+void IHooks::OnRenderView(CWorld &wo, CEntity *penViewer, CAnyProjection3D &apr, CDrawPort *pdp)
 {
   // Call render view function for each plugin
   FOREACHPLUGINHANDLER(GetPluginAPI()->cRenderers, IRenderingEvents, pEvents) {
@@ -106,7 +106,7 @@ void ICoreHooks::OnRenderView(CWorld &wo, CEntity *penViewer, CAnyProjection3D &
 };
 
 // Called after starting world simulation
-void ICoreHooks::OnGameStart(void)
+void IHooks::OnGameStart(void)
 {
   // Call game start function for each plugin
   FOREACHPLUGINHANDLER(GetPluginAPI()->cGameEvents, IGameEvents, pEvents) {
@@ -117,7 +117,7 @@ void ICoreHooks::OnGameStart(void)
 };
 
 // Called after changing the level
-void ICoreHooks::OnChangeLevel(void)
+void IHooks::OnChangeLevel(void)
 {
   // Call level change function for each plugin
   FOREACHPLUGINHANDLER(GetPluginAPI()->cGameEvents, IGameEvents, pEvents) {
@@ -128,7 +128,7 @@ void ICoreHooks::OnChangeLevel(void)
 };
 
 // Called before stopping world simulation
-void ICoreHooks::OnGameStop(void)
+void IHooks::OnGameStop(void)
 {
   // Reset CAM for the next start
   GetGameAPI()->GetCamera().Reset();
@@ -151,7 +151,7 @@ void ICoreHooks::OnGameStop(void)
 };
 
 // Called after saving the game
-void ICoreHooks::OnGameSave(const CTFileName &fnmSave)
+void IHooks::OnGameSave(const CTFileName &fnmSave)
 {
   // Call game save function for each plugin
   FOREACHPLUGINHANDLER(GetPluginAPI()->cGameEvents, IGameEvents, pEvents) {
@@ -162,7 +162,7 @@ void ICoreHooks::OnGameSave(const CTFileName &fnmSave)
 };
 
 // Called after loading a saved game
-void ICoreHooks::OnGameLoad(const CTFileName &fnmSave)
+void IHooks::OnGameLoad(const CTFileName &fnmSave)
 {
   // Call game load function for each plugin
   FOREACHPLUGINHANDLER(GetPluginAPI()->cGameEvents, IGameEvents, pEvents) {
@@ -178,7 +178,7 @@ void ICoreHooks::OnGameLoad(const CTFileName &fnmSave)
 };
 
 // Called every time a new player is added
-void ICoreHooks::OnAddPlayer(CPlayerTarget &plt, BOOL bLocal)
+void IHooks::OnAddPlayer(CPlayerTarget &plt, BOOL bLocal)
 {
   // Call player addition function for each plugin
   FOREACHPLUGINHANDLER(GetPluginAPI()->cNetworkEvents, INetworkEvents, pEvents) {
@@ -202,7 +202,7 @@ void ICoreHooks::OnAddPlayer(CPlayerTarget &plt, BOOL bLocal)
 };
 
 // Called every time a player is removed
-void ICoreHooks::OnRemovePlayer(CPlayerTarget &plt, BOOL bLocal)
+void IHooks::OnRemovePlayer(CPlayerTarget &plt, BOOL bLocal)
 {
   // Call player removal function for each plugin
   FOREACHPLUGINHANDLER(GetPluginAPI()->cNetworkEvents, INetworkEvents, pEvents) {
@@ -213,7 +213,7 @@ void ICoreHooks::OnRemovePlayer(CPlayerTarget &plt, BOOL bLocal)
 };
 
 // Called after starting demo playback
-void ICoreHooks::OnDemoPlay(const CTFileName &fnmDemo)
+void IHooks::OnDemoPlay(const CTFileName &fnmDemo)
 {
   // Start CAM for the demo
   GetGameAPI()->GetCamera().Start(fnmDemo);
@@ -232,7 +232,7 @@ void ICoreHooks::OnDemoPlay(const CTFileName &fnmDemo)
 };
 
 // Called after starting demo recording
-void ICoreHooks::OnDemoStart(const CTFileName &fnmDemo)
+void IHooks::OnDemoStart(const CTFileName &fnmDemo)
 {
   // Call demo start function for each plugin
   FOREACHPLUGINHANDLER(GetPluginAPI()->cDemoEvents, IDemoEvents, pEvents) {
@@ -243,7 +243,7 @@ void ICoreHooks::OnDemoStart(const CTFileName &fnmDemo)
 };
 
 // Called after stopping demo recording
-void ICoreHooks::OnDemoStop(void)
+void IHooks::OnDemoStop(void)
 {
   // Call demo stop function for each plugin
   FOREACHPLUGINHANDLER(GetPluginAPI()->cDemoEvents, IDemoEvents, pEvents) {
@@ -254,7 +254,7 @@ void ICoreHooks::OnDemoStop(void)
 };
 
 // Called after finishing reading the world file
-void ICoreHooks::OnWorldLoad(CWorld *pwo, const CTFileName &fnmWorld)
+void IHooks::OnWorldLoad(CWorld *pwo, const CTFileName &fnmWorld)
 {
   // Call world load function for each plugin
   FOREACHPLUGINHANDLER(GetPluginAPI()->cWorldEvents, IWorldEvents, pEvents) {
@@ -263,3 +263,14 @@ void ICoreHooks::OnWorldLoad(CWorld *pwo, const CTFileName &fnmWorld)
     pEvents->OnWorldLoad(pwo, fnmWorld);
   }
 };
+
+// Interface initialization
+namespace IInitAPI {
+
+void Hooks(void) {
+  // Update shadows in the current world
+  _pShell->DeclareSymbol("user void UpdateShadows(void);", &UpdateShadows);
+  _pShell->DeclareSymbol("persistent user INDEX gam_bAutoUpdateShadows;", &gam_bAutoUpdateShadows);
+};
+
+}; // namespace

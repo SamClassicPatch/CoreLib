@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <Engine/Base/ListIterator.inl>
 
-#if CLASSICSPATCH_CLASS_DEFINITIONS
+#if _PATCHCONFIG_CLASS_DEFINITIONS
 
 // One animation of CAnimObject
 class COneAnim {
@@ -124,6 +124,6 @@ class CCRCEntry {
     };
 };
 
-#endif // CLASSICSPATCH_CLASS_DEFINITIONS
+#endif // _PATCHCONFIG_CLASS_DEFINITIONS
 
 #endif

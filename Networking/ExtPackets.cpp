@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define VANILLA_EVENTS_ENTITY_ID
 #include <Extras/XGizmo/Vanilla/EntityEvents.h>
 
-#if CLASSICSPATCH_EXT_PACKETS
+#if _PATCHCONFIG_EXT_PACKETS
 
 // Report packet actions to the server
 INDEX ser_bReportExtPacketLogic = TRUE;
@@ -325,4 +325,4 @@ void EExtEntityEvent::ConvertTypes(void)
   }
 };
 
-#endif // CLASSICSPATCH_EXT_PACKETS
+#endif // _PATCHCONFIG_EXT_PACKETS

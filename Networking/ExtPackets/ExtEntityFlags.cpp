@@ -17,7 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "Networking/ExtPackets.h"
 
-#if CLASSICSPATCH_EXT_PACKETS
+#if _PATCHCONFIG_EXT_PACKETS
 
 void CExtEntityFlags::Write(CNetworkMessage &nm) {
   WriteEntity(nm);
@@ -66,4 +66,4 @@ void CExtEntityFlags::Process(void) {
   ExtServerReport(strReport, pen->en_ulID, ulOld, *pulFlags);
 };
 
-#endif // CLASSICSPATCH_EXT_PACKETS
+#endif // _PATCHCONFIG_EXT_PACKETS

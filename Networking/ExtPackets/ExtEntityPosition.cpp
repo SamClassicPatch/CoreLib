@@ -17,7 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "Networking/ExtPackets.h"
 
-#if CLASSICSPATCH_EXT_PACKETS
+#if _PATCHCONFIG_EXT_PACKETS
 
 void CExtEntityPosition::Write(CNetworkMessage &nm) {
   WriteEntity(nm);
@@ -89,4 +89,4 @@ void CExtEntityPosition::Process(void) {
     pl.pl_OrientationAngle(1), pl.pl_OrientationAngle(2), pl.pl_OrientationAngle(3));
 };
 
-#endif // CLASSICSPATCH_EXT_PACKETS
+#endif // _PATCHCONFIG_EXT_PACKETS

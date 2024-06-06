@@ -512,7 +512,7 @@ BOOL Chat::VoteMute(CTString &strResult, INDEX iClient, const CTString &strArgum
 
 // Initiate voting to skip current round
 BOOL Chat::VoteSkip(CTString &strResult, INDEX iClient, const CTString &strArguments) {
-  if (!GetAPI()->IsServerApp()) return FALSE;
+  if (!ClassicsCore_IsServerApp()) return FALSE;
 
   // Disabled (unless it's an admin)
   if (!ser_bVoteSkip && !CActiveClient::IsAdmin(iClient)) return FALSE;

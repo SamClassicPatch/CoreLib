@@ -102,16 +102,27 @@ class CORE_API CPatch
     #include "patcher_defines.h"
 
     // Destructor
-    virtual ~CPatch();
+    virtual ~CPatch() {
+      if (!m_bSetForever) {
+        RemovePatch(true);
+      }
+    };
 
     // Check if patch has been set
-    virtual bool IsPatched(void);
+    inline bool IsPatched(void) {
+      return m_bPatched;
+    };
 
     // Check if the patch is valid
-    virtual bool IsValid(void);
+    inline bool IsValid(void) {
+      return m_bValid;
+    };
 
     // Set patch validity
-    virtual bool Valid(bool bSetValid);
+    inline bool Valid(bool bSetValid) {
+      m_bValid = bSetValid;
+      return m_bValid;
+    };
 
     // Restore old function
     virtual void RemovePatch(bool bForever = false);
@@ -145,11 +156,6 @@ class CORE_API CPatch
     // Set debug logging state
     static inline void SetDebug(bool bState) {
       _bDebugOutput = bState;
-    };
-
-    // Force instruction rewrite
-    static inline void ForceRewrite(const int iLength) {
-      _iForceRewriteLen = iLength;
     };
 };
 

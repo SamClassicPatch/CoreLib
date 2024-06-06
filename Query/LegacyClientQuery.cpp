@@ -15,7 +15,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "StdH.h"
 
-#if CLASSICSPATCH_NEW_QUERY
+#if _PATCHCONFIG_NEW_QUERY
 
 #include "QueryManager.h"
 
@@ -767,4 +767,4 @@ void ILegacy::EnumUpdate(void) {
   }
 };
 
-#endif // CLASSICSPATCH_NEW_QUERY
+#endif // _PATCHCONFIG_NEW_QUERY

@@ -30,14 +30,14 @@ INDEX IProcessPacket::_bReportSyncBadToClients = FALSE;
 // Prevent clients from joining unless they have the same patch installed
 INDEX IProcessPacket::_bForbidVanilla = FALSE;
 
-#if CLASSICSPATCH_GAMEPLAY_EXT
+#if _PATCHCONFIG_GAMEPLAY_EXT
 
 // Gameplay extensions (reset to recommended settings)
-CCoreVariables::GameplayExt IProcessPacket::_gexSetup(FALSE);
+IConfig::GameplayExt IProcessPacket::_gexSetup(FALSE);
 
 // Check if gameplay extensions are enabled for the server
 BOOL IProcessPacket::GameplayExtEnabled(void) {
-  return _gexSetup.bEnable;
+  return _gexSetup[k_EGameplayExt_Enable].IsTrue();
 };
 
 #else
@@ -47,7 +47,7 @@ BOOL IProcessPacket::GameplayExtEnabled(void) {
   return FALSE;
 };
 
-#endif // CLASSICSPATCH_GAMEPLAY_EXT
+#endif // _PATCHCONFIG_GAMEPLAY_EXT
 
 // Allow changing value of a symbol unless currently running a server
 BOOL IProcessPacket::UpdateSymbolValue(void *pSymbol) {
@@ -68,26 +68,13 @@ void IProcessPacket::RegisterCommands(void) {
   _pShell->DeclareSymbol("persistent user INDEX ser_bReportSyncBadToClients;", &_bReportSyncBadToClients);
   _pShell->DeclareSymbol("persistent user INDEX ser_bForbidVanilla pre:UpdateServerSymbolValue;", &_bForbidVanilla);
 
-#if CLASSICSPATCH_GAMEPLAY_EXT
-
+#if _PATCHCONFIG_GAMEPLAY_EXT
   // Gameplay extensions
-  #define GAMEPLAY_EXT_SYMBOL(_Type, _Command, _Variable) \
-    _pShell->DeclareSymbol("persistent user " #_Type " " _Command " pre:UpdateServerSymbolValue;", &_Variable)
-
-  GAMEPLAY_EXT_SYMBOL(INDEX, "gex_bEnable", _gexSetup.bEnable);
-  GAMEPLAY_EXT_SYMBOL(INDEX, "gex_bFixTimers", _gexSetup.bFixTimers);
-
-  GAMEPLAY_EXT_SYMBOL(INDEX, "gex_bUnlimitedAirControl", _gexSetup.bUnlimitedAirControl);
-  GAMEPLAY_EXT_SYMBOL(FLOAT, "gex_fMoveSpeed", _gexSetup.fMoveSpeed);
-  GAMEPLAY_EXT_SYMBOL(FLOAT, "gex_fJumpHeight", _gexSetup.fJumpHeight);
-  GAMEPLAY_EXT_SYMBOL(FLOAT, "gex_fGravityAcc", _gexSetup.fGravityAcc);
-
-  #undef GAMEPLAY_EXT_SYMBOL
-
-#endif // CLASSICSPATCH_GAMEPLAY_EXT
+  _gexSetup.DeclareSymbols();
+#endif
 };
 
-#if CLASSICSPATCH_GUID_MASKING
+#if _PATCHCONFIG_GUID_MASKING
 
 // Arrays of sync checks per client
 CStaticArray<IProcessPacket::CSyncCheckArray> IProcessPacket::_aClientChecks;
@@ -109,12 +96,12 @@ void IProcessPacket::ClearSyncChecks(void)
   }
 };
 
-#endif // CLASSICSPATCH_GUID_MASKING
+#endif // _PATCHCONFIG_GUID_MASKING
 
 // Buffer sync check for the server
 void IProcessPacket::AddSyncCheck(const INDEX iClient, const CSyncCheck &sc)
 {
-#if CLASSICSPATCH_GUID_MASKING
+#if _PATCHCONFIG_GUID_MASKING
   // Use the first array if not masking
   CSyncCheckArray &aChecks = _aClientChecks[ShouldMaskGUIDs() ? iClient : 0];
 #else
@@ -148,7 +135,7 @@ void IProcessPacket::AddSyncCheck(const INDEX iClient, const CSyncCheck &sc)
 // Find buffered sync check for a given tick
 INDEX IProcessPacket::FindSyncCheck(const INDEX iClient, TIME tmTick, CSyncCheck &sc)
 {
-#if CLASSICSPATCH_GUID_MASKING
+#if _PATCHCONFIG_GUID_MASKING
   // Use the first array if not masking
   CSyncCheckArray &aChecks = _aClientChecks[ShouldMaskGUIDs() ? iClient : 0];
 #else
@@ -244,7 +231,7 @@ static BOOL CheckClientPatch(INDEX iClient, CNetworkMessage &nmMessage) {
 
     // Verify client tag and version
     const BOOL bTagMatch = (memcmp(aClientTag, _aSessionStatePatchTag, ctTagLen) == 0);
-    const BOOL bVersionMatch = (ulClientVer == CCoreAPI::ulCoreVersion);
+    const BOOL bVersionMatch = (ulClientVer == ClassicsCore_GetVersion());
 
     CPrintF(TRANS("Server: Client '%s' has provided an identification tag:\n"
                   "  Tag match: %d | Version match: %d\n"), strClient.str_String, bTagMatch, bVersionMatch);
@@ -349,7 +336,7 @@ void IProcessPacket::OnConnectRemoteSessionStateRequest(INDEX iClient, CNetworkM
   // [Cecil] Disconnect unless the client has the right patch version installed
   if (bForbid && !CheckClientPatch(iClient, nmMessage)) {
     // Prompt to download the right patch version
-    const CTString strVer = GetAPI()->GetVersion();
+    const CTString strVer = ClassicsCore_GetVersionName();
     const CTString strMod = "MOD:Classics Patch " + strVer + "\\" + CLASSICSPATCH_URL_TAGRELEASE(strVer);
 
     INetwork::SendDisconnectMessage(iClient, strMod, TRUE);
@@ -375,7 +362,7 @@ void IProcessPacket::OnConnectRemoteSessionStateRequest(INDEX iClient, CNetworkM
   INDEX ctMaxAllowedClients = ctMaxAllowedPlayers;
 
   if (piMaxClients.GetIndex() > 0) {
-    ctMaxAllowedClients = ClampUp(piMaxClients.GetIndex(), (INDEX)CORE_MAX_GAME_COMPUTERS);
+    ctMaxAllowedClients = ClampUp(piMaxClients.GetIndex(), ICore::MAX_GAME_COMPUTERS);
   }
 
   INDEX ctMaxAllowedVIPPlayers = 0;
@@ -555,7 +542,7 @@ void IProcessPacket::OnPlayerConnectRequest(INDEX iClient, CNetworkMessage &nmMe
 
     const INDEX iLastSequence = ++srv.srv_iLastProcessedSequence;
 
-  #if CLASSICSPATCH_GUID_MASKING
+  #if _PATCHCONFIG_GUID_MASKING
     if (ShouldMaskGUIDs()) {
       // Send message back to this client about adding a new player
       if (iClient == 0 || sso.sso_bActive) {
@@ -569,14 +556,14 @@ void IProcessPacket::OnPlayerConnectRequest(INDEX iClient, CNetworkMessage &nmMe
       // Mask player GUID for other clients
       MaskGUID(pcCharacter.pc_aubGUID, *pplbNew);
     }
-  #endif // CLASSICSPATCH_GUID_MASKING
+  #endif // _PATCHCONFIG_GUID_MASKING
 
     // Send message to other clients about adding a new player
     CNetStreamBlock nsbAddClientData(MSG_SEQ_ADDPLAYER, iLastSequence);
     nsbAddClientData << iNewPlayer;
     nsbAddClientData << pcCharacter;
 
-  #if CLASSICSPATCH_GUID_MASKING
+  #if _PATCHCONFIG_GUID_MASKING
     // Send to other clients
     if (ShouldMaskGUIDs()) {
       for (INDEX iSession = 0; iSession < srv.srv_assoSessions.Count(); iSession++) {
@@ -590,7 +577,7 @@ void IProcessPacket::OnPlayerConnectRequest(INDEX iClient, CNetworkMessage &nmMe
       }
 
     } else
-  #endif // CLASSICSPATCH_GUID_MASKING
+  #endif // _PATCHCONFIG_GUID_MASKING
     {
       // Send to everyone
       INetwork::AddBlockToAllSessions(nsbAddClientData);
@@ -681,7 +668,7 @@ void IProcessPacket::OnCharacterChangeRequest(INDEX iClient, CNetworkMessage &nm
 
   const INDEX iLastSequence = ++srv.srv_iLastProcessedSequence;
 
-#if CLASSICSPATCH_GUID_MASKING
+#if _PATCHCONFIG_GUID_MASKING
   if (ShouldMaskGUIDs()) {
     // Send character change back to this client
     if (iClient == 0 || srv.srv_assoSessions[iClient].sso_bActive) {
@@ -695,14 +682,14 @@ void IProcessPacket::OnCharacterChangeRequest(INDEX iClient, CNetworkMessage &nm
     // Mask player GUID for other clients
     MaskGUID(pcCharacter.pc_aubGUID, plb);
   }
-#endif // CLASSICSPATCH_GUID_MASKING
+#endif // _PATCHCONFIG_GUID_MASKING
 
   // Send character change to other clients
   CNetStreamBlock nsbChangeChar(MSG_SEQ_CHARACTERCHANGE, iLastSequence);
   nsbChangeChar << iPlayer;
   nsbChangeChar << pcCharacter;
 
-#if CLASSICSPATCH_GUID_MASKING
+#if _PATCHCONFIG_GUID_MASKING
   // Send to other clients
   if (ShouldMaskGUIDs()) {
     for (INDEX iSession = 0; iSession < srv.srv_assoSessions.Count(); iSession++) {
@@ -716,7 +703,7 @@ void IProcessPacket::OnCharacterChangeRequest(INDEX iClient, CNetworkMessage &nm
     }
 
   } else
-#endif // CLASSICSPATCH_GUID_MASKING
+#endif // _PATCHCONFIG_GUID_MASKING
   {
     // Send to everyone
     INetwork::AddBlockToAllSessions(nsbChangeChar);
@@ -777,7 +764,7 @@ void IProcessPacket::OnPlayerAction(INDEX iClient, CNetworkMessage &nmMessage)
   CSessionSocket &sso = srv.srv_assoSessions[iClient];
 
   // For each possible player on that client
-  for (INDEX i = 0; i < CORE_MAX_LOCAL_PLAYERS; i++) {
+  for (INDEX i = 0; i < ICore::MAX_LOCAL_PLAYERS; i++) {
     // [Cecil] Stop reading actions if there are less than 4 bytes of data left
     // 15 bits / 2 bytes for bSaved, iPlayer and plb_iPing and then CPlayerAction (more than 2 extra bytes)
     const INDEX ctBytesLeft = nmMessage.nm_slSize - INDEX(nmMessage.nm_pubPointer - nmMessage.nm_pubMessage);

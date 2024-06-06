@@ -37,14 +37,14 @@ class CORE_API INetwork {
 
       // Allow 49-62 range for mod packets
 
-    #if CLASSICSPATCH_EXT_PACKETS
+    #if _PATCHCONFIG_EXT_PACKETS
       // Occupy the last index for new packets (cannot go above 63)
       PCK_EXTENSION = 63,
     #endif
     };
 
   public:
-  #if CLASSICSPATCH_EXT_PACKETS
+  #if _PATCHCONFIG_EXT_PACKETS
 
     // Create packet to send to a server
     static inline CNetworkMessage CreateClientPacket(const ULONG ulType) {
@@ -64,7 +64,7 @@ class CORE_API INetwork {
       return nsbServer;
     };
 
-  #endif // CLASSICSPATCH_EXT_PACKETS
+  #endif // _PATCHCONFIG_EXT_PACKETS
 
     // Add stream block to one session
     static inline void AddBlockToSession(CNetStreamBlock &nsb, INDEX iSession) {

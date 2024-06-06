@@ -21,7 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 void IProcessPacket::WritePatchTag(CTStream &strm) {
   // Write tag and release version
   strm.Write_t(_aSessionStatePatchTag, sizeof(_aSessionStatePatchTag));
-  strm << (ULONG)CCoreAPI::ulCoreVersion;
+  strm << (ULONG)ClassicsCore_GetVersion();
 };
 
 // Read patch identification tag from a stream
@@ -62,17 +62,17 @@ BOOL IProcessPacket::ReadPatchTag(CTStream &strm, ULONG *pulReadVersion) {
   return TRUE;
 };
 
-#if CLASSICSPATCH_GAMEPLAY_EXT
+#if _PATCHCONFIG_GAMEPLAY_EXT
 
 // Reset data before starting any session
 void IProcessPacket::ResetSessionData(BOOL bNewSetup) {
   // Set new data
   if (bNewSetup && GameplayExtEnabled()) {
-    CoreGEX() = _gexSetup;
+    IConfig::gex = _gexSetup;
 
   // Reset to vanilla
   } else {
-    CoreGEX().Reset(TRUE);
+    IConfig::gex.Reset(TRUE);
   }
 };
 
@@ -92,27 +92,27 @@ static BOOL ReadOneServerInfoChunk(CTStream &strm) {
 
   // Fix logic timers
   if (cid == _cidTimers0) {
-    CoreGEX().bFixTimers = FALSE;
+    IConfig::gex[k_EGameplayExt_FixTimers].GetIndex() = FALSE;
 
   } else if (cid == _cidTimers1) {
-    CoreGEX().bFixTimers = TRUE;
+    IConfig::gex[k_EGameplayExt_FixTimers].GetIndex() = TRUE;
 
   // Unlimited air control
   } else if (cid == _cidAirControl0) {
-    CoreGEX().bUnlimitedAirControl = FALSE;
+    IConfig::gex[k_EGameplayExt_UnlimitedAirControl].GetIndex() = FALSE;
 
   } else if (cid == _cidAirControl1) {
-    CoreGEX().bUnlimitedAirControl = TRUE;
+    IConfig::gex[k_EGameplayExt_UnlimitedAirControl].GetIndex() = TRUE;
 
   // Movement speed and jump height multipliers
   } else if (cid == _cidMoveSpeed) {
-    strm >> CoreGEX().fMoveSpeed;
+    strm >> IConfig::gex[k_EGameplayExt_MoveSpeed].GetFloat();
 
   } else if (cid == _cidJumpHeight) {
-    strm >> CoreGEX().fJumpHeight;
+    strm >> IConfig::gex[k_EGameplayExt_JumpHeight].GetFloat();
 
   } else if (cid == _cidGravityMod) {
-    strm >> CoreGEX().fGravityAcc;
+    strm >> IConfig::gex[k_EGameplayExt_GravityAcc].GetFloat();
 
   // Invalid chunk
   } else {
@@ -125,7 +125,7 @@ static BOOL ReadOneServerInfoChunk(CTStream &strm) {
 // Append extra info about the patched server
 void IProcessPacket::WriteServerInfoToSessionState(CTStream &strm) {
   // No gameplay extensions
-  if (!CoreGEX().bEnable) return;
+  if (!IConfig::gex[k_EGameplayExt_Enable]) return;
 
   // Write patch tag
   IProcessPacket::WritePatchTag(strm);
@@ -134,19 +134,19 @@ void IProcessPacket::WriteServerInfoToSessionState(CTStream &strm) {
   strm << (INDEX)5;
 
   // Fix logic timers
-  strm.WriteID_t(CoreGEX().bFixTimers ? _cidTimers1 : _cidTimers0);
+  strm.WriteID_t(IConfig::gex[k_EGameplayExt_FixTimers] ? _cidTimers1 : _cidTimers0);
 
   // Player settings
-  strm.WriteID_t(CoreGEX().bUnlimitedAirControl ? _cidAirControl1 : _cidAirControl0);
+  strm.WriteID_t(IConfig::gex[k_EGameplayExt_UnlimitedAirControl] ? _cidAirControl1 : _cidAirControl0);
 
   strm.WriteID_t(_cidMoveSpeed);
-  strm << CoreGEX().fMoveSpeed;
+  strm << IConfig::gex[k_EGameplayExt_MoveSpeed].GetFloat();
 
   strm.WriteID_t(_cidJumpHeight);
-  strm << CoreGEX().fJumpHeight;
+  strm << IConfig::gex[k_EGameplayExt_JumpHeight].GetFloat();
 
   strm.WriteID_t(_cidGravityMod);
-  strm << CoreGEX().fGravityAcc;
+  strm << IConfig::gex[k_EGameplayExt_GravityAcc].GetFloat();
 };
 
 // Read extra info about the patched server
@@ -155,7 +155,7 @@ void IProcessPacket::ReadServerInfoFromSessionState(CTStream &strm) {
   if (!ReadPatchTag(strm, NULL)) return;
 
   // Gameplay extensions are active
-  CoreGEX().bEnable = TRUE;
+  IConfig::gex[k_EGameplayExt_Enable].GetIndex() = TRUE;
 
   // Read amount of written chunks
   INDEX ctChunks;
@@ -186,8 +186,8 @@ void IProcessPacket::ReadServerInfoFromSessionState(CTStream &strm) {
   if (!ReadPatchTag(strm, NULL)) return;
 
   // No data to read after the tag
-  ASSERTALWAYS("CLASSICSPATCH_GAMEPLAY_EXT is turned off in this build!");
+  ASSERTALWAYS(GAMEPLAY_EXT_ASSERT_MSG);
   ThrowF_t("Server info reading is unavailable in this build!");
 };
 
-#endif // CLASSICSPATCH_GAMEPLAY_EXT
+#endif // _PATCHCONFIG_GAMEPLAY_EXT

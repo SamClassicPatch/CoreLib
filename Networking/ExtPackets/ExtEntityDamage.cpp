@@ -17,7 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "Networking/ExtPackets.h"
 
-#if CLASSICSPATCH_EXT_PACKETS
+#if _PATCHCONFIG_EXT_PACKETS
 
 void CExtEntityDamage::Write(CNetworkMessage &nm) {
   WriteEntity(nm);
@@ -123,4 +123,4 @@ void CExtEntityBoxDamage::Process(void) {
     pen->en_ulID, fDamage, boxArea.Size()(1), boxArea.Size()(2), boxArea.Size()(3));
 };
 
-#endif // CLASSICSPATCH_EXT_PACKETS
+#endif // _PATCHCONFIG_EXT_PACKETS

@@ -24,20 +24,23 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class CORE_API CPluginModule : public CSerial {
   public:
     // Plugin method types
-    typedef void (*CVoidFunc)(void); // Simple method
-    typedef void (*CInfoFunc)(CPluginInfo &info); // Plugin info method
+    typedef void (*CInfoFunc)(PluginInfo_t *pOutInfo);
+    typedef void (*CModuleFunc)(CIniConfig &props);
 
   private:
     HINSTANCE pm_hLibrary; // Library handle
     BOOL pm_bInitialized; // Plugin has been initialized
 
-    CPluginInfo pm_info; // Plugin information
-    CDynamicContainer<CPatch> pm_cPatches; // Custom patches
+    CStaticStackArray<HFuncPatch> pm_aPatches; // Custom patches added on plugin startup
 
     // Hooked methods
-    CVoidFunc pm_pOnStartupFunc; // Entry point for the plugin
-    CVoidFunc pm_pOnShutdownFunc; // Plugin cleanup before releasing it
     CInfoFunc pm_pGetInfoFunc; // Retrieve information about the plugin
+    CModuleFunc pm_pStartupFunc; // Entry point for the plugin
+    CModuleFunc pm_pShutdownFunc; // Plugin cleanup before releasing it
+
+  public:
+    PluginInfo_t pm_info; // Plugin information
+    CIniConfig pm_props; // Loaded plugin properties
 
   public:
     // Constructor
@@ -56,16 +59,6 @@ class CORE_API CPluginModule : public CSerial {
       return pm_bInitialized;
     };
 
-    // Get plugin information
-    inline CPluginInfo &GetInfo(void) {
-      return pm_info;
-    };
-
-    // Get plugin information (read-only)
-    inline const CPluginInfo &GetInfo(void) const {
-      return pm_info;
-    };
-
     // Module initialization
     virtual void Initialize(void);
 
@@ -75,39 +68,16 @@ class CORE_API CPluginModule : public CSerial {
     // Reset class fields
     virtual void ResetFields(void);
 
-    // Add new function patch
-    virtual void AddPatch(CPatch *pPatch);
+    // Add new function patch on startup
+    virtual void AddPatch(HFuncPatch hPatch);
 
     // Get specific symbol from the module
-    virtual void *GetSymbol_t(const char *strSymbolName) {
-      // No module
-      if (GetHandle() == NULL) {
-        ThrowF_t(TRANS("Plugin module has not been loaded yet!"));
-      }
-
-      void *pSymbol = GetProcAddress(GetHandle(), strSymbolName);
-
-      // No symbol
-      if (pSymbol == NULL) {
-        ThrowF_t(TRANS("Cannot find '%s' symbol in '%s'!"), strSymbolName, GetName());
-      }
-
-      return pSymbol;
-    };
+    virtual void *GetSymbol_t(const char *strSymbolName);
 
     // Get specific symbol from the module (must be a pointer to the pointer variable)
     template<class Type> void GetSymbol_t(Type *ppSymbol, const char *strSymbolName) {
       *ppSymbol = (Type)GetSymbol_t(strSymbolName);
     };
-
-  // Plugin methods
-  public:
-
-    // Call startup method
-    virtual void OnStartup(void);
-
-    // Call shutdown method
-    virtual void OnShutdown(void);
 
   // CSerial overrides
   public:

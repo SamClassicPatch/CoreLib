@@ -20,8 +20,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #pragma once
 #endif
 
+#include <CoreLib/API/IPlugins.h>
+
 // Abstract class for plugin events
-class CORE_API IAbstractEvents {
+class IAbstractEvents {
   public:
     // Index of the handler in the container
     INDEX _iHandler;
@@ -39,7 +41,7 @@ class CORE_API IAbstractEvents {
   public:
     // Container to utilize for registering and unregistering
     virtual CPluginInterfaces *GetContainer(void) {
-      return NULL;
+      return NULL; // Needs to be defined to avoid crashing on destruction
     };
 
     // Register events
@@ -81,10 +83,7 @@ class CORE_API IAbstractEvents {
 // Main plugin events
 class IProcessingEvents : public IAbstractEvents {
   public:
-    // Return handlers container
-    virtual CPluginInterfaces *GetContainer(void) {
-      return &GetPluginAPI()->cProcessors;
-    };
+    virtual CPluginInterfaces *GetContainer(void) { return &GetPluginAPI()->cProcessors; };
 
     virtual void OnStep(void); // Every simulation tick for synchronized logic
     virtual void OnFrame(CDrawPort *pdp); // After rendering everything
@@ -93,10 +92,7 @@ class IProcessingEvents : public IAbstractEvents {
 // Rendering events
 class IRenderingEvents : public IAbstractEvents {
   public:
-    // Return handlers container
-    virtual CPluginInterfaces *GetContainer(void) {
-      return &GetPluginAPI()->cRenderers;
-    };
+    virtual CPluginInterfaces *GetContainer(void) { return &GetPluginAPI()->cRenderers; };
 
     virtual void OnPreDraw(CDrawPort *pdp); // Before drawing the game view
     virtual void OnPostDraw(CDrawPort *pdp); // After drawing the game view
@@ -108,10 +104,7 @@ class IRenderingEvents : public IAbstractEvents {
 // Networking events
 class INetworkEvents : public IAbstractEvents {
   public:
-    // Return handlers container
-    virtual CPluginInterfaces *GetContainer(void) {
-      return &GetPluginAPI()->cNetworkEvents;
-    };
+    virtual CPluginInterfaces *GetContainer(void) { return &GetPluginAPI()->cNetworkEvents; };
 
     // Upon receiving an extension packet as a server (returns TRUE if the packet was handled)
     virtual BOOL OnServerPacket(CNetworkMessage &nmMessage, const ULONG ulType);
@@ -129,10 +122,7 @@ class INetworkEvents : public IAbstractEvents {
 // Network packet events
 class IPacketEvents : public IAbstractEvents {
   public:
-    // Return handlers container
-    virtual CPluginInterfaces *GetContainer(void) {
-      return &GetPluginAPI()->cPacketEvents;
-    };
+    virtual CPluginInterfaces *GetContainer(void) { return &GetPluginAPI()->cPacketEvents; };
 
     // Upon player joining the game with some player character
     virtual void OnCharacterConnect(INDEX iClient, CPlayerCharacter &pc);
@@ -157,10 +147,7 @@ class IPacketEvents : public IAbstractEvents {
 // Game events
 class IGameEvents : public IAbstractEvents {
   public:
-    // Return handlers container
-    virtual CPluginInterfaces *GetContainer(void) {
-      return &GetPluginAPI()->cGameEvents;
-    };
+    virtual CPluginInterfaces *GetContainer(void) { return &GetPluginAPI()->cGameEvents; };
 
     // After starting the server and loading in the world
     virtual void OnGameStart(void);
@@ -181,10 +168,7 @@ class IGameEvents : public IAbstractEvents {
 // Demo events
 class IDemoEvents : public IAbstractEvents {
   public:
-    // Return handlers container
-    virtual CPluginInterfaces *GetContainer(void) {
-      return &GetPluginAPI()->cDemoEvents;
-    };
+    virtual CPluginInterfaces *GetContainer(void) { return &GetPluginAPI()->cDemoEvents; };
 
     // After starting demo playback
     virtual void OnDemoPlay(const CTFileName &fnmDemo);
@@ -199,10 +183,7 @@ class IDemoEvents : public IAbstractEvents {
 // World events
 class IWorldEvents : public IAbstractEvents {
   public:
-    // Return handlers container
-    virtual CPluginInterfaces *GetContainer(void) {
-      return &GetPluginAPI()->cWorldEvents;
-    };
+    virtual CPluginInterfaces *GetContainer(void) { return &GetPluginAPI()->cWorldEvents; };
 
     // After finishing reading the world file
     virtual void OnWorldLoad(CWorld *pwo, const CTFileName &fnmWorld);
@@ -211,10 +192,7 @@ class IWorldEvents : public IAbstractEvents {
 // Listener events
 class IListenerEvents : public IAbstractEvents {
   public:
-    // Return handlers container
-    virtual CPluginInterfaces *GetContainer(void) {
-      return &GetPluginAPI()->cListenerEvents;
-    };
+    virtual CPluginInterfaces *GetContainer(void) { return &GetPluginAPI()->cListenerEvents; };
 
     // Upon sending any event via entity logic
     virtual void OnSendEvent(CEntity *pen, const CEntityEvent &ee);
@@ -229,10 +207,7 @@ class IListenerEvents : public IAbstractEvents {
 // Timer events
 class ITimerEvents : public IAbstractEvents {
   public:
-    // Return handlers container
-    virtual CPluginInterfaces *GetContainer(void) {
-      return &GetPluginAPI()->cTimerEvents;
-    };
+    virtual CPluginInterfaces *GetContainer(void) { return &GetPluginAPI()->cTimerEvents; };
 
     // Executed each tick (simulation-independent)
     virtual void OnTick(void);

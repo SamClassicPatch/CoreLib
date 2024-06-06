@@ -15,7 +15,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "StdH.h"
 
-#if CLASSICSPATCH_NEW_QUERY
+#if _PATCHCONFIG_NEW_QUERY
 
 #include "QueryManager.h"
 #include "Networking/NetworkFunctions.h"
@@ -245,7 +245,7 @@ static void ComposeStatusPacket(CTString &strPacket, const char *strChallenge, B
     // Game info
     sam_strGameName, "", _SE_VER_STRING,
     // Server info
-    ctMaxPlayers, ctClients, 0, IWorld::GetWorld()->wo_strName, GetGameAPI()->GetSessionName(), _iProtocolVersion,
+    ctMaxPlayers, ctClients, 0, IWorld::GetWorld()->wo_strName, GetGameAPI()->SessionName(), _iProtocolVersion,
     // Server status
     GetGameAPI()->GetCurrentGameTypeNameSS(), "0.8.2", 0, ctMaxPlayers - ctClients, 0, sam_strGameName);
 
@@ -360,4 +360,4 @@ void IDarkPlaces::ServerParsePacket(INDEX iLength) {
   }
 };
 
-#endif // CLASSICSPATCH_NEW_QUERY
+#endif // _PATCHCONFIG_NEW_QUERY

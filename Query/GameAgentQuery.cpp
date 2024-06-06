@@ -15,7 +15,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "StdH.h"
 
-#if CLASSICSPATCH_NEW_QUERY
+#if _PATCHCONFIG_NEW_QUERY
 
 #include "QueryManager.h"
 #include "Networking/NetworkFunctions.h"
@@ -212,7 +212,7 @@ void IGameAgent::ServerParsePacket(INDEX iLength) {
       strPacket.PrintF("0;players;%d;maxplayers;%d;level;%s;gametype;%s;version;%s;gamename;%s;sessionname;%s",
         ctPlayers, _pNetwork->ga_sesSessionState.ses_ctMaxPlayers,
         IWorld::GetWorld()->wo_strName, GetGameAPI()->GetCurrentGameTypeNameSS(),
-        _SE_VER_STRING, sam_strGameName, GetGameAPI()->GetSessionName());
+        _SE_VER_STRING, sam_strGameName, GetGameAPI()->SessionName());
 
       IQuery::SendReply(strPacket);
     } break;
@@ -258,4 +258,4 @@ void IGameAgent::ServerParsePacket(INDEX iLength) {
   }
 };
 
-#endif // CLASSICSPATCH_NEW_QUERY
+#endif // _PATCHCONFIG_NEW_QUERY

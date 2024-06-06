@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "MessageCompression.h"
 
-#if CLASSICSPATCH_EXT_PACKETS
+#if _PATCHCONFIG_EXT_PACKETS
 
 // Report packet actions to the server
 CORE_API extern INDEX ser_bReportExtPacketLogic;
@@ -657,6 +657,6 @@ inline CEntity *FindExtEntity(ULONG ulID) {
   return pen;
 };
 
-#endif // CLASSICSPATCH_EXT_PACKETS
+#endif // _PATCHCONFIG_EXT_PACKETS
 
 #endif

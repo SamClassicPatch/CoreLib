@@ -17,7 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "Networking/ExtPackets.h"
 
-#if CLASSICSPATCH_EXT_PACKETS
+#if _PATCHCONFIG_EXT_PACKETS
 
 // Copy event bytes (iEventSize = sizeof(ee))
 void CExtEntityEvent::SetEvent(CEntityEvent &ee, size_t iEventSize) {
@@ -85,4 +85,4 @@ void CExtEntityItem::Process(void) {
   pen->ReceiveItem(eEvent);
 };
 
-#endif // CLASSICSPATCH_EXT_PACKETS
+#endif // _PATCHCONFIG_EXT_PACKETS

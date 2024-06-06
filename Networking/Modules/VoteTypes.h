@@ -130,20 +130,10 @@ class CORE_API IClientVote : public CGenericVote {
 
   public:
     // Constructor from an active client
-    IClientVote(CActiveClient &ac) : CGenericVote(), vt_pciIdentity(ac.pClient)
-    {
-      if (ac.cPlayers.Count() == 0) {
-        vt_strPlayers.PrintF(TRANS("Client %d"), _aActiveClients.Index(&ac));
-      } else {
-        vt_strPlayers = ac.ListPlayers().Undecorated();
-      }
-    };
+    IClientVote(CActiveClient &ac);
 
     // Copy constructor
-    IClientVote(const IClientVote &vtOther) : CGenericVote(vtOther),
-      vt_pciIdentity(vtOther.vt_pciIdentity), vt_strPlayers(vtOther.vt_strPlayers)
-    {
-    };
+    IClientVote(const IClientVote &vtOther);
 };
 
 // Vote to kick a client

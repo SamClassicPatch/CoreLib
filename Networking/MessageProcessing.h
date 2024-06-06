@@ -48,12 +48,12 @@ class CORE_API IProcessPacket {
     // Prevent clients from joining unless they have the same patch installed
     static INDEX _bForbidVanilla;
 
-  #if CLASSICSPATCH_GAMEPLAY_EXT
+  #if _PATCHCONFIG_GAMEPLAY_EXT
 
     // Gameplay extensions
-    static CCoreVariables::GameplayExt _gexSetup;
+    static IConfig::GameplayExt _gexSetup;
 
-  #endif // CLASSICSPATCH_GAMEPLAY_EXT
+  #endif // _PATCHCONFIG_GAMEPLAY_EXT
 
     // Check if gameplay extensions are enabled for the server
     static BOOL GameplayExtEnabled(void);
@@ -64,7 +64,7 @@ class CORE_API IProcessPacket {
     // Register commands for packet processing
     static void RegisterCommands(void);
 
-  #if CLASSICSPATCH_GUID_MASKING
+  #if _PATCHCONFIG_GUID_MASKING
 
     // Arrays of sync checks per client
     static CStaticArray<CSyncCheckArray> _aClientChecks;
@@ -78,7 +78,7 @@ class CORE_API IProcessPacket {
     // Clear arrays with sync checks
     static void ClearSyncChecks(void);
 
-  #endif // CLASSICSPATCH_GUID_MASKING
+  #endif // _PATCHCONFIG_GUID_MASKING
 
     // Buffer sync check for the server
     static void AddSyncCheck(const INDEX iClient, const CSyncCheck &sc);

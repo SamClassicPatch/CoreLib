@@ -13,8 +13,6 @@ bool CPatch::_bDebugOutput = false;
 CTString CPatch::_strPatcherLog = "";
 int CPatch::_iForceRewriteLen = -1;
 
-#define PATCHER_LOG_HEADER "- Parsing instructions -\n"
-
 // [Cecil] Append some text to the patcher log
 static inline void PushLog(const CTString &strOutput) {
   if (CPatch::_bDebugOutput) {
@@ -34,12 +32,12 @@ bool CPatch::CanRewriteInstructionSet(long iAddress, int &iRewriteLen)
 
     iRewriteLen = _iForceRewriteLen;
     _iForceRewriteLen = -1;
-    
+
     return true;
   }
 
   // [Cecil] Reset output log (avoid ASSERT failure)
-  _strPatcherLog.str_String = StringDuplicate(PATCHER_LOG_HEADER);
+  _strPatcherLog.str_String = StringDuplicate("- Parsing instructions -\n");
 
   bool bInstructionFound;
   int iReadLen = 0;
@@ -283,29 +281,6 @@ BOOL CPatch::HookFunction(long iFuncToHook, long iMyHook, long *piNewCallAddress
   }
 
   return bHooked;
-}
-
-// Destructor
-CPatch::~CPatch() {
-  if (!m_bSetForever) {
-    RemovePatch(true);
-  }
-};
-
-// Check if patch has been set
-bool CPatch::IsPatched(void) {
-  return m_bPatched;
-};
-
-// Check if the patch is valid
-bool CPatch::IsValid(void) {
-  return m_bValid;
-};
-
-// Set patch validity
-bool CPatch::Valid(bool bSetValid) {
-  m_bValid = bSetValid;
-  return m_bValid;
 };
 
 // Restore old function

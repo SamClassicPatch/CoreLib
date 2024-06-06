@@ -56,7 +56,7 @@ CTString CMapVote::ResultMessage(void) const {
 
 void CMapVote::VotingOver(void) {
   // Force server to switch to another map
-  if (GetAPI()->IsServerApp()) {
+  if (ClassicsCore_IsServerApp()) {
     _pShell->SetString("ded_strForceLevelChange", vt_map.fnmWorld);
 
   // Start new game on a new map
@@ -65,8 +65,24 @@ void CMapVote::VotingOver(void) {
 
     CSesPropsContainer sp;
     _pGame->SetMultiPlayerSession((CSessionProperties &)sp);
-    GetGameAPI()->NewGame(GetGameAPI()->GetSessionName(), vt_map.fnmWorld, (CSessionProperties &)sp);
+    GetGameAPI()->NewGame(GetGameAPI()->SessionName(), vt_map.fnmWorld, (CSessionProperties &)sp);
   }
+};
+
+// Constructor from an active client
+IClientVote::IClientVote(CActiveClient &ac) : CGenericVote(), vt_pciIdentity(ac.pClient)
+{
+  if (ac.cPlayers.Count() == 0) {
+    vt_strPlayers.PrintF(TRANS("Client %d"), _aActiveClients.Index(&ac));
+  } else {
+    vt_strPlayers = ac.ListPlayers().Undecorated();
+  }
+};
+
+// Copy constructor
+IClientVote::IClientVote(const IClientVote &vtOther) : CGenericVote(vtOther),
+  vt_pciIdentity(vtOther.vt_pciIdentity), vt_strPlayers(vtOther.vt_strPlayers)
+{
 };
 
 CTString CKickVote::VoteMessage(void) const {
@@ -117,7 +133,7 @@ CTString CSkipRoundVote::ResultMessage(void) const {
 
 void CSkipRoundVote::VotingOver(void) {
   // Force restart server
-  if (GetAPI()->IsServerApp()) {
+  if (ClassicsCore_IsServerApp()) {
     _pShell->Execute("Restart();");
   }
 };

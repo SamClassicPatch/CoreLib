@@ -17,43 +17,19 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "Networking/ExtPackets.h"
 
-#if CLASSICSPATCH_EXT_PACKETS
-
-#if CLASSICSPATCH_GAMEPLAY_EXT
-
-// Structure that describes one field inside CCoreVariables::GameplayExt
-struct GexOffset {
-  ULONG ulType; // 0 - INDEX, 1 - FLOAT, 2 - CTString
-  const char *strName;
-  size_t ulOffset;
-};
-
-// Define a list of all GEX variables
-#define GEX_OFFSET(_Type, _Variable) { _Type, #_Variable, offsetof(CCoreVariables::GameplayExt, _Variable) }
-
-static const GexOffset _aVarOffsets[] = {
-  { -1, "", -1 }, // Invalid
-  GEX_OFFSET(0, bEnable),
-  GEX_OFFSET(0, bFixTimers),
-  GEX_OFFSET(0, bUnlimitedAirControl),
-  GEX_OFFSET(1, fMoveSpeed),
-  GEX_OFFSET(1, fJumpHeight),
-  GEX_OFFSET(1, fGravityAcc),
-};
-
-static const UWORD _ctVarOffsets = ARRAYCOUNT(_aVarOffsets);
-
-#endif // CLASSICSPATCH_GAMEPLAY_EXT
+#if _PATCHCONFIG_EXT_PACKETS
 
 // Find variable index by its name
 UWORD CExtGameplayExt::FindVar(const CTString &strVar) {
-#if CLASSICSPATCH_GAMEPLAY_EXT
+#if _PATCHCONFIG_GAMEPLAY_EXT
 
-  for (UWORD i = 1; i < _ctVarOffsets; i++) {
-    if (strVar == _aVarOffsets[i].strName) return i;
+  if (strVar != "") {
+    for (INDEX i = 0; i < k_EGameplayExt_Max; i++) {
+      if (strVar == IConfig::gex.props[i].strKey) return UWORD(i + 1);
+    }
   }
 
-#endif // CLASSICSPATCH_GAMEPLAY_EXT
+#endif // _PATCHCONFIG_GAMEPLAY_EXT
 
   ExtServerReport(TRANS("Couldn't find index for '%s' gameplay extension!\n"), strVar.str_String);
   return 0;
@@ -74,7 +50,7 @@ void CExtGameplayExt::SetValue(const CTString &strVar, DOUBLE f) {
 };
 
 void CExtGameplayExt::Write(CNetworkMessage &nm) {
-#if CLASSICSPATCH_GAMEPLAY_EXT
+#if _PATCHCONFIG_GAMEPLAY_EXT
 
   // It's not like there will ever be more than 16383 GEX variables,
   // plus if 'fValue' is 0, it'll all be neatly packed in just 2 bytes!
@@ -87,11 +63,11 @@ void CExtGameplayExt::Write(CNetworkMessage &nm) {
     INetCompress::Double(nm, fValue);
   }
 
-#endif // CLASSICSPATCH_GAMEPLAY_EXT
+#endif // _PATCHCONFIG_GAMEPLAY_EXT
 };
 
 void CExtGameplayExt::Read(CNetworkMessage &nm) {
-#if CLASSICSPATCH_GAMEPLAY_EXT
+#if _PATCHCONFIG_GAMEPLAY_EXT
 
   iVar = 0;
   bString = FALSE;
@@ -105,41 +81,42 @@ void CExtGameplayExt::Read(CNetworkMessage &nm) {
     INetDecompress::Double(nm, fValue);
   }
 
-#endif // CLASSICSPATCH_GAMEPLAY_EXT
+#endif // _PATCHCONFIG_GAMEPLAY_EXT
 };
 
 void CExtGameplayExt::Process(void) {
-#if CLASSICSPATCH_GAMEPLAY_EXT
+#if _PATCHCONFIG_GAMEPLAY_EXT
 
   // Invalid offset
-  if (iVar <= 0 || iVar >= _ctVarOffsets) return;
+  INDEX iGameplayExt = INDEX(iVar) - 1;
+  if (iGameplayExt < 0 || iGameplayExt >= k_EGameplayExt_Max) return;
 
-  const GexOffset &off = _aVarOffsets[iVar];
+  IConfig::NamedValue &entry = IConfig::gex.props[iGameplayExt];
+  CAnyValue::EType eType = entry.val.GetType();
 
   // Got a number but expected a string
-  if (!bString && off.ulType == 2) {
-    ExtServerReport(TRANS("Expected a string value for '%s' gameplay extension!\n"), off.strName);
+  if (!bString && eType == CAnyValue::E_STRING) {
+    ExtServerReport(TRANS("Expected a string value for '%s' gameplay extension!\n"), entry.strKey);
     return;
 
   // Got a string but expected a number
-  } else if (bString && off.ulType != 2) {
-    ExtServerReport(TRANS("Expected a number value for '%s' gameplay extension!\n"), off.strName);
+  } else if (bString && eType != CAnyValue::E_STRING) {
+    ExtServerReport(TRANS("Expected a number value for '%s' gameplay extension!\n"), entry.strKey);
     return;
   }
 
   // Set new value depending on type
-  UBYTE *pField = ((UBYTE *)&CoreGEX()) + off.ulOffset;
-
-  switch (off.ulType) {
-    case 0: *((INDEX    *)pField) = fValue; break;
-    case 1: *((FLOAT    *)pField) = fValue; break;
-    case 2: *((CTString *)pField) = strValue; break;
+  switch (eType) {
+    case CAnyValue::E_BOOL:   entry.val.GetIndex() = fValue; break;
+    case CAnyValue::E_INDEX:  entry.val.GetIndex() = fValue; break;
+    case CAnyValue::E_FLOAT:  entry.val.GetFloat() = fValue; break;
+    case CAnyValue::E_STRING: entry.val.GetString() = strValue; break;
   }
 
 #else
-  ASSERTALWAYS("CLASSICSPATCH_GAMEPLAY_EXT is turned off in this build!");
-  ExtServerReport("CLASSICSPATCH_GAMEPLAY_EXT is turned off in this build!");
-#endif // CLASSICSPATCH_GAMEPLAY_EXT
+  ASSERTALWAYS(GAMEPLAY_EXT_ASSERT_MSG);
+  ExtServerReport(GAMEPLAY_EXT_ASSERT_MSG);
+#endif // _PATCHCONFIG_GAMEPLAY_EXT
 };
 
-#endif // CLASSICSPATCH_EXT_PACKETS
+#endif // _PATCHCONFIG_EXT_PACKETS

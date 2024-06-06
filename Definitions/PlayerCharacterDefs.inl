@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #pragma once
 #endif
 
-#if CLASSICSPATCH_FUNC_DEFINITIONS
+#if _PATCHCONFIG_FUNC_DEFINITIONS
 
 // Write player character into a network packet
 CNetworkMessage &operator<<(CNetworkMessage &nm, CPlayerCharacter &pc) {
@@ -54,6 +54,6 @@ CNetworkMessage &operator>>(CNetworkMessage &nm, CPlayerCharacter &pc) {
   return nm;
 };
 
-#endif // CLASSICSPATCH_FUNC_DEFINITIONS
+#endif // _PATCHCONFIG_FUNC_DEFINITIONS
 
 #endif

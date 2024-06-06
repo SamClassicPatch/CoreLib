@@ -25,6 +25,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <Extras/XGizmo/Objects/PropertyPtr.h>
 #undef CPropertyPtr
 
+// Find entity property data by a variable name of a specific class
+CORE_API const CEntityProperty *FindPropertyByVariable(const CTString &strClass, const CTString &strVariable);
+
 class CPropertyPtr : public CPropertyPtr_XGizmoBase {
   public:
     // Default constructor
@@ -44,7 +47,7 @@ class CPropertyPtr : public CPropertyPtr_XGizmoBase {
       {
       #if SE1_GAME != SS_REV
         // Find property data and try to find it by name or ID
-        const CEntityProperty *pep = GetPatchAPI()->FindProperty(strClass, strVariable);
+        const CEntityProperty *pep = FindPropertyByVariable(strClass, strVariable);
         _pep = IWorld::PropertyForNameOrId(_lch, pep->ep_eptType, pep->ep_strName, pep->ep_ulID);
       #else
         _pep = _lch->PropertyForVariable(strVariable);

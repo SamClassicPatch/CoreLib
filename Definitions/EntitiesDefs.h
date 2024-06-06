@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #pragma once
 #endif
 
-#if CLASSICSPATCH_CLASS_DEFINITIONS
+#if _PATCHCONFIG_CLASS_DEFINITIONS
 
 class CSentEvent {
   public:
@@ -43,6 +43,6 @@ class CActiveSector {
     void Clear(void) {};
 };
 
-#endif // CLASSICSPATCH_CLASS_DEFINITIONS
+#endif // _PATCHCONFIG_CLASS_DEFINITIONS
 
 #endif

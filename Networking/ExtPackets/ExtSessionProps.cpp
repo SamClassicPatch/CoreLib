@@ -17,7 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "Networking/ExtPackets.h"
 
-#if CLASSICSPATCH_EXT_PACKETS
+#if _PATCHCONFIG_EXT_PACKETS
 
 // [Cecil] NOTE: Assume that NET_MAXSESSIONPROPERTIES is 2048
 #define SESPROPS_BITFIT 11
@@ -70,4 +70,4 @@ void CExtSessionProps::Process(void) {
   }
 };
 
-#endif // CLASSICSPATCH_EXT_PACKETS
+#endif // _PATCHCONFIG_EXT_PACKETS

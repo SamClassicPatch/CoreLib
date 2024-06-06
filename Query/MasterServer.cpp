@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "QueryManager.h"
 #include "Networking/CommInterface.h"
 
-#if CLASSICSPATCH_NEW_QUERY
+#if _PATCHCONFIG_NEW_QUERY
 
 // When the last heartbeat has been sent
 static TIME _tmLastHeartbeat = -1.0f;
@@ -311,4 +311,4 @@ void EnumCancel(void)
 
 }; // namespace
 
-#endif // CLASSICSPATCH_NEW_QUERY
+#endif // _PATCHCONFIG_NEW_QUERY

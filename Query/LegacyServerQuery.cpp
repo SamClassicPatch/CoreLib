@@ -15,7 +15,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "StdH.h"
 
-#if CLASSICSPATCH_NEW_QUERY
+#if _PATCHCONFIG_NEW_QUERY
 
 #include "QueryManager.h"
 #include "Networking/NetworkFunctions.h"
@@ -80,7 +80,7 @@ void ILegacy::ServerParsePacket(INDEX iLength) {
     // Compose status response
     CTString strPacket;
     strPacket.PrintF(_strStatusResponseFormat,
-      sam_strGameName, _SE_VER_STRING, strLocation, GetGameAPI()->GetSessionName(), _piNetPort.GetIndex(),
+      sam_strGameName, _SE_VER_STRING, strLocation, GetGameAPI()->SessionName(), _piNetPort.GetIndex(),
       IWorld::GetWorld()->wo_strName, GetGameAPI()->GetCurrentGameTypeNameSS(),
       ctPlayers, ctMaxPlayers, symptrFF.GetIndex(), symptrWeap.GetIndex(), symptrAmmo.GetIndex(),
       symptrVital.GetIndex(), symptrHP.GetIndex(), symptrAR.GetIndex(), symptrIA.GetIndex(), symptrResp.GetIndex());
@@ -122,7 +122,7 @@ void ILegacy::ServerParsePacket(INDEX iLength) {
     strPacket.PrintF("\\hostname\\%s\\hostport\\%hu\\mapname\\%s\\gametype\\%s"
       "\\numplayers\\%d\\maxplayers\\%d\\gamemode\\openplaying\\final\\"
       "\\queryid\\8.1",
-      GetGameAPI()->GetSessionName(), _piNetPort.GetIndex(),
+      GetGameAPI()->SessionName(), _piNetPort.GetIndex(),
       IWorld::GetWorld()->wo_strName, GetGameAPI()->GetCurrentGameTypeNameSS(),
       ctPlayers, ctMaxPlayers);
 
@@ -210,4 +210,4 @@ void ILegacy::ServerParsePacket(INDEX iLength) {
   }
 };
 
-#endif // CLASSICSPATCH_NEW_QUERY
+#endif // _PATCHCONFIG_NEW_QUERY

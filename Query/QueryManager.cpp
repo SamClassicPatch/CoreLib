@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma comment(lib, "wsock32.lib")
 
-#if CLASSICSPATCH_NEW_QUERY
+#if _PATCHCONFIG_NEW_QUERY
 
 static WSADATA *_wsaData = NULL;
 static sockaddr_in *_sin = NULL;
@@ -283,4 +283,4 @@ void SetStatus(const CTString &strStatus) {
 
 }; // namespace
 
-#endif // CLASSICSPATCH_NEW_QUERY
+#endif // _PATCHCONFIG_NEW_QUERY

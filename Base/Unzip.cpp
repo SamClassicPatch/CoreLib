@@ -17,91 +17,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "Unzip.h"
 
-#ifdef CORE_NO_ZLIB
-
-namespace IUnzip {
-
-// zlib library isn't utilized
-#define NO_ZLIB_ERROR ASSERTALWAYS("zlib library usage has been disabled!")
-
-void SortEntries(void) {
-  NO_ZLIB_ERROR;
-};
-
-void AddArchive(const CTFileName &) {
-  NO_ZLIB_ERROR;
-};
-
-void ReadDirectoriesReverse_t(void) {
-  NO_ZLIB_ERROR;
-};
-
-INDEX GetFileCount(void) {
-  NO_ZLIB_ERROR;
-  return -1;
-};
-
-const CZipEntry &GetEntry(INDEX i) {
-  NO_ZLIB_ERROR;
-  static const CZipEntry zeInvalid;
-  return zeInvalid;
-};
-
-const CTFileName &GetFileAtIndex(INDEX) {
-  NO_ZLIB_ERROR;
-  static const CTFileName fnmNone = CTString("");
-  return fnmNone;
-};
-
-BOOL IsFileAtIndexMod(INDEX) {
-  NO_ZLIB_ERROR;
-  return FALSE;
-};
-
-INDEX GetFileIndex(const CTFileName &) {
-  NO_ZLIB_ERROR;
-  return -1;
-};
-
-// [Cecil] Get path to the archive with the file
-const CTFileName &GetFileArchive(const CTFileName &fnm) {
-  NO_ZLIB_ERROR;
-  static const CTFileName fnmNone = CTString("");
-  return fnmNone;
-};
-
-void GetFileInfo(INDEX, CTFileName &, SLONG &, SLONG &, SLONG &, BOOL &) {
-  NO_ZLIB_ERROR;
-};
-
-INDEX Open_t(const CTFileName &) {
-  NO_ZLIB_ERROR;
-  return -1;
-};
-
-SLONG GetSize(INDEX) {
-  NO_ZLIB_ERROR;
-  return -1;
-};
-
-ULONG GetCRC(INDEX) {
-  NO_ZLIB_ERROR;
-  return 0;
-};
-
-void ReadBlock_t(INDEX, UBYTE *, SLONG, SLONG) {
-  NO_ZLIB_ERROR;
-};
-
-void Close(INDEX) {
-  NO_ZLIB_ERROR;
-};
-
-}; // namespace
-
-#else
-
+// Include zlib
 #include <Extras/zlib/zlib.h>
+#pragma comment(lib, "zlib.lib")
 
 // [Cecil] Pointer to 'zip_csLock' in the engine
 static CTCriticalSection *_pcsZipLock = (CTCriticalSection *)ADDR_UNZIP_CRITSEC;
@@ -930,5 +848,3 @@ void Close(INDEX iHandle)
 };
 
 }; // namespace
-
-#endif

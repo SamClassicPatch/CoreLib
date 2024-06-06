@@ -39,7 +39,9 @@ void CPluginModule::Initialize(void) {
   _pInitializingPlugin = this;
 
   // Start the plugin
-  OnStartup();
+  if (pm_pStartupFunc != NULL) {
+    pm_pStartupFunc(pm_props);
+  }
 
   // Restore last plugin
   _pInitializingPlugin = pLastPlugin;
@@ -52,25 +54,16 @@ void CPluginModule::Deactivate(void) {
   if (!IsInitialized()) return;
 
   // Destroy all patches
-  for (INDEX i = 0; i < pm_cPatches.Count(); i++) {
-    CPatch *pPatch = pm_cPatches.Pointer(i);
-
-    // Remove from the storage
-    SFuncPatch *pfp = GetPatchAPI()->FindFuncPatch("", pPatch);
-    ASSERTMSG(pfp != NULL, "Trying to remove a function patch that's not in the patch storage!");
-
-    if (pfp != NULL) {
-      GetPatchAPI()->aPatches.Delete(pfp);
-    }
-
-    // Remove the patch
-    delete pPatch;
+  for (INDEX i = 0; i < pm_aPatches.Count(); i++) {
+    DestroyPatch(pm_aPatches[i]);
   }
 
-  pm_cPatches.Clear();
+  pm_aPatches.PopAll();
 
   // Stop the plugin
-  OnShutdown();
+  if (pm_pShutdownFunc != NULL) {
+    pm_pShutdownFunc(pm_props);
+  }
 
   pm_bInitialized = FALSE;
 };
@@ -80,31 +73,39 @@ void CPluginModule::ResetFields(void) {
   pm_hLibrary = NULL;
   pm_bInitialized = FALSE;
 
-  pm_pOnStartupFunc = NULL;
-  pm_pOnShutdownFunc = NULL;
   pm_pGetInfoFunc = NULL;
+  pm_pStartupFunc = NULL;
+  pm_pShutdownFunc = NULL;
+
+  pm_props.Clear();
 };
 
-// Add new function patch
-void CPluginModule::AddPatch(CPatch *pPatch) {
-  // Add if it's not there yet
-  if (!pm_cPatches.IsMember(pPatch)) {
-    pm_cPatches.Add(pPatch);
+// Add new function patch on startup
+void CPluginModule::AddPatch(HFuncPatch hPatch)
+{
+  // Check if it already exists
+  for (INDEX i = 0; i < pm_aPatches.Count(); i++) {
+    if (pm_aPatches[i] == hPatch) return;
   }
+
+  pm_aPatches.Add(hPatch);
 };
 
-// Call startup method
-void CPluginModule::OnStartup(void) {
-  if (pm_pOnStartupFunc != NULL) {
-    pm_pOnStartupFunc();
+// Get specific symbol from the module
+void *CPluginModule::GetSymbol_t(const char *strSymbolName) {
+  // No module
+  if (GetHandle() == NULL) {
+    ThrowF_t(TRANS("Plugin module has not been loaded yet!"));
   }
-};
 
-// Call shutdown method
-void CPluginModule::OnShutdown(void) {
-  if (pm_pOnShutdownFunc != NULL) {
-    pm_pOnShutdownFunc();
+  void *pSymbol = GetProcAddress(GetHandle(), strSymbolName);
+
+  // No symbol
+  if (pSymbol == NULL) {
+    ThrowF_t(TRANS("Cannot find '%s' symbol in '%s'!"), strSymbolName, GetName());
   }
+
+  return pSymbol;
 };
 
 // Module cleanup
@@ -135,7 +136,7 @@ void CPluginModule::Load_t(const CTFileName &fnmDLL)
   const CTString strConfig = IDir::AppModBin() + "Plugins\\" + fnmDLL.FileName() + ".ini";
 
   try {
-    GetInfo().props.Load_t(strConfig, TRUE);
+    pm_props.Load_t(strConfig, TRUE);
 
   } catch (char *strError) {
     (void)strError;
@@ -149,12 +150,12 @@ void CPluginModule::Load_t(const CTFileName &fnmDLL)
   pm_hLibrary = ILib::LoadLib(fnmExpanded);
 
   // Main plugin methods
-  pm_pOnStartupFunc  = (CVoidFunc)GetProcAddress(GetHandle(), "Module_Startup");
-  pm_pOnShutdownFunc = (CVoidFunc)GetProcAddress(GetHandle(), "Module_Shutdown");
-  pm_pGetInfoFunc    = (CInfoFunc)GetProcAddress(GetHandle(), "Module_GetInfo");
+  pm_pGetInfoFunc  = (CInfoFunc)  GetProcAddress(GetHandle(), CLASSICSPATCH_STRINGIFY(PLUGINMODULEMETHOD_GETINFO));
+  pm_pStartupFunc  = (CModuleFunc)GetProcAddress(GetHandle(), CLASSICSPATCH_STRINGIFY(PLUGINMODULEMETHOD_STARTUP));
+  pm_pShutdownFunc = (CModuleFunc)GetProcAddress(GetHandle(), CLASSICSPATCH_STRINGIFY(PLUGINMODULEMETHOD_SHUTDOWN));
 
-  // Get information about the plugin, if possible
+  // Try to get information about the plugin immediately
   if (pm_pGetInfoFunc != NULL) {
-    pm_pGetInfoFunc(pm_info);
+    pm_pGetInfoFunc(&pm_info);
   }
 };

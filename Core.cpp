@@ -17,186 +17,202 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "Base/CoreTimerHandler.h"
 #include "Networking/NetworkFunctions.h"
+#include "Patcher/patcher.h"
 
-#include "Networking/Modules/ClientLogging.h"
+static bool _bClassicsPatchRunning = false;
+static bool _bClassicsPatchCustomMod = false;
 
-// Pointer to the Game module
-CGame *_pGame = NULL;
+static EClassicsPatchAppType _eAppType = k_EClassicsPatchAppType_Unknown; // Running application type
+static EClassicsPatchSeason _eSpecialEvent = k_EClassicsPatchSeason_None; // Current seasonal event
 
-// Pre-1.10 variables removed from Revolution engine
-#if SE1_GAME == SS_REV
-  CTString _strModName = "";
-  CTString _strModURL = "";
-  CTString _strModExt = "";
-#endif
-
-// Common game variables
-#if SE1_GAME == SS_TFE
-  CTString sam_strFirstLevel = "Levels\\01_Hatshepsut.wld";
-  CTString sam_strIntroLevel = "Levels\\Intro.wld";
-  CTString sam_strGameName = "serioussam";
-#else
-  CTString sam_strFirstLevel = "Levels\\LevelsMP\\1_0_InTheLastEpisode.wld";
-  CTString sam_strIntroLevel = "Levels\\LevelsMP\\Intro.wld";
-  CTString sam_strGameName = "serioussamse";
-#endif
-
-CTString sam_strVersion = _SE_VER_STRING; // Use version string
-
-// Temporary password for connecting to some server
-CTString cli_strConnectPassword = "";
-
-// Current values of input axes
-FLOAT inp_afAxisValues[MAX_OVERALL_AXES];
-
-// Display information about the Classics patch
-static void PatchInfo(void) {
-  static CTString strInfo(0,
-    "\nSerious Sam Classics Patch"
-    "\n" CLASSICSPATCH_URL_SHORT
-    "\n"
-    "\n- Compiler version: %d"
-    "\n- Engine version: %s"
-    "\n- Patch version: %s"
-    "\n\n(c) Dreamy Cecil, 2022-2024\n",
-  _MSC_FULL_VER, _SE_VER_STRING, GetAPI()->GetVersion());
-
-  CPutString(strInfo);
+EClassicsPatchAppType ClassicsCore_GetAppType(void) {
+  return _eAppType;
 };
 
-// Helper method for loading scripts via string variables
-static void IncludeScript(SHELL_FUNC_ARGS) {
-  BEGIN_SHELL_FUNC;
-  const CTString &strScript = *NEXT_ARG(CTString *);
-
-  // Include command doesn't support variables, so the string needs to be inserted
-  CTString strLoad(0, "include \"%s\";", strScript.str_String);
-  _pShell->Execute(strLoad);
+EClassicsPatchSeason ClassicsCore_GetSeason(void) {
+  return _eSpecialEvent;
 };
 
-// Resave config properties into the file after setting them
-static void ResaveConfigProperties(void) {
-  CCoreAPI::Props().Save();
-
-  CPrintF(TRANS("Config properties have been resaved into '%s'!\n"), CORE_CONFIG_FILE);
-  CPutString(TRANS("Restart the game for the new settings to take effect!\n"));
+bool ClassicsCore_IsCustomModActive(void) {
+  return _bClassicsPatchCustomMod;
 };
 
-// Initialize Core module (always after 'SE_InitEngine'!)
-void ClassicsPatch_InitCore(void) {
-  // Create core API
-  new CCoreAPI();
+void ClassicsCore_SetCustomMod(bool bState)
+{
+  // Don't let the state be changed
+  static BOOL bCustomModSet = FALSE;
+  if (bCustomModSet) return;
+  bCustomModSet = TRUE;
 
-  // Allow more characters in console by default
-  GetAPI()->ReinitConsole(160, 512);
+  _bClassicsPatchCustomMod = bState;
+};
 
-  // Load custom include/exclude lists for mods
-  if (_fnmMod != "") {
-    IFiles::LoadStringList(_aBaseWriteInc, CTString("BaseWriteInclude.lst"));
-    IFiles::LoadStringList(_aBaseWriteExc, CTString("BaseWriteExclude.lst"));
-    IFiles::LoadStringList(_aBaseBrowseInc, CTString("BaseBrowseInclude.lst"));
-    IFiles::LoadStringList(_aBaseBrowseExc, CTString("BaseBrowseExclude.lst"));
+EVerifyAPIResult ClassicsPatchAPI_VerifyInternal(PatchVer_t ulInterfaceVersion, ClassicsPatchErrMsg *pOutErrMsg) {
+  // Classics Patch isn't currently running
+  if (!_bClassicsPatchRunning) {
+    strcpy(*pOutErrMsg, "Classics Patch hasn't been initialized yet");
+    return k_EVerifyAPIResult_NotRunning;
+
+  // Desired interface version is too new
+  } else if (ulInterfaceVersion > CLASSICSPATCH_INTERFACE_VERSION) {
+    strcpy(*pOutErrMsg, "Classics Patch API version is too old");
+    return k_EVerifyAPIResult_VersionMismatch;
   }
 
-  // Information about the patch
-  _pShell->DeclareSymbol("user void PatchInfo(void);", &PatchInfo);
+  return k_EVerifyAPIResult_OK;
+};
 
-  // Common symbols
-  if (GetAPI()->IsGameApp() || GetAPI()->IsServerApp())
+bool ClassicsPatchAPI_IsRunning(void) {
+  return _bClassicsPatchRunning;
+};
+
+// Specify vanilla Bin directory as an extra DLL directory
+static void SetVanillaBinDirectory(void) {
+  // No need if the Bin folder is the same
+  if (IDir::AppBin() == "Bin\\") return;
+
+  // Load DLL directory method
+  HINSTANCE hKernel = GetModuleHandleA("Kernel32.dll");
+
+  // This should never happen, but still
+  if (hKernel == NULL) return;
+
+  typedef BOOL (*CSetDirFunc)(LPCSTR);
+  CSetDirFunc pSetDirFunc = (CSetDirFunc)GetProcAddress(hKernel, "SetDllDirectoryA");
+
+  // Set extra DLL directory
+  if (pSetDirFunc != NULL) {
+    pSetDirFunc((IDir::AppPath() + "Bin\\").str_String);
+  }
+};
+
+void ClassicsPatch_Setup(EClassicsPatchAppType eApplicationType) {
+  // Set application type
+  _eAppType = eApplicationType;
+
+  // Specify extra DLL directory
+  SetVanillaBinDirectory();
+
+  // Load configuration properties
+  IConfig::global.Load();
+
+  // Enable debug output for patcher actions
+  if (IConfig::global[k_EConfigProps_DebugPatcher]) {
+    CPatch::SetDebug(true);
+  }
+};
+
+// Physical interfaces
+static CGameAPI *_pGameAPI = NULL;
+static CPluginAPI *_pPluginAPI = NULL;
+static CSteamAPI *_pSteamAPI = NULL;
+
+CGameAPI   *GetGameAPI(void)   { return _pGameAPI; };
+CPluginAPI *GetPluginAPI(void) { return _pPluginAPI; };
+CSteamAPI  *GetSteamAPI(void)  { return _pSteamAPI; };
+
+IClassicsGame    *ClassicsGame(void)    { return _pGameAPI; };
+IClassicsPlugins *ClassicsPlugins(void) { return _pPluginAPI; };
+
+// Non-physical interfaces
+namespace IInitAPI {
+  extern void Config(void);
+  extern void Core(void);
+  extern void Hooks(void);
+  extern void Patches(void);
+};
+
+void ClassicsPatch_Init(void)
+{
+  // Already running
+  ASSERT(!_bClassicsPatchRunning);
+  if (_bClassicsPatchRunning) return;
+  _bClassicsPatchRunning = true;
+
+  // Initial preparation
   {
-    // Game variables
-    _pShell->DeclareSymbol("           user CTString sam_strFirstLevel;", &sam_strFirstLevel);
-    _pShell->DeclareSymbol("persistent user CTString sam_strIntroLevel;", &sam_strIntroLevel);
-    _pShell->DeclareSymbol("persistent user CTString sam_strGameName;",   &sam_strGameName);
-    _pShell->DeclareSymbol("           user CTString sam_strVersion;",    &sam_strVersion);
+    // Allow more characters in console by default
+    ICore::ReinitConsole(160, 512);
 
-    _pShell->DeclareSymbol("persistent user CTString cli_strConnectPassword;", &cli_strConnectPassword);
+    // Load custom include/exclude lists for mods
+    if (_fnmMod != "") {
+      IFiles::LoadStringList(_aBaseWriteInc, CTString("BaseWriteInclude.lst"));
+      IFiles::LoadStringList(_aBaseWriteExc, CTString("BaseWriteExclude.lst"));
+      IFiles::LoadStringList(_aBaseBrowseInc, CTString("BaseBrowseInclude.lst"));
+      IFiles::LoadStringList(_aBaseBrowseExc, CTString("BaseBrowseExclude.lst"));
+    }
+
+    // Disable custom mod if it was never set
+    ClassicsCore_SetCustomMod(false);
+
+    // Determine current seasonal event from local time
+    time_t iTime;
+    time(&iTime);
+    tm *tmLocal = localtime(&iTime);
+
+    const int iDay = tmLocal->tm_mday;
+
+    switch (tmLocal->tm_mon) {
+      case  0: if (              iDay <= 15) _eSpecialEvent = k_EClassicsPatchSeason_Christmas; break; // January
+      case  1: if (iDay >= 10 && iDay <= 18) _eSpecialEvent = k_EClassicsPatchSeason_Valentine; break; // February
+      case  2: if (iDay >= 19 && iDay <= 23) _eSpecialEvent = k_EClassicsPatchSeason_Birthday;  break; // March
+      case  5: if (iDay >= 20 && iDay <= 24) _eSpecialEvent = k_EClassicsPatchSeason_Birthday;  break; // June
+      case  9: /** Everyday is Halloween **/ _eSpecialEvent = k_EClassicsPatchSeason_Halloween; break; // October
+      case 11: if (iDay >= 15              ) _eSpecialEvent = k_EClassicsPatchSeason_Christmas; break; // December
+    }
   }
 
-  _pShell->DeclareSymbol("user void IncludeScript(CTString);", &IncludeScript);
-
-  // Current values of input axes
-  static const CTString strAxisValues(0, "user const FLOAT inp_afAxisValues[%d];", MAX_OVERALL_AXES);
-  _pShell->DeclareSymbol(strAxisValues, &inp_afAxisValues);
-
-  // Input axes constants
-  static const INDEX iAxisNone = AXIS_NONE;
-  static const INDEX iAxisMouseX = MOUSE_X_AXIS;
-  static const INDEX iAxisMouseY = MOUSE_Y_AXIS;
-  static const INDEX iAxisMouseZ = 3;
-  static const INDEX iAxisMouse2X = 4;
-  static const INDEX iAxisMouse2Y = 5;
-  static const INDEX iMaxJoysticks = MAX_JOYSTICKS;
-  static const INDEX iAxesPerJoystick = MAX_AXES_PER_JOYSTICK;
-  static const INDEX iFirstJoystickAxis = FIRST_JOYAXIS;
-  static const INDEX iMaxInputAxes = MAX_OVERALL_AXES;
-
-  _pShell->DeclareSymbol("const INDEX AXIS_NONE;",    (void *)&iAxisNone);
-  _pShell->DeclareSymbol("const INDEX AXIS_M1_X;",    (void *)&iAxisMouseX);
-  _pShell->DeclareSymbol("const INDEX AXIS_M1_Y;",    (void *)&iAxisMouseY);
-  _pShell->DeclareSymbol("const INDEX AXIS_M1_Z;",    (void *)&iAxisMouseZ);
-  _pShell->DeclareSymbol("const INDEX AXIS_M2_X;",    (void *)&iAxisMouse2X);
-  _pShell->DeclareSymbol("const INDEX AXIS_M2_Y;",    (void *)&iAxisMouse2Y);
-  _pShell->DeclareSymbol("const INDEX AXIS_JOY_CT;",  (void *)&iMaxJoysticks);
-  _pShell->DeclareSymbol("const INDEX AXIS_PER_JOY;", (void *)&iAxesPerJoystick);
-  _pShell->DeclareSymbol("const INDEX AXIS_JOY_1;",   (void *)&iFirstJoystickAxis);
-  _pShell->DeclareSymbol("const INDEX AXIS_CT;",      (void *)&iMaxInputAxes);
-
-  // Config property symbols
-  {
-    _pShell->DeclareSymbol("void ResaveConfigProperties(void);", &ResaveConfigProperties);
-
-    #define DEFINE_PROP_SYMBOL(_Type, _Property) \
-      _pShell->DeclareSymbol(#_Type " cfg_" #_Property ";", &CCoreAPI::Props()._Property);
-
-    DEFINE_PROP_SYMBOL(INDEX, bMountTFE);
-    DEFINE_PROP_SYMBOL(CTString, strTFEDir);
-    DEFINE_PROP_SYMBOL(INDEX, bMountSSR);
-    DEFINE_PROP_SYMBOL(CTString, strSSRDir);
-    DEFINE_PROP_SYMBOL(INDEX, bMountSSRWorkshop);
-    DEFINE_PROP_SYMBOL(CTString, strSSRWorkshop);
-
-    DEFINE_PROP_SYMBOL(INDEX, bCustomMod);
-    DEFINE_PROP_SYMBOL(INDEX, bDebugPatcher);
-    DEFINE_PROP_SYMBOL(INDEX, bDPIAware);
-    DEFINE_PROP_SYMBOL(INDEX, bExtendedFileSystem);
-    DEFINE_PROP_SYMBOL(INDEX, bFullAppIntegration);
-
-    DEFINE_PROP_SYMBOL(INDEX, bSteamEnable);
-    DEFINE_PROP_SYMBOL(INDEX, bSteamForServers);
-    DEFINE_PROP_SYMBOL(INDEX, bSteamForTools);
-
-    #undef DEFINE_PROP_SYMBOL
-  }
-
-  // Initialize networking
-  INetwork::Initialize();
+  // Initialize interfaces
+  IInitAPI::Config();
+  IInitAPI::Core();
+  IInitAPI::Hooks();
+  IInitAPI::Patches();
+  _pGameAPI = new CGameAPI;
+  _pPluginAPI = new CPluginAPI;
+  _pSteamAPI = new CSteamAPI;
 
   // Create timer handler for constant functionatily
   _pTimerHandler = new CCoreTimerHandler;
   _pTimer->AddHandler(_pTimerHandler);
 
-  // Load client log
-  IClientLogging::LoadLog();
+  // Various initializations
+  {
+    // Initialize networking
+    INetwork::Initialize();
 
-  // Initialize Steam API
-  GetSteamAPI()->Init();
+    // Initialize Steam API
+    GetSteamAPI()->Init();
 
-  // Load Core plugins
-  GetAPI()->LoadPlugins(PLF_ENGINE);
+    // Load core plugins
+    GetPluginAPI()->LoadPlugins(k_EPluginFlagEngine);
+  }
 };
 
-// Clean up Core module (always before 'SE_EndEngine'!)
-void ClassicsPatch_EndCore(void) {
-  // Save configuration properties
-  CCoreAPI::Props().Save();
+void ClassicsPatch_Shutdown(void)
+{
+  // Not running yet
+  ASSERT(_bClassicsPatchRunning);
+  if (!_bClassicsPatchRunning) return;
+  _bClassicsPatchRunning = false;
+  
+  // Various cleanups
+  {
+    // Save configuration properties
+    IConfig::global.Save();
 
-  // Release all loaded plugins
-  GetAPI()->ReleasePlugins(PLF_ALL);
+    // Release all loaded plugins
+    GetPluginAPI()->ReleasePlugins(k_EPluginFlagAll);
 
-  // Shutdown Steam API
-  GetSteamAPI()->End();
+    // Shutdown Steam API
+    GetSteamAPI()->End();
+  }
 
+  // Destroy timer handler
   _pTimer->RemHandler(_pTimerHandler);
   delete _pTimerHandler;
+
+  // Destroy interfaces
+  delete _pGameAPI;   _pGameAPI   = NULL;
+  delete _pPluginAPI; _pPluginAPI = NULL;
+  delete _pSteamAPI;  _pSteamAPI  = NULL;
 };

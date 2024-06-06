@@ -15,12 +15,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "StdH.h"
 
-#if CLASSICSPATCH_STEAM_API
+#if _PATCHCONFIG_STEAM_API
 
 // [Cecil] NOTE: Delay loaded, meaning that the library is actually hooked upon calling any function for the first time
 #pragma comment(lib, "../Extras/Steamworks/redistributable_bin/steam_api.lib")
 
-#endif // CLASSICSPATCH_STEAM_API
+#endif // _PATCHCONFIG_STEAM_API
 
 static INDEX steam_bAllowJoin = TRUE; // Allow friends to join the same game
 static INDEX steam_bUseWebBrowser = TRUE; // Allow using web browser in Steam overlay
@@ -65,23 +65,23 @@ void CSteamAPI::Reset(void) {
 
 // Initialize Steam API
 void CSteamAPI::Init(void) {
-#if CLASSICSPATCH_STEAM_API
+#if _PATCHCONFIG_STEAM_API
 
   // Skip for dedicated servers
-  if (GetAPI()->IsServerApp()) {
-    if (!CCoreAPI::Props().bSteamForServers) return;
+  if (ClassicsCore_IsServerApp()) {
+    if (!IConfig::global[k_EConfigProps_SteamForServers]) return;
 
   // Skip for tools
-  } else if (GetAPI()->IsEditorApp() || GetAPI()->IsModelerApp()) {
-    if (!CCoreAPI::Props().bSteamForTools) return;
+  } else if (ClassicsCore_IsEditorApp() || ClassicsCore_IsModelerApp()) {
+    if (!IConfig::global[k_EConfigProps_SteamForTools]) return;
 
   // Skip for unknown non-game applications
-  } else if (!GetAPI()->IsGameApp()) {
+  } else if (!ClassicsCore_IsGameApp()) {
     return;
   }
 
   // Steam disabled or already initialized
-  if (!CCoreAPI::Props().bSteamEnable || bInitialized) return;
+  if (!IConfig::global[k_EConfigProps_SteamEnable] || bInitialized) return;
   bInitialized = TRUE;
 
   // Check if the module is even available
@@ -135,12 +135,12 @@ void CSteamAPI::Init(void) {
 
 #else
   CPutString("Steam API is disabled in this build!\n");
-#endif // CLASSICSPATCH_STEAM_API
+#endif // _PATCHCONFIG_STEAM_API
 };
 
 // Shutdown Steam API
 void CSteamAPI::End(void) {
-#if CLASSICSPATCH_STEAM_API
+#if _PATCHCONFIG_STEAM_API
 
   if (!IsUsable()) return;
 
@@ -155,16 +155,16 @@ void CSteamAPI::End(void) {
   SteamAPI_Shutdown();
   CPutString("OK!\n");
 
-#endif // CLASSICSPATCH_STEAM_API
+#endif // _PATCHCONFIG_STEAM_API
 
   Reset();
 };
 
 // Check if Steam has been initialized and can be used
 BOOL CSteamAPI::IsUsable(void) {
-#if CLASSICSPATCH_STEAM_API
+#if _PATCHCONFIG_STEAM_API
   // Enabled and initialized correctly
-  return (CCoreAPI::Props().bSteamEnable && bInitialized && eApiState == k_ESteamAPIInitResult_OK);
+  return (IConfig::global[k_EConfigProps_SteamEnable] && bInitialized && eApiState == k_ESteamAPIInitResult_OK);
 
 #else
   return FALSE;
@@ -173,7 +173,7 @@ BOOL CSteamAPI::IsUsable(void) {
 
 // Interact with Steam once in a while
 void CSteamAPI::Update(void) {
-#if CLASSICSPATCH_STEAM_API
+#if _PATCHCONFIG_STEAM_API
 
   if (!IsUsable()) return;
 
@@ -193,7 +193,7 @@ void CSteamAPI::Update(void) {
   if (!_pNetwork->IsServer() && GetGameAPI()->IsHooked() && GetGameAPI()->IsGameOn()) {
     // Set address of the joined server
     CSymbolPtr piNetPort("net_iPort");
-    CTString strAddress(0, "%s:%d", GetGameAPI()->GetJoinAddress(), piNetPort.GetIndex());
+    CTString strAddress(0, "%s:%d", GetGameAPI()->JoinAddress(), piNetPort.GetIndex());
     GetSteamAPI()->SetJoinAddress(strAddress);
 
   } else {
@@ -210,12 +210,12 @@ void CSteamAPI::Update(void) {
     bScreenshotRequested = FALSE;
   }
 
-#endif // CLASSICSPATCH_STEAM_API
+#endif // _PATCHCONFIG_STEAM_API
 };
 
 // Set server address to be used in "Join game" option
 void CSteamAPI::SetJoinAddress(const CTString &strAddress) {
-#if CLASSICSPATCH_STEAM_API
+#if _PATCHCONFIG_STEAM_API
 
   if (!IsUsable()) return;
   STEAM_DEBUG2("CSteamAPI::SetJoinAddress(\"%s\") - ", strAddress);
@@ -242,14 +242,14 @@ void CSteamAPI::SetJoinAddress(const CTString &strAddress) {
   SteamFriends()->SetRichPresence("connect", strArgs);
   STEAM_DEBUG2("set to '%s'\n", strArgs);
 
-#endif // CLASSICSPATCH_STEAM_API
+#endif // _PATCHCONFIG_STEAM_API
 };
 
 // Activate Steam Overlay web browser directly to the specified URL
 BOOL CSteamAPI::OpenWebPage(const char *strURL) {
   if (!steam_bUseWebBrowser || !IsUsable()) return FALSE;
 
-#if CLASSICSPATCH_STEAM_API
+#if _PATCHCONFIG_STEAM_API
   SteamFriends()->ActivateGameOverlayToWebPage(strURL);
   STEAM_DEBUG1("CSteamAPI::OpenWebPage(\"%s\") - opened webpage\n", strURL);
 #endif
@@ -260,7 +260,7 @@ BOOL CSteamAPI::OpenWebPage(const char *strURL) {
 // Set drawport that will be used for making Steam screenshots from within the game
 // This makes Steam send screenshot requests instead of capturing the entire game window automatically
 void CSteamAPI::SetScreenshotHook(CDrawPort *pdpScreenshotSurface) {
-#if CLASSICSPATCH_STEAM_API
+#if _PATCHCONFIG_STEAM_API
 
   if (!IsUsable()) return;
   _pdpScreenshot = pdpScreenshotSurface;
@@ -276,12 +276,12 @@ void CSteamAPI::SetScreenshotHook(CDrawPort *pdpScreenshotSurface) {
       (bHookScreenshots ? "enabled" : "disabled"));
   }
 
-#endif // CLASSICSPATCH_STEAM_API
+#endif // _PATCHCONFIG_STEAM_API
 };
 
 // Make a custom Steam screenshot by manually writing a bitmap from image info
 void CSteamAPI::WriteScreenshot(CImageInfo &ii) {
-#if CLASSICSPATCH_STEAM_API
+#if _PATCHCONFIG_STEAM_API
 
   if (!IsUsable()) return;
   STEAM_DEBUG1("CSteamAPI::WriteScreenshot() - ");
@@ -321,12 +321,12 @@ void CSteamAPI::WriteScreenshot(CImageInfo &ii) {
 
   STEAM_DEBUG1("OK: Wrote screenshot\n");
 
-#endif // CLASSICSPATCH_STEAM_API
+#endif // _PATCHCONFIG_STEAM_API
 };
 
 // Force Steam to take a screenshot (equivalent to manually pressing a screenshot button, e.g. F12)
 void CSteamAPI::TriggerScreenshot(void) {
-#if CLASSICSPATCH_STEAM_API
+#if _PATCHCONFIG_STEAM_API
 
   if (!IsUsable()) return;
   STEAM_DEBUG1("CSteamAPI::TriggerScreenshot()\n");
@@ -336,7 +336,7 @@ void CSteamAPI::TriggerScreenshot(void) {
 #endif
 };
 
-#if CLASSICSPATCH_STEAM_API
+#if _PATCHCONFIG_STEAM_API
 
 // Update Steam callbacks (should be called each frame/timer tick)
 void CSteamAPI::UpdateCallbacks(void) {
@@ -393,4 +393,4 @@ void CSteamAPI::OnScreenshotReady(ScreenshotReady_t *pCallback) {
   STEAM_DEBUG1("CSteamAPI::OnScreenshotReady(%s) - %s\n", strHandle, strResult);
 };
 
-#endif // CLASSICSPATCH_STEAM_API
+#endif // _PATCHCONFIG_STEAM_API

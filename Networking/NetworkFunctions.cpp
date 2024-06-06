@@ -23,7 +23,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Initialize networking
 void INetwork::Initialize(void) {
   // Modeler applications don't need networking
-  if (GetAPI()->IsModelerApp()) return;
+  if (ClassicsCore_IsModelerApp()) return;
+
+  // Load client log
+  IClientLogging::LoadLog();
 
   // Server commands
   _pShell->DeclareSymbol("user CTString ser_strAdminPassword;",    &ser_strAdminPassword);
@@ -38,13 +41,13 @@ void INetwork::Initialize(void) {
   // Register commands for packet processing
   IProcessPacket::RegisterCommands();
 
-#if CLASSICSPATCH_NEW_QUERY
+#if _PATCHCONFIG_NEW_QUERY
   // Initialize query manager
   extern void InitQuery(void);
   InitQuery();
 #endif
 
-#if CLASSICSPATCH_EXT_PACKETS
+#if _PATCHCONFIG_EXT_PACKETS
   // Register extension packets
   CExtPacket::RegisterExtPackets();
 #endif
@@ -55,10 +58,10 @@ void INetwork::Initialize(void) {
   // Initialize voting system
   IVotingSystem::Initialize();
 
-  _aActiveClients.New(CORE_MAX_SERVER_CLIENTS);
+  _aActiveClients.New(ICore::MAX_SERVER_CLIENTS);
 
-#if CLASSICSPATCH_GUID_MASKING
-  IProcessPacket::_aClientChecks.New(CORE_MAX_GAME_PLAYERS);
+#if _PATCHCONFIG_GUID_MASKING
+  IProcessPacket::_aClientChecks.New(ICore::MAX_GAME_PLAYERS);
 #endif
 
   extern void InitHttp(void);
@@ -66,7 +69,7 @@ void INetwork::Initialize(void) {
 
   // Make sure there is enough space for local players
   _pNetwork->ga_aplsPlayers.Clear();
-  _pNetwork->ga_aplsPlayers.New(CORE_MAX_LOCAL_PLAYERS);
+  _pNetwork->ga_aplsPlayers.New(ICore::MAX_LOCAL_PLAYERS);
 };
 
 // Handle packets coming from a client
@@ -114,7 +117,7 @@ BOOL INetwork::ServerHandle(CMessageDispatcher *pmd, INDEX iClient, CNetworkMess
       return IProcessPacket::OnChatInRequest(iClient, nmMessage);
   }
 
-#if CLASSICSPATCH_EXT_PACKETS
+#if _PATCHCONFIG_EXT_PACKETS
 
   // Let CServer::Handle process packets of other types
   if (ePacket != PCK_EXTENSION) return TRUE;
@@ -157,13 +160,13 @@ BOOL INetwork::ServerHandle(CMessageDispatcher *pmd, INDEX iClient, CNetworkMess
   // Let CServer::Handle process packets of other types
   return TRUE;
 
-#endif // CLASSICSPATCH_EXT_PACKETS
+#endif // _PATCHCONFIG_EXT_PACKETS
 };
 
 // Handle packets coming from a server
 // If output is TRUE, it will pass packets into engine's CSessionState::ProcessGameStreamBlock()
 BOOL INetwork::ClientHandle(CSessionState *pses, CNetworkMessage &nmMessage) {
-#if CLASSICSPATCH_EXT_PACKETS
+#if _PATCHCONFIG_EXT_PACKETS
 
   // Let default methods handle packets of other types
   if (nmMessage.GetType() != PCK_EXTENSION) return TRUE;
@@ -206,7 +209,7 @@ BOOL INetwork::ClientHandle(CSessionState *pses, CNetworkMessage &nmMessage) {
   // Let CSessionState::ProcessGameStreamBlock process packets of other types
   return TRUE;
 
-#endif // CLASSICSPATCH_EXT_PACKETS
+#endif // _PATCHCONFIG_EXT_PACKETS
 };
 
 // Send disconnect message to a client (CServer::SendDisconnectMessage reimplementation)

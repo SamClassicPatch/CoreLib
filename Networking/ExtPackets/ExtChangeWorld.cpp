@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <Extras/XGizmo/Vanilla/EntityEvents.h>
 
-#if CLASSICSPATCH_EXT_PACKETS
+#if _PATCHCONFIG_EXT_PACKETS
 
 void CExtChangeLevel::Write(CNetworkMessage &nm) {
   // Store up to 255 characters
@@ -92,4 +92,4 @@ void CExtChangeWorld::Process(void) {
   _pNetwork->ChangeLevel(strWorld, FALSE, 0);
 };
 
-#endif // CLASSICSPATCH_EXT_PACKETS
+#endif // _PATCHCONFIG_EXT_PACKETS
