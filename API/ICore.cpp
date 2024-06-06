@@ -183,8 +183,8 @@ const PatchVerString_t &ClassicsCore_GetVersionName(void) {
     MakeVersionString(_strVer, ClassicsCore_GetVersion());
 
     // Append dev build tag
-    #if CORE_DEV_BUILD
-      strcat(_strVer, "-dev");
+    #if CORE_PRERELEASE_BUILD > 0
+      sprintf(_strVer, "%s-pre%d", _strVer, CORE_PRERELEASE_BUILD);
     #endif
   }
 
