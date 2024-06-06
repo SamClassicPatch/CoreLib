@@ -255,8 +255,10 @@ static void PatchInfo(void) {
     "\n- Compiler version: %d"
     "\n- Engine version: %s"
     "\n- Patch version: %s"
+    "\n- API version: %s"
     "\n\n(c) Dreamy Cecil, 2022-2024\n",
-  _MSC_FULL_VER, _SE_VER_STRING, ClassicsCore_GetVersionName());
+  _MSC_FULL_VER, _SE_VER_STRING, ClassicsCore_GetVersionName(),
+  CLASSICSPATCH_STRINGIFY(CLASSICSPATCH_INTERFACE_VERSION));
 
   CPutString(strInfo);
 };
