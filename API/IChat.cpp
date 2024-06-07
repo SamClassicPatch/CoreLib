@@ -27,8 +27,24 @@ CTString ser_strCommandPrefix = "!";
 CTString ser_strAdminPassword = "";
 CTString ser_strOperatorPassword = "";
 
+// Chat command function holder
+struct ChatCommand_t {
+  BOOL bPure;
+
+  union {
+    FEngineChatCommand pEngineHandler;
+    FPureChatCommand pPureHandler;
+  };
+
+  ChatCommand_t() : bPure(FALSE), pEngineHandler(NULL) {};
+
+  inline bool operator==(const ChatCommand_t &other) const {
+    return bPure == other.bPure && pEngineHandler == other.pEngineHandler;
+  };
+};
+
 // List of chat commands
-typedef se1::map<CTString, FChatCommand> CChatCommands;
+typedef se1::map<CTString, ChatCommand_t> CChatCommands;
 static CChatCommands _mapChatCommands;
 
 // Extract command name from the string
@@ -86,7 +102,16 @@ BOOL HandleChatCommand(INDEX iClient, const CTString &strCommand)
   if (it != _mapChatCommands.end()) {
     // Execute it
     CTString strOut = "";
-    BOOL bHandled = (*it->second)(strOut, iClient, strArguments);
+    BOOL bHandled;
+
+    if (it->second.bPure) {
+      ChatCommandResultStr strBufferOut = { 0 };
+      bHandled = it->second.pPureHandler(strBufferOut, iClient, strArguments.str_String);
+      strOut = strBufferOut;
+
+    } else {
+      bHandled = it->second.pEngineHandler(strOut, iClient, strArguments);
+    }
 
     // Process as a normal chat message upon failure
     if (!bHandled) {
@@ -104,9 +129,18 @@ BOOL HandleChatCommand(INDEX iClient, const CTString &strCommand)
   return TRUE;
 };
 
-void ClassicsChat_RegisterCommand(const char *strName, FChatCommand pFunction)
+void ClassicsChat_RegisterCommand(const char *strName, FEngineChatCommand pFunction)
 {
-  _mapChatCommands[strName] = pFunction;
+  ChatCommand_t &com = _mapChatCommands[strName];
+  com.bPure = FALSE;
+  com.pEngineHandler = pFunction;
+};
+
+void ClassicsChat_RegisterCommandPure(const char *strName, FPureChatCommand pFunction)
+{
+  ChatCommand_t &com = _mapChatCommands[strName];
+  com.bPure = TRUE;
+  com.pPureHandler = pFunction;
 };
 
 void ClassicsChat_UnregisterCommand(const char *strName)
