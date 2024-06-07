@@ -264,20 +264,6 @@ CListHead &CGameAPI::GetActions(CControls *pctrl) {
   return pctrl->ctrl_lhButtonActions;
 };
 
-void CGameAPI::ResetStartPlayers(void)
-{
-  for (INDEX iPlayer = 0; iPlayer < GetLocalPlayerCount(); iPlayer++) {
-    SetStartPlayer(iPlayer, -1);
-  }
-};
-
-void CGameAPI::SetStartPlayersFromMenuPlayers(void)
-{
-  for (INDEX iPlayer = 0; iPlayer < GetLocalPlayerCount(); iPlayer++) {
-    SetStartPlayer(iPlayer, GetMenuPlayer(iPlayer));
-  }
-};
-
 bool CGameAPI::IsLocalPlayerActive(int iPlayer)
 {
   UBYTE *pLocalPlayer = aLocalPlayers + (lpOffsets.ctSize * iPlayer);
@@ -286,10 +272,24 @@ bool CGameAPI::IsLocalPlayerActive(int iPlayer)
   return !!*pbActive;
 };
 
-int CGameAPI::GetLocalPlayerIndex(int iPlayer)
+int CGameAPI::GetProfileFromLocalPlayer(int iPlayer)
 {
   UBYTE *pLocalPlayer = aLocalPlayers + (lpOffsets.ctSize * iPlayer);
-  INDEX *piPlayer = (INDEX *)(pLocalPlayer + lpOffsets.slPlayer);
+  INDEX *piProfile = (INDEX *)(pLocalPlayer + lpOffsets.slPlayer);
 
-  return *piPlayer;
+  return *piProfile;
+};
+
+void CGameAPI::ResetStartProfiles(void)
+{
+  for (INDEX iPlayer = 0; iPlayer < GetLocalPlayerCount(); iPlayer++) {
+    SetProfileForStart(iPlayer, -1);
+  }
+};
+
+void CGameAPI::SetStartProfilesFromMenuProfiles(void)
+{
+  for (INDEX iPlayer = 0; iPlayer < GetLocalPlayerCount(); iPlayer++) {
+    SetProfileForStart(iPlayer, GetProfileForMenu(iPlayer));
+  }
 };

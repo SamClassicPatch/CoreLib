@@ -182,9 +182,6 @@ class CORE_API CGameAPI : public IClassicsGame {
 
     virtual int GetGameMode(int i) { return sp_aiGameModes[i]; };
 
-    virtual int GetLocalPlayerCount(void) { return ctLocalPlayers; };
-    virtual int GetProfileCount(void) { return ctPlayerProfiles; };
-
     virtual int GetConState(void) { return *piConsoleState; };
     virtual void SetConState(int iState) {
       // [Cecil] Rev: Force console to become closed (CS_TURNINGOFF -> CS_OFF)
@@ -198,8 +195,14 @@ class CORE_API CGameAPI : public IClassicsGame {
     virtual int GetCompState(void) { return *piComputerState; };
     virtual void SetCompState(int iState) { *piComputerState = iState; };
 
-    virtual int GetPlayerForSP(void) { return *piSinglePlayer; };
-    virtual void SetPlayerForSP(int iPlayer) { *piSinglePlayer = iPlayer; };
+    virtual bool IsGameOn(void) { return !!*pbGameOn; };
+    virtual void SetGameState(bool bState) { *pbGameOn = bState; };
+
+    virtual bool IsMenuOn(void) { return !!*pbMenuOn; };
+    virtual void SetMenuState(bool bState) { *pbMenuOn = bState; };
+
+    virtual bool GetFirstLoading(void) { return !!*pbFirstLoading; };
+    virtual void SetFirstLoading(bool bState) { *pbFirstLoading = bState; };
 
     virtual int GetMenuSplitCfg(void) { return *piMenuSplitCfg; };
     virtual void SetMenuSplitCfg(int iConfiguration) { *piMenuSplitCfg = iConfiguration; };
@@ -210,25 +213,23 @@ class CORE_API CGameAPI : public IClassicsGame {
     virtual int GetCurrentSplitCfg(void) { return *piCurrentSplitCfg; };
     virtual void SetCurrentSplitCfg(int iConfiguration) { *piCurrentSplitCfg = iConfiguration; };
 
-    virtual bool IsGameOn(void) { return !!*pbGameOn; };
-    virtual void SetGameState(bool bState) { *pbGameOn = bState; };
+    virtual int GetLocalPlayerCount(void) { return ctLocalPlayers; };
+    virtual int GetProfileCount(void) { return ctPlayerProfiles; };
 
-    virtual bool IsMenuOn(void) { return !!*pbMenuOn; };
-    virtual void SetMenuState(bool bState) { *pbMenuOn = bState; };
-
-    virtual bool GetFirstLoading(void) { return !!*pbFirstLoading; };
-    virtual void SetFirstLoading(bool bState) { *pbFirstLoading = bState; };
-
-    virtual int GetMenuPlayer(int i) { return aiMenuLocalPlayers[i]; };
-    virtual void SetMenuPlayer(int i, int iPlayer) { aiMenuLocalPlayers[i] = iPlayer; };
-
-    virtual int GetStartPlayer(int i) { return aiStartLocalPlayers[i]; };
-    virtual void SetStartPlayer(int i, int iPlayer) { aiStartLocalPlayers[i] = iPlayer; };
-
-    virtual void ResetStartPlayers(void);
-    virtual void SetStartPlayersFromMenuPlayers(void);
     virtual bool IsLocalPlayerActive(int iPlayer);
-    virtual int GetLocalPlayerIndex(int iPlayer);
+    virtual int GetProfileFromLocalPlayer(int iPlayer);
+
+    virtual int GetProfileForSP(void) { return *piSinglePlayer; };
+    virtual void SetProfileForSP(int iProfile) { *piSinglePlayer = iProfile; };
+
+    virtual int GetProfileForMenu(int iPlayer) { return aiMenuLocalPlayers[iPlayer]; };
+    virtual void SetProfileForMenu(int iPlayer, int iProfile) { aiMenuLocalPlayers[iPlayer] = iProfile; };
+
+    virtual int GetProfileForStart(int iPlayer) { return aiStartLocalPlayers[iPlayer]; };
+    virtual void SetProfileForStart(int iPlayer, int iProfile) { aiStartLocalPlayers[iPlayer] = iProfile; };
+
+    virtual void ResetStartProfiles(void);
+    virtual void SetStartProfilesFromMenuProfiles(void);
 };
 
 // Full interface getter
