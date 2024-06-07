@@ -116,6 +116,7 @@ IClassicsPlugins *ClassicsPlugins(void) { return _pPluginAPI; };
 
 // Non-physical interfaces
 namespace IInitAPI {
+  extern void Chat(void);
   extern void Config(void);
   extern void Core(void);
   extern void Hooks(void);
@@ -163,6 +164,7 @@ void ClassicsPatch_Init(void)
   }
 
   // Initialize interfaces
+  IInitAPI::Chat();
   IInitAPI::Config();
   IInitAPI::Core();
   IInitAPI::Hooks();

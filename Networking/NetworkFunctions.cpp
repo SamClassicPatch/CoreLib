@@ -29,14 +29,10 @@ void INetwork::Initialize(void) {
   IClientLogging::LoadLog();
 
   // Server commands
-  _pShell->DeclareSymbol("user CTString ser_strAdminPassword;",    &ser_strAdminPassword);
-  _pShell->DeclareSymbol("user CTString ser_strOperatorPassword;", &ser_strOperatorPassword);
-
   _pShell->DeclareSymbol("persistent user INDEX ser_bEnableAntiFlood;",      &ser_bEnableAntiFlood);
   _pShell->DeclareSymbol("persistent user INDEX ser_iPacketFloodThreshold;", &ser_iPacketFloodThreshold);
   _pShell->DeclareSymbol("persistent user INDEX ser_iMaxMessagesPerSecond;", &ser_iMaxMessagesPerSecond);
   _pShell->DeclareSymbol("persistent user INDEX ser_iMaxPlayersPerClient;",  &ser_iMaxPlayersPerClient);
-  _pShell->DeclareSymbol("persistent user CTString ser_strCommandPrefix;",   &ser_strCommandPrefix);
 
   // Register commands for packet processing
   IProcessPacket::RegisterCommands();
@@ -51,9 +47,6 @@ void INetwork::Initialize(void) {
   // Register extension packets
   CExtPacket::RegisterExtPackets();
 #endif
-
-  // Register default chat commands
-  IChatCommands::RegisterDefaultCommands();
 
   // Initialize voting system
   IVotingSystem::Initialize();

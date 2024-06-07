@@ -20,7 +20,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #pragma once
 #endif
 
-#include "ChatCommands.h"
 #include "VoteTypes.h"
 
 CORE_API extern INDEX ser_bVotingSystem;

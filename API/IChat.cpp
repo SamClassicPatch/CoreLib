@@ -15,11 +15,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "StdH.h"
 
-#include "ChatCommands.h"
 #include "Networking/NetworkFunctions.h"
-#include "StockCommands.h"
-#include "VotingSystem.h"
-#include "ClientLogging.h"
+#include "Networking/Modules/StockCommands.h"
+#include "Networking/Modules/VotingSystem.h"
+#include "Networking/Modules/ClientLogging.h"
 
 // Prefix that the chat commands start with
 CTString ser_strCommandPrefix = "!";
@@ -29,7 +28,8 @@ CTString ser_strAdminPassword = "";
 CTString ser_strOperatorPassword = "";
 
 // List of chat commands
-CDynamicContainer<SChatCommand> _cChatCommands;
+typedef se1::map<CTString, FChatCommand> CChatCommands;
+static CChatCommands _mapChatCommands;
 
 // Extract command name from the string
 static INDEX ExtractCommand(CTString &strCommand) {
@@ -56,7 +56,7 @@ static INDEX ExtractCommand(CTString &strCommand) {
 };
 
 // Interface for chat commands
-BOOL IChatCommands::HandleCommand(INDEX iClient, const CTString &strCommand)
+BOOL HandleChatCommand(INDEX iClient, const CTString &strCommand)
 {
   // Copy full command for extracting arguments
   CTString strArguments = strCommand;
@@ -80,53 +80,48 @@ BOOL IChatCommands::HandleCommand(INDEX iClient, const CTString &strCommand)
     strArguments = "";
   }
 
-  // Go through the commands
-  FOREACHINDYNAMICCONTAINER(_cChatCommands, SChatCommand, itcom)
-  {
-    // Found matching command
-    if (itcom->strName == strCommandName) {
-      // Execute it
-      CTString strOut = "";
-      BOOL bHandled = itcom->pHandler(strOut, iClient, strArguments);
+  // Find desired command
+  CChatCommands::const_iterator it = _mapChatCommands.find(strCommandName);
 
-      // Process as a normal chat message upon failure
-      if (!bHandled) {
-        return TRUE;
-      }
+  if (it != _mapChatCommands.end()) {
+    // Execute it
+    CTString strOut = "";
+    BOOL bHandled = (*it->second)(strOut, iClient, strArguments);
 
-      // Reply to the client with the inputted command
-      const CTString strReply = strCommand + "\n" + strOut;
-      INetwork::SendChatToClient(iClient, "Chat command", strReply);
-
-      // Don't process as a chat message
-      return FALSE;
+    // Process as a normal chat message upon failure
+    if (!bHandled) {
+      return TRUE;
     }
+
+    // Reply to the client with the inputted command
+    const CTString strReply = strCommand + "\n" + strOut;
+    INetwork::SendChatToClient(iClient, "Chat command", strReply);
+
+    // Don't process as a chat message
+    return FALSE;
   }
 
   return TRUE;
 };
 
-// Register a new chat command
-void IChatCommands::Register(const char *strName, SChatCommand::CCommandFunc pFunction)
+void ClassicsChat_RegisterCommand(const char *strName, FChatCommand pFunction)
 {
-  // Add new command to the container
-  _cChatCommands.Add(new SChatCommand(strName, pFunction));
+  _mapChatCommands[strName] = pFunction;
 };
 
-// Unregister a chat command by its name
-void IChatCommands::Unregister(const char *strName)
+void ClassicsChat_UnregisterCommand(const char *strName)
 {
-  FOREACHINDYNAMICCONTAINER(_cChatCommands, SChatCommand, itcom)
-  {
-    // Matching command
-    if (itcom->strName == strName) {
-      _cChatCommands.Remove(itcom);
-      delete &*itcom;
+  CChatCommands::const_iterator itCommand = _mapChatCommands.find(strName);
 
-      return;
-    }
+  if (itCommand != _mapChatCommands.end()) {
+    _mapChatCommands.remove(*itCommand);
   }
 };
+
+extern void PrintClientLog(CTString &strResult, INDEX iIdentity, INDEX iCharacter);
+
+// Interface initialization
+namespace IInitAPI {
 
 // Output log of a specific identity and optionally a character
 static void ClientLogInConsole(SHELL_FUNC_ARGS) {
@@ -135,8 +130,6 @@ static void ClientLogInConsole(SHELL_FUNC_ARGS) {
   INDEX iCharacter = NEXT_ARG(INDEX);
 
   CTString strLog;
-
-  extern void PrintClientLog(CTString &strResult, INDEX iIdentity, INDEX iCharacter);
   PrintClientLog(strLog, iIdentity, iCharacter);
 
   CPutString(strLog + "\n");
@@ -182,27 +175,31 @@ static void ClientLogLoad(void) {
   IClientLogging::LoadLog();
 };
 
-// Register default chat commands
-void IChatCommands::RegisterDefaultCommands(void) {
-  Register("map",   &IStockCommands::CurrentMap);
-  Register("login", &IStockCommands::PasswordLogin);
-  Register("rcon",  &IStockCommands::RemoteConsole);
-  Register("save",  &IStockCommands::RemoteSave);
-  Register("log",   &IStockCommands::ClientLog);
-  Register("ban",   &IStockCommands::BanClient);
-  Register("mute",  &IStockCommands::MuteClient);
-  Register("kick",  &IStockCommands::KickClient);
+void Chat(void) {
+  _pShell->DeclareSymbol("persistent user CTString ser_strCommandPrefix;", &ser_strCommandPrefix);
+  _pShell->DeclareSymbol("user CTString ser_strAdminPassword;", &ser_strAdminPassword);
+  _pShell->DeclareSymbol("user CTString ser_strOperatorPassword;", &ser_strOperatorPassword);
+
+  // Register default chat commands
+  ClassicsChat_RegisterCommand("map",   &IStockCommands::CurrentMap);
+  ClassicsChat_RegisterCommand("login", &IStockCommands::PasswordLogin);
+  ClassicsChat_RegisterCommand("rcon",  &IStockCommands::RemoteConsole);
+  ClassicsChat_RegisterCommand("save",  &IStockCommands::RemoteSave);
+  ClassicsChat_RegisterCommand("log",   &IStockCommands::ClientLog);
+  ClassicsChat_RegisterCommand("ban",   &IStockCommands::BanClient);
+  ClassicsChat_RegisterCommand("mute",  &IStockCommands::MuteClient);
+  ClassicsChat_RegisterCommand("kick",  &IStockCommands::KickClient);
 
   // Voting
   if (ClassicsCore_IsServerApp()) {
-    Register("voteskip", &IVotingSystem::Chat::VoteSkip);
+    ClassicsChat_RegisterCommand("voteskip", &IVotingSystem::Chat::VoteSkip);
   }
 
-  Register("votemap",  &IVotingSystem::Chat::VoteMap);
-  Register("votekick", &IVotingSystem::Chat::VoteKick);
-  Register("votemute", &IVotingSystem::Chat::VoteMute);
-  Register("y", &IVotingSystem::Chat::VoteYes);
-  Register("n", &IVotingSystem::Chat::VoteNo);
+  ClassicsChat_RegisterCommand("votemap",  &IVotingSystem::Chat::VoteMap);
+  ClassicsChat_RegisterCommand("votekick", &IVotingSystem::Chat::VoteKick);
+  ClassicsChat_RegisterCommand("votemute", &IVotingSystem::Chat::VoteMute);
+  ClassicsChat_RegisterCommand("y", &IVotingSystem::Chat::VoteYes);
+  ClassicsChat_RegisterCommand("n", &IVotingSystem::Chat::VoteNo);
 
   // Local interaction with the client log
   _pShell->DeclareSymbol("user void ClientLog(INDEX, INDEX);", &ClientLogInConsole);
@@ -210,3 +207,5 @@ void IChatCommands::RegisterDefaultCommands(void) {
   _pShell->DeclareSymbol("user void ClientLogSave(void);", &ClientLogSave);
   _pShell->DeclareSymbol("user void ClientLogLoad(void);", &ClientLogLoad);
 };
+
+}; // namespace

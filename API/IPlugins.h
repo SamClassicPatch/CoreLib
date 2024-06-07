@@ -21,7 +21,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 
 #include <CoreLib/Modules/PluginModule.h>
-#include <CoreLib/Networking/Modules/ChatCommands.h>
 
 // Pointers to plugin interfaces
 typedef CDynamicContainer<class IAbstractEvents> CPluginInterfaces;

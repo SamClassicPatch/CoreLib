@@ -23,6 +23,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="API\IChat.h" />
     <ClInclude Include="API\ICore.h" />
     <ClInclude Include="API\IHooks.h" />
     <ClInclude Include="API\IConfig.h" />
@@ -65,7 +66,6 @@
     <ClInclude Include="Networking\MessageProcessing.h" />
     <ClInclude Include="Networking\Modules\ActiveClients.h" />
     <ClInclude Include="Networking\Modules\AntiFlood.h" />
-    <ClInclude Include="Networking\Modules\ChatCommands.h" />
     <ClInclude Include="Networking\Modules\ClientIdentity.h" />
     <ClInclude Include="Networking\Modules\ClientLogging.h" />
     <ClInclude Include="Networking\Modules\ClientRestrictions.h" />
@@ -86,6 +86,7 @@
     <ClInclude Include="StdH.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="API\IChat.cpp" />
     <ClCompile Include="API\IHooks.cpp" />
     <ClCompile Include="API\IGame.cpp" />
     <ClCompile Include="API\ICore.cpp" />
@@ -123,7 +124,6 @@
     <ClCompile Include="Networking\MessageProcessing.cpp" />
     <ClCompile Include="Networking\Modules\ActiveClients.cpp" />
     <ClCompile Include="Networking\Modules\AntiFlood.cpp" />
-    <ClCompile Include="Networking\Modules\ChatCommands.cpp" />
     <ClCompile Include="Networking\Modules\ClientIdentity.cpp" />
     <ClCompile Include="Networking\Modules\ClientLogging.cpp" />
     <ClCompile Include="Networking\Modules\ClientRestrictions.cpp" />

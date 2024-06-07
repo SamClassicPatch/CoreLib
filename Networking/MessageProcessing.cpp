@@ -928,7 +928,7 @@ BOOL IProcessPacket::OnChatInRequest(INDEX iClient, CNetworkMessage &nmMessage)
 
   // Handle chat command if the message starts with a command prefix
   if (strMessage.HasPrefix(ser_strCommandPrefix)) {
-    return IChatCommands::HandleCommand(iClient, strMessage);
+    return HandleChatCommand(iClient, strMessage);
   }
 
   return TRUE;

@@ -13,16 +13,21 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#ifndef CECIL_INCL_NETWORKMODULES_H
-#define CECIL_INCL_NETWORKMODULES_H
+#ifndef CECIL_INCL_CHATINTERFACE_H
+#define CECIL_INCL_CHATINTERFACE_H
 
 #ifdef PRAGMA_ONCE
   #pragma once
 #endif
 
-#include "Modules/AntiFlood.h"
-#include "Modules/SplitScreenClients.h"
-#include "Modules/ClientLogging.h"
-#include "Modules/VotingSystem.h"
+// Prefix that the chat commands start with
+CORE_API extern CTString ser_strCommandPrefix;
+
+// Passwords for authorizing as administrator and operator
+CORE_API extern CTString ser_strAdminPassword;
+CORE_API extern CTString ser_strOperatorPassword;
+
+// Handle chat command from a client
+CORE_API BOOL HandleChatCommand(INDEX iClient, const CTString &strCommand);
 
 #endif

@@ -17,7 +17,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "StockCommands.h"
 #include "Networking/NetworkFunctions.h"
-#include "ChatCommands.h"
 #include "ClientLogging.h"
 
 // Parse command as a normal chat message for clients without administrator rights

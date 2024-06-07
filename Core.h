@@ -80,6 +80,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 
 // C++ API
+#include <CoreLib/API/IChat.h>
 #include <CoreLib/API/IConfig.h>
 #include <CoreLib/API/ICore.h>
 #include <CoreLib/API/IGame.h>
