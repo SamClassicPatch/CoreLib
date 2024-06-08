@@ -228,9 +228,6 @@
     <ClInclude Include="Base\ObserverCamera.h">
       <Filter>Header Files\Base headers</Filter>
     </ClInclude>
-    <ClInclude Include="API\PluginEvents.h">
-      <Filter>Header Files\API headers</Filter>
-    </ClInclude>
     <ClInclude Include="API\ICore.h">
       <Filter>Header Files\API headers</Filter>
     </ClInclude>

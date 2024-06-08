@@ -120,8 +120,8 @@ BOOL INetwork::ServerHandle(CMessageDispatcher *pmd, INDEX iClient, CNetworkMess
   INetDecompress::Integer(nmMessage, ulType);
 
   // Let plugins handle packets
-  FOREACHPLUGINHANDLER(GetPluginAPI()->cNetworkEvents, INetworkEvents, pEvents) {
-    if ((IAbstractEvents *)pEvents == NULL) continue;
+  FOREACHPLUGINHANDLER(k_EPluginEventType_Network, INetworkEvents, pEvents) {
+    if (pEvents == NULL) continue;
 
     // Handle packet through this plugin handler
     if (pEvents->OnServerPacket(nmMessage, ulType)) {
@@ -169,8 +169,8 @@ BOOL INetwork::ClientHandle(CSessionState *pses, CNetworkMessage &nmMessage) {
   INetDecompress::Integer(nmMessage, ulType);
 
   // Let plugins handle packets
-  FOREACHPLUGINHANDLER(GetPluginAPI()->cNetworkEvents, INetworkEvents, pEvents) {
-    if ((IAbstractEvents *)pEvents == NULL) continue;
+  FOREACHPLUGINHANDLER(k_EPluginEventType_Network, INetworkEvents, pEvents) {
+    if (pEvents == NULL) continue;
 
     // Handle packet through this plugin handler
     if (pEvents->OnClientPacket(nmMessage, ulType)) {

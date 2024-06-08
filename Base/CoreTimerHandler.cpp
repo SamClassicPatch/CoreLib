@@ -58,8 +58,8 @@ void CCoreTimerHandler::OnTick(void)
   CClientRestriction::UpdateExpirations();
 
   // Call per-tick function for each plugin
-  FOREACHPLUGINHANDLER(GetPluginAPI()->cTimerEvents, ITimerEvents, pEvents) {
-    if ((IAbstractEvents *)pEvents == NULL) continue;
+  FOREACHPLUGINHANDLER(k_EPluginEventType_Timer, ITimerEvents, pEvents) {
+    if (pEvents == NULL) continue;
 
     pEvents->OnTick();
   }
@@ -72,8 +72,8 @@ void CCoreTimerHandler::OnSecond(void)
   IAntiFlood::ResetCounters();
 
   // Call per-second function for each plugin
-  FOREACHPLUGINHANDLER(GetPluginAPI()->cTimerEvents, ITimerEvents, pEvents) {
-    if ((IAbstractEvents *)pEvents == NULL) continue;
+  FOREACHPLUGINHANDLER(k_EPluginEventType_Timer, ITimerEvents, pEvents) {
+    if (pEvents == NULL) continue;
 
     pEvents->OnSecond();
   }

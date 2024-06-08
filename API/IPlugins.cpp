@@ -451,3 +451,44 @@ void CPluginSymbol::Register(const char *strSymbolName, const char *strPreFunc, 
     }
   }
 };
+
+void ClassicsPlugins_RegisterEvents(IAbstractEvents *pEvents)
+{
+  EPluginEventType eType = pEvents->GetType();
+
+  if (eType < 0 || eType >= k_EPluginEventType_Max) {
+    ASSERTALWAYS("Cannot register plugin events due to invalid plugin event type!");
+    return;
+  }
+
+  int &iHandler = pEvents->m_iHandler;
+  CPluginInterfaces &cont = GetPluginAPI()->aHandlerContainers[eType];
+
+  // Restore the pointer if it has a dedicated slot
+  if (iHandler != -1) {
+    cont.sa_Array[iHandler] = pEvents;
+
+  // Add to handlers if it's not there
+  } else if (!cont.IsMember(pEvents)) {
+    iHandler = cont.Count();
+    cont.Add(pEvents);
+
+  // Weird edge case with the pointer in the container but with an invalid index
+  } else {
+    ASSERT(FALSE);
+    iHandler = cont.GetIndex(pEvents);
+  }
+};
+
+void ClassicsPlugins_UnregisterEvents(IAbstractEvents *pEvents)
+{
+  EPluginEventType eType = pEvents->GetType();
+  if (eType < 0 || eType >= k_EPluginEventType_Max) return;
+
+  int &iHandler = pEvents->m_iHandler;
+  CPluginInterfaces &cont = GetPluginAPI()->aHandlerContainers[eType];
+
+  // Remove the pointer from the dedicated slot
+  ASSERT(iHandler != -1);
+  cont.sa_Array[iHandler] = NULL;
+};

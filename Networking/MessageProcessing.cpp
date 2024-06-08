@@ -531,8 +531,8 @@ void IProcessPacket::OnPlayerConnectRequest(INDEX iClient, CNetworkMessage &nmMe
     INDEX iNewPlayer = pplbNew->plb_Index;
 
     // Let plugins handle characters
-    FOREACHPLUGINHANDLER(GetPluginAPI()->cPacketEvents, IPacketEvents, pEvents) {
-      if ((IAbstractEvents *)pEvents == NULL) continue;
+    FOREACHPLUGINHANDLER(k_EPluginEventType_Packet, IPacketEvents, pEvents) {
+      if (pEvents == NULL) continue;
 
       pEvents->OnCharacterConnect(iClient, pcCharacter);
     }
@@ -654,8 +654,8 @@ void IProcessPacket::OnCharacterChangeRequest(INDEX iClient, CNetworkMessage &nm
   }
 
   // Let plugins handle characters
-  FOREACHPLUGINHANDLER(GetPluginAPI()->cPacketEvents, IPacketEvents, pEvents) {
-    if ((IAbstractEvents *)pEvents == NULL) continue;
+  FOREACHPLUGINHANDLER(k_EPluginEventType_Packet, IPacketEvents, pEvents) {
+    if (pEvents == NULL) continue;
 
     // Quit if cannot change the character
     if (!pEvents->OnCharacterChange(iClient, iPlayer, pcCharacter)) {
@@ -721,8 +721,8 @@ static void ReceiveActionsForPlayer(INDEX iClient, INDEX iPlayer, CNetworkMessag
   nm >> pa;
 
   // Let plugins handle actions
-  FOREACHPLUGINHANDLER(GetPluginAPI()->cPacketEvents, IPacketEvents, pEvents) {
-    if ((IAbstractEvents *)pEvents == NULL) continue;
+  FOREACHPLUGINHANDLER(k_EPluginEventType_Packet, IPacketEvents, pEvents) {
+    if (pEvents == NULL) continue;
 
     pEvents->OnPlayerAction(iClient, iPlayer, pa, -1);
   }
@@ -739,8 +739,8 @@ static void ReceiveActionsForPlayer(INDEX iClient, INDEX iPlayer, CNetworkMessag
     nm >> paOld;
 
     // Let plugins handle actions
-    FOREACHPLUGINHANDLER(GetPluginAPI()->cPacketEvents, IPacketEvents, pEvents) {
-      if ((IAbstractEvents *)pEvents == NULL) continue;
+    FOREACHPLUGINHANDLER(k_EPluginEventType_Packet, IPacketEvents, pEvents) {
+      if (pEvents == NULL) continue;
 
       pEvents->OnPlayerAction(iClient, iPlayer, pa, i);
     }
@@ -917,8 +917,8 @@ BOOL IProcessPacket::OnChatInRequest(INDEX iClient, CNetworkMessage &nmMessage)
   nmMessage.Rewind();
 
   // Let plugins handle chat messages
-  FOREACHPLUGINHANDLER(GetPluginAPI()->cPacketEvents, IPacketEvents, pEvents) {
-    if ((IAbstractEvents *)pEvents == NULL) continue;
+  FOREACHPLUGINHANDLER(k_EPluginEventType_Packet, IPacketEvents, pEvents) {
+    if (pEvents == NULL) continue;
 
     // Quit if it's not a regular chat message
     if (!pEvents->OnChatMessage(iClient, ulFrom, ulTo, strMessage)) {

@@ -30,7 +30,6 @@
     <ClInclude Include="API\IGame.h" />
     <ClInclude Include="API\IPlugins.h" />
     <ClInclude Include="API\ISteam.h" />
-    <ClInclude Include="API\PluginEvents.h" />
     <ClInclude Include="Base\CoreTimerHandler.h" />
     <ClInclude Include="Base\GameDirectories.h" />
     <ClInclude Include="Base\ObserverCamera.h" />
