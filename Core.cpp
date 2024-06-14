@@ -17,7 +17,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "Base/CoreTimerHandler.h"
 #include "Networking/NetworkFunctions.h"
-#include "Patcher/patcher.h"
 
 static bool _bClassicsPatchRunning = false;
 static bool _bClassicsPatchCustomMod = false;
@@ -97,9 +96,8 @@ void ClassicsPatch_Setup(EClassicsPatchAppType eApplicationType) {
   IConfig::global.Load();
 
   // Enable debug output for patcher actions
-  if (IConfig::global[k_EConfigProps_DebugPatcher]) {
-    CPatch::SetDebug(true);
-  }
+  bool bDebugPatcher = IConfig::global[k_EConfigProps_DebugPatcher].IsTrue();
+  FuncPatch_SetDebug(bDebugPatcher);
 };
 
 // Physical interfaces

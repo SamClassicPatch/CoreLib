@@ -13,12 +13,6 @@
       <UniqueIdentifier>{f483e665-b347-4776-8c97-9c8eae695c22}</UniqueIdentifier>
       <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
     </Filter>
-    <Filter Include="Source Files\Patcher">
-      <UniqueIdentifier>{dada0e2a-5921-4e12-9666-80fe63db0206}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Patcher headers">
-      <UniqueIdentifier>{33282aa2-c9b2-450e-b526-69fc2c52008d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\API">
       <UniqueIdentifier>{ca1f2c70-a877-4207-8790-5aded94ab4bd}</UniqueIdentifier>
     </Filter>
@@ -83,12 +77,6 @@
     </ClInclude>
     <ClInclude Include="Core.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Patcher\patcher.h">
-      <Filter>Header Files\Patcher headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Patcher\patcher_defines.h">
-      <Filter>Header Files\Patcher headers</Filter>
     </ClInclude>
     <ClInclude Include="Query\QueryManager.h">
       <Filter>Header Files\Query headers</Filter>
@@ -238,9 +226,6 @@
   <ItemGroup>
     <ClCompile Include="StdH.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Patcher\patcher.cpp">
-      <Filter>Source Files\Patcher</Filter>
     </ClCompile>
     <ClCompile Include="API\ICore.cpp">
       <Filter>Source Files\API</Filter>

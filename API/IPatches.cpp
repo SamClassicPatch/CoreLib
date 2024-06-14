@@ -15,7 +15,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "StdH.h"
 
-#include "Patcher/patcher.h"
+// Define the patcher
+#include <Extras/XGizmo/Patcher/patcher.h>
+#include <Extras/XGizmo/Patcher/patcher.cpp>
 
 // Actual data of the function patch that's being physically constructed
 struct CoreFunctionPatch_t : public FuncPatch_t
@@ -68,6 +70,10 @@ struct CoreFunctionPatch_t : public FuncPatch_t
 // Function patch storage
 typedef se1::map<ULONG, HFuncPatch> CFuncPatches;
 static CFuncPatches _mapFuncPatches;
+
+void FuncPatch_SetDebug(bool bState) {
+  CPatch::SetDebug(bState);
+};
 
 void FuncPatch_ForceRewrite(int nBytes) {
   CPatch::_iForceRewriteLen = nBytes;
