@@ -19,12 +19,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #if _PATCHCONFIG_EXT_PACKETS
 
-void CExtEntityDamage::Write(CNetworkMessage &nm) {
+bool CExtEntityDamage::Write(CNetworkMessage &nm) {
   WriteEntity(nm);
   INetCompress::Integer(nm, eDamageType);
 
   // Write damage amount up to 2 decimal places
   INetCompress::Integer(nm, fDamage * 100.0f);
+  return true;
 };
 
 void CExtEntityDamage::Read(CNetworkMessage &nm) {
@@ -37,12 +38,13 @@ void CExtEntityDamage::Read(CNetworkMessage &nm) {
   fDamage = FLOAT(ulDamagePoints) * 0.01f;
 };
 
-void CExtEntityDirectDamage::Write(CNetworkMessage &nm) {
+bool CExtEntityDirectDamage::Write(CNetworkMessage &nm) {
   CExtEntityDamage::Write(nm);
 
   INetCompress::Integer(nm, ulTarget);
   INetCompress::Float3D(nm, vHitPoint);
   INetCompress::Float3D(nm, vDirection);
+  return true;
 };
 
 void CExtEntityDirectDamage::Read(CNetworkMessage &nm) {
@@ -64,15 +66,16 @@ void CExtEntityDirectDamage::Process(void) {
 
   pen->InflictDirectDamage(penTarget, pen, (DamageType)eDamageType, fDamage, vHitPoint, vDirection);
 
-  ExtServerReport(TRANS("Entity %u inflicted %.2f damage to entity %u\n"), pen->en_ulID, fDamage, penTarget->en_ulID);
+  ClassicsPackets_ServerReport(this, TRANS("Entity %u inflicted %.2f damage to entity %u\n"), pen->en_ulID, fDamage, penTarget->en_ulID);
 };
 
-void CExtEntityRangeDamage::Write(CNetworkMessage &nm) {
+bool CExtEntityRangeDamage::Write(CNetworkMessage &nm) {
   CExtEntityDamage::Write(nm);
 
   INetCompress::Float3D(nm, vCenter);
   INetCompress::Integer(nm, fFallOff * 10.0f);
   INetCompress::Integer(nm, fHotSpot * 10.0f);
+  return true;
 };
 
 void CExtEntityRangeDamage::Read(CNetworkMessage &nm) {
@@ -95,14 +98,15 @@ void CExtEntityRangeDamage::Process(void) {
 
   pen->InflictRangeDamage(pen, (DamageType)eDamageType, fDamage, vCenter, fHotSpot, fFallOff);
 
-  ExtServerReport(TRANS("Entity %u inflicted %.2f damage in a %.1f range\n"), pen->en_ulID, fDamage, fFallOff);
+  ClassicsPackets_ServerReport(this, TRANS("Entity %u inflicted %.2f damage in a %.1f range\n"), pen->en_ulID, fDamage, fFallOff);
 };
 
-void CExtEntityBoxDamage::Write(CNetworkMessage &nm) {
+bool CExtEntityBoxDamage::Write(CNetworkMessage &nm) {
   CExtEntityDamage::Write(nm);
 
   INetCompress::Float3D(nm, boxArea.minvect);
   INetCompress::Float3D(nm, boxArea.maxvect);
+  return true;
 };
 
 void CExtEntityBoxDamage::Read(CNetworkMessage &nm) {
@@ -119,7 +123,7 @@ void CExtEntityBoxDamage::Process(void) {
 
   pen->InflictBoxDamage(pen, (DamageType)eDamageType, fDamage, boxArea);
 
-  ExtServerReport(TRANS("Entity %u inflicted %.2f damage in a [%.2f, %.2f, %.2f] sized area\n"),
+  ClassicsPackets_ServerReport(this, TRANS("Entity %u inflicted %.2f damage in a [%.2f, %.2f, %.2f] sized area\n"),
     pen->en_ulID, fDamage, boxArea.Size()(1), boxArea.Size()(2), boxArea.Size()(3));
 };
 

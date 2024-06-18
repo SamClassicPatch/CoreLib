@@ -181,7 +181,7 @@ CTString CExtEntityCreate::aBaseClasses[255] = {
 
 CEntity *CExtEntityCreate::penLast = NULL;
 
-void CExtEntityCreate::Write(CNetworkMessage &nm) {
+bool CExtEntityCreate::Write(CNetworkMessage &nm) {
   ubClass = 0xFF;
   CTFileName fnmCheck = fnmClass;
 
@@ -219,6 +219,7 @@ void CExtEntityCreate::Write(CNetworkMessage &nm) {
   }
 
   INetCompress::Placement(nm, plPos);
+  return true;
 };
 
 void CExtEntityCreate::Read(CNetworkMessage &nm) {
@@ -256,10 +257,10 @@ void CExtEntityCreate::Process(void) {
 
   try {
     penLast = IWorld::GetWorld()->CreateEntity_t(plPos, fnmClass);
-    ExtServerReport(TRANS("Created '%s' entity (%u)\n"), penLast->GetClass()->ec_pdecDLLClass->dec_strName, penLast->en_ulID);
+    ClassicsPackets_ServerReport(this, TRANS("Created '%s' entity (%u)\n"), penLast->GetClass()->ec_pdecDLLClass->dec_strName, penLast->en_ulID);
 
   } catch (char *strError) {
-    ExtServerReport(TRANS("Cannot create entity: %s\n"), strError);
+    ClassicsPackets_ServerReport(this, TRANS("Cannot create entity: %s\n"), strError);
   }
 };
 

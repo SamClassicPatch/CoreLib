@@ -19,9 +19,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #if _PATCHCONFIG_EXT_PACKETS
 
-void CExtEntityHealth::Write(CNetworkMessage &nm) {
+bool CExtEntityHealth::Write(CNetworkMessage &nm) {
   WriteEntity(nm);
   INetCompress::Float(nm, fHealth);
+  return true;
 };
 
 void CExtEntityHealth::Read(CNetworkMessage &nm) {
@@ -36,10 +37,10 @@ void CExtEntityHealth::Process(void) {
 
   if (IsLiveEntity(pen)) {
     ((CLiveEntity *)pen)->SetHealth(fHealth);
-    ExtServerReport(TRANS("Set health of %u entity to %.2f\n"), pen->en_ulID, fHealth);
+    ClassicsPackets_ServerReport(this, TRANS("Set health of %u entity to %.2f\n"), pen->en_ulID, fHealth);
 
   } else {
-    ExtServerReport(TRANS("Cannot set health for %u entity: not a live entity\n"), pen->en_ulID);
+    ClassicsPackets_ServerReport(this, TRANS("Cannot set health for %u entity: not a live entity\n"), pen->en_ulID);
   }
 };
 

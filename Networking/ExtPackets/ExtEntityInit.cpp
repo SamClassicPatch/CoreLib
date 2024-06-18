@@ -27,14 +27,14 @@ void CExtEntityInit::Process(void) {
   // Use received event for initialization instead of sending
   if (pen->GetRenderType() == CEntity::RT_NONE) {
     pen->Initialize(eEvent);
-    ExtServerReport(TRANS("Initialized %u entity\n"), pen->en_ulID);
+    ClassicsPackets_ServerReport(this, TRANS("Initialized %u entity\n"), pen->en_ulID);
 
   } else {
     // Not using CEntity::Reinitialize() because it doesn't take initialization events
     pen->End_internal();
     pen->Initialize_internal(eEvent);
 
-    ExtServerReport(TRANS("Reinitialized %u entity\n"), pen->en_ulID);
+    ClassicsPackets_ServerReport(this, TRANS("Reinitialized %u entity\n"), pen->en_ulID);
   }
 };
 

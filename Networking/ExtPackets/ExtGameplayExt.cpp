@@ -20,18 +20,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #if _PATCHCONFIG_EXT_PACKETS
 
 // Find variable index by its name
-UWORD CExtGameplayExt::FindVar(const CTString &strVar) {
+int CExtGameplayExt::FindVar(const CTString &strVar) {
 #if _PATCHCONFIG_GAMEPLAY_EXT
 
   if (strVar != "") {
-    for (INDEX i = 0; i < k_EGameplayExt_Max; i++) {
-      if (strVar == IConfig::gex.props[i].strKey) return UWORD(i + 1);
+    for (int i = 0; i < k_EGameplayExt_Max; i++) {
+      if (strVar == IConfig::gex.props[i].strKey) return i + 1;
     }
   }
 
 #endif // _PATCHCONFIG_GAMEPLAY_EXT
 
-  ExtServerReport(TRANS("Couldn't find index for '%s' gameplay extension!\n"), strVar.str_String);
+  ClassicsPackets_ServerReport(this, TRANS("Couldn't find index for '%s' gameplay extension!\n"), strVar.str_String);
   return 0;
 };
 
@@ -49,7 +49,7 @@ void CExtGameplayExt::SetValue(const CTString &strVar, DOUBLE f) {
   fValue = f;
 };
 
-void CExtGameplayExt::Write(CNetworkMessage &nm) {
+bool CExtGameplayExt::Write(CNetworkMessage &nm) {
 #if _PATCHCONFIG_GAMEPLAY_EXT
 
   // It's not like there will ever be more than 16383 GEX variables,
@@ -63,6 +63,9 @@ void CExtGameplayExt::Write(CNetworkMessage &nm) {
     INetCompress::Double(nm, fValue);
   }
 
+  return true;
+#else
+  return false;
 #endif // _PATCHCONFIG_GAMEPLAY_EXT
 };
 
@@ -96,12 +99,12 @@ void CExtGameplayExt::Process(void) {
 
   // Got a number but expected a string
   if (!bString && eType == CAnyValue::E_STRING) {
-    ExtServerReport(TRANS("Expected a string value for '%s' gameplay extension!\n"), entry.strKey);
+    ClassicsPackets_ServerReport(this, TRANS("Expected a string value for '%s' gameplay extension!\n"), entry.strKey);
     return;
 
   // Got a string but expected a number
   } else if (bString && eType != CAnyValue::E_STRING) {
-    ExtServerReport(TRANS("Expected a number value for '%s' gameplay extension!\n"), entry.strKey);
+    ClassicsPackets_ServerReport(this, TRANS("Expected a number value for '%s' gameplay extension!\n"), entry.strKey);
     return;
   }
 
@@ -115,7 +118,7 @@ void CExtGameplayExt::Process(void) {
 
 #else
   ASSERTALWAYS(GAMEPLAY_EXT_ASSERT_MSG);
-  ExtServerReport(GAMEPLAY_EXT_ASSERT_MSG);
+  ClassicsPackets_ServerReport(this, GAMEPLAY_EXT_ASSERT_MSG);
 #endif // _PATCHCONFIG_GAMEPLAY_EXT
 };
 

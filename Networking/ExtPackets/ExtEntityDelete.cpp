@@ -19,9 +19,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #if _PATCHCONFIG_EXT_PACKETS
 
-void CExtEntityDelete::Write(CNetworkMessage &nm) {
+bool CExtEntityDelete::Write(CNetworkMessage &nm) {
   WriteEntity(nm);
   nm.WriteBits(&bSameClass, 1);
+  return true;
 };
 
 void CExtEntityDelete::Read(CNetworkMessage &nm) {
@@ -51,7 +52,7 @@ void CExtEntityDelete::Process(void) {
 
     const INDEX ctEntities = cenDestroy.Count();
 
-    ExtServerReport(TRANS("Deleted %d \"%s\" entities\n"), ctEntities, strClass);
+    ClassicsPackets_ServerReport(this, TRANS("Deleted %d \"%s\" entities\n"), ctEntities, strClass);
 
     FOREACHINDYNAMICCONTAINER(cenDestroy, CEntity, itenDestroy) {
       itenDestroy->Destroy();
@@ -59,7 +60,7 @@ void CExtEntityDelete::Process(void) {
 
   // Delete this entity
   } else {
-    ExtServerReport(TRANS("Deleted %u entity\n"), pen->en_ulID);
+    ClassicsPackets_ServerReport(this, TRANS("Deleted %u entity\n"), pen->en_ulID);
     pen->Destroy();
   }
 };

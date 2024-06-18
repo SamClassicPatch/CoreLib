@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #if _PATCHCONFIG_EXT_PACKETS
 
-void CExtEntityProp::Write(CNetworkMessage &nm) {
+bool CExtEntityProp::Write(CNetworkMessage &nm) {
   WriteEntity(nm);
 
   nm.WriteBits(&bName, 1);
@@ -31,6 +31,8 @@ void CExtEntityProp::Write(CNetworkMessage &nm) {
   } else {
     INetCompress::Double(nm, fValue);
   }
+
+  return true;
 };
 
 void CExtEntityProp::Read(CNetworkMessage &nm) {
@@ -72,7 +74,7 @@ void CExtEntityProp::Process(void) {
     if (iType == CEntityProperty::EPT_STRING) {
       IProperties::SetPropValue(pen, pep, &strValue);
     } else {
-      ExtServerReport(TRANS("Expected string property type but got %d\n"), iType);
+      ClassicsPackets_ServerReport(this, TRANS("Expected string property type but got %d\n"), iType);
     }
 
   } else if (iType == CEntityProperty::EPT_FLOAT) {
@@ -84,7 +86,7 @@ void CExtEntityProp::Process(void) {
     IProperties::SetPropValue(pen, pep, &iIntProp);
 
   } else {
-    ExtServerReport(TRANS("Expected number property type but got %d\n"), iType);
+    ClassicsPackets_ServerReport(this, TRANS("Expected number property type but got %d\n"), iType);
   }
 };
 

@@ -130,7 +130,7 @@ BOOL INetwork::ServerHandle(CMessageDispatcher *pmd, INDEX iClient, CNetworkMess
     }
   }
 
-  CExtPacket *pPacket = CExtPacket::CreatePacket((CExtPacket::EType)ulType, FALSE);
+  CExtPacket *pPacket = CExtPacket::CreatePacket((IClassicsExtPacket::EPacketType)ulType, FALSE);
 
   // No built-in packet under this index
   if (pPacket == NULL) {
@@ -179,7 +179,7 @@ BOOL INetwork::ClientHandle(CSessionState *pses, CNetworkMessage &nmMessage) {
     }
   }
 
-  CExtPacket *pPacket = CExtPacket::CreatePacket((CExtPacket::EType)ulType, TRUE);
+  CExtPacket *pPacket = CExtPacket::CreatePacket((IClassicsExtPacket::EPacketType)ulType, TRUE);
 
   // No built-in packet under this index
   if (pPacket == NULL) {

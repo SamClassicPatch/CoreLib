@@ -19,9 +19,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #if _PATCHCONFIG_EXT_PACKETS
 
-void CExtEntityParent::Write(CNetworkMessage &nm) {
+bool CExtEntityParent::Write(CNetworkMessage &nm) {
   WriteEntity(nm);
   INetCompress::Integer(nm, ulParent);
+  return true;
 };
 
 void CExtEntityParent::Read(CNetworkMessage &nm) {
@@ -38,10 +39,10 @@ void CExtEntityParent::Process(void) {
   pen->SetParent(penParent);
 
   if (pen->GetParent() == NULL) {
-    ExtServerReport(TRANS("Unparented %u entity\n"), pen->en_ulID);
+    ClassicsPackets_ServerReport(this, TRANS("Unparented %u entity\n"), pen->en_ulID);
 
   } else {
-    ExtServerReport(TRANS("Parented %u entity to %u\n"), pen->en_ulID, penParent->en_ulID);
+    ClassicsPackets_ServerReport(this, TRANS("Parented %u entity to %u\n"), pen->en_ulID, penParent->en_ulID);
   }
 };
 

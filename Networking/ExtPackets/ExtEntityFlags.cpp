@@ -19,12 +19,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #if _PATCHCONFIG_EXT_PACKETS
 
-void CExtEntityFlags::Write(CNetworkMessage &nm) {
+bool CExtEntityFlags::Write(CNetworkMessage &nm) {
   WriteEntity(nm);
   INetCompress::Integer(nm, ulFlags);
   
   nm.WriteBits(&ubType, 2);
   nm.WriteBits(&bRemove, 1);
+  return true;
 };
 
 void CExtEntityFlags::Read(CNetworkMessage &nm) {
@@ -63,7 +64,7 @@ void CExtEntityFlags::Process(void) {
     *pulFlags |= ulFlags;
   }
 
-  ExtServerReport(strReport, pen->en_ulID, ulOld, *pulFlags);
+  ClassicsPackets_ServerReport(this, strReport, pen->en_ulID, ulOld, *pulFlags);
 };
 
 #endif // _PATCHCONFIG_EXT_PACKETS

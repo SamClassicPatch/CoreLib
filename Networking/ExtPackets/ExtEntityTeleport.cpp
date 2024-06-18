@@ -19,11 +19,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #if _PATCHCONFIG_EXT_PACKETS
 
-void CExtEntityTeleport::Write(CNetworkMessage &nm) {
+bool CExtEntityTeleport::Write(CNetworkMessage &nm) {
   WriteEntity(nm);
   INetCompress::Placement(nm, plSet);
 
   nm.WriteBits(&bRelative, 1);
+  return true;
 };
 
 void CExtEntityTeleport::Read(CNetworkMessage &nm) {
@@ -48,7 +49,7 @@ void CExtEntityTeleport::Process(void) {
 
   pen->Teleport(pl, FALSE);
 
-  ExtServerReport(TRANS("Teleported %u entity to [%.2f, %.2f, %.2f;  %.2f, %.2f, %.2f]\n"), pen->en_ulID,
+  ClassicsPackets_ServerReport(this, TRANS("Teleported %u entity to [%.2f, %.2f, %.2f;  %.2f, %.2f, %.2f]\n"), pen->en_ulID,
     pl.pl_PositionVector(1),   pl.pl_PositionVector(2),   pl.pl_PositionVector(3),
     pl.pl_OrientationAngle(1), pl.pl_OrientationAngle(2), pl.pl_OrientationAngle(3));
 };

@@ -27,71 +27,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Report packet actions to the server
 CORE_API extern INDEX ser_bReportExtPacketLogic;
 
-// Base class for each extension packet
-class CORE_API CExtPacket {
+// Core wrapper for the abstract base
+class CORE_API CExtPacket : public IClassicsExtPacket {
   public:
-    // Built-in extension packets
-    enum EType {
-      // Server to all clients
-      EXT_ENTITY_CREATE,   // Create new entity
-      EXT_ENTITY_DELETE,   // Delete an entity
-      EXT_ENTITY_COPY,     // Copy an entity
-      EXT_ENTITY_EVENT,    // Send event to an entity
-      EXT_ENTITY_ITEM,     // Receive item by an entity
-      EXT_ENTITY_INIT,     // (Re)initialize an entity
-      EXT_ENTITY_TELEPORT, // Teleport an entity
-      EXT_ENTITY_POSITION, // Set position or rotation of an entity
-      EXT_ENTITY_PARENT,   // Set entity's parent
-      EXT_ENTITY_PROP,     // Change property value of an entity
-      EXT_ENTITY_HEALTH,   // Set entity health
-      EXT_ENTITY_FLAGS,    // Change various entity flags
-      EXT_ENTITY_MOVE,     // Set absolute movement speed of an entity
-      EXT_ENTITY_ROTATE,   // Set absolute rotation speed of an entity
-      EXT_ENTITY_IMPULSE,  // Give impulse to some entity
-      EXT_ENTITY_DIRDMG,   // Inflict damage to some entity
-      EXT_ENTITY_RADDMG,   // Inflict damage at some point
-      EXT_ENTITY_BOXDMG,   // Inflict damage in some area
-
-      EXT_CHANGE_LEVEL,  // Force level change by creating vanilla WorldLink entity, if possible
-      EXT_CHANGE_WORLD,  // Force immediate world change regardless of gameplay
-      EXT_SESSION_PROPS, // Change data in session properties
-      EXT_GAMEPLAY_EXT,  // Change data in gameplay extensions
-
-      // Maximum amount of built-in packets
-      EXT_MAX_PACKETS,
+    __forceinline void SendPacket(void) {
+      ClassicsPackets_Send(this);
     };
 
-  public:
-    // Report packet actions to the server
-    void ExtServerReport(const char *strFormat, ...);
-
-    // Extension packet index
-    virtual EType GetType(void) const = 0;
-
-    // Internal name of the extension packet type
-    virtual const char *GetName(void) const = 0;
-
-    // Macro for defining packets of a specific type
-    #define DEFINE_EXT_PACKET_FOR_TYPE(_Type) \
-      virtual EType GetType(void) const { return _Type; }; \
-      virtual const char *GetName(void) const { return #_Type; };
-
-  public:
-    // Write extension packet
-    virtual void Write(CNetworkMessage &nm) = 0;
-
-    // Read extension packet
-    virtual void Read(CNetworkMessage &nm) = 0;
-
-    // Process read packet as a client
-    virtual void Process(void) = 0;
-
-    // Send extension packet from server to all clients
-    void SendPacket(void);
-
-  public:
     // Create new packet from type
-    static CExtPacket *CreatePacket(EType ePacket, BOOL bClient);
+    static CExtPacket *CreatePacket(EPacketType ePacket, BOOL bServerToClient);
 
     // Register the module
     static void RegisterExtPackets(void);
@@ -119,9 +63,9 @@ class CORE_API CExtEntityCreate : public CExtPacket {
     };
 
   public:
-    DEFINE_EXT_PACKET_FOR_TYPE(EXT_ENTITY_CREATE);
+    EXTPACKET_DEFINEFORTYPE(k_EPacketType_EntityCreate);
 
-    virtual void Write(CNetworkMessage &nm);
+    virtual bool Write(CNetworkMessage &nm);
     virtual void Read(CNetworkMessage &nm);
     virtual void Process(void);
 };
@@ -153,6 +97,9 @@ class CORE_API CExtEntityPacket : public CExtPacket {
       // 0x7FFFFFFF - 0xFFFFFFFF are invalid
       return ulEntity < 0x7FFFFFFF;
     };
+
+    // Retrieve an entity from an ID
+    CEntity *FindExtEntity(ULONG ulID);
 
     // Make sure to return some entity from the ID
     CEntity *GetEntity(void);
@@ -222,9 +169,9 @@ class CORE_API CExtEntityDelete : public CExtEntityPacket {
     };
 
   public:
-    DEFINE_EXT_PACKET_FOR_TYPE(EXT_ENTITY_DELETE);
+    EXTPACKET_DEFINEFORTYPE(k_EPacketType_EntityDelete);
 
-    virtual void Write(CNetworkMessage &nm);
+    virtual bool Write(CNetworkMessage &nm);
     virtual void Read(CNetworkMessage &nm);
     virtual void Process(void);
 };
@@ -239,9 +186,9 @@ class CORE_API CExtEntityCopy : public CExtEntityPacket {
     };
 
   public:
-    DEFINE_EXT_PACKET_FOR_TYPE(EXT_ENTITY_COPY);
+    EXTPACKET_DEFINEFORTYPE(k_EPacketType_EntityCopy);
 
-    virtual void Write(CNetworkMessage &nm);
+    virtual bool Write(CNetworkMessage &nm);
     virtual void Read(CNetworkMessage &nm);
     virtual void Process(void);
 };
@@ -263,9 +210,9 @@ class CORE_API CExtEntityEvent : public CExtEntityPacket {
     void Copy(const EExtEntityEvent &eeOther, ULONG ctSetFields);
 
   public:
-    DEFINE_EXT_PACKET_FOR_TYPE(EXT_ENTITY_EVENT);
+    EXTPACKET_DEFINEFORTYPE(k_EPacketType_EntityEvent);
 
-    virtual void Write(CNetworkMessage &nm);
+    virtual bool Write(CNetworkMessage &nm);
     virtual void Read(CNetworkMessage &nm);
     virtual void Process(void);
 };
@@ -277,7 +224,7 @@ class CORE_API CExtEntityItem : public CExtEntityEvent {
     };
 
   public:
-    DEFINE_EXT_PACKET_FOR_TYPE(EXT_ENTITY_ITEM);
+    EXTPACKET_DEFINEFORTYPE(k_EPacketType_EntityItem);
 
     virtual void Process(void);
 };
@@ -289,7 +236,7 @@ class CORE_API CExtEntityInit : public CExtEntityEvent {
     };
 
   public:
-    DEFINE_EXT_PACKET_FOR_TYPE(EXT_ENTITY_INIT);
+    EXTPACKET_DEFINEFORTYPE(k_EPacketType_EntityInit);
 
     virtual void Process(void);
 };
@@ -306,9 +253,9 @@ class CORE_API CExtEntityTeleport : public CExtEntityPacket {
     };
 
   public:
-    DEFINE_EXT_PACKET_FOR_TYPE(EXT_ENTITY_TELEPORT);
+    EXTPACKET_DEFINEFORTYPE(k_EPacketType_EntityTeleport);
 
-    virtual void Write(CNetworkMessage &nm);
+    virtual bool Write(CNetworkMessage &nm);
     virtual void Read(CNetworkMessage &nm);
     virtual void Process(void);
 };
@@ -326,9 +273,9 @@ class CORE_API CExtEntityPosition : public CExtEntityPacket {
     };
 
   public:
-    DEFINE_EXT_PACKET_FOR_TYPE(EXT_ENTITY_POSITION);
+    EXTPACKET_DEFINEFORTYPE(k_EPacketType_EntityPosition);
 
-    virtual void Write(CNetworkMessage &nm);
+    virtual bool Write(CNetworkMessage &nm);
     virtual void Read(CNetworkMessage &nm);
     virtual void Process(void);
 };
@@ -343,9 +290,9 @@ class CORE_API CExtEntityParent : public CExtEntityPacket {
     };
 
   public:
-    DEFINE_EXT_PACKET_FOR_TYPE(EXT_ENTITY_PARENT);
+    EXTPACKET_DEFINEFORTYPE(k_EPacketType_EntityParent);
 
-    virtual void Write(CNetworkMessage &nm);
+    virtual bool Write(CNetworkMessage &nm);
     virtual void Read(CNetworkMessage &nm);
     virtual void Process(void);
 };
@@ -390,9 +337,9 @@ class CORE_API CExtEntityProp : public CExtEntityPacket {
     };
 
   public:
-    DEFINE_EXT_PACKET_FOR_TYPE(EXT_ENTITY_PROP);
+    EXTPACKET_DEFINEFORTYPE(k_EPacketType_EntityProp);
 
-    virtual void Write(CNetworkMessage &nm);
+    virtual bool Write(CNetworkMessage &nm);
     virtual void Read(CNetworkMessage &nm);
     virtual void Process(void);
 };
@@ -407,9 +354,9 @@ class CORE_API CExtEntityHealth : public CExtEntityPacket {
     };
 
   public:
-    DEFINE_EXT_PACKET_FOR_TYPE(EXT_ENTITY_HEALTH);
+    EXTPACKET_DEFINEFORTYPE(k_EPacketType_EntityHealth);
 
-    virtual void Write(CNetworkMessage &nm);
+    virtual bool Write(CNetworkMessage &nm);
     virtual void Read(CNetworkMessage &nm);
     virtual void Process(void);
 };
@@ -447,9 +394,9 @@ class CORE_API CExtEntityFlags : public CExtEntityPacket {
     };
 
   public:
-    DEFINE_EXT_PACKET_FOR_TYPE(EXT_ENTITY_FLAGS);
+    EXTPACKET_DEFINEFORTYPE(k_EPacketType_EntityFlags);
 
-    virtual void Write(CNetworkMessage &nm);
+    virtual bool Write(CNetworkMessage &nm);
     virtual void Read(CNetworkMessage &nm);
     virtual void Process(void);
 };
@@ -464,9 +411,9 @@ class CORE_API CExtEntityMove : public CExtEntityPacket {
     };
 
   public:
-    DEFINE_EXT_PACKET_FOR_TYPE(EXT_ENTITY_MOVE);
+    EXTPACKET_DEFINEFORTYPE(k_EPacketType_EntityMove);
 
-    virtual void Write(CNetworkMessage &nm);
+    virtual bool Write(CNetworkMessage &nm);
     virtual void Read(CNetworkMessage &nm);
     virtual void Process(void);
 };
@@ -478,7 +425,7 @@ class CORE_API CExtEntityRotate : public CExtEntityMove {
     };
 
   public:
-    DEFINE_EXT_PACKET_FOR_TYPE(EXT_ENTITY_ROTATE);
+    EXTPACKET_DEFINEFORTYPE(k_EPacketType_EntityRotate);
 
     virtual void Process(void);
 };
@@ -490,7 +437,7 @@ class CORE_API CExtEntityImpulse : public CExtEntityMove {
     };
 
   public:
-    DEFINE_EXT_PACKET_FOR_TYPE(EXT_ENTITY_IMPULSE);
+    EXTPACKET_DEFINEFORTYPE(k_EPacketType_EntityImpulse);
 
     virtual void Process(void);
 };
@@ -506,7 +453,7 @@ class CORE_API CExtEntityDamage : public CExtEntityPacket {
     {
     };
 
-    virtual void Write(CNetworkMessage &nm);
+    virtual bool Write(CNetworkMessage &nm);
     virtual void Read(CNetworkMessage &nm);
 };
 
@@ -522,9 +469,9 @@ class CORE_API CExtEntityDirectDamage : public CExtEntityDamage {
     };
 
   public:
-    DEFINE_EXT_PACKET_FOR_TYPE(EXT_ENTITY_DIRDMG);
+    EXTPACKET_DEFINEFORTYPE(k_EPacketType_EntityDirDmg);
 
-    virtual void Write(CNetworkMessage &nm);
+    virtual bool Write(CNetworkMessage &nm);
     virtual void Read(CNetworkMessage &nm);
     virtual void Process(void);
 };
@@ -541,9 +488,9 @@ class CORE_API CExtEntityRangeDamage : public CExtEntityDamage {
     };
 
   public:
-    DEFINE_EXT_PACKET_FOR_TYPE(EXT_ENTITY_RADDMG);
+    EXTPACKET_DEFINEFORTYPE(k_EPacketType_EntityRadDmg);
 
-    virtual void Write(CNetworkMessage &nm);
+    virtual bool Write(CNetworkMessage &nm);
     virtual void Read(CNetworkMessage &nm);
     virtual void Process(void);
 };
@@ -558,9 +505,9 @@ class CORE_API CExtEntityBoxDamage : public CExtEntityDamage {
     };
 
   public:
-    DEFINE_EXT_PACKET_FOR_TYPE(EXT_ENTITY_BOXDMG);
+    EXTPACKET_DEFINEFORTYPE(k_EPacketType_EntityBoxDmg);
 
-    virtual void Write(CNetworkMessage &nm);
+    virtual bool Write(CNetworkMessage &nm);
     virtual void Read(CNetworkMessage &nm);
     virtual void Process(void);
 };
@@ -575,9 +522,9 @@ class CORE_API CExtChangeLevel : public CExtPacket {
     };
 
   public:
-    DEFINE_EXT_PACKET_FOR_TYPE(EXT_CHANGE_LEVEL);
+    EXTPACKET_DEFINEFORTYPE(k_EPacketType_ChangeLevel);
 
-    virtual void Write(CNetworkMessage &nm);
+    virtual bool Write(CNetworkMessage &nm);
     virtual void Read(CNetworkMessage &nm);
     virtual void Process(void);
 };
@@ -589,7 +536,7 @@ class CORE_API CExtChangeWorld : public CExtChangeLevel {
     };
 
   public:
-    DEFINE_EXT_PACKET_FOR_TYPE(EXT_CHANGE_WORLD);
+    EXTPACKET_DEFINEFORTYPE(k_EPacketType_ChangeWorld);
 
     virtual void Process(void);
 };
@@ -609,9 +556,9 @@ class CORE_API CExtSessionProps : public CExtPacket {
     BOOL AddData(const void *pData, size_t ctBytes);
 
   public:
-    DEFINE_EXT_PACKET_FOR_TYPE(EXT_SESSION_PROPS);
+    EXTPACKET_DEFINEFORTYPE(k_EPacketType_SessionProps);
 
-    virtual void Write(CNetworkMessage &nm);
+    virtual bool Write(CNetworkMessage &nm);
     virtual void Read(CNetworkMessage &nm);
     virtual void Process(void);
 };
@@ -629,7 +576,7 @@ class CORE_API CExtGameplayExt : public CExtPacket {
     };
 
     // Find variable index by its name
-    UWORD FindVar(const CTString &strVar);
+    int FindVar(const CTString &strVar);
 
     // Set string value
     void SetValue(const CTString &strVar, const CTString &str);
@@ -638,23 +585,11 @@ class CORE_API CExtGameplayExt : public CExtPacket {
     void SetValue(const CTString &strVar, DOUBLE f);
 
   public:
-    DEFINE_EXT_PACKET_FOR_TYPE(EXT_GAMEPLAY_EXT);
+    EXTPACKET_DEFINEFORTYPE(k_EPacketType_GameplayExt);
 
-    virtual void Write(CNetworkMessage &nm);
+    virtual bool Write(CNetworkMessage &nm);
     virtual void Read(CNetworkMessage &nm);
     virtual void Process(void);
-};
-
-// Retrieve an entity from an ID
-inline CEntity *FindExtEntity(ULONG ulID) {
-  // Take last created entity if ID is 0
-  CEntity *pen = CExtEntityCreate::penLast;
-
-  if (ulID != 0) {
-    pen = IWorld::FindEntityByID(IWorld::GetWorld(), ulID);
-  }
-
-  return pen;
 };
 
 #endif // _PATCHCONFIG_EXT_PACKETS

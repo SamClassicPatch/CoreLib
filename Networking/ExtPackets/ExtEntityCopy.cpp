@@ -19,9 +19,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #if _PATCHCONFIG_EXT_PACKETS
 
-void CExtEntityCopy::Write(CNetworkMessage &nm) {
+bool CExtEntityCopy::Write(CNetworkMessage &nm) {
   WriteEntity(nm);
   nm.WriteBits(&ubCopies, 5); // Up to 31
+  return true;
 };
 
 void CExtEntityCopy::Read(CNetworkMessage &nm) {
@@ -45,7 +46,7 @@ void CExtEntityCopy::Process(void) {
     strReport += CTString(0, (i == 0) ? "%u" : ", %u", CExtEntityCreate::penLast->en_ulID);
   }
 
-  ExtServerReport("%s\n", strReport.str_String);
+  ClassicsPackets_ServerReport(this, "%s\n", strReport.str_String);
 };
 
 #endif // _PATCHCONFIG_EXT_PACKETS

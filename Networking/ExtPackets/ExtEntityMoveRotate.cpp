@@ -19,11 +19,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #if _PATCHCONFIG_EXT_PACKETS
 
-void CExtEntityMove::Write(CNetworkMessage &nm) {
+bool CExtEntityMove::Write(CNetworkMessage &nm) {
   WriteEntity(nm);
   INetCompress::Float(nm, vSpeed(1));
   INetCompress::Float(nm, vSpeed(2));
   INetCompress::Float(nm, vSpeed(3));
+  return true;
 };
 
 void CExtEntityMove::Read(CNetworkMessage &nm) {
@@ -42,10 +43,10 @@ void CExtEntityMove::Process(void) {
 
   if (IsDerivedFromID(pen, CMovableEntity_ClassID)) {
     ((CMovableEntity *)pen)->SetDesiredTranslation(vSpeed);
-    ExtServerReport(TRANS("Changed movement speed of %u entity to [%.2f, %.2f, %.2f]\n"), pen->en_ulID, vSpeed(1), vSpeed(2), vSpeed(3));
+    ClassicsPackets_ServerReport(this, TRANS("Changed movement speed of %u entity to [%.2f, %.2f, %.2f]\n"), pen->en_ulID, vSpeed(1), vSpeed(2), vSpeed(3));
 
   } else {
-    ExtServerReport(TRANS("Cannot change movement speed for %u entity: %s\n"), pen->en_ulID, REPORT_NOT_MOVABLE);
+    ClassicsPackets_ServerReport(this, TRANS("Cannot change movement speed for %u entity: %s\n"), pen->en_ulID, REPORT_NOT_MOVABLE);
   }
 };
 
@@ -56,10 +57,10 @@ void CExtEntityRotate::Process(void) {
 
   if (IsDerivedFromID(pen, CMovableEntity_ClassID)) {
     ((CMovableEntity *)pen)->SetDesiredRotation(vSpeed);
-    ExtServerReport(TRANS("Changed rotation speed of %u entity to [%.2f, %.2f, %.2f]\n"), pen->en_ulID, vSpeed(1), vSpeed(2), vSpeed(3));
+    ClassicsPackets_ServerReport(this, TRANS("Changed rotation speed of %u entity to [%.2f, %.2f, %.2f]\n"), pen->en_ulID, vSpeed(1), vSpeed(2), vSpeed(3));
 
   } else {
-    ExtServerReport(TRANS("Cannot change rotation speed for %u entity: %s\n"), pen->en_ulID, REPORT_NOT_MOVABLE);
+    ClassicsPackets_ServerReport(this, TRANS("Cannot change rotation speed for %u entity: %s\n"), pen->en_ulID, REPORT_NOT_MOVABLE);
   }
 };
 
@@ -70,10 +71,10 @@ void CExtEntityImpulse::Process(void) {
 
   if (IsDerivedFromID(pen, CMovableEntity_ClassID)) {
     ((CMovableEntity *)pen)->GiveImpulseTranslationAbsolute(vSpeed);
-    ExtServerReport(TRANS("Gave impulse to %u entity: [%.2f, %.2f, %.2f]\n"), vSpeed(1), vSpeed(2), vSpeed(3), pen->en_ulID);
+    ClassicsPackets_ServerReport(this, TRANS("Gave impulse to %u entity: [%.2f, %.2f, %.2f]\n"), vSpeed(1), vSpeed(2), vSpeed(3), pen->en_ulID);
 
   } else {
-    ExtServerReport(TRANS("Cannot give impulse to %u entity: %s\n"), pen->en_ulID, REPORT_NOT_MOVABLE);
+    ClassicsPackets_ServerReport(this, TRANS("Cannot give impulse to %u entity: %s\n"), pen->en_ulID, REPORT_NOT_MOVABLE);
   }
 };
 

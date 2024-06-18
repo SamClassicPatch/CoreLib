@@ -33,7 +33,7 @@ BOOL CExtSessionProps::AddData(const void *pData, size_t ctBytes) {
   return TRUE;
 };
 
-void CExtSessionProps::Write(CNetworkMessage &nm) {
+bool CExtSessionProps::Write(CNetworkMessage &nm) {
   // From first to last byte
   slOffset = Clamp(slOffset, (SLONG)0, SLONG(sizeof(sp) - 1));
   nm.WriteBits(&slOffset, SESPROPS_BITFIT);
@@ -45,6 +45,8 @@ void CExtSessionProps::Write(CNetworkMessage &nm) {
   for (INDEX i = 0; i < slSize; i++) {
     nm << sp[i];
   }
+
+  return true;
 };
 
 void CExtSessionProps::Read(CNetworkMessage &nm) {

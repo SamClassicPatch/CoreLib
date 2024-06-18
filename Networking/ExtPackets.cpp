@@ -27,8 +27,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Report packet actions to the server
 INDEX ser_bReportExtPacketLogic = TRUE;
 
-// Report packet actions to the server
-void CExtPacket::ExtServerReport(const char *strFormat, ...) {
+void ClassicsPackets_ServerReport(IClassicsExtPacket *pExtPacket, const char *strFormat, ...)
+{
   // Ignore reports
   if (!_pNetwork->IsServer() || !ser_bReportExtPacketLogic) return;
 
@@ -39,32 +39,45 @@ void CExtPacket::ExtServerReport(const char *strFormat, ...) {
   str.VPrintF(strFormat, arg);
 
   // Append packet name in the beginning
-  CPrintF("[%s] %s", GetName(), str);
+  CPrintF("[%s] %s", pExtPacket->GetName(), str);
   va_end(arg);
 };
 
-// Send extension packet from server to all clients
-void CExtPacket::SendPacket(void) {
+void ClassicsPackets_Send(IClassicsExtPacket *pExtPacket)
+{
   // Not running a server
   if (!_pNetwork->IsServer()) return;
 
-  CNetStreamBlock nsbExt = INetwork::CreateServerPacket(GetType());
-  Write(nsbExt);
+  CNetStreamBlock nsbExt = INetwork::CreateServerPacket(pExtPacket->GetType());
 
-  INetwork::AddBlockToAllSessions(nsbExt);
+  if (pExtPacket->Write(nsbExt)) {
+    INetwork::AddBlockToAllSessions(nsbExt);
+  }
+};
+
+// Retrieve an entity from an ID
+CEntity *CExtEntityPacket::FindExtEntity(ULONG ulID) {
+  // Take last created entity if ID is 0
+  CEntity *pen = CExtEntityCreate::penLast;
+
+  if (ulID != 0) {
+    pen = IWorld::FindEntityByID(IWorld::GetWorld(), ulID);
+  }
+
+  return pen;
 };
 
 // Make sure to return some entity from the ID
 CEntity *CExtEntityPacket::GetEntity(void) {
   if (!IsEntityValid()) {
-    ExtServerReport(TRANS("Received invalid entity ID!\n"));
+    ClassicsPackets_ServerReport(this, TRANS("Received invalid entity ID!\n"));
     return NULL;
   }
 
   CEntity *pen = FindExtEntity(ulEntity);
 
   if (pen == NULL) {
-    ExtServerReport(TRANS("Received invalid entity ID!\n"));
+    ClassicsPackets_ServerReport(this, TRANS("Received invalid entity ID!\n"));
     return NULL;
   }
 
@@ -72,42 +85,37 @@ CEntity *CExtEntityPacket::GetEntity(void) {
 };
 
 // Create new packet from type
-CExtPacket *CExtPacket::CreatePacket(EType ePacket, BOOL bClient) {
-  // Invalid packet
-  if (ePacket < 0 || ePacket >= EXT_MAX_PACKETS) {
-    ASSERT(FALSE);
-    return NULL;
-  }
-
-  // From server to client
-  if (bClient) {
+CExtPacket *CExtPacket::CreatePacket(EPacketType ePacket, BOOL bServerToClient)
+{
+  if (bServerToClient) {
     switch (ePacket) {
-      case EXT_ENTITY_CREATE:   return new CExtEntityCreate();
-      case EXT_ENTITY_DELETE:   return new CExtEntityDelete();
-      case EXT_ENTITY_COPY:     return new CExtEntityCopy();
-      case EXT_ENTITY_EVENT:    return new CExtEntityEvent();
-      case EXT_ENTITY_ITEM:     return new CExtEntityItem();
-      case EXT_ENTITY_INIT:     return new CExtEntityInit();
-      case EXT_ENTITY_TELEPORT: return new CExtEntityTeleport();
-      case EXT_ENTITY_POSITION: return new CExtEntityPosition();
-      case EXT_ENTITY_PARENT:   return new CExtEntityParent();
-      case EXT_ENTITY_PROP:     return new CExtEntityProp();
-      case EXT_ENTITY_HEALTH:   return new CExtEntityHealth();
-      case EXT_ENTITY_FLAGS:    return new CExtEntityFlags();
-      case EXT_ENTITY_MOVE:     return new CExtEntityMove();
-      case EXT_ENTITY_ROTATE:   return new CExtEntityRotate();
-      case EXT_ENTITY_IMPULSE:  return new CExtEntityImpulse();
-      case EXT_ENTITY_DIRDMG:   return new CExtEntityDirectDamage();
-      case EXT_ENTITY_RADDMG:   return new CExtEntityRangeDamage();
-      case EXT_ENTITY_BOXDMG:   return new CExtEntityBoxDamage();
+      case k_EPacketType_EntityCreate  : return new CExtEntityCreate();
+      case k_EPacketType_EntityDelete  : return new CExtEntityDelete();
+      case k_EPacketType_EntityCopy    : return new CExtEntityCopy();
+      case k_EPacketType_EntityEvent   : return new CExtEntityEvent();
+      case k_EPacketType_EntityItem    : return new CExtEntityItem();
+      case k_EPacketType_EntityInit    : return new CExtEntityInit();
+      case k_EPacketType_EntityTeleport: return new CExtEntityTeleport();
+      case k_EPacketType_EntityPosition: return new CExtEntityPosition();
+      case k_EPacketType_EntityParent  : return new CExtEntityParent();
+      case k_EPacketType_EntityProp    : return new CExtEntityProp();
+      case k_EPacketType_EntityHealth  : return new CExtEntityHealth();
+      case k_EPacketType_EntityFlags   : return new CExtEntityFlags();
+      case k_EPacketType_EntityMove    : return new CExtEntityMove();
+      case k_EPacketType_EntityRotate  : return new CExtEntityRotate();
+      case k_EPacketType_EntityImpulse : return new CExtEntityImpulse();
+      case k_EPacketType_EntityDirDmg  : return new CExtEntityDirectDamage();
+      case k_EPacketType_EntityRadDmg  : return new CExtEntityRangeDamage();
+      case k_EPacketType_EntityBoxDmg  : return new CExtEntityBoxDamage();
 
-      case EXT_CHANGE_LEVEL:    return new CExtChangeLevel();
-      case EXT_CHANGE_WORLD:    return new CExtChangeWorld();
-      case EXT_SESSION_PROPS:   return new CExtSessionProps();
-      case EXT_GAMEPLAY_EXT:    return new CExtGameplayExt();
+      case k_EPacketType_ChangeLevel : return new CExtChangeLevel();
+      case k_EPacketType_ChangeWorld : return new CExtChangeWorld();
+      case k_EPacketType_SessionProps: return new CExtSessionProps();
+      case k_EPacketType_GameplayExt : return new CExtGameplayExt();
     }
   }
 
+  // Invalid packet
   ASSERT(FALSE);
   return NULL;
 };

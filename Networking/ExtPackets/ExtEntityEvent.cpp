@@ -54,9 +54,10 @@ void CExtEntityEvent::Copy(const EExtEntityEvent &eeOther, ULONG ctSetFields) {
   ctFields = ctSetFields;
 };
 
-void CExtEntityEvent::Write(CNetworkMessage &nm) {
+bool CExtEntityEvent::Write(CNetworkMessage &nm) {
   WriteEntity(nm);
   eEvent.Write(nm, ctFields);
+  return true;
 };
 
 void CExtEntityEvent::Read(CNetworkMessage &nm) {
