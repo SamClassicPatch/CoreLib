@@ -22,14 +22,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 bool CExtEntityProp::Write(CNetworkMessage &nm) {
   WriteEntity(nm);
 
+  BOOL bName = props["bName"].IsTrue();
   nm.WriteBits(&bName, 1);
-  nm << ulProp;
+  nm << (ULONG)props["ulProp"].GetIndex();
+
+  BOOL bString = (props["value"].GetType() == CAnyValue::E_VAL_STRING);
   nm.WriteBits(&bString, 1);
 
   if (bString) {
-    nm << strValue;
+    nm << props["value"].ToString();
   } else {
-    INetCompress::Double(nm, fValue);
+    INetCompress::Double(nm, props["value"].ToFloat());
   }
 
   return true;
@@ -38,18 +41,26 @@ bool CExtEntityProp::Write(CNetworkMessage &nm) {
 void CExtEntityProp::Read(CNetworkMessage &nm) {
   ReadEntity(nm);
 
-  bName = FALSE;
+  BOOL bName = FALSE;
   nm.ReadBits(&bName, 1);
+  props["bName"].GetIndex() = bName;
 
+  ULONG ulProp;
   nm >> ulProp;
+  props["ulProp"].GetIndex() = ulProp;
 
-  bString = FALSE;
+  BOOL bString = FALSE;
   nm.ReadBits(&bString, 1);
 
   if (bString) {
+    CTString strValue;
     nm >> strValue;
+    props["value"] = strValue;
+
   } else {
+    DOUBLE fValue;
     INetDecompress::Double(nm, fValue);
+    props["value"] = fValue;
   }
 };
 
@@ -59,8 +70,9 @@ void CExtEntityProp::Process(void) {
   if (!EntityExists(pen)) return;
 
   CEntityProperty *pep = NULL;
+  ULONG ulProp = props["ulProp"].GetIndex();
 
-  if (bName) {
+  if (props["bName"].IsTrue()) {
     pep = IWorld::PropertyForHash(pen, ulProp);
   } else {
     pep = IWorld::PropertyForId(pen, ulProp);
@@ -70,19 +82,22 @@ void CExtEntityProp::Process(void) {
 
   INDEX iType = IProperties::ConvertType(pep->ep_eptType);
 
+  bool bString = (props["value"].GetType() == CAnyValue::E_VAL_STRING);
+
   if (bString) {
     if (iType == CEntityProperty::EPT_STRING) {
+      CTString &strValue = props["value"].GetString();
       IProperties::SetPropValue(pen, pep, &strValue);
     } else {
       ClassicsPackets_ServerReport(this, TRANS("Expected string property type but got %d\n"), iType);
     }
 
   } else if (iType == CEntityProperty::EPT_FLOAT) {
-    FLOAT fFloatProp = fValue;
+    FLOAT fFloatProp = props["value"].ToFloat();
     IProperties::SetPropValue(pen, pep, &fFloatProp);
 
   } else if (iType == CEntityProperty::EPT_INDEX) {
-    INDEX iIntProp = fValue;
+    INDEX iIntProp = props["value"].ToIndex();
     IProperties::SetPropValue(pen, pep, &iIntProp);
 
   } else {

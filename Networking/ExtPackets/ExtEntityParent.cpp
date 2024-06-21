@@ -21,13 +21,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 bool CExtEntityParent::Write(CNetworkMessage &nm) {
   WriteEntity(nm);
+
+  ULONG ulParent = props["ulParent"].GetIndex();
   INetCompress::Integer(nm, ulParent);
   return true;
 };
 
 void CExtEntityParent::Read(CNetworkMessage &nm) {
   ReadEntity(nm);
+
+  ULONG ulParent;
   INetDecompress::Integer(nm, ulParent);
+  props["ulParent"].GetIndex() = ulParent;
 };
 
 void CExtEntityParent::Process(void) {
@@ -35,7 +40,9 @@ void CExtEntityParent::Process(void) {
 
   if (!EntityExists(pen)) return;
 
+  const ULONG ulParent = props["ulParent"].GetIndex();
   CEntity *penParent = FindExtEntity(ulParent);
+
   pen->SetParent(penParent);
 
   if (pen->GetParent() == NULL) {

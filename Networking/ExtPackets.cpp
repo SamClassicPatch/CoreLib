@@ -91,6 +91,7 @@ CEntity *CExtEntityPacket::GetEntity(void) {
     return NULL;
   }
 
+  const ULONG ulEntity = props["ulEntity"].GetIndex();
   CEntity *pen = FindExtEntity(ulEntity);
 
   if (pen == NULL) {
@@ -99,6 +100,17 @@ CEntity *CExtEntityPacket::GetEntity(void) {
   }
 
   return pen;
+};
+
+// Convenient value getter
+CAnyValue &CExtPacket::operator[](const CTString &strVariable) {
+  return props[strVariable];
+};
+
+// Convenient value setter
+void CExtPacket::operator()(const CTString &strVariable, const CAnyValue &val) {
+  if (props[strVariable].GetType() != val.GetType()) return;
+  props[strVariable] = val;
 };
 
 // Create new packet from type

@@ -22,6 +22,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #if _PATCHCONFIG_EXT_PACKETS
 
 bool CExtChangeLevel::Write(CNetworkMessage &nm) {
+  CTString &strWorld = props["strWorld"].GetString();
+
   // Store up to 255 characters
   UBYTE ct = (UBYTE)ClampUp(strWorld.Length(), (INDEX)255);
   nm << ct;
@@ -35,6 +37,7 @@ bool CExtChangeLevel::Write(CNetworkMessage &nm) {
 };
 
 void CExtChangeLevel::Read(CNetworkMessage &nm) {
+  CTString &strWorld = props["strWorld"].GetString();
   strWorld = "";
 
   UBYTE ct;
@@ -49,6 +52,8 @@ void CExtChangeLevel::Read(CNetworkMessage &nm) {
 };
 
 void CExtChangeLevel::Process(void) {
+  const CTString &strWorld = props["strWorld"].GetString();
+
   if (!FileExists(strWorld)) {
     ClassicsPackets_ServerReport(this, TRANS("Cannot change world to '%s': World file does not exist\n"), strWorld);
     return;
@@ -87,6 +92,8 @@ void CExtChangeLevel::Process(void) {
 };
 
 void CExtChangeWorld::Process(void) {
+  const CTString &strWorld = props["strWorld"].GetString();
+
   if (!FileExists(strWorld)) {
     ClassicsPackets_ServerReport(this, TRANS("Cannot change world to '%s': World file does not exist\n"), strWorld);
     return;

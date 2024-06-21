@@ -21,22 +21,32 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 bool CExtEntityFlags::Write(CNetworkMessage &nm) {
   WriteEntity(nm);
+
+  ULONG ulFlags = props["ulFlags"].GetIndex();
   INetCompress::Integer(nm, ulFlags);
-  
-  nm.WriteBits(&ubType, 2);
+
+  INDEX iType = props["iType"].GetIndex();
+  nm.WriteBits(&iType, 2);
+
+  BOOL bRemove = props["bRemove"].IsTrue();
   nm.WriteBits(&bRemove, 1);
   return true;
 };
 
 void CExtEntityFlags::Read(CNetworkMessage &nm) {
   ReadEntity(nm);
+
+  ULONG ulFlags;
   INetDecompress::Integer(nm, ulFlags);
+  props["ulFlags"].GetIndex() = ulFlags;
 
-  ubType = 0;
-  nm.ReadBits(&ubType, 2);
+  INDEX iType = 0;
+  nm.ReadBits(&iType, 2);
+  props["iType"].GetIndex() = iType;
 
-  bRemove = FALSE;
+  BOOL bRemove = FALSE;
   nm.ReadBits(&bRemove, 1);
+  props["bRemove"].GetIndex() = bRemove;
 };
 
 void CExtEntityFlags::Process(void) {
@@ -44,14 +54,18 @@ void CExtEntityFlags::Process(void) {
 
   if (!EntityExists(pen)) return;
 
+  const ULONG ulFlags = props["ulFlags"].GetIndex();
+  const INDEX iType = props["iType"].GetIndex();
+  const BOOL bRemove = props["bRemove"].IsTrue();
+
   ULONG *pulFlags = &pen->en_ulFlags;
   CTString strReport = TRANS("Changed flags of %u entity: 0x%08X -> 0x%08X\n");
 
-  if (ubType == 1) {
+  if (iType == 1) {
     pulFlags = &pen->en_ulPhysicsFlags;
     strReport = TRANS("Changed physical flags of %u entity: 0x%08X -> 0x%08X\n");
 
-  } else if (ubType == 2) {
+  } else if (iType == 2) {
     pulFlags = &pen->en_ulCollisionFlags;
     strReport = TRANS("Changed collision flags of %u entity: 0x%08X -> 0x%08X\n");
   }

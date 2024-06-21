@@ -21,15 +21,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 bool CExtEntityCopy::Write(CNetworkMessage &nm) {
   WriteEntity(nm);
-  nm.WriteBits(&ubCopies, 5); // Up to 31
+
+  INDEX iCopies = props["iCopies"].GetIndex();
+  nm.WriteBits(&iCopies, 5); // Up to 31
   return true;
 };
 
 void CExtEntityCopy::Read(CNetworkMessage &nm) {
   ReadEntity(nm);
 
-  ubCopies = 0;
-  nm.ReadBits(&ubCopies, 5);
+  INDEX iCopies = 0;
+  nm.ReadBits(&iCopies, 5);
+  props["iCopies"].GetIndex() = iCopies;
 };
 
 void CExtEntityCopy::Process(void) {
@@ -38,8 +41,9 @@ void CExtEntityCopy::Process(void) {
   if (!EntityExists(pen)) return;
 
   CTString strReport(0, TRANS("Copied %u entity: "), pen->en_ulID);
+  const INDEX iCopies = props["iCopies"].GetIndex();
 
-  for (UBYTE i = 0; i < ubCopies; i++) {
+  for (INDEX i = 0; i < iCopies; i++) {
     // Update last created entity
     CExtEntityCreate::penLast = IWorld::GetWorld()->CopyEntityInWorld(*pen, pen->GetPlacement(), TRUE);
 

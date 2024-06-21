@@ -21,19 +21,19 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 bool CExtEntityPosition::Write(CNetworkMessage &nm) {
   WriteEntity(nm);
+
+  BOOL bRotation = props["bRotation"].IsTrue();
   nm.WriteBits(&bRotation, 1);
 
-  if (bRotation) {
-    INetCompress::Angle(nm, vSet(1));
-    INetCompress::Angle(nm, vSet(2));
-    INetCompress::Angle(nm, vSet(3));
+  const FLOAT3D &vSet = props["vSet"].GetVector();
 
+  if (bRotation) {
+    INetCompress::Angle3D(nm, vSet);
   } else {
-    INetCompress::Float(nm, vSet(1));
-    INetCompress::Float(nm, vSet(2));
-    INetCompress::Float(nm, vSet(3));
+    INetCompress::Float3D(nm, vSet);
   }
 
+  BOOL bRelative = props["bRelative"].IsTrue();
   nm.WriteBits(&bRelative, 1);
   return true;
 };
@@ -41,22 +41,21 @@ bool CExtEntityPosition::Write(CNetworkMessage &nm) {
 void CExtEntityPosition::Read(CNetworkMessage &nm) {
   ReadEntity(nm);
 
-  bRotation = FALSE;
+  BOOL bRotation = FALSE;
   nm.ReadBits(&bRotation, 1);
+  props["bRotation"].GetIndex() = bRotation;
+
+  FLOAT3D &vSet = props["vSet"].GetVector();
 
   if (bRotation) {
-    INetDecompress::Angle(nm, vSet(1));
-    INetDecompress::Angle(nm, vSet(2));
-    INetDecompress::Angle(nm, vSet(3));
-
+    INetDecompress::Angle3D(nm, vSet);
   } else {
-    INetDecompress::Float(nm, vSet(1));
-    INetDecompress::Float(nm, vSet(2));
-    INetDecompress::Float(nm, vSet(3));
+    INetDecompress::Float3D(nm, vSet);
   }
 
-  bRelative = FALSE;
+  BOOL bRelative = FALSE;
   nm.ReadBits(&bRelative, 1);
+  props["bRelative"].GetIndex() = bRelative;
 };
 
 void CExtEntityPosition::Process(void) {
@@ -65,6 +64,10 @@ void CExtEntityPosition::Process(void) {
   if (!EntityExists(pen)) return;
 
   CPlacement3D pl = pen->GetPlacement();
+
+  const FLOAT3D &vSet = props["vSet"].GetVector();
+  const BOOL bRotation = props["bRotation"].IsTrue();
+  const BOOL bRelative = props["bRelative"].IsTrue();
 
   // Relative to absolute axes
   if (bRelative) {
@@ -85,9 +88,8 @@ void CExtEntityPosition::Process(void) {
 
   pen->Teleport(pl, FALSE);
 
-  ClassicsPackets_ServerReport(this, TRANS("Teleported %u entity to [%.2f, %.2f, %.2f;  %.2f, %.2f, %.2f]\n"), pen->en_ulID,
-    pl.pl_PositionVector(1),   pl.pl_PositionVector(2),   pl.pl_PositionVector(3),
-    pl.pl_OrientationAngle(1), pl.pl_OrientationAngle(2), pl.pl_OrientationAngle(3));
+  CAnyValue val(pl);
+  ClassicsPackets_ServerReport(this, TRANS("Teleported %u entity to %s\n"), pen->en_ulID, val.ToString());
 };
 
 #endif // _PATCHCONFIG_EXT_PACKETS

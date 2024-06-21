@@ -21,6 +21,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 bool CExtEntityDelete::Write(CNetworkMessage &nm) {
   WriteEntity(nm);
+
+  BOOL bSameClass = props["bSameClass"].IsTrue();
   nm.WriteBits(&bSameClass, 1);
   return true;
 };
@@ -28,8 +30,9 @@ bool CExtEntityDelete::Write(CNetworkMessage &nm) {
 void CExtEntityDelete::Read(CNetworkMessage &nm) {
   ReadEntity(nm);
 
-  bSameClass = FALSE;
+  BOOL bSameClass = FALSE;
   nm.ReadBits(&bSameClass, 1);
+  props["bSameClass"].GetIndex() = bSameClass;
 };
 
 void CExtEntityDelete::Process(void) {
@@ -43,7 +46,7 @@ void CExtEntityDelete::Process(void) {
   }
 
   // Delete all entities of the same class
-  if (bSameClass) {
+  if (props["bSameClass"].IsTrue()) {
     const char *strClass = pen->GetClass()->ec_pdecDLLClass->dec_strName;
     INDEX iClassID = pen->GetClass()->ec_pdecDLLClass->dec_iID;
 

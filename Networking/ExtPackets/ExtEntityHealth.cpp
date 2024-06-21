@@ -21,13 +21,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 bool CExtEntityHealth::Write(CNetworkMessage &nm) {
   WriteEntity(nm);
-  INetCompress::Float(nm, fHealth);
+  INetCompress::Float(nm, props["fHealth"].GetFloat());
   return true;
 };
 
 void CExtEntityHealth::Read(CNetworkMessage &nm) {
   ReadEntity(nm);
-  INetDecompress::Float(nm, fHealth);
+  INetDecompress::Float(nm, props["fHealth"].GetFloat());
 };
 
 void CExtEntityHealth::Process(void) {
@@ -36,6 +36,8 @@ void CExtEntityHealth::Process(void) {
   if (!EntityExists(pen)) return;
 
   if (IsLiveEntity(pen)) {
+    FLOAT fHealth = props["fHealth"].GetFloat();
+
     ((CLiveEntity *)pen)->SetHealth(fHealth);
     ClassicsPackets_ServerReport(this, TRANS("Set health of %u entity to %.2f\n"), pen->en_ulID, fHealth);
 

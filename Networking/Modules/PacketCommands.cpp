@@ -92,8 +92,8 @@ void EntityCreate(SHELL_FUNC_ARGS) {
   const CTString &strClass = *NEXT_ARG(CTString *);
 
   CExtEntityCreate pck;
-  pck.fnmClass = "Classes\\" + strClass + ".ecl";
-  pck.SendPacket();
+  pck("fnmClass", "Classes\\" + strClass + ".ecl");
+  pck.SendToClients();
 };
 
 // Destroy entities
@@ -103,9 +103,9 @@ void EntityDelete(SHELL_FUNC_ARGS) {
   INDEX iSameClass = NEXT_ARG(INDEX);
 
   CExtEntityDelete pck;
-  pck.ulEntity = iEntity;
-  pck.bSameClass = (iSameClass != 0);
-  pck.SendPacket();
+  pck("ulEntity", (int)iEntity);
+  pck("bSameClass", bool(iSameClass != 0));
+  pck.SendToClients();
 };
 
 // Copy entity
@@ -115,9 +115,9 @@ void EntityCopy(SHELL_FUNC_ARGS) {
   INDEX iCopies = NEXT_ARG(INDEX);
 
   CExtEntityCopy pck;
-  pck.ulEntity = iEntity;
-  pck.ubCopies = Clamp(iCopies, (INDEX)0, (INDEX)31);
-  pck.SendPacket();
+  pck("ulEntity", (int)iEntity);
+  pck("iCopies", Clamp(iCopies, (INDEX)0, (INDEX)31));
+  pck.SendToClients();
 };
 
 // Send set up event to an entity
@@ -126,9 +126,9 @@ void EntityEvent(SHELL_FUNC_ARGS) {
   INDEX iEntity = NEXT_ARG(INDEX);
 
   CExtEntityEvent pck;
-  pck.ulEntity = iEntity;
+  pck("ulEntity", (int)iEntity);
   pck.Copy(_eePacketEvent, _ctPacketEventFields);
-  pck.SendPacket();
+  pck.SendToClients();
 };
 
 // Receive item by an entity via a set up event
@@ -137,9 +137,9 @@ void EntityItem(SHELL_FUNC_ARGS) {
   INDEX iEntity = NEXT_ARG(INDEX);
 
   CExtEntityItem pck;
-  pck.ulEntity = iEntity;
+  pck("ulEntity", (int)iEntity);
   pck.Copy(_eePacketEvent, _ctPacketEventFields);
-  pck.SendPacket();
+  pck.SendToClients();
 };
 
 // Initialize entity
@@ -148,9 +148,9 @@ void EntityInit(SHELL_FUNC_ARGS) {
   INDEX iEntity = NEXT_ARG(INDEX);
 
   CExtEntityInit pck;
-  pck.ulEntity = iEntity;
+  pck("ulEntity", (int)iEntity);
   pck.SetEvent(EVoid(), sizeof(EVoid));
-  pck.SendPacket();
+  pck.SendToClients();
 };
 
 // Initialize entity with preset event
@@ -159,9 +159,9 @@ void EntityInitEvent(SHELL_FUNC_ARGS) {
   INDEX iEntity = NEXT_ARG(INDEX);
 
   CExtEntityInit pck;
-  pck.ulEntity = iEntity;
+  pck("ulEntity", (int)iEntity);
   pck.Copy(_eePacketEvent, _ctPacketEventFields);
-  pck.SendPacket();
+  pck.SendToClients();
 };
 
 // Set new entity position
@@ -174,11 +174,11 @@ void EntitySetPos(SHELL_FUNC_ARGS) {
   INDEX iRelative = NEXT_ARG(INDEX);
 
   CExtEntityPosition pck;
-  pck.ulEntity = iEntity;
-  pck.vSet = FLOAT3D(fX, fY, fZ);
-  pck.bRotation = FALSE;
-  pck.bRelative = (iRelative != 0);
-  pck.SendPacket();
+  pck("ulEntity", (int)iEntity);
+  pck("vSet", FLOAT3D(fX, fY, fZ));
+  pck("bRotation", false);
+  pck("bRelative", bool(iRelative != 0));
+  pck.SendToClients();
 };
 
 // Set new entity rotation
@@ -191,11 +191,11 @@ void EntitySetRot(SHELL_FUNC_ARGS) {
   INDEX iRelative = NEXT_ARG(INDEX);
 
   CExtEntityPosition pck;
-  pck.ulEntity = iEntity;
-  pck.vSet = FLOAT3D(fH, fP, fB);
-  pck.bRotation = TRUE;
-  pck.bRelative = (iRelative != 0);
-  pck.SendPacket();
+  pck("ulEntity", (int)iEntity);
+  pck("vSet", FLOAT3D(fH, fP, fB));
+  pck("bRotation", true);
+  pck("bRelative", bool(iRelative != 0));
+  pck.SendToClients();
 };
 
 // Set new entity placement
@@ -211,10 +211,10 @@ void EntityTeleport(SHELL_FUNC_ARGS) {
   INDEX iRelative = NEXT_ARG(INDEX);
 
   CExtEntityTeleport pck;
-  pck.ulEntity = iEntity;
-  pck.plSet = CPlacement3D(FLOAT3D(fX, fY, fZ), ANGLE3D(fH, fP, fB));
-  pck.bRelative = (iRelative != 0);
-  pck.SendPacket();
+  pck("ulEntity", (int)iEntity);
+  pck("plSet", CPlacement3D(FLOAT3D(fX, fY, fZ), ANGLE3D(fH, fP, fB)));
+  pck("bRelative", bool(iRelative != 0));
+  pck.SendToClients();
 };
 
 // Parent entity
@@ -224,9 +224,9 @@ void EntityParent(SHELL_FUNC_ARGS) {
   INDEX iParent = NEXT_ARG(INDEX);
 
   CExtEntityParent pck;
-  pck.ulEntity = iEntity;
-  pck.ulParent = iParent;
-  pck.SendPacket();
+  pck("ulEntity", (int)iEntity);
+  pck("ulParent", (int)iParent);
+  pck.SendToClients();
 };
 
 // Change number property by name or ID
@@ -238,7 +238,7 @@ void EntityNumberProp(SHELL_FUNC_ARGS) {
   FLOAT fValue = NEXT_ARG(FLOAT);
 
   CExtEntityProp pck;
-  pck.ulEntity = iEntity;
+  pck("ulEntity", (int)iEntity);
 
   if (strProp != "") {
     pck.SetProperty(strProp);
@@ -247,7 +247,7 @@ void EntityNumberProp(SHELL_FUNC_ARGS) {
   }
 
   pck.SetValue(fValue);
-  pck.SendPacket();
+  pck.SendToClients();
 };
 
 // Change string property by name or ID
@@ -259,7 +259,7 @@ void EntityStringProp(SHELL_FUNC_ARGS) {
   const CTString &strValue = *NEXT_ARG(CTString *);
 
   CExtEntityProp pck;
-  pck.ulEntity = iEntity;
+  pck("ulEntity", (int)iEntity);
 
   if (strProp != "") {
     pck.SetProperty(strProp);
@@ -268,7 +268,7 @@ void EntityStringProp(SHELL_FUNC_ARGS) {
   }
 
   pck.SetValue(strValue);
-  pck.SendPacket();
+  pck.SendToClients();
 };
 
 // Change entity health
@@ -278,9 +278,9 @@ void EntityHealth(SHELL_FUNC_ARGS) {
   FLOAT fHealth = NEXT_ARG(FLOAT);
 
   CExtEntityHealth pck;
-  pck.ulEntity = iEntity;
-  pck.fHealth = fHealth;
-  pck.SendPacket();
+  pck("ulEntity", (int)iEntity);
+  pck("fHealth", fHealth);
+  pck.SendToClients();
 };
 
 // Change entity flags
@@ -291,9 +291,9 @@ void EntityFlags(SHELL_FUNC_ARGS) {
   INDEX iRemove = NEXT_ARG(INDEX);
 
   CExtEntityFlags pck;
-  pck.ulEntity = iEntity;
+  pck("ulEntity", (int)iEntity);
   pck.EntityFlags(iFlags, (iRemove != 0));
-  pck.SendPacket();
+  pck.SendToClients();
 };
 
 // Change physical flags
@@ -304,9 +304,9 @@ void EntityPhysicalFlags(SHELL_FUNC_ARGS) {
   INDEX iRemove = NEXT_ARG(INDEX);
 
   CExtEntityFlags pck;
-  pck.ulEntity = iEntity;
+  pck("ulEntity", (int)iEntity);
   pck.PhysicalFlags(iFlags, (iRemove != 0));
-  pck.SendPacket();
+  pck.SendToClients();
 };
 
 // Change collision flags
@@ -317,9 +317,9 @@ void EntityCollisionFlags(SHELL_FUNC_ARGS) {
   INDEX iRemove = NEXT_ARG(INDEX);
 
   CExtEntityFlags pck;
-  pck.ulEntity = iEntity;
+  pck("ulEntity", (int)iEntity);
   pck.CollisionFlags(iFlags, (iRemove != 0));
-  pck.SendPacket();
+  pck.SendToClients();
 };
 
 // Set movement speed
@@ -331,9 +331,9 @@ void EntityMove(SHELL_FUNC_ARGS) {
   FLOAT fZ = NEXT_ARG(FLOAT);
 
   CExtEntityMove pck;
-  pck.ulEntity = iEntity;
-  pck.vSpeed = FLOAT3D(fX, fY, fZ);
-  pck.SendPacket();
+  pck("ulEntity", (int)iEntity);
+  pck("vSpeed", FLOAT3D(fX, fY, fZ));
+  pck.SendToClients();
 };
 
 // Set rotation speed
@@ -345,9 +345,9 @@ void EntityRotate(SHELL_FUNC_ARGS) {
   FLOAT fB = NEXT_ARG(FLOAT);
 
   CExtEntityRotate pck;
-  pck.ulEntity = iEntity;
-  pck.vSpeed = FLOAT3D(fH, fP, fB);
-  pck.SendPacket();
+  pck("ulEntity", (int)iEntity);
+  pck("vSpeed", FLOAT3D(fH, fP, fB));
+  pck.SendToClients();
 };
 
 // Give impulse in an absolute direction
@@ -359,9 +359,9 @@ void EntityImpulse(SHELL_FUNC_ARGS) {
   FLOAT fZ = NEXT_ARG(FLOAT);
 
   CExtEntityImpulse pck;
-  pck.ulEntity = iEntity;
-  pck.vSpeed = FLOAT3D(fX, fY, fZ);
-  pck.SendPacket();
+  pck("ulEntity", (int)iEntity);
+  pck("vSpeed", FLOAT3D(fX, fY, fZ));
+  pck.SendToClients();
 };
 
 static INDEX _iDamageSetup = -1;
@@ -442,36 +442,36 @@ void EntityDamage(void) {
   switch (_iDamageSetup) {
     case 0: {
       CExtEntityDirectDamage pck;
-      pck.ulEntity = _ulDamageInflictor;
-      pck.eDamageType = _ulDamageType;
-      pck.fDamage = _fDamageAmount;
+      pck("ulEntity", (int)_ulDamageInflictor);
+      pck("eDamageType", (int)_ulDamageType);
+      pck("fDamage", _fDamageAmount);
 
-      pck.ulTarget = _ulDamageTarget;
-      pck.vHitPoint = _vDamageVec1;
-      pck.vDirection = _vDamageVec2;
-      pck.SendPacket();
+      pck("ulTarget", (int)_ulDamageTarget);
+      pck("vHitPoint", _vDamageVec1);
+      pck("vDirection", _vDamageVec2);
+      pck.SendToClients();
     } break;
 
     case 1: {
       CExtEntityRangeDamage pck;
-      pck.ulEntity = _ulDamageInflictor;
-      pck.eDamageType = _ulDamageType;
-      pck.fDamage = _fDamageAmount;
+      pck("ulEntity", (int)_ulDamageInflictor);
+      pck("eDamageType", (int)_ulDamageType);
+      pck("fDamage", _fDamageAmount);
 
-      pck.vCenter = _vDamageVec1;
-      pck.fFallOff = _vDamageVec2(1);
-      pck.fHotSpot = _vDamageVec2(2);
-      pck.SendPacket();
+      pck("vCenter", _vDamageVec1);
+      pck("fFallOff", _vDamageVec2(1));
+      pck("fHotSpot", _vDamageVec2(2));
+      pck.SendToClients();
     } break;
 
     case 2: {
       CExtEntityBoxDamage pck;
-      pck.ulEntity = _ulDamageInflictor;
-      pck.eDamageType = _ulDamageType;
-      pck.fDamage = _fDamageAmount;
+      pck("ulEntity", (int)_ulDamageInflictor);
+      pck("eDamageType", (int)_ulDamageType);
+      pck("fDamage", _fDamageAmount);
 
-      pck.boxArea = FLOATaabbox3D(_vDamageVec1, _vDamageVec2);
-      pck.SendPacket();
+      pck("boxArea", FLOATaabbox3D(_vDamageVec1, _vDamageVec2));
+      pck.SendToClients();
     } break;
   }
 };
@@ -482,8 +482,8 @@ void ChangeLevel(SHELL_FUNC_ARGS) {
   const CTString &strWorld = *NEXT_ARG(CTString *);
 
   CExtChangeLevel pck;
-  pck.strWorld = strWorld;
-  pck.SendPacket();
+  pck("strWorld", strWorld);
+  pck.SendToClients();
 };
 
 // Force immediate world change
@@ -492,8 +492,8 @@ void ChangeWorld(SHELL_FUNC_ARGS) {
   const CTString &strWorld = *NEXT_ARG(CTString *);
 
   CExtChangeWorld pck;
-  pck.strWorld = strWorld;
-  pck.SendPacket();
+  pck("strWorld", strWorld);
+  pck.SendToClients();
 };
 
 // Preconfigured session properties to change
@@ -502,8 +502,8 @@ static CExtSessionProps _pckSesProps;
 // Begin session properties setup from specific offset
 void StartSesProps(SHELL_FUNC_ARGS) {
   BEGIN_SHELL_FUNC;
-  _pckSesProps.slOffset = NEXT_ARG(INDEX);
-  _pckSesProps.slSize = 0;
+  _pckSesProps.GetOffset() = NEXT_ARG(INDEX);
+  _pckSesProps.GetSize() = 0;
 };
 
 // Set integer in session properties
@@ -531,12 +531,14 @@ void SesPropString(SHELL_FUNC_ARGS) {
 void SeekSesProp(SHELL_FUNC_ARGS) {
   BEGIN_SHELL_FUNC;
   INDEX iBytes = NEXT_ARG(INDEX);
-  _pckSesProps.slSize = ClampDn(_pckSesProps.slSize + iBytes, (SLONG)0);
+
+  INDEX &iSize = _pckSesProps.GetSize();
+  iSize = ClampDn(iSize + iBytes, (INDEX)0);
 };
 
 // Send previously set session properties
 void SendSesProps(void) {
-  _pckSesProps.SendPacket();
+  _pckSesProps.SendToClients();
 };
 
 // Change number value of some gameplay extension
@@ -547,7 +549,7 @@ void GameplayExtNumber(SHELL_FUNC_ARGS) {
 
   CExtGameplayExt pck;
   pck.SetValue(strVar, fValue);
-  pck.SendPacket();
+  pck.SendToClients();
 };
 
 // Change string value of some gameplay extension
@@ -558,7 +560,7 @@ void GameplayExtString(SHELL_FUNC_ARGS) {
 
   CExtGameplayExt pck;
   pck.SetValue(strVar, strValue);
-  pck.SendPacket();
+  pck.SendToClients();
 };
 
 }; // namespace

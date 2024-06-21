@@ -37,30 +37,32 @@ int CExtGameplayExt::FindVar(const CTString &strVar) {
 
 // Set string value
 void CExtGameplayExt::SetValue(const CTString &strVar, const CTString &str) {
-  iVar = FindVar(strVar);
-  bString = TRUE;
-  strValue = str;
+  props["iVar"] = FindVar(strVar);
+  props["value"] = str;
 };
 
 // Set number value
 void CExtGameplayExt::SetValue(const CTString &strVar, DOUBLE f) {
-  iVar = FindVar(strVar);
-  bString = FALSE;
-  fValue = f;
+  props["iVar"] = FindVar(strVar);
+  props["value"] = f;
 };
 
 bool CExtGameplayExt::Write(CNetworkMessage &nm) {
 #if _PATCHCONFIG_GAMEPLAY_EXT
 
   // It's not like there will ever be more than 16383 GEX variables,
-  // plus if 'fValue' is 0, it'll all be neatly packed in just 2 bytes!
+  // plus if 'value' is 0.0, it'll all be neatly packed in just 2 bytes!
+  UWORD iVar = props["iVar"].GetIndex();
+  if (iVar == 0) return false;
+
+  BOOL bString = (props["value"].GetType() == CAnyValue::E_VAL_STRING);
   nm.WriteBits(&iVar, 14);
   nm.WriteBits(&bString, 1);
 
   if (bString) {
-    nm << strValue;
+    nm << props["value"].ToString();
   } else {
-    INetCompress::Double(nm, fValue);
+    INetCompress::Double(nm, props["value"].ToFloat());
   }
 
   return true;
@@ -72,16 +74,23 @@ bool CExtGameplayExt::Write(CNetworkMessage &nm) {
 void CExtGameplayExt::Read(CNetworkMessage &nm) {
 #if _PATCHCONFIG_GAMEPLAY_EXT
 
-  iVar = 0;
-  bString = FALSE;
+  UWORD iVar = 0;
+  BOOL bString = FALSE;
 
   nm.ReadBits(&iVar, 14);
   nm.ReadBits(&bString, 1);
 
+  props["iVar"] = (int)iVar;
+
   if (bString) {
+    CTString strValue;
     nm >> strValue;
+    props["value"] = strValue;
+
   } else {
+    DOUBLE fValue;
     INetDecompress::Double(nm, fValue);
+    props["value"] = fValue;
   }
 
 #endif // _PATCHCONFIG_GAMEPLAY_EXT
@@ -91,11 +100,13 @@ void CExtGameplayExt::Process(void) {
 #if _PATCHCONFIG_GAMEPLAY_EXT
 
   // Invalid offset
-  INDEX iGameplayExt = INDEX(iVar) - 1;
+  INDEX iGameplayExt = props["iVar"].GetIndex() - 1;
   if (iGameplayExt < 0 || iGameplayExt >= k_EGameplayExt_Max) return;
 
   IConfig::NamedValue &entry = IConfig::gex.props[iGameplayExt];
   CAnyValue::EType eType = entry.val.GetType();
+
+  bool bString = (props["value"].GetType() == CAnyValue::E_VAL_STRING);
 
   // Got a number but expected a string
   if (!bString && eType == CAnyValue::E_VAL_STRING) {
@@ -110,10 +121,10 @@ void CExtGameplayExt::Process(void) {
 
   // Set new value depending on type
   switch (eType) {
-    case CAnyValue::E_VAL_BOOL:   entry.val.GetIndex() = fValue; break;
-    case CAnyValue::E_VAL_INDEX:  entry.val.GetIndex() = fValue; break;
-    case CAnyValue::E_VAL_FLOAT:  entry.val.GetFloat() = fValue; break;
-    case CAnyValue::E_VAL_STRING: entry.val.GetString() = strValue; break;
+    case CAnyValue::E_VAL_BOOL:   entry.val.GetIndex()  = props["value"].GetDouble(); break;
+    case CAnyValue::E_VAL_INDEX:  entry.val.GetIndex()  = props["value"].GetDouble(); break;
+    case CAnyValue::E_VAL_FLOAT:  entry.val.GetFloat()  = props["value"].GetDouble(); break;
+    case CAnyValue::E_VAL_STRING: entry.val.GetString() = props["value"].GetString(); break;
   }
 
 #else

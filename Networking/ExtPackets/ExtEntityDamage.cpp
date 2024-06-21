@@ -21,38 +21,48 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 bool CExtEntityDamage::Write(CNetworkMessage &nm) {
   WriteEntity(nm);
-  INetCompress::Integer(nm, eDamageType);
+
+  ULONG ulDamageType = props["eDamageType"].GetIndex();
+  INetCompress::Integer(nm, ulDamageType);
 
   // Write damage amount up to 2 decimal places
-  INetCompress::Integer(nm, fDamage * 100.0f);
+  ULONG ulDamagePoints = ULONG(props["fDamage"].GetFloat()) * 100;
+  INetCompress::Integer(nm, ulDamagePoints);
   return true;
 };
 
 void CExtEntityDamage::Read(CNetworkMessage &nm) {
   ReadEntity(nm);
-  INetDecompress::Integer(nm, eDamageType);
+
+  ULONG ulDamageType;
+  INetDecompress::Integer(nm, ulDamageType);
 
   // Read damage amount
   ULONG ulDamagePoints;
   INetDecompress::Integer(nm, ulDamagePoints);
-  fDamage = FLOAT(ulDamagePoints) * 0.01f;
+
+  props["eDamageType"].GetIndex() = ulDamageType;
+  props["fDamage"].GetFloat() = FLOAT(ulDamagePoints) * 0.01f;
 };
 
 bool CExtEntityDirectDamage::Write(CNetworkMessage &nm) {
   CExtEntityDamage::Write(nm);
 
-  INetCompress::Integer(nm, ulTarget);
-  INetCompress::Float3D(nm, vHitPoint);
-  INetCompress::Float3D(nm, vDirection);
+  INetCompress::Integer(nm, props["ulTarget"].GetIndex());
+  INetCompress::Float3D(nm, props["vHitPoint"].GetVector());
+  INetCompress::Float3D(nm, props["vDirection"].GetVector());
   return true;
 };
 
 void CExtEntityDirectDamage::Read(CNetworkMessage &nm) {
   CExtEntityDamage::Read(nm);
 
+  ULONG ulTarget;
   INetDecompress::Integer(nm, ulTarget);
-  INetDecompress::Float3D(nm, vHitPoint);
-  INetDecompress::Float3D(nm, vDirection);
+  props["ulTarget"].GetIndex() = ulTarget;
+
+  INetDecompress::Float3D(nm, props["vHitPoint"].GetVector());
+  INetDecompress::Float3D(nm, props["vDirection"].GetVector());
 };
 
 void CExtEntityDirectDamage::Process(void) {
@@ -60,11 +70,17 @@ void CExtEntityDirectDamage::Process(void) {
 
   if (!EntityExists(pen)) return;
 
+  const ULONG ulTarget = props["ulTarget"].GetIndex();
   CEntity *penTarget = FindExtEntity(ulTarget);
 
   if (penTarget == NULL) return;
 
-  pen->InflictDirectDamage(penTarget, pen, (DamageType)eDamageType, fDamage, vHitPoint, vDirection);
+  const DamageType eDamageType = (DamageType)props["eDamageType"].GetIndex();
+  const FLOAT fDamage = props["fDamage"].GetFloat();
+  const FLOAT3D vHitPoint = props["vHitPoint"].GetVector();
+  const FLOAT3D vDirection = props["vDirection"].GetVector();
+
+  pen->InflictDirectDamage(penTarget, pen, eDamageType, fDamage, vHitPoint, vDirection);
 
   ClassicsPackets_ServerReport(this, TRANS("Entity %u inflicted %.2f damage to entity %u\n"), pen->en_ulID, fDamage, penTarget->en_ulID);
 };
@@ -72,23 +88,27 @@ void CExtEntityDirectDamage::Process(void) {
 bool CExtEntityRangeDamage::Write(CNetworkMessage &nm) {
   CExtEntityDamage::Write(nm);
 
-  INetCompress::Float3D(nm, vCenter);
-  INetCompress::Integer(nm, fFallOff * 10.0f);
-  INetCompress::Integer(nm, fHotSpot * 10.0f);
+  INetCompress::Float3D(nm, props["vCenter"].GetVector());
+
+  ULONG ulRange = ULONG(props["fFallOff"].GetFloat()) * 10;
+  INetCompress::Integer(nm, ulRange);
+
+  ulRange = ULONG(props["fHotSpot"].GetFloat()) * 10;
+  INetCompress::Integer(nm, ulRange);
   return true;
 };
 
 void CExtEntityRangeDamage::Read(CNetworkMessage &nm) {
   CExtEntityDamage::Read(nm);
 
-  INetDecompress::Float3D(nm, vCenter);
+  INetDecompress::Float3D(nm, props["vCenter"].GetVector());
 
   ULONG ulRange;
   INetDecompress::Integer(nm, ulRange);
-  fFallOff = FLOAT(ulRange) * 0.1f;
+  props["fFallOff"].GetFloat() = FLOAT(ulRange) / 10.0f;
 
   INetDecompress::Integer(nm, ulRange);
-  fHotSpot = FLOAT(ulRange) * 0.1f;
+  props["fHotSpot"].GetFloat() = FLOAT(ulRange) / 10.0f;
 };
 
 void CExtEntityRangeDamage::Process(void) {
@@ -96,7 +116,13 @@ void CExtEntityRangeDamage::Process(void) {
 
   if (!EntityExists(pen)) return;
 
-  pen->InflictRangeDamage(pen, (DamageType)eDamageType, fDamage, vCenter, fHotSpot, fFallOff);
+  const DamageType eDamageType = (DamageType)props["eDamageType"].GetIndex();
+  const FLOAT fDamage = props["fDamage"].GetFloat();
+  const FLOAT3D vCenter = props["vCenter"].GetVector();
+  const FLOAT fFallOff = props["fFallOff"].GetFloat();
+  const FLOAT fHotSpot = props["fHotSpot"].GetFloat();
+
+  pen->InflictRangeDamage(pen, eDamageType, fDamage, vCenter, fHotSpot, fFallOff);
 
   ClassicsPackets_ServerReport(this, TRANS("Entity %u inflicted %.2f damage in a %.1f range\n"), pen->en_ulID, fDamage, fFallOff);
 };
@@ -104,6 +130,7 @@ void CExtEntityRangeDamage::Process(void) {
 bool CExtEntityBoxDamage::Write(CNetworkMessage &nm) {
   CExtEntityDamage::Write(nm);
 
+  const FLOATaabbox3D &boxArea = props["boxArea"].GetBox();
   INetCompress::Float3D(nm, boxArea.minvect);
   INetCompress::Float3D(nm, boxArea.maxvect);
   return true;
@@ -112,6 +139,7 @@ bool CExtEntityBoxDamage::Write(CNetworkMessage &nm) {
 void CExtEntityBoxDamage::Read(CNetworkMessage &nm) {
   CExtEntityDamage::Read(nm);
 
+  FLOATaabbox3D &boxArea = props["boxArea"].GetBox();
   INetDecompress::Float3D(nm, boxArea.minvect);
   INetDecompress::Float3D(nm, boxArea.maxvect);
 };
@@ -121,7 +149,11 @@ void CExtEntityBoxDamage::Process(void) {
 
   if (!EntityExists(pen)) return;
 
-  pen->InflictBoxDamage(pen, (DamageType)eDamageType, fDamage, boxArea);
+  const DamageType eDamageType = (DamageType)props["eDamageType"].GetIndex();
+  const FLOAT fDamage = props["fDamage"].GetFloat();
+  const FLOATaabbox3D &boxArea = props["boxArea"].GetBox();
+
+  pen->InflictBoxDamage(pen, eDamageType, fDamage, boxArea);
 
   ClassicsPackets_ServerReport(this, TRANS("Entity %u inflicted %.2f damage in a [%.2f, %.2f, %.2f] sized area\n"),
     pen->en_ulID, fDamage, boxArea.Size()(1), boxArea.Size()(2), boxArea.Size()(3));

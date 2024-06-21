@@ -19,7 +19,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #if _PATCHCONFIG_EXT_PACKETS
 
-CTString CExtEntityCreate::aBaseClasses[255] = {
+// Dictionary of base class names, the index of which can be one byte
+static CTString _aBaseClasses[255] = {
   "Acid",
   "AirElemental",
   "AirShockwave",
@@ -182,7 +183,9 @@ CTString CExtEntityCreate::aBaseClasses[255] = {
 CEntity *CExtEntityCreate::penLast = NULL;
 
 bool CExtEntityCreate::Write(CNetworkMessage &nm) {
-  ubClass = 0xFF;
+  UBYTE ubClass = 0xFF; // Index in the dictionary (0-254; 255 is invalid)
+
+  const CTFileName fnmClass = props["fnmClass"].GetString();
   CTFileName fnmCheck = fnmClass;
 
   // If class file matches base classes
@@ -193,10 +196,10 @@ bool CExtEntityCreate::Write(CNetworkMessage &nm) {
       // Find its index in the dictionary
       for (UBYTE i = 0; i < 0xFF; i++) {
         // Empty base class
-        if (aBaseClasses[i] == "") continue;
+        if (_aBaseClasses[i] == "") continue;
 
         // Compare filename with a base class regardless of case
-        if (stricmp(fnmCheck.str_String, aBaseClasses[i]) == 0) {
+        if (stricmp(fnmCheck.str_String, _aBaseClasses[i]) == 0) {
           ubClass = i;
           break;
         }
@@ -218,11 +221,12 @@ bool CExtEntityCreate::Write(CNetworkMessage &nm) {
     }
   }
 
-  INetCompress::Placement(nm, plPos);
+  INetCompress::Placement(nm, props["plPos"].GetPlacement());
   return true;
 };
 
 void CExtEntityCreate::Read(CNetworkMessage &nm) {
+  UBYTE ubClass;
   nm >> ubClass;
 
   // Read extra class filename
@@ -230,25 +234,26 @@ void CExtEntityCreate::Read(CNetworkMessage &nm) {
     UBYTE ubLength;
     nm >> ubLength;
 
-    // Allocate enough characters
-    char *strAlloc = new char[ubLength + 1];
-    strAlloc[ubLength] = '\0';
-
     // Read each character
-    for (UBYTE i = 0; i < ubLength; i++) {
-      strAlloc[i] = INetDecompress::PathChar(nm);
+    char strAlloc[256]; // UBYTE maxes out at 255 anyway
+    INDEX iChar;
+
+    for (iChar = 0; iChar < ubLength; iChar++) {
+      strAlloc[iChar] = INetDecompress::PathChar(nm);
     }
 
-    // Assign path to the class and free the allocated buffer
-    fnmClass = strAlloc + CTString(".ecl");
-    delete[] strAlloc;
+    // Set null-terminator at the end
+    strAlloc[iChar] = '\0';
+
+    // Assign path to the class
+    props["fnmClass"].GetString() = strAlloc + CTString(".ecl");
 
   // Get class from the dictionary
   } else {
-    fnmClass = "Classes\\" + aBaseClasses[ubClass] + ".ecl";
+    props["fnmClass"].GetString() = "Classes\\" + _aBaseClasses[ubClass] + ".ecl";
   }
 
-  INetDecompress::Placement(nm, plPos);
+  INetDecompress::Placement(nm, props["plPos"].GetPlacement());
 };
 
 void CExtEntityCreate::Process(void) {
@@ -256,6 +261,9 @@ void CExtEntityCreate::Process(void) {
   penLast = NULL;
 
   try {
+    const CTString &fnmClass = props["fnmClass"].GetString();
+    const CPlacement3D &plPos = props["plPos"].GetPlacement();
+
     penLast = IWorld::GetWorld()->CreateEntity_t(plPos, fnmClass);
     ClassicsPackets_ServerReport(this, TRANS("Created '%s' entity (%u)\n"), penLast->GetClass()->ec_pdecDLLClass->dec_strName, penLast->en_ulID);
 

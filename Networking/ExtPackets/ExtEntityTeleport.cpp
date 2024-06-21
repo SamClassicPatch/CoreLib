@@ -21,18 +21,20 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 bool CExtEntityTeleport::Write(CNetworkMessage &nm) {
   WriteEntity(nm);
-  INetCompress::Placement(nm, plSet);
+  INetCompress::Placement(nm, props["plSet"].GetPlacement());
 
+  BOOL bRelative = props["bRelative"].IsTrue();
   nm.WriteBits(&bRelative, 1);
   return true;
 };
 
 void CExtEntityTeleport::Read(CNetworkMessage &nm) {
   ReadEntity(nm);
-  INetDecompress::Placement(nm, plSet);
+  INetDecompress::Placement(nm, props["plSet"].GetPlacement());
 
-  bRelative = FALSE;
+  BOOL bRelative = FALSE;
   nm.ReadBits(&bRelative, 1);
+  props["bRelative"].GetIndex() = bRelative;
 };
 
 void CExtEntityTeleport::Process(void) {
@@ -40,18 +42,18 @@ void CExtEntityTeleport::Process(void) {
 
   if (!EntityExists(pen)) return;
 
-  CPlacement3D pl = plSet;
+  CAnyValue &val = props["plSet"];
+  CPlacement3D pl = val.GetPlacement();
 
   // Relative to current position and orientation
-  if (bRelative) {
+  if (props["bRelative"].IsTrue())
+  {
     pl.RelativeToAbsoluteSmooth(pen->GetPlacement());
   }
 
   pen->Teleport(pl, FALSE);
 
-  ClassicsPackets_ServerReport(this, TRANS("Teleported %u entity to [%.2f, %.2f, %.2f;  %.2f, %.2f, %.2f]\n"), pen->en_ulID,
-    pl.pl_PositionVector(1),   pl.pl_PositionVector(2),   pl.pl_PositionVector(3),
-    pl.pl_OrientationAngle(1), pl.pl_OrientationAngle(2), pl.pl_OrientationAngle(3));
+  ClassicsPackets_ServerReport(this, TRANS("Teleported %u entity to %s\n"), pen->en_ulID, val.ToString());
 };
 
 #endif // _PATCHCONFIG_EXT_PACKETS

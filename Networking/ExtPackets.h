@@ -29,10 +29,16 @@ CORE_API extern INDEX ser_bReportExtPacketLogic;
 
 // Core wrapper for the abstract base
 class CORE_API CExtPacket : public IClassicsExtPacket {
+  protected:
+    // Properties instead of raw data fields for easier modification via API
+    se1::map<CTString, CAnyValue> props;
+
   public:
-    __forceinline void SendPacket(void) {
-      ClassicsPackets_Send(this);
-    };
+    // Convenient value getter
+    CAnyValue &operator[](const CTString &strVariable);
+
+    // Convenient value setter
+    void operator()(const CTString &strVariable, const CAnyValue &val);
 
     // Create new packet from type
     static CExtPacket *CreatePacket(EPacketType ePacket, BOOL bServerToClient);
@@ -44,22 +50,13 @@ class CORE_API CExtPacket : public IClassicsExtPacket {
 // Entity packets
 
 class CORE_API CExtEntityCreate : public CExtPacket {
-  private:
-    // Dictionary of base class names, the index of which can be one byte
-    static CTString aBaseClasses[255];
-    UBYTE ubClass; // Index in the dictionary (0-254)
+  public:
+    static CEntity *penLast; // Last created entity
 
   public:
-    // Class file to create an entity from
-    CTFileName fnmClass; // Packed as an extra if index is 255
-    CPlacement3D plPos; // Place to create an entity at
-
-    // Last created entity
-    static CEntity *penLast;
-
-  public:
-    CExtEntityCreate() : ubClass(0xFF), plPos(FLOAT3D(0, 0, 0), ANGLE3D(0, 0, 0))
-    {
+    CExtEntityCreate() {
+      props["fnmClass"] = ""; // Class file to create an entity from (packed as extra if index isn't found in the predefined list)
+      props["plPos"] = CPlacement3D(FLOAT3D(0, 0, 0), ANGLE3D(0, 0, 0)); // Place to create an entity at
     };
 
   public:
@@ -73,29 +70,27 @@ class CORE_API CExtEntityCreate : public CExtPacket {
 // Base for entity manipulation packets
 class CORE_API CExtEntityPacket : public CExtPacket {
   public:
-    ULONG ulEntity; // Entity ID in the world (31 bits)
-
-  public:
-    CExtEntityPacket() : ulEntity(0x7FFFFFFF)
-    {
+    CExtEntityPacket() {
+      props["ulEntity"] = 0x7FFFFFFF; // Entity ID in the world (31 bits)
     };
 
     // Write entity ID
     void WriteEntity(CNetworkMessage &nm) {
-      ulEntity = ClampUp(ulEntity, 0x7FFFFFFFUL);
+      ULONG ulEntity = ClampUp((ULONG)props["ulEntity"].GetIndex(), (ULONG)0x7FFFFFFFUL);
       nm.WriteBits(&ulEntity, 31);
     };
 
     // Read entity ID
     void ReadEntity(CNetworkMessage &nm) {
-      ulEntity = 0;
+      ULONG ulEntity = 0;
       nm.ReadBits(&ulEntity, 31);
+      props["ulEntity"].GetIndex() = ulEntity;
     };
 
     // Check for invalid ID
     inline BOOL IsEntityValid(void) {
       // 0x7FFFFFFF - 0xFFFFFFFF are invalid
-      return ulEntity < 0x7FFFFFFF;
+      return ULONG(props["ulEntity"].GetIndex()) < 0x7FFFFFFF;
     };
 
     // Retrieve an entity from an ID
@@ -161,11 +156,8 @@ class CORE_API EExtEntityEvent : public CEntityEvent {
 
 class CORE_API CExtEntityDelete : public CExtEntityPacket {
   public:
-    BOOL bSameClass; // Delete all entities of the same class
-
-  public:
-    CExtEntityDelete() : CExtEntityPacket(), bSameClass(FALSE)
-    {
+    CExtEntityDelete() : CExtEntityPacket() {
+      props["bSameClass"] = false; // Delete all instances of the same class
     };
 
   public:
@@ -178,11 +170,8 @@ class CORE_API CExtEntityDelete : public CExtEntityPacket {
 
 class CORE_API CExtEntityCopy : public CExtEntityPacket {
   public:
-    UBYTE ubCopies;
-
-  public:
-    CExtEntityCopy() : CExtEntityPacket(), ubCopies(1)
-    {
+    CExtEntityCopy() : CExtEntityPacket() {
+      props["iCopies"] = 1;
     };
 
   public:
@@ -243,13 +232,9 @@ class CORE_API CExtEntityInit : public CExtEntityEvent {
 
 class CORE_API CExtEntityTeleport : public CExtEntityPacket {
   public:
-    CPlacement3D plSet; // Placement to set
-    BOOL bRelative; // Relative to the current placement (oriented)
-
-  public:
-    CExtEntityTeleport() : CExtEntityPacket(),
-      plSet(FLOAT3D(0, 0, 0), ANGLE3D(0, 0, 0)), bRelative(FALSE)
-    {
+    CExtEntityTeleport() : CExtEntityPacket() {
+      props["plSet"] = CPlacement3D(FLOAT3D(0, 0, 0), ANGLE3D(0, 0, 0)); // Placement to set
+      props["bRelative"] = false; // Relative to the current placement (oriented)
     };
 
   public:
@@ -262,14 +247,10 @@ class CORE_API CExtEntityTeleport : public CExtEntityPacket {
 
 class CORE_API CExtEntityPosition : public CExtEntityPacket {
   public:
-    FLOAT3D vSet; // Position or rotation to set
-    BOOL bRotation; // Set rotation instead of position
-    BOOL bRelative; // Relative to the current placement (axis-aligned)
-
-  public:
-    CExtEntityPosition() : CExtEntityPacket(), vSet(0, 0, 0),
-      bRotation(FALSE), bRelative(FALSE)
-    {
+    CExtEntityPosition() : CExtEntityPacket() {
+      props["vSet"] = FLOAT3D(0, 0, 0); // Position or rotation to set
+      props["bRotation"] = false; // Set rotation instead of position
+      props["bRelative"] = false; // Relative to the current placement (axis-aligned)
     };
 
   public:
@@ -282,11 +263,8 @@ class CORE_API CExtEntityPosition : public CExtEntityPacket {
 
 class CORE_API CExtEntityParent : public CExtEntityPacket {
   public:
-    ULONG ulParent;
-
-  public:
-    CExtEntityParent() : CExtEntityPacket(), ulParent(-1)
-    {
+    CExtEntityParent() : CExtEntityPacket() {
+      props["ulParent"] = -1;
     };
 
   public:
@@ -298,42 +276,33 @@ class CORE_API CExtEntityParent : public CExtEntityPacket {
 };
 
 class CORE_API CExtEntityProp : public CExtEntityPacket {
-  private:
-    BOOL bName; // Using a name
-    ULONG ulProp; // Property ID or name hash
-
-    BOOL bString; // Using a string value
-    CTString strValue;
-    DOUBLE fValue;
-
   public:
-    CExtEntityProp() : CExtEntityPacket(),
-      bName(FALSE), ulProp(0), bString(FALSE), fValue(0.0)
-    {
+    CExtEntityProp() : CExtEntityPacket() {
+      props["bName"] = false; // Using a name to find the property or not
+      props["ulProp"] = 0; // Property ID or name hash
+      props["value"] = 0.0; // DOUBLE or CTString
     };
 
     // Set property name
     inline void SetProperty(const CTString &strName) {
-      bName = TRUE;
-      ulProp = strName.GetHash();
+      props["bName"].GetIndex() = true;
+      props["ulProp"].GetIndex() = strName.GetHash();
     };
 
     // Set property ID
     inline void SetProperty(ULONG ulID) {
-      bName = FALSE;
-      ulProp = ulID;
+      props["bName"].GetIndex() = false;
+      props["ulProp"].GetIndex() = ulID;
     };
 
     // Set string value
     inline void SetValue(const CTString &str) {
-      bString = TRUE;
-      strValue = str;
+      props["value"] = str;
     };
 
     // Set number value
     inline void SetValue(DOUBLE f) {
-      bString = FALSE;
-      fValue = f;
+      props["value"] = f;
     };
 
   public:
@@ -346,11 +315,8 @@ class CORE_API CExtEntityProp : public CExtEntityPacket {
 
 class CORE_API CExtEntityHealth : public CExtEntityPacket {
   public:
-    FLOAT fHealth; // Health to set
-
-  public:
-    CExtEntityHealth() : CExtEntityPacket(), fHealth(0.0f)
-    {
+    CExtEntityHealth() : CExtEntityPacket() {
+      props["fHealth"] = 0.0f; // Health to set
     };
 
   public:
@@ -362,35 +328,32 @@ class CORE_API CExtEntityHealth : public CExtEntityPacket {
 };
 
 class CORE_API CExtEntityFlags : public CExtEntityPacket {
-  protected:
-    ULONG ulFlags; // Flags to apply
-    UBYTE ubType; // Type of flags
-    BOOL bRemove; // Disable flags instead of enabling
-
   public:
-    CExtEntityFlags() : CExtEntityPacket(), ulFlags(0), ubType(0), bRemove(FALSE)
-    {
+    CExtEntityFlags() : CExtEntityPacket() {
+      props["ulFlags"] = 0; // Flags to apply
+      props["iType"] = 0; // Type of flags
+      props["bRemove"] = false; // Disable flags instead of enabling
     };
 
     // Set normal flags
     inline void EntityFlags(ULONG ul, BOOL bRemoveFlags) {
-      ulFlags = ul;
-      ubType = 0;
-      bRemove = bRemoveFlags;
+      props["ulFlags"].GetIndex() = ul;
+      props["iType"].GetIndex() = 0;
+      props["bRemove"].GetIndex() = bRemoveFlags;
     };
 
     // Set physical flags
     inline void PhysicalFlags(ULONG ul, BOOL bRemoveFlags) {
-      ulFlags = ul;
-      ubType = 1;
-      bRemove = bRemoveFlags;
+      props["ulFlags"].GetIndex() = ul;
+      props["iType"].GetIndex() = 1;
+      props["bRemove"].GetIndex() = bRemoveFlags;
     };
 
     // Set collision flags
     inline void CollisionFlags(ULONG ul, BOOL bRemoveFlags) {
-      ulFlags = ul;
-      ubType = 2;
-      bRemove = bRemoveFlags;
+      props["ulFlags"].GetIndex() = ul;
+      props["iType"].GetIndex() = 2;
+      props["bRemove"].GetIndex() = bRemoveFlags;
     };
 
   public:
@@ -403,11 +366,8 @@ class CORE_API CExtEntityFlags : public CExtEntityPacket {
 
 class CORE_API CExtEntityMove : public CExtEntityPacket {
   public:
-    FLOAT3D vSpeed; // Desired speed
-
-  public:
-    CExtEntityMove() : CExtEntityPacket(), vSpeed(0.0f, 0.0f, 0.0f)
-    {
+    CExtEntityMove() : CExtEntityPacket() {
+      props["vSpeed"] = FLOAT3D(0, 0, 0); // Desired speed
     };
 
   public:
@@ -445,12 +405,9 @@ class CORE_API CExtEntityImpulse : public CExtEntityMove {
 // Abstract damage packet
 class CORE_API CExtEntityDamage : public CExtEntityPacket {
   public:
-    ULONG eDamageType; // Damage type to use
-    FLOAT fDamage; // Damage to inflict
-
-  public:
-    CExtEntityDamage() : CExtEntityPacket(), eDamageType(DMT_NONE), fDamage(0.0f)
-    {
+    CExtEntityDamage() : CExtEntityPacket() {
+      props["eDamageType"] = (int)DMT_NONE; // Damage type to use
+      props["fDamage"] = 0.0f; // Damage to inflict
     };
 
     virtual bool Write(CNetworkMessage &nm);
@@ -459,13 +416,10 @@ class CORE_API CExtEntityDamage : public CExtEntityPacket {
 
 class CORE_API CExtEntityDirectDamage : public CExtEntityDamage {
   public:
-    ULONG ulTarget; // Target entity for damaging
-    FLOAT3D vHitPoint; // Where exactly the damage occurred
-    FLOAT3D vDirection; // From which direction the damage came from
-
-  public:
-    CExtEntityDirectDamage() : CExtEntityDamage(), ulTarget(-1)
-    {
+    CExtEntityDirectDamage() : CExtEntityDamage() {
+      props["ulTarget"] = -1; // Target entity for damaging
+      props["vHitPoint"] = FLOAT3D(0, 0, 0); // Where exactly the damage occurred
+      props["vDirection"] = FLOAT3D(0, 0, 0); // From which direction the damage came from
     };
 
   public:
@@ -478,13 +432,10 @@ class CORE_API CExtEntityDirectDamage : public CExtEntityDamage {
 
 class CORE_API CExtEntityRangeDamage : public CExtEntityDamage {
   public:
-    FLOAT3D vCenter; // Place to inflict damage from
-    FLOAT fFallOff; // Total damage radius
-    FLOAT fHotSpot; // Full damage radius
-
-  public:
-    CExtEntityRangeDamage() : CExtEntityDamage(), vCenter(0, 0, 0), fFallOff(0.0f), fHotSpot(0.0f)
-    {
+    CExtEntityRangeDamage() : CExtEntityDamage() {
+      props["vCenter"] = FLOAT3D(0, 0, 0); // Place to inflict damage from
+      props["fFallOff"] = 0.0f; // Total damage radius
+      props["fHotSpot"] = 0.0f; // Full damage radius
     };
 
   public:
@@ -497,11 +448,8 @@ class CORE_API CExtEntityRangeDamage : public CExtEntityDamage {
 
 class CORE_API CExtEntityBoxDamage : public CExtEntityDamage {
   public:
-    FLOATaabbox3D boxArea; // Area to inflict the damage in
-
-  public:
-    CExtEntityBoxDamage() : CExtEntityDamage(), boxArea(FLOAT3D(0, 0, 0), 0.0f)
-    {
+    CExtEntityBoxDamage() : CExtEntityDamage() {
+      props["boxArea"] = FLOATaabbox3D(FLOAT3D(0, 0, 0), 0.0f); // Area to inflict the damage in
     };
 
   public:
@@ -514,11 +462,8 @@ class CORE_API CExtEntityBoxDamage : public CExtEntityDamage {
 
 class CORE_API CExtChangeLevel : public CExtPacket {
   public:
-    CTString strWorld; // World file to change to
-
-  public:
-    CExtChangeLevel()
-    {
+    CExtChangeLevel() {
+      props["strWorld"] = ""; // World file to change to
     };
 
   public:
@@ -544,13 +489,15 @@ class CORE_API CExtChangeWorld : public CExtChangeLevel {
 class CORE_API CExtSessionProps : public CExtPacket {
   public:
     CSesPropsContainer sp; // Session properties to set (data that's not processed isn't being zeroed!)
-    SLONG slSize; // Amount of bytes to set
-    SLONG slOffset; // Starting byte (up to NET_MAXSESSIONPROPERTIES - 1)
 
   public:
-    CExtSessionProps() : slSize(0), slOffset(0)
-    {
+    CExtSessionProps() {
+      props["iSize"] = 0; // Amount of bytes to set
+      props["iOffset"] = 0; // Starting byte (up to NET_MAXSESSIONPROPERTIES - 1)
     };
+
+    inline INDEX &GetSize(void) { return props["iSize"].GetIndex(); };
+    inline INDEX &GetOffset(void) { return props["iOffset"].GetIndex(); };
 
     // Set new data at the current end and expand session properties size
     BOOL AddData(const void *pData, size_t ctBytes);
@@ -564,15 +511,10 @@ class CORE_API CExtSessionProps : public CExtPacket {
 };
 
 class CORE_API CExtGameplayExt : public CExtPacket {
-  private:
-    UWORD iVar; // Variable in the structure (0 is invalid, starts from 1)
-    BOOL bString; // Using a string value
-    CTString strValue;
-    DOUBLE fValue;
-
   public:
-    CExtGameplayExt() : iVar(0), bString(FALSE), fValue(0.0)
-    {
+    CExtGameplayExt() {
+      props["iVar"] = 0; // Variable in the structure (0 is invalid, starts from 1)
+      props["value"] = 0.0; // DOUBLE or CTString
     };
 
     // Find variable index by its name

@@ -24,25 +24,27 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 // Set new data at the current end and expand session properties size
 BOOL CExtSessionProps::AddData(const void *pData, size_t ctBytes) {
+  INDEX &ctSize = GetSize();
+
   // Not enough space
-  if (slSize + ctBytes > sizeof(sp)) return FALSE;
+  if (ctSize + ctBytes > sizeof(sp)) return FALSE;
 
   // Copy data to the current offset and add its size
-  memcpy(sp + slSize, pData, ctBytes);
-  slSize += ctBytes;
+  memcpy(sp + ctSize, pData, ctBytes);
+  ctSize += ctBytes;
   return TRUE;
 };
 
 bool CExtSessionProps::Write(CNetworkMessage &nm) {
   // From first to last byte
-  slOffset = Clamp(slOffset, (SLONG)0, SLONG(sizeof(sp) - 1));
-  nm.WriteBits(&slOffset, SESPROPS_BITFIT);
+  INDEX iOffset = Clamp(GetOffset(), (INDEX)0, INDEX(sizeof(sp) - 1));
+  nm.WriteBits(&iOffset, SESPROPS_BITFIT);
 
   // Fit as much data as there's space after offset
-  slSize = Clamp(slSize, (SLONG)0, SLONG(sizeof(sp) - slOffset));
-  nm.WriteBits(&slSize, SESPROPS_BITFIT);
+  INDEX ctSize = Clamp(GetSize(), (INDEX)0, INDEX(sizeof(sp) - iOffset));
+  nm.WriteBits(&ctSize, SESPROPS_BITFIT);
 
-  for (INDEX i = 0; i < slSize; i++) {
+  for (INDEX i = 0; i < ctSize; i++) {
     nm << sp[i];
   }
 
@@ -50,25 +52,34 @@ bool CExtSessionProps::Write(CNetworkMessage &nm) {
 };
 
 void CExtSessionProps::Read(CNetworkMessage &nm) {
-  nm.ReadBits(&slOffset, SESPROPS_BITFIT);
-  nm.ReadBits(&slSize, SESPROPS_BITFIT);
+  INDEX iOffset = 0;
+  nm.ReadBits(&iOffset, SESPROPS_BITFIT);
 
-  for (INDEX i = 0; i < slSize; i++) {
+  INDEX ctSize = 0;
+  nm.ReadBits(&ctSize, SESPROPS_BITFIT);
+
+  for (INDEX i = 0; i < ctSize; i++) {
     nm >> sp[i];
   }
+
+  GetSize() = ctSize;
+  GetOffset() = iOffset;
 };
 
 void CExtSessionProps::Process(void) {
+  INDEX ctSize = GetSize();
+  INDEX iOffset = GetOffset();
+
   // No data or past the limits
-  if (slSize == 0 || slOffset < 0 || slOffset >= sizeof(sp)) return;
+  if (ctSize == 0 || iOffset < 0 || iOffset >= sizeof(sp)) return;
 
   // Fit as much data as there's space after offset
-  slSize = Clamp(slSize, (SLONG)0, SLONG(sizeof(sp) - slOffset));
+  ctSize = Clamp(ctSize, (SLONG)0, SLONG(sizeof(sp) - iOffset));
 
   // Copy received data from the beginning into current session properties with some offset
-  if (slSize != 0) {
+  if (ctSize != 0) {
     UBYTE *pubProps = (UBYTE *)_pNetwork->GetSessionProperties();
-    memcpy(pubProps + slOffset, sp, slSize);
+    memcpy(pubProps + iOffset, sp, ctSize);
   }
 };
 

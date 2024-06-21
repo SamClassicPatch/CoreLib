@@ -21,17 +21,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 bool CExtEntityMove::Write(CNetworkMessage &nm) {
   WriteEntity(nm);
-  INetCompress::Float(nm, vSpeed(1));
-  INetCompress::Float(nm, vSpeed(2));
-  INetCompress::Float(nm, vSpeed(3));
+  INetCompress::Float3D(nm, props["vSpeed"].GetVector());
   return true;
 };
 
 void CExtEntityMove::Read(CNetworkMessage &nm) {
   ReadEntity(nm);
-  INetDecompress::Float(nm, vSpeed(1));
-  INetDecompress::Float(nm, vSpeed(2));
-  INetDecompress::Float(nm, vSpeed(3));
+  INetDecompress::Float3D(nm, props["vSpeed"].GetVector());
 };
 
 #define REPORT_NOT_MOVABLE TRANS("not a movable entity")
@@ -42,8 +38,10 @@ void CExtEntityMove::Process(void) {
   if (!EntityExists(pen)) return;
 
   if (IsDerivedFromID(pen, CMovableEntity_ClassID)) {
-    ((CMovableEntity *)pen)->SetDesiredTranslation(vSpeed);
-    ClassicsPackets_ServerReport(this, TRANS("Changed movement speed of %u entity to [%.2f, %.2f, %.2f]\n"), pen->en_ulID, vSpeed(1), vSpeed(2), vSpeed(3));
+    CAnyValue &val = props["vSpeed"];
+
+    ((CMovableEntity *)pen)->SetDesiredTranslation(val.GetVector());
+    ClassicsPackets_ServerReport(this, TRANS("Changed movement speed of %u entity to %s\n"), pen->en_ulID, val.ToString());
 
   } else {
     ClassicsPackets_ServerReport(this, TRANS("Cannot change movement speed for %u entity: %s\n"), pen->en_ulID, REPORT_NOT_MOVABLE);
@@ -56,8 +54,10 @@ void CExtEntityRotate::Process(void) {
   if (!EntityExists(pen)) return;
 
   if (IsDerivedFromID(pen, CMovableEntity_ClassID)) {
-    ((CMovableEntity *)pen)->SetDesiredRotation(vSpeed);
-    ClassicsPackets_ServerReport(this, TRANS("Changed rotation speed of %u entity to [%.2f, %.2f, %.2f]\n"), pen->en_ulID, vSpeed(1), vSpeed(2), vSpeed(3));
+    CAnyValue &val = props["vSpeed"];
+
+    ((CMovableEntity *)pen)->SetDesiredRotation(val.GetVector());
+    ClassicsPackets_ServerReport(this, TRANS("Changed rotation speed of %u entity to %s\n"), pen->en_ulID, val.ToString());
 
   } else {
     ClassicsPackets_ServerReport(this, TRANS("Cannot change rotation speed for %u entity: %s\n"), pen->en_ulID, REPORT_NOT_MOVABLE);
@@ -70,8 +70,10 @@ void CExtEntityImpulse::Process(void) {
   if (!EntityExists(pen)) return;
 
   if (IsDerivedFromID(pen, CMovableEntity_ClassID)) {
-    ((CMovableEntity *)pen)->GiveImpulseTranslationAbsolute(vSpeed);
-    ClassicsPackets_ServerReport(this, TRANS("Gave impulse to %u entity: [%.2f, %.2f, %.2f]\n"), vSpeed(1), vSpeed(2), vSpeed(3), pen->en_ulID);
+    CAnyValue &val = props["vSpeed"];
+
+    ((CMovableEntity *)pen)->GiveImpulseTranslationAbsolute(val.GetVector());
+    ClassicsPackets_ServerReport(this, TRANS("Gave impulse to %u entity: %s\n"), pen->en_ulID, val.ToString());
 
   } else {
     ClassicsPackets_ServerReport(this, TRANS("Cannot give impulse to %u entity: %s\n"), pen->en_ulID, REPORT_NOT_MOVABLE);
