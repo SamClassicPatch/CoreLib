@@ -98,22 +98,22 @@ void CExtGameplayExt::Process(void) {
   CAnyValue::EType eType = entry.val.GetType();
 
   // Got a number but expected a string
-  if (!bString && eType == CAnyValue::E_STRING) {
+  if (!bString && eType == CAnyValue::E_VAL_STRING) {
     ClassicsPackets_ServerReport(this, TRANS("Expected a string value for '%s' gameplay extension!\n"), entry.strKey);
     return;
 
   // Got a string but expected a number
-  } else if (bString && eType != CAnyValue::E_STRING) {
+  } else if (bString && eType != CAnyValue::E_VAL_STRING) {
     ClassicsPackets_ServerReport(this, TRANS("Expected a number value for '%s' gameplay extension!\n"), entry.strKey);
     return;
   }
 
   // Set new value depending on type
   switch (eType) {
-    case CAnyValue::E_BOOL:   entry.val.GetIndex() = fValue; break;
-    case CAnyValue::E_INDEX:  entry.val.GetIndex() = fValue; break;
-    case CAnyValue::E_FLOAT:  entry.val.GetFloat() = fValue; break;
-    case CAnyValue::E_STRING: entry.val.GetString() = strValue; break;
+    case CAnyValue::E_VAL_BOOL:   entry.val.GetIndex() = fValue; break;
+    case CAnyValue::E_VAL_INDEX:  entry.val.GetIndex() = fValue; break;
+    case CAnyValue::E_VAL_FLOAT:  entry.val.GetFloat() = fValue; break;
+    case CAnyValue::E_VAL_STRING: entry.val.GetString() = strValue; break;
   }
 
 #else

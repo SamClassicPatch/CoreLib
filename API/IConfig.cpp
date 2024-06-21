@@ -57,10 +57,10 @@ void GlobalProps::DeclareSymbols(void)
     CAnyValue &val = it->val;
 
     switch (val.GetType()) {
-      case CAnyValue::E_BOOL:   _pShell->DeclareSymbol("INDEX    cfg_b"   + strDecl, &val.GetIndex()); break;
-      case CAnyValue::E_INDEX:  _pShell->DeclareSymbol("INDEX    cfg_i"   + strDecl, &val.GetIndex()); break;
-      case CAnyValue::E_FLOAT:  _pShell->DeclareSymbol("FLOAT    cfg_f"   + strDecl, &val.GetFloat()); break;
-      case CAnyValue::E_STRING: _pShell->DeclareSymbol("CTString cfg_str" + strDecl, &val.GetString()); break;
+      case CAnyValue::E_VAL_BOOL:   _pShell->DeclareSymbol("INDEX    cfg_b"   + strDecl, &val.GetIndex()); break;
+      case CAnyValue::E_VAL_INDEX:  _pShell->DeclareSymbol("INDEX    cfg_i"   + strDecl, &val.GetIndex()); break;
+      case CAnyValue::E_VAL_FLOAT:  _pShell->DeclareSymbol("FLOAT    cfg_f"   + strDecl, &val.GetFloat()); break;
+      case CAnyValue::E_VAL_STRING: _pShell->DeclareSymbol("CTString cfg_str" + strDecl, &val.GetString()); break;
     }
   }
 };
@@ -92,10 +92,10 @@ void GlobalProps::Load(void) {
     CAnyValue &val = it->val;
 
     switch (val.GetType()) {
-      case CAnyValue::E_BOOL: val = !!iniConfig.GetBoolValue(it->strSection, it->strKey, val.GetIndex()); break;
-      case CAnyValue::E_INDEX: val = (int)iniConfig.GetIntValue(it->strSection, it->strKey, val.GetIndex()); break;
-      case CAnyValue::E_FLOAT: val = (float)iniConfig.GetDoubleValue(it->strSection, it->strKey, val.GetFloat()); break;
-      case CAnyValue::E_STRING: val = iniConfig.GetValue(it->strSection, it->strKey, val.GetString()); break;
+      case CAnyValue::E_VAL_BOOL: val = !!iniConfig.GetBoolValue(it->strSection, it->strKey, val.GetIndex()); break;
+      case CAnyValue::E_VAL_INDEX: val = (int)iniConfig.GetIntValue(it->strSection, it->strKey, val.GetIndex()); break;
+      case CAnyValue::E_VAL_FLOAT: val = (float)iniConfig.GetDoubleValue(it->strSection, it->strKey, val.GetFloat()); break;
+      case CAnyValue::E_VAL_STRING: val = iniConfig.GetValue(it->strSection, it->strKey, val.GetString()); break;
     }
   }
 };
@@ -179,10 +179,10 @@ void GameplayExt::DeclareSymbols(void) {
     CAnyValue &val = it->val;
 
     switch (val.GetType()) {
-      case CAnyValue::E_BOOL:   _pShell->DeclareSymbol("persistent user INDEX    gex_b"   + strDecl, &val.GetIndex()); break;
-      case CAnyValue::E_INDEX:  _pShell->DeclareSymbol("persistent user INDEX    gex_i"   + strDecl, &val.GetIndex()); break;
-      case CAnyValue::E_FLOAT:  _pShell->DeclareSymbol("persistent user FLOAT    gex_f"   + strDecl, &val.GetFloat()); break;
-      case CAnyValue::E_STRING: _pShell->DeclareSymbol("persistent user CTString gex_str" + strDecl, &val.GetString()); break;
+      case CAnyValue::E_VAL_BOOL:   _pShell->DeclareSymbol("persistent user INDEX    gex_b"   + strDecl, &val.GetIndex()); break;
+      case CAnyValue::E_VAL_INDEX:  _pShell->DeclareSymbol("persistent user INDEX    gex_i"   + strDecl, &val.GetIndex()); break;
+      case CAnyValue::E_VAL_FLOAT:  _pShell->DeclareSymbol("persistent user FLOAT    gex_f"   + strDecl, &val.GetFloat()); break;
+      case CAnyValue::E_VAL_STRING: _pShell->DeclareSymbol("persistent user CTString gex_str" + strDecl, &val.GetString()); break;
     }
   }
 };
@@ -238,10 +238,10 @@ void ModData::LoadConfigs(void) {
       CAnyValue &val = it->val;
 
       switch (val.GetType()) {
-        case CAnyValue::E_BOOL: val = !!iniModData.GetBoolValue(it->strSection, it->strKey, val.GetIndex()); break;
-        case CAnyValue::E_INDEX: val = (int)iniModData.GetIntValue(it->strSection, it->strKey, val.GetIndex()); break;
-        case CAnyValue::E_FLOAT: val = (float)iniModData.GetDoubleValue(it->strSection, it->strKey, val.GetFloat()); break;
-        case CAnyValue::E_STRING: val = iniModData.GetValue(it->strSection, it->strKey, val.GetString()); break;
+        case CAnyValue::E_VAL_BOOL: val = !!iniModData.GetBoolValue(it->strSection, it->strKey, val.GetIndex()); break;
+        case CAnyValue::E_VAL_INDEX: val = (int)iniModData.GetIntValue(it->strSection, it->strKey, val.GetIndex()); break;
+        case CAnyValue::E_VAL_FLOAT: val = (float)iniModData.GetDoubleValue(it->strSection, it->strKey, val.GetFloat()); break;
+        case CAnyValue::E_VAL_STRING: val = iniModData.GetValue(it->strSection, it->strKey, val.GetString()); break;
       }
     }
 
