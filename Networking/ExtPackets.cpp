@@ -43,15 +43,32 @@ void ClassicsPackets_ServerReport(IClassicsExtPacket *pExtPacket, const char *st
   va_end(arg);
 };
 
-void ClassicsPackets_Send(IClassicsExtPacket *pExtPacket)
+void ClassicsPackets_SendToClients(IClassicsExtPacket *pExtPacket)
 {
   // Not running a server
   if (!_pNetwork->IsServer()) return;
+
+  // Remember last value
+  INDEX &iLastSequence = _pNetwork->ga_srvServer.srv_iLastProcessedSequence;
+  const INDEX iLastValue = iLastSequence;
 
   CNetStreamBlock nsbExt = INetwork::CreateServerPacket(pExtPacket->GetType());
 
   if (pExtPacket->Write(nsbExt)) {
     INetwork::AddBlockToAllSessions(nsbExt);
+
+  // Restore the value since the packet has been discarded
+  } else {
+    iLastSequence = iLastValue;
+  }
+};
+
+void ClassicsPackets_SendToServer(IClassicsExtPacket *pExtPacket)
+{
+  CNetworkMessage nmExt = INetwork::CreateClientPacket(pExtPacket->GetType());
+
+  if (pExtPacket->Write(nmExt)) {
+    _pNetwork->SendToServerReliable(nmExt);
   }
 };
 
