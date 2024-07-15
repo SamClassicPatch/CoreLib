@@ -189,16 +189,18 @@ void CSteamAPI::Update(void) {
   // Update Steam callbacks
   GetSteamAPI()->UpdateCallbacks();
 
-  // While connected to a server
-  if (!_pNetwork->IsServer() && GetGameAPI()->IsHooked() && GetGameAPI()->IsGameOn()) {
-    // Set address of the joined server
-    CSymbolPtr piNetPort("net_iPort");
-    CTString strAddress(0, "%s:%d", GetGameAPI()->JoinAddress(), piNetPort.GetIndex());
-    GetSteamAPI()->SetJoinAddress(strAddress);
+  if (ClassicsCore_IsGameApp()) {
+    // While connected to a server
+    if (!_pNetwork->IsServer() && GetGameAPI()->IsHooked() && GetGameAPI()->IsGameOn()) {
+      // Set address of the joined server
+      CSymbolPtr piNetPort("net_iPort");
+      CTString strAddress(0, "%s:%d", GetGameAPI()->JoinAddress(), piNetPort.GetIndex());
+      GetSteamAPI()->SetJoinAddress(strAddress);
 
-  } else {
-    // Reset join address
-    GetSteamAPI()->SetJoinAddress("");
+    } else {
+      // Reset join address
+      GetSteamAPI()->SetJoinAddress("");
+    }
   }
 
   // If requested a custom screenshot and it's present
