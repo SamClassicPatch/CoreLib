@@ -171,10 +171,6 @@ void ClassicsPatch_Init(void)
   _pPluginAPI = new CPluginAPI;
   _pSteamAPI = new CSteamAPI;
 
-  // Create timer handler for constant functionatily
-  _pTimerHandler = new CCoreTimerHandler;
-  _pTimer->AddHandler(_pTimerHandler);
-
   // Various initializations
   {
     // Initialize networking
@@ -186,6 +182,10 @@ void ClassicsPatch_Init(void)
     // Load core plugins
     GetPluginAPI()->LoadPlugins(k_EPluginFlagEngine);
   }
+
+  // Create timer handler for constant functionatily
+  _pTimerHandler = new CCoreTimerHandler;
+  _pTimer->AddHandler(_pTimerHandler);
 };
 
 void ClassicsPatch_Shutdown(void)
@@ -194,7 +194,11 @@ void ClassicsPatch_Shutdown(void)
   ASSERT(_bClassicsPatchRunning);
   if (!_bClassicsPatchRunning) return;
   _bClassicsPatchRunning = false;
-  
+
+  // Destroy timer handler
+  _pTimer->RemHandler(_pTimerHandler);
+  delete _pTimerHandler;
+
   // Various cleanups
   {
     // Save configuration properties
@@ -206,10 +210,6 @@ void ClassicsPatch_Shutdown(void)
     // Shutdown Steam API
     GetSteamAPI()->End();
   }
-
-  // Destroy timer handler
-  _pTimer->RemHandler(_pTimerHandler);
-  delete _pTimerHandler;
 
   // Destroy interfaces
   delete _pGameAPI;   _pGameAPI   = NULL;
