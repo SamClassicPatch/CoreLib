@@ -277,7 +277,7 @@ void Core(void) {
   // Add API to symbols
   CShellSymbol *pssNew = _pShell->sh_assSymbols.New();
   pssNew->ss_strName = "CoreAPI";
-  pssNew->ss_pvValue = NULL;
+  pssNew->ss_pvValue = ClassicsPatchAPI(); // Pointer to the interface
   pssNew->ss_istType = 0; // Should be '_shell_istUndeclared'
   pssNew->ss_ulFlags = SSF_CONSTANT; // Unchangable
   pssNew->ss_pPreFunc = NULL; // Unused

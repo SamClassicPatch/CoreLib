@@ -216,3 +216,32 @@ void ClassicsPatch_Shutdown(void)
   delete _pPluginAPI; _pPluginAPI = NULL;
   delete _pSteamAPI;  _pSteamAPI  = NULL;
 };
+
+// Internal API with all the interfaces
+class CInternalClassicsPatchAPI : public IClassicsPatchAPI {
+  public:
+    IClassicsChat m_apiChat;
+    IClassicsConfig m_apiConfig;
+    IClassicsGameplayExt m_apiGameplayExt;
+    IClassicsCore m_apiCore;
+    IClassicsModData m_apiModData;
+    IClassicsFuncPatches m_apiFuncPatches;
+    IClassicsPackets m_apiPackets;
+
+  public:
+    virtual IClassicsChat *Chat(void) { return &m_apiChat; };
+    virtual IClassicsConfig *Config(void) { return &m_apiConfig; };
+    virtual IClassicsGameplayExt *GameplayExt(void) { return &m_apiGameplayExt; };
+    virtual IClassicsCore *Core(void) { return &m_apiCore; };
+    virtual IClassicsGame *Game(void) { return _pGameAPI; };
+    virtual IClassicsModData *ModData(void) { return &m_apiModData; };
+    virtual IClassicsPlugins *Plugins(void) { return _pPluginAPI; };
+    virtual IClassicsFuncPatches *FuncPatches(void) { return &m_apiFuncPatches; };
+    virtual IClassicsPackets *Packets(void) { return &m_apiPackets; };
+};
+
+static CInternalClassicsPatchAPI _ClassicsPatchAPI;
+
+IClassicsPatchAPI *ClassicsPatchAPI(void) {
+  return &_ClassicsPatchAPI;
+};
