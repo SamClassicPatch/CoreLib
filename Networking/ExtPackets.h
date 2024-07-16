@@ -41,7 +41,7 @@ class CORE_API CExtPacket : public IClassicsExtPacket {
     void operator()(const CTString &strVariable, const CAnyValue &val);
 
     // Create new packet from type
-    static CExtPacket *CreatePacket(EPacketType ePacket, BOOL bServerToClient);
+    static CExtPacket *CreatePacket(EPacketType ePacket);
 
     // Register the module
     static void RegisterExtPackets(void);

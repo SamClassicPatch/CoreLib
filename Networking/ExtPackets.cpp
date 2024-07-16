@@ -114,34 +114,36 @@ void CExtPacket::operator()(const CTString &strVariable, const CAnyValue &val) {
 };
 
 // Create new packet from type
-CExtPacket *CExtPacket::CreatePacket(EPacketType ePacket, BOOL bServerToClient)
+CExtPacket *CExtPacket::CreatePacket(EPacketType ePacket)
 {
-  if (bServerToClient) {
-    switch (ePacket) {
-      case k_EPacketType_EntityCreate  : return new CExtEntityCreate();
-      case k_EPacketType_EntityDelete  : return new CExtEntityDelete();
-      case k_EPacketType_EntityCopy    : return new CExtEntityCopy();
-      case k_EPacketType_EntityEvent   : return new CExtEntityEvent();
-      case k_EPacketType_EntityItem    : return new CExtEntityItem();
-      case k_EPacketType_EntityInit    : return new CExtEntityInit();
-      case k_EPacketType_EntityTeleport: return new CExtEntityTeleport();
-      case k_EPacketType_EntityPosition: return new CExtEntityPosition();
-      case k_EPacketType_EntityParent  : return new CExtEntityParent();
-      case k_EPacketType_EntityProp    : return new CExtEntityProp();
-      case k_EPacketType_EntityHealth  : return new CExtEntityHealth();
-      case k_EPacketType_EntityFlags   : return new CExtEntityFlags();
-      case k_EPacketType_EntityMove    : return new CExtEntityMove();
-      case k_EPacketType_EntityRotate  : return new CExtEntityRotate();
-      case k_EPacketType_EntityImpulse : return new CExtEntityImpulse();
-      case k_EPacketType_EntityDirDmg  : return new CExtEntityDirectDamage();
-      case k_EPacketType_EntityRadDmg  : return new CExtEntityRangeDamage();
-      case k_EPacketType_EntityBoxDmg  : return new CExtEntityBoxDamage();
+  switch (ePacket) {
+    // Server to client
+    case k_EPacketType_EntityCreate  : return new CExtEntityCreate();
+    case k_EPacketType_EntityDelete  : return new CExtEntityDelete();
+    case k_EPacketType_EntityCopy    : return new CExtEntityCopy();
+    case k_EPacketType_EntityEvent   : return new CExtEntityEvent();
+    case k_EPacketType_EntityItem    : return new CExtEntityItem();
+    case k_EPacketType_EntityInit    : return new CExtEntityInit();
+    case k_EPacketType_EntityTeleport: return new CExtEntityTeleport();
+    case k_EPacketType_EntityPosition: return new CExtEntityPosition();
+    case k_EPacketType_EntityParent  : return new CExtEntityParent();
+    case k_EPacketType_EntityProp    : return new CExtEntityProp();
+    case k_EPacketType_EntityHealth  : return new CExtEntityHealth();
+    case k_EPacketType_EntityFlags   : return new CExtEntityFlags();
+    case k_EPacketType_EntityMove    : return new CExtEntityMove();
+    case k_EPacketType_EntityRotate  : return new CExtEntityRotate();
+    case k_EPacketType_EntityImpulse : return new CExtEntityImpulse();
+    case k_EPacketType_EntityDirDmg  : return new CExtEntityDirectDamage();
+    case k_EPacketType_EntityRadDmg  : return new CExtEntityRangeDamage();
+    case k_EPacketType_EntityBoxDmg  : return new CExtEntityBoxDamage();
 
-      case k_EPacketType_ChangeLevel : return new CExtChangeLevel();
-      case k_EPacketType_ChangeWorld : return new CExtChangeWorld();
-      case k_EPacketType_SessionProps: return new CExtSessionProps();
-      case k_EPacketType_GameplayExt : return new CExtGameplayExt();
-    }
+    case k_EPacketType_ChangeLevel : return new CExtChangeLevel();
+    case k_EPacketType_ChangeWorld : return new CExtChangeWorld();
+    case k_EPacketType_SessionProps: return new CExtSessionProps();
+    case k_EPacketType_GameplayExt : return new CExtGameplayExt();
+
+    // Client to server
+    // ...
   }
 
   // Invalid packet

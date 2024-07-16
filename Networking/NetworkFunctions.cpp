@@ -130,7 +130,12 @@ BOOL INetwork::ServerHandle(CMessageDispatcher *pmd, INDEX iClient, CNetworkMess
     }
   }
 
-  CExtPacket *pPacket = CExtPacket::CreatePacket((IClassicsExtPacket::EPacketType)ulType, FALSE);
+  CExtPacket *pPacket = NULL;
+
+  // Only create packets that can come from clients
+  if (ulType >= IClassicsExtPacket::k_EPacketType_FirstC2S) {
+    pPacket = CExtPacket::CreatePacket((IClassicsExtPacket::EPacketType)ulType);
+  }
 
   // No built-in packet under this index
   if (pPacket == NULL) {
@@ -179,7 +184,12 @@ BOOL INetwork::ClientHandle(CSessionState *pses, CNetworkMessage &nmMessage) {
     }
   }
 
-  CExtPacket *pPacket = CExtPacket::CreatePacket((IClassicsExtPacket::EPacketType)ulType, TRUE);
+  CExtPacket *pPacket = NULL;
+
+  // Only create packets that can come from a server
+  if (ulType <= IClassicsExtPacket::k_EPacketType_LastS2C) {
+    pPacket = CExtPacket::CreatePacket((IClassicsExtPacket::EPacketType)ulType);
+  }
 
   // No built-in packet under this index
   if (pPacket == NULL) {
