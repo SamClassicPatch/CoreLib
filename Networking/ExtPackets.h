@@ -27,18 +27,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Report packet actions to the server
 CORE_API extern INDEX ser_bReportExtPacketLogic;
 
-// Core wrapper for the abstract base
-class CORE_API CExtPacket : public IClassicsExtPacket {
+// Define built-in extension packets
+class CORE_API CExtPacket : public IClassicsBuiltInExtPacket {
   protected:
     // Properties instead of raw data fields for easier modification via API
     se1::map<CTString, CAnyValue> props;
 
   public:
     // Convenient value getter
-    CAnyValue &operator[](const CTString &strVariable);
+    CAnyValue *GetValue(const CTString &strVariable);
 
     // Convenient value setter
-    void operator()(const CTString &strVariable, const CAnyValue &val);
+    bool operator()(const CTString &strVariable, const CAnyValue &val);
 
     // Create new packet from type
     static CExtPacket *CreatePacket(EPacketType ePacket);

@@ -72,6 +72,118 @@ void ClassicsPackets_SendToServer(IClassicsExtPacket *pExtPacket)
   }
 };
 
+// [Cecil] TEMP: Display a warning regarding some built-in packet property
+#define PACKET_PROP_WARNING(_Packet, _Property, _Warning) \
+  CPrintF("[%s] ^cff0000'%s' - %s\n", _Packet->GetName(), _Property, _Warning)
+
+bool ClassicsPackets_GetBoolProp(IClassicsBuiltInExtPacket *pExtPacket, const char *strProperty) {
+  CExtPacket &pck = *(CExtPacket *)pExtPacket;
+  CAnyValue *pval = pck.GetValue(strProperty);
+  if (pval == NULL) return false;
+
+  return pval->IsTrue();
+};
+
+int ClassicsPackets_GetIntProp(IClassicsBuiltInExtPacket *pExtPacket, const char *strProperty) {
+  CExtPacket &pck = *(CExtPacket *)pExtPacket;
+  CAnyValue *pval = pck.GetValue(strProperty);
+  if (pval == NULL) return 0;
+
+  return pval->ToIndex();
+};
+
+double ClassicsPackets_GetFloatProp(IClassicsBuiltInExtPacket *pExtPacket, const char *strProperty) {
+  CExtPacket &pck = *(CExtPacket *)pExtPacket;
+  CAnyValue *pval = pck.GetValue(strProperty);
+  if (pval == NULL) return 0.0;
+
+  return pval->ToFloat();
+};
+
+const char *ClassicsPackets_GetStringProp(IClassicsBuiltInExtPacket *pExtPacket, const char *strProperty) {
+  CExtPacket &pck = *(CExtPacket *)pExtPacket;
+  CAnyValue *pval = pck.GetValue(strProperty);
+  if (pval == NULL) return "";
+
+  if (pval->GetType() != CAnyValue::E_VAL_STRING) return "";
+  return pval->GetString().str_String;
+};
+
+bool ClassicsPackets_SetBoolProp(IClassicsBuiltInExtPacket *pExtPacket, const char *strProperty, bool bValue) {
+  CExtPacket &pck = *(CExtPacket *)pExtPacket;
+  CAnyValue *pval = pck.GetValue(strProperty);
+  if (pval == NULL) return false;
+
+  if (pval->GetType() == CAnyValue::E_VAL_BOOL || pval->GetType() == CAnyValue::E_VAL_INDEX) {
+    pval->GetIndex() = bValue;
+
+  } else {
+    PACKET_PROP_WARNING(pExtPacket, strProperty, "Cannot set property to a bool value!");
+    return false;
+  }
+
+  return true;
+};
+
+bool ClassicsPackets_SetIntProp(IClassicsBuiltInExtPacket *pExtPacket, const char *strProperty, int iValue) {
+  CExtPacket &pck = *(CExtPacket *)pExtPacket;
+  CAnyValue *pval = pck.GetValue(strProperty);
+  if (pval == NULL) return false;
+
+  if (pval->GetType() == CAnyValue::E_VAL_BOOL || pval->GetType() == CAnyValue::E_VAL_INDEX) {
+    pval->GetIndex() = iValue;
+
+  } else {
+    PACKET_PROP_WARNING(pExtPacket, strProperty, "Cannot set property to an integer value!");
+    return false;
+  }
+
+  return true;
+};
+
+bool ClassicsPackets_SetFloatProp(IClassicsBuiltInExtPacket *pExtPacket, const char *strProperty, double fValue) {
+  CExtPacket &pck = *(CExtPacket *)pExtPacket;
+  CAnyValue *pval = pck.GetValue(strProperty);
+  if (pval == NULL) return false;
+
+  if (pval->GetType() == CAnyValue::E_VAL_FLOAT) {
+    pval->GetFloat() = fValue;
+
+  } else if (pval->GetType() == CAnyValue::E_VAL_DOUBLE) {
+    pval->GetDouble() = fValue;
+
+  } else {
+    PACKET_PROP_WARNING(pExtPacket, strProperty, "Cannot set property to a float value!");
+    return false;
+  }
+
+  return true;
+};
+
+bool ClassicsPackets_SetStringProp(IClassicsBuiltInExtPacket *pExtPacket, const char *strProperty, const char *strValue) {
+  CExtPacket &pck = *(CExtPacket *)pExtPacket;
+  CAnyValue *pval = pck.GetValue(strProperty);
+  if (pval == NULL) return false;
+
+  if (pval->GetType() == CAnyValue::E_VAL_STRING) {
+    pval->GetString() = strValue;
+
+  } else {
+    PACKET_PROP_WARNING(pExtPacket, strProperty, "Cannot set property to a string value!");
+    return false;
+  }
+
+  return true;
+};
+
+IClassicsBuiltInExtPacket *ClassicsPackets_Create(IClassicsExtPacket::EPacketType ePacket) {
+  return CExtPacket::CreatePacket(ePacket);
+};
+
+void ClassicsPackets_Destroy(IClassicsBuiltInExtPacket *pExtPacket) {
+  delete pExtPacket;
+};
+
 // Retrieve an entity from an ID
 CEntity *CExtEntityPacket::FindExtEntity(ULONG ulID) {
   // Take last created entity if ID is 0
@@ -103,14 +215,33 @@ CEntity *CExtEntityPacket::GetEntity(void) {
 };
 
 // Convenient value getter
-CAnyValue &CExtPacket::operator[](const CTString &strVariable) {
-  return props[strVariable];
+CAnyValue *CExtPacket::GetValue(const CTString &strVariable) {
+  se1::map<CTString, CAnyValue>::iterator it = props.find(strVariable);
+
+  if (it == props.end()) {
+    PACKET_PROP_WARNING(this, strVariable, "Property doesn't exist!");
+    return NULL;
+  }
+
+  return &it->second;
 };
 
 // Convenient value setter
-void CExtPacket::operator()(const CTString &strVariable, const CAnyValue &val) {
-  if (props[strVariable].GetType() != val.GetType()) return;
-  props[strVariable] = val;
+bool CExtPacket::operator()(const CTString &strVariable, const CAnyValue &val) {
+  se1::map<CTString, CAnyValue>::iterator it = props.find(strVariable);
+
+  if (it == props.end()) {
+    PACKET_PROP_WARNING(this, strVariable, "Property doesn't exist!");
+    return false;
+  }
+
+  if (it->second.GetType() != val.GetType()) {
+    PACKET_PROP_WARNING(this, strVariable, CTString(0, "Cannot set value! Expected type %d but got %d!", it->second.GetType(), val.GetType()));
+    return false;
+  }
+
+  it->second = val;
+  return true;
 };
 
 // Create new packet from type
