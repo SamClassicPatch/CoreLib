@@ -60,8 +60,8 @@ typedef void (GFX_FUNC_POINTER CMinMaxFunc )(FLOAT, FLOAT);
 #define ARGS_GfxSetOrtho   (FLOAT fL, FLOAT fR, FLOAT fT, FLOAT fB, FLOAT fNear, FLOAT fFar, BOOL bSubPixelAdjust)
 #define ARGS_GfxSetFrustum (FLOAT fL, FLOAT fR, FLOAT fT, FLOAT fB, FLOAT fNear, FLOAT fFar)
 
-// [Cecil] TODO: Find addresses of methods in both 1.05 games
-#if SE1_VER == SE1_107
+// [Cecil] TODO: Find addresses of methods in Debug and both 1.05 games
+#if SE1_VER == SE1_107 && defined(NDEBUG)
 
 // Fog interface
 namespace Fog {
