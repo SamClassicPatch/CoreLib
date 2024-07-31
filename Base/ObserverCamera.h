@@ -132,6 +132,9 @@ class CORE_API CObserverCamera {
     // Initialize camera interface
     void Init(void);
 
+    // Hook old camera commands for compatibility
+    void HookOldCamCommands(void);
+
     void ReadPos(CameraPos &cp);
     void WritePos(CameraPos &cp);
 

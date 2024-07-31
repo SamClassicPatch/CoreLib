@@ -154,6 +154,36 @@ void CObserverCamera::Init(void)
   _pShell->DeclareSymbol("persistent user INDEX ocam_iScreenshotH;", &cam_props.iScreenshotH);
 };
 
+// Dummy variable and function for compatibility
+static INDEX _bZoomDefaultDummy = 0;
+
+static void ResetCameraInternal(INDEX) {
+  GetGameAPI()->GetCamera().ResetCameraAngles();
+  _bZoomDefaultDummy = FALSE;
+};
+
+// Hook old camera commands for compatibility
+void CObserverCamera::HookOldCamCommands(void) {
+  _pShell->DeclareSymbol("INDEX cam_bRecord;",           &cam_props.bActive);
+  _pShell->DeclareSymbol("INDEX cam_bMoveForward;",      &cam_ctl.bMoveF);
+  _pShell->DeclareSymbol("INDEX cam_bMoveBackward;",     &cam_ctl.bMoveB);
+  _pShell->DeclareSymbol("INDEX cam_bMoveLeft;",         &cam_ctl.bMoveL);
+  _pShell->DeclareSymbol("INDEX cam_bMoveRight;",        &cam_ctl.bMoveR);
+  _pShell->DeclareSymbol("INDEX cam_bMoveUp;",           &cam_ctl.bMoveU);
+  _pShell->DeclareSymbol("INDEX cam_bMoveDown;",         &cam_ctl.bMoveD);
+  _pShell->DeclareSymbol("INDEX cam_bTurnBankingLeft;",  &cam_ctl.bBankingL);
+  _pShell->DeclareSymbol("INDEX cam_bTurnBankingRight;", &cam_ctl.bBankingR);
+  _pShell->DeclareSymbol("INDEX cam_bZoomIn;",           &cam_ctl.bZoomIn);
+  _pShell->DeclareSymbol("INDEX cam_bZoomOut;",          &cam_ctl.bZoomOut);
+
+  _pShell->DeclareSymbol("void cam_ResetCameraInternal(INDEX);", &ResetCameraInternal);
+  _pShell->DeclareSymbol("INDEX cam_bZoomDefault post:cam_ResetCameraInternal;", &_bZoomDefaultDummy);
+
+  _pShell->DeclareSymbol("INDEX cam_bSnapshot;",         &cam_ctl.bSnapshot);
+  _pShell->DeclareSymbol("INDEX cam_bResetToPlayer;",    &cam_ctl.bResetToPlayer);
+  _pShell->DeclareSymbol("FLOAT cam_fSpeed;",            &cam_props.fSpeed);
+};
+
 // Start camera for a game (or a currently playing demo)
 void CObserverCamera::Start(const CTFileName &fnmDemo) {
   // Reset variables
