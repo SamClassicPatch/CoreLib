@@ -495,4 +495,68 @@ void EExtEntityEvent::ConvertTypes(void)
   }
 };
 
+#else
+
+void ClassicsPackets_ServerReport(IClassicsExtPacket *pExtPacket, const char *strFormat, ...) {
+  ASSERT(FALSE);
+};
+
+void ClassicsPackets_SendToClients(IClassicsExtPacket *pExtPacket) {
+  ASSERT(FALSE);
+};
+
+void ClassicsPackets_SendToServer(IClassicsExtPacket *pExtPacket) {
+  ASSERT(FALSE);
+};
+
+bool ClassicsPackets_GetBoolProp(IClassicsBuiltInExtPacket *pExtPacket, const char *strProperty) {
+  ASSERT(FALSE);
+  return false;
+};
+
+int ClassicsPackets_GetIntProp(IClassicsBuiltInExtPacket *pExtPacket, const char *strProperty) {
+  ASSERT(FALSE);
+  return 0;
+};
+
+double ClassicsPackets_GetFloatProp(IClassicsBuiltInExtPacket *pExtPacket, const char *strProperty) {
+  ASSERT(FALSE);
+  return 0.0;
+};
+
+const char *ClassicsPackets_GetStringProp(IClassicsBuiltInExtPacket *pExtPacket, const char *strProperty) {
+  ASSERT(FALSE);
+  return "";
+};
+
+bool ClassicsPackets_SetBoolProp(IClassicsBuiltInExtPacket *pExtPacket, const char *strProperty, bool bValue) {
+  ASSERT(FALSE);
+  return false;
+};
+
+bool ClassicsPackets_SetIntProp(IClassicsBuiltInExtPacket *pExtPacket, const char *strProperty, int iValue) {
+  ASSERT(FALSE);
+  return false;
+};
+
+bool ClassicsPackets_SetFloatProp(IClassicsBuiltInExtPacket *pExtPacket, const char *strProperty, double fValue) {
+  ASSERT(FALSE);
+  return false;
+};
+
+bool ClassicsPackets_SetStringProp(IClassicsBuiltInExtPacket *pExtPacket, const char *strProperty, const char *strValue) {
+  ASSERT(FALSE);
+  return false;
+};
+
+IClassicsBuiltInExtPacket *ClassicsPackets_Create(IClassicsExtPacket::EPacketType ePacket) {
+  ASSERT(FALSE);
+  return NULL;
+};
+
+void ClassicsPackets_Destroy(IClassicsBuiltInExtPacket *pExtPacket) {
+  ASSERT(FALSE);
+  delete pExtPacket;
+};
+
 #endif // _PATCHCONFIG_EXT_PACKETS
