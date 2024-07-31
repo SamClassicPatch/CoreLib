@@ -17,6 +17,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "ObserverCamera.h"
 
+// Global controls and properties for the observer camera
+CObserverCamera::CameraControl CObserverCamera::cam_ctl;
+CObserverCamera::CameraProps CObserverCamera::cam_props;
+
 // Clamp distance from number difference
 __forceinline DOUBLE ClampDistDn(DOUBLE dDiff, DOUBLE dDown) {
   DOUBLE d = Abs(dDiff);
@@ -92,8 +96,9 @@ void CObserverCamera::WritePos(CameraPos &cp) {
   }
 };
 
+// Change demo playback speed
 void CObserverCamera::SetSpeed(FLOAT fSpeed) {
-  if (!cam_bPlaybackSpeedControl) return;
+  if (!cam_props.bPlaybackSpeedControl) return;
 
   static CSymbolPtr pfRealTimeFactor("dem_fRealTimeFactor");
 
@@ -103,6 +108,13 @@ void CObserverCamera::SetSpeed(FLOAT fSpeed) {
   }
 
   pfRealTimeFactor.GetFloat() = fSpeed;
+};
+
+// Reset camera FOV and the banking angle
+void CObserverCamera::ResetCameraAngles(void) {
+  cam_ctl.fFOV = 90.0f;
+  cam_cpCurrent.aRot(3) = 0.0f;
+  cam_aRotation(3) = 0.0f;
 };
 
 // Initialize camera interface
@@ -126,20 +138,20 @@ void CObserverCamera::Init(void)
   _pShell->DeclareSymbol("user INDEX ocam_bScreenshot;",       &cam_ctl.bScreenshot);
 
   // Camera properties
-  _pShell->DeclareSymbol("           user INDEX ocam_bActive;",               &cam_bActive);
-  _pShell->DeclareSymbol("persistent user INDEX ocam_iShowInfo;",             &cam_iShowInfo);
-  _pShell->DeclareSymbol("persistent user INDEX ocam_bDefaultControls;",      &cam_bDefaultControls);
-  _pShell->DeclareSymbol("persistent user INDEX ocam_bPlaybackSpeedControl;", &cam_bPlaybackSpeedControl);
-  _pShell->DeclareSymbol("persistent user INDEX ocam_bSmoothPlayback;",       &cam_bSmoothPlayback);
-  _pShell->DeclareSymbol("persistent user FLOAT ocam_fSmoothTension;",        &cam_fSmoothTension);
-  _pShell->DeclareSymbol("persistent user FLOAT ocam_fSpeed;",                &cam_fSpeed);
-  _pShell->DeclareSymbol("persistent user FLOAT ocam_fTiltAngleMul;",         &cam_fTiltAngleMul);
-  _pShell->DeclareSymbol("persistent user FLOAT ocam_fSmoothMovement;",       &cam_fSmoothMovement);
-  _pShell->DeclareSymbol("persistent user FLOAT ocam_fSmoothRotation;",       &cam_fSmoothRotation);
-  _pShell->DeclareSymbol("persistent user FLOAT ocam_fFollowDist;",           &cam_fFollowDist);
+  _pShell->DeclareSymbol("           user INDEX ocam_bActive;",               &cam_props.bActive);
+  _pShell->DeclareSymbol("persistent user INDEX ocam_iShowInfo;",             &cam_props.iShowInfo);
+  _pShell->DeclareSymbol("persistent user INDEX ocam_bDefaultControls;",      &cam_props.bDefaultControls);
+  _pShell->DeclareSymbol("persistent user INDEX ocam_bPlaybackSpeedControl;", &cam_props.bPlaybackSpeedControl);
+  _pShell->DeclareSymbol("persistent user INDEX ocam_bSmoothPlayback;",       &cam_props.bSmoothPlayback);
+  _pShell->DeclareSymbol("persistent user FLOAT ocam_fSmoothTension;",        &cam_props.fSmoothTension);
+  _pShell->DeclareSymbol("persistent user FLOAT ocam_fSpeed;",                &cam_props.fSpeed);
+  _pShell->DeclareSymbol("persistent user FLOAT ocam_fTiltAngleMul;",         &cam_props.fTiltAngleMul);
+  _pShell->DeclareSymbol("persistent user FLOAT ocam_fSmoothMovement;",       &cam_props.fSmoothMovement);
+  _pShell->DeclareSymbol("persistent user FLOAT ocam_fSmoothRotation;",       &cam_props.fSmoothRotation);
+  _pShell->DeclareSymbol("persistent user FLOAT ocam_fFollowDist;",           &cam_props.fFollowDist);
 
-  _pShell->DeclareSymbol("persistent user INDEX ocam_iScreenshotW;", &cam_iScreenshotW);
-  _pShell->DeclareSymbol("persistent user INDEX ocam_iScreenshotH;", &cam_iScreenshotH);
+  _pShell->DeclareSymbol("persistent user INDEX ocam_iScreenshotW;", &cam_props.iScreenshotW);
+  _pShell->DeclareSymbol("persistent user INDEX ocam_iScreenshotH;", &cam_props.iScreenshotH);
 };
 
 // Start camera for a game (or a currently playing demo)
@@ -214,7 +226,7 @@ BOOL CObserverCamera::IsActive(void) {
 
   // Or if it needs to be used externally
   if (cam_bExternalUsage || bObserver || _pNetwork->IsPlayingDemo()) {
-    return cam_bActive || cam_bPlayback;
+    return cam_props.bActive || cam_bPlayback;
   }
 
   return FALSE;
@@ -266,7 +278,7 @@ BOOL CObserverCamera::StartRecording(void) {
 // Direct button input using default controls
 void CObserverCamera::UpdateControls(void) {
   // Camera or default controls are disabled
-  if (!cam_bDefaultControls || !IsActive()) return;
+  if (!cam_props.bDefaultControls || !IsActive()) return;
 
   _pInput->SetJoyPolling(FALSE);
   _pInput->GetInput(FALSE);
@@ -310,26 +322,26 @@ void CObserverCamera::UpdateControls(void) {
   // Change screenshot resolution
   static BOOL _bRes = FALSE;
   if (!_bRes && bF8) {
-    switch (cam_iScreenshotW)
+    switch (cam_props.iScreenshotW)
     {
       case 1920: // 1080p 21:9
-        cam_iScreenshotW = 2560;
-        cam_iScreenshotH = 1080;
+        cam_props.iScreenshotW = 2560;
+        cam_props.iScreenshotH = 1080;
         break;
 
       case 2560: // 1440p 21:9
-        cam_iScreenshotW = 3440;
-        cam_iScreenshotH = 1440;
+        cam_props.iScreenshotW = 3440;
+        cam_props.iScreenshotH = 1440;
         break;
 
       case 3440: // 4K
-        cam_iScreenshotW = 3840;
-        cam_iScreenshotH = 2160;
+        cam_props.iScreenshotW = 3840;
+        cam_props.iScreenshotH = 2160;
         break;
 
       default: // Full HD
-        cam_iScreenshotW = 1920;
-        cam_iScreenshotH = 1080;
+        cam_props.iScreenshotW = 1920;
+        cam_props.iScreenshotH = 1080;
         break;
     }
   }
@@ -354,15 +366,13 @@ void CObserverCamera::UpdateControls(void) {
 
   // Reset FOV and banking angle
   if (_pInput->GetButtonState(OCAM_KID_RESET)) {
-    cam_ctl.fFOV = 90.0f;
-    cam_cpCurrent.aRot(3) = 0.0f;
-    cam_aRotation(3) = 0.0f;
+    ResetCameraAngles();
   }
 };
 
 // Print info and default controls for the camera
 void CObserverCamera::PrintCameraInfo(CDrawPort *pdp) {
-  if (cam_iShowInfo <= 0) return;
+  if (cam_props.iShowInfo <= 0) return;
 
   const FLOAT fScaling = HEIGHT_SCALING(pdp);
   const FLOAT fTextScaling = fScaling * 0.8f;
@@ -383,35 +393,35 @@ void CObserverCamera::PrintCameraInfo(CDrawPort *pdp) {
 
   CTString strProps = "";
 
-  if (cam_bPlayback && !cam_bActive) {
-    strProps += CTString(0, "ocam_bPlaybackSpeedControl = %d\n", cam_bPlaybackSpeedControl);
-    strProps += CTString(0, "ocam_bSmoothPlayback = %d\n", cam_bSmoothPlayback);
-    strProps += CTString(0, "ocam_fSmoothTension = %g\n", cam_fSmoothTension);
+  if (cam_bPlayback && !cam_props.bActive) {
+    strProps += CTString(0, "ocam_bPlaybackSpeedControl = %d\n", cam_props.bPlaybackSpeedControl);
+    strProps += CTString(0, "ocam_bSmoothPlayback = %d\n", cam_props.bSmoothPlayback);
+    strProps += CTString(0, "ocam_fSmoothTension = %g\n", cam_props.fSmoothTension);
 
   } else {
-    strProps += CTString(0, "ocam_bDefaultControls = %d\n", cam_bDefaultControls);
-    strProps += CTString(0, "ocam_fSpeed = %g\n", cam_fSpeed);
-    strProps += CTString(0, "ocam_fTiltAngleMul = %g\n", cam_fTiltAngleMul);
-    strProps += CTString(0, "ocam_fSmoothMovement = %g\n", cam_fSmoothMovement);
-    strProps += CTString(0, "ocam_fSmoothRotation = %g\n", cam_fSmoothRotation);
+    strProps += CTString(0, "ocam_bDefaultControls = %d\n", cam_props.bDefaultControls);
+    strProps += CTString(0, "ocam_fSpeed = %g\n", cam_props.fSpeed);
+    strProps += CTString(0, "ocam_fTiltAngleMul = %g\n", cam_props.fTiltAngleMul);
+    strProps += CTString(0, "ocam_fSmoothMovement = %g\n", cam_props.fSmoothMovement);
+    strProps += CTString(0, "ocam_fSmoothRotation = %g\n", cam_props.fSmoothRotation);
     strProps += CTString(0, "ocam_fFOV = %g\n", cam_ctl.fFOV);
     strProps += CTString(0, "ocam_bFollowPlayer = %d\n", cam_ctl.bFollowPlayer);
-    strProps += CTString(0, "ocam_fFollowDist = %g\n", cam_fFollowDist);
+    strProps += CTString(0, "ocam_fFollowDist = %g\n", cam_props.fFollowDist);
   }
 
-  strProps += CTString(0, "ocam_iScreenshotW/H = %dx%d\n", cam_iScreenshotW, cam_iScreenshotH);
+  strProps += CTString(0, "ocam_iScreenshotW/H = %dx%d\n", cam_props.iScreenshotW, cam_props.iScreenshotH);
 
   pixInfoY += pixLineHeight;
   pdp->PutText(strProps, 16 * fScaling, pixInfoY, 0xFFFFFFFF);
 
   // Default controls for free fly camera
-  if (cam_bActive && cam_iShowInfo > 1) {
+  if (cam_props.bActive && cam_props.iShowInfo > 1) {
     pixInfoY += pixLineHeight * 9;
     pdp->PutText(TRANS("Default camera controls"), 8 * fScaling, pixInfoY, 0xFFD700FF);
 
     CTString strControls = TRANS("Disabled");
 
-    if (cam_bDefaultControls) {
+    if (cam_props.bDefaultControls) {
       strControls = CTString(0, TRANS("Movement: %s / %s\n"), "WASD", TRANS("Arrow keys"));
       strControls += CTString(0, TRANS("Move up: %s / %s\n"),
         _pInput->GetButtonTransName(OCAM_KID_MOVEU_1), _pInput->GetButtonTransName(OCAM_KID_MOVEU_2));
@@ -449,8 +459,8 @@ CObserverCamera::CameraPos &CObserverCamera::FreeFly(CPlayerEntity *penObserving
 
   // Camera rotation
   {
-    cam_fSmoothRotation = Clamp(cam_fSmoothRotation, 0.0f, 1.0f);
-    const BOOL bInstantRotation = (cam_fSmoothRotation == 1.0f);
+    cam_props.fSmoothRotation = Clamp(cam_props.fSmoothRotation, 0.0f, 1.0f);
+    const BOOL bInstantRotation = (cam_props.fSmoothRotation == 1.0f);
     const BOOL bFollowing = (cam_ctl.bFollowPlayer && penObserving != NULL);
 
     // Input rotation
@@ -481,7 +491,7 @@ CObserverCamera::CameraPos &CObserverCamera::FreeFly(CPlayerEntity *penObserving
       aRotate(2) = _pInput->GetAxisValue(MOUSE_Y_AXIS) * +0.5f;
     }
 
-    aRotate(3) = FLOAT(cam_ctl.bBankingL - cam_ctl.bBankingR) * cam_fTiltAngleMul * 0.5f;
+    aRotate(3) = FLOAT(cam_ctl.bBankingL - cam_ctl.bBankingR) * cam_props.fTiltAngleMul * 0.5f;
 
     // Set immediately
     if (bInstantRotation) {
@@ -492,13 +502,13 @@ CObserverCamera::CameraPos &CObserverCamera::FreeFly(CPlayerEntity *penObserving
     // Smooth rotation
     } else {
       // Use cosine in order to make real values slightly lower than they are (e.g. 0.5 -> ~0.3)
-      const FLOAT fSpeedMul = 1.0f - Cos(cam_fSmoothRotation * 90);
+      const FLOAT fSpeedMul = 1.0f - Cos(cam_props.fSmoothRotation * 90);
       cam_aRotation += (aRotate - cam_aRotation) * dTimeMul * fSpeedMul;
 
       // Override directional rotation while following
       if (bFollowing) {
-        cam_aRotation(1) = aRotate(1) * dTimeMul * cam_fSmoothRotation;
-        cam_aRotation(2) = aRotate(2) * dTimeMul * cam_fSmoothRotation;
+        cam_aRotation(1) = aRotate(1) * dTimeMul * cam_props.fSmoothRotation;
+        cam_aRotation(2) = aRotate(2) * dTimeMul * cam_props.fSmoothRotation;
       }
     }
 
@@ -506,22 +516,22 @@ CObserverCamera::CameraPos &CObserverCamera::FreeFly(CPlayerEntity *penObserving
 
     // Snap banking angle on sharp movement
     if (bInstantRotation && Abs(cam_aRotation(3)) > 0.0f) {
-      Snap(cp.aRot(3), cam_fTiltAngleMul * 10.0f);
+      Snap(cp.aRot(3), cam_props.fTiltAngleMul * 10.0f);
     }
   }
 
   // Camera movement
-  if (cam_fSpeed != 0.0f) {
+  if (cam_props.fSpeed != 0.0f) {
     // Movement vector
     FLOAT3D vMoveDir(0, 0, 0);
 
     // Follow the player and always stay close enough
-    if (cam_fFollowDist >= 0.0f && penObserving != NULL) {
+    if (cam_props.fFollowDist >= 0.0f && penObserving != NULL) {
       CPlacement3D plView = IWorld::GetViewpoint(penObserving, TRUE);
       FLOAT3D vToPlayer = (plView.pl_PositionVector - cp.vPos);
 
-      if (vToPlayer.Length() > cam_fFollowDist) {
-        vMoveDir = vToPlayer.SafeNormalize() * cam_fSpeed;
+      if (vToPlayer.Length() > cam_props.fFollowDist) {
+        vMoveDir = vToPlayer.SafeNormalize() * cam_props.fSpeed;
       }
     }
 
@@ -534,17 +544,17 @@ CObserverCamera::CameraPos &CObserverCamera::FreeFly(CPlayerEntity *penObserving
       MakeRotationMatrixFast(mRot, ANGLE3D(cp.aRot(1), 0, 0)); // Only heading direction
 
       // Normalize vector, apply current rotation and speed
-      vMoveDir += (vInputDir / fInputLength) * mRot * cam_fSpeed;
+      vMoveDir += (vInputDir / fInputLength) * mRot * cam_props.fSpeed;
     }
 
     // Set immediately
-    if (cam_fSmoothMovement >= 1.0f) {
+    if (cam_props.fSmoothMovement >= 1.0f) {
       cam_vMovement = vMoveDir;
 
     // Smooth movement
     } else {
       // Use cosine in order to make real values slightly lower than they are (e.g. 0.5 -> ~0.3)
-      const FLOAT fSpeedMul = 1.0f - Cos(ClampDn(cam_fSmoothMovement, 0.0f) * 90);
+      const FLOAT fSpeedMul = 1.0f - Cos(ClampDn(cam_props.fSmoothMovement, 0.0f) * 90);
       cam_vMovement += (vMoveDir - cam_vMovement) * dTimeMul * fSpeedMul;
     }
 
@@ -600,7 +610,7 @@ BOOL CObserverCamera::Update(CEntity *pen, CDrawPort *pdp) {
 
   // Camera is currently disabled
   if (!IsActive()) {
-    cam_bActive = FALSE; // Prevent it from suddenly switching if the conditions are met
+    cam_props.bActive = FALSE; // Prevent it from suddenly switching if the conditions are met
     cam_ctl.bScreenshot = FALSE; // And from making screenshots
 
     // Remember player view position for the next activation
@@ -620,7 +630,7 @@ BOOL CObserverCamera::Update(CEntity *pen, CDrawPort *pdp) {
   CameraPos &cp = cam_cpView;
 
   // Camera playback
-  if (cam_bPlayback && !cam_bActive) {
+  if (cam_bPlayback && !cam_props.bActive) {
     // Read next position when the destination expires
     TIME tmNow = _pTimer->GetLerpedCurrentTick() - cam_tmStartTime;
 
@@ -646,11 +656,11 @@ BOOL CObserverCamera::Update(CEntity *pen, CDrawPort *pdp) {
     FLOAT fRatio = Clamp((tmNow - acp[1].tmTick) / (acp[2].tmTick - acp[1].tmTick), (TIME)0.0, (TIME)1.0);
 
     // Move through a curve between two points
-    if (cam_bSmoothPlayback) {
-      cam_fSmoothTension = Clamp(cam_fSmoothTension, 0.0f, 1.0f);
-      cp.vPos = CatmullRom(acp[0].vPos, acp[1].vPos, acp[2].vPos, acp[3].vPos, fRatio, cam_fSmoothTension);
-      cp.aRot = CatmullRom(acp[0].aRot, acp[1].aRot, acp[2].aRot, acp[3].aRot, fRatio, cam_fSmoothTension);
-      cp.fFOV = CatmullRom(acp[0].fFOV, acp[1].fFOV, acp[2].fFOV, acp[3].fFOV, fRatio, cam_fSmoothTension);
+    if (cam_props.bSmoothPlayback) {
+      cam_props.fSmoothTension = Clamp(cam_props.fSmoothTension, 0.0f, 1.0f);
+      cp.vPos = CatmullRom(acp[0].vPos, acp[1].vPos, acp[2].vPos, acp[3].vPos, fRatio, cam_props.fSmoothTension);
+      cp.aRot = CatmullRom(acp[0].aRot, acp[1].aRot, acp[2].aRot, acp[3].aRot, fRatio, cam_props.fSmoothTension);
+      cp.fFOV = CatmullRom(acp[0].fFOV, acp[1].fFOV, acp[2].fFOV, acp[3].fFOV, fRatio, cam_props.fSmoothTension);
 
     // Linear movement from one point to another
     } else {
@@ -733,12 +743,12 @@ static CTFileName MakeScreenShotName(void) {
 // Take a high quality screenshot of the current view
 void CObserverCamera::TakeScreenshot(void) {
   // Limit resolution
-  cam_iScreenshotW = Clamp(cam_iScreenshotW, (INDEX)1, (INDEX)20000);
-  cam_iScreenshotH = Clamp(cam_iScreenshotH, (INDEX)1, (INDEX)20000);
+  cam_props.iScreenshotW = Clamp(cam_props.iScreenshotW, (INDEX)1, (INDEX)20000);
+  cam_props.iScreenshotH = Clamp(cam_props.iScreenshotH, (INDEX)1, (INDEX)20000);
 
   // Create canvas for the screenshot
   CDrawPort *pdpScreenshot;
-  _pGfx->CreateWorkCanvas(cam_iScreenshotW, cam_iScreenshotH, &pdpScreenshot);
+  _pGfx->CreateWorkCanvas(cam_props.iScreenshotW, cam_props.iScreenshotH, &pdpScreenshot);
   if (pdpScreenshot == NULL) return;
 
   // Use Steam's screenshot bitmap

@@ -43,6 +43,44 @@ class CORE_API CObserverCamera {
       };
     };
 
+    // Camera properties
+    struct CameraProps {
+      BOOL bActive; // Dynamic camera toggle
+      INDEX iShowInfo; // Display current camera properties and default controls for free fly mode
+      BOOL bDefaultControls; // Use internal controls instead of manually binding the commands
+      BOOL bPlaybackSpeedControl; // Let camera playback control demo speed
+      BOOL bSmoothPlayback; // Smooth camera movement during playback
+      FLOAT fSmoothTension; // Camera movement tension during smooth playback
+      FLOAT fSpeed; // Movement speed multiplier
+      FLOAT fTiltAngleMul; // Multiplier for banking rotation speed/angle
+      FLOAT fSmoothMovement; // Factor for smooth camera movement
+      FLOAT fSmoothRotation; // Factor for smooth camera rotation
+      FLOAT fFollowDist; // Close in on the player if they're far enough from the camera
+
+      INDEX iScreenshotW, iScreenshotH; // Screenshot resolution (limited to 1x1 .. 20000x20000)
+
+      CameraProps() {
+        Reset();
+      };
+
+      void Reset(void) {
+        bActive = FALSE;
+        iShowInfo = 2;
+        bDefaultControls = TRUE;
+        bPlaybackSpeedControl = FALSE;
+        bSmoothPlayback = FALSE;
+        fSmoothTension = 0.0f;
+        fSpeed = 1.0f;
+        fTiltAngleMul = 1.0f;
+        fSmoothMovement = 1.0f;
+        fSmoothRotation = 1.0f;
+        fFollowDist = -1.0f;
+
+        iScreenshotW = 1920;
+        iScreenshotH = 1080;
+      };
+    };
+
     // Camera position
     struct CameraPos {
       TIME tmTick;
@@ -62,23 +100,9 @@ class CORE_API CObserverCamera {
     };
 
   public:
-    // Camera control (fields outside cam_ctl aren't reset between camera activations)
-    CameraControl cam_ctl;
-
-    // Camera properties
-    BOOL cam_bActive; // Dynamic camera toggle
-    INDEX cam_iShowInfo; // Display current camera properties and default controls for free fly mode
-    BOOL cam_bDefaultControls; // Use internal controls instead of manually binding the commands
-    BOOL cam_bPlaybackSpeedControl; // Let camera playback control demo speed
-    BOOL cam_bSmoothPlayback; // Smooth camera movement during playback
-    FLOAT cam_fSmoothTension; // Camera movement tension during smooth playback
-    FLOAT cam_fSpeed; // Movement speed multiplier
-    FLOAT cam_fTiltAngleMul; // Multiplier for banking rotation speed/angle
-    FLOAT cam_fSmoothMovement; // Factor for smooth camera movement
-    FLOAT cam_fSmoothRotation; // Factor for smooth camera rotation
-    FLOAT cam_fFollowDist; // Close in on the player if they're far enough from the camera
-
-    INDEX cam_iScreenshotW, cam_iScreenshotH; // Screenshot resolution (limited to 1x1 .. 20000x20000)
+    // Global controls and properties for the observer camera
+    static CameraControl cam_ctl;
+    static CameraProps cam_props;
 
     BOOL cam_bPlayback; // Currently playing back the recording
     CTFileName cam_fnmDemo; // Currently playing demo
@@ -101,21 +125,6 @@ class CORE_API CObserverCamera {
   public:
     // Constructor
     CObserverCamera() {
-      cam_bActive = FALSE;
-      cam_iShowInfo = 2;
-      cam_bDefaultControls = TRUE;
-      cam_bPlaybackSpeedControl = FALSE;
-      cam_bSmoothPlayback = FALSE;
-      cam_fSmoothTension = 0.0f;
-      cam_fSpeed = 1.0f;
-      cam_fTiltAngleMul = 1.0f;
-      cam_fSmoothMovement = 1.0f;
-      cam_fSmoothRotation = 1.0f;
-      cam_fFollowDist = -1.0f;
-
-      cam_iScreenshotW = 1920;
-      cam_iScreenshotH = 1080;
-
       cam_bExternalUsage = FALSE;
       Reset();
     };
@@ -128,6 +137,9 @@ class CORE_API CObserverCamera {
 
     // Change demo playback speed
     void SetSpeed(FLOAT fSpeed);
+
+    // Reset camera FOV and the banking angle
+    void ResetCameraAngles(void);
 
   public:
     // Start camera for a game (or a currently playing demo)
