@@ -128,10 +128,10 @@ void CSteamAPI::Init(void) {
   CPutString("OK!\n");
 
   // Register callbacks
-  cbOnGameOverlayActivated.Register(this, OnGameOverlayActivated);
-  cbOnGameJoinRequested.Register(this, OnGameJoinRequested);
-  cbOnScreenshotRequested.Register(this, OnScreenshotRequested);
-  cbOnScreenshotReady.Register(this, OnScreenshotReady);
+  cbOnGameOverlayActivated.Register(this, &CSteamAPI::OnGameOverlayActivated);
+  cbOnGameJoinRequested.Register(this, &CSteamAPI::OnGameJoinRequested);
+  cbOnScreenshotRequested.Register(this, &CSteamAPI::OnScreenshotRequested);
+  cbOnScreenshotReady.Register(this, &CSteamAPI::OnScreenshotReady);
 
 #else
   CPutString("Steam API is disabled in this build!\n");

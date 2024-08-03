@@ -23,11 +23,19 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #if _PATCHCONFIG_STEAM_API
 
 // Compatibility with C++11
-#define nullptr NULL
-#define snprintf _snprintf
-typedef int int32_t;
-typedef __int64 int64_t;
-typedef size_t intptr_t;
+#if _MSC_VER < 1600
+  #define nullptr NULL
+  typedef int int32_t;
+  typedef __int64 int64_t;
+  typedef size_t intptr_t;
+#else
+  #include <cstdint>
+#endif
+
+#if _MSC_VER < 1900
+  #define snprintf _snprintf
+#endif
+
 #include <Extras/Steamworks/public/steam/steam_api.h>
 
 #else
