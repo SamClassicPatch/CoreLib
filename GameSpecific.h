@@ -70,6 +70,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #define ADDR_UNZIP_ENTRIES  (ADDR_ENGINE + 0x270D48) // &_azeFiles
   #define ADDR_UNZIP_ARCHIVES (ADDR_ENGINE + 0x270D68) // &_afnmArchives
 
+  // Offsets within virtual tables of class functions
+  #define VFOFFSET_ENTITY_GETFORCE (31) // CEntity::GetForce()
+  #define VFOFFSET_CONTROLS_LOAD (11) // CControls::Load_t()
+
 #elif defined(NDEBUG) // Release 1.05 & 1.07 addresses
   // InitStreams()
   #define ADDR_INITSTREAMS (ADDR_ENGINE + CHOOSE_FOR_GAME(0x1A2C0, 0x1A2C0, 0x265F0))
@@ -94,6 +98,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #define ADDR_UNZIP_GETFILEATINDEX   (ADDR_ENGINE + CHOOSE_FOR_GAME(0x218D0, 0x21960, 0x2DC40)) // UNZIPGetFileAtIndex()
   #define ADDR_UNZIP_ISFILEATINDEXMOD (ADDR_ENGINE + CHOOSE_FOR_GAME(0x218F0, 0x21980, 0x2DC60)) // UNZIPIsFileAtIndexMod()
 
+  // Offsets within virtual tables of class functions
+  #define VFOFFSET_ENTITY_GETFORCE CHOOSE_FOR_GAME(27, 27, 31) // CEntity::GetForce()
+  #define VFOFFSET_CONTROLS_LOAD (11) // CControls::Load_t()
+
 #elif SE1_VER == SE1_107 // Debug addresses
   // InitStreams()
   #define ADDR_INITSTREAMS (ADDR_ENGINE + 0x7B49)
@@ -117,6 +125,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #define ADDR_UNZIP_GETFILECOUNT     (ADDR_ENGINE + 0x1456) // UNZIPGetFileCount()
   #define ADDR_UNZIP_GETFILEATINDEX   (ADDR_ENGINE + 0x5268) // UNZIPGetFileAtIndex()
   #define ADDR_UNZIP_ISFILEATINDEXMOD (ADDR_ENGINE + 0xA45C) // UNZIPIsFileAtIndexMod()
+
+  // Offsets within virtual tables of class functions
+  #define VFOFFSET_ENTITY_GETFORCE (31) // CEntity::GetForce()
+  #define VFOFFSET_CONTROLS_LOAD (11) // CControls::Load_t()
 #endif
 
 #endif

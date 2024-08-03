@@ -126,7 +126,7 @@ void CGameAPI::HookFields(void) {
     // Pointer to the virtual table of CControls
     size_t *pVFTable = *(size_t **)pctrlControlsExtra;
 
-    pLoadControls = *(CControlsPatch::CLoadFunc *)(pVFTable + 11);
+    pLoadControls = *(CControlsPatch::CLoadFunc *)(pVFTable + VFOFFSET_CONTROLS_LOAD);
     _hLoadControlsPatch = CreatePatch(pLoadControls, &CControlsPatch::P_Load, "CControls::Load_t(...)");
   }
 
