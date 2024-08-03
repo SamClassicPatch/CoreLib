@@ -66,7 +66,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 // [Cecil] TEMP: "APCT" - "Automatic Patch Config Toggle"
 #define _APCT_NREV (SE1_GAME != SS_REV) // Feature should be disabled for Revolution
-#define _APCT_N110 (SE1_VER != SE1_110) // Feature should be disabled for 1.10 forks
+#define _APCT_N110 (SE1_VER != SE1_110 || !_APCT_NREV) // Feature should be disabled for 1.10 forks (but not Revolution)
 
 // CoreLib
 
@@ -74,8 +74,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #define _PATCHCONFIG_STEAM_API (1 && _APCT_NREV) // Enable interactions with Steam
 
   // Definitions
-  #define _PATCHCONFIG_CLASS_DEFINITIONS (1) // Define classes that aren't exported from the engine
-  #define _PATCHCONFIG_FUNC_DEFINITIONS  (1) // Define methods that aren't exported from the engine
+  #define _PATCHCONFIG_CLASS_DEFINITIONS (1 && _APCT_N110) // Define classes that aren't exported from the engine
+  #define _PATCHCONFIG_FUNC_DEFINITIONS  (1 && _APCT_N110) // Define methods that aren't exported from the engine
 
   // Networking
   #define _PATCHCONFIG_EXT_PACKETS  (1 && _APCT_NREV) // Support for custom extension packets
@@ -83,7 +83,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #define _PATCHCONFIG_GUID_MASKING (1 && _APCT_NREV) // System for masking GUIDs of player characters separately for each server client
 
   // Query
-  #define _PATCHCONFIG_NEW_QUERY (1 && _APCT_NREV) // Utilize new query manager and switch master servers
+  #define _PATCHCONFIG_NEW_QUERY (1 && _APCT_NREV && _APCT_N110) // Utilize new query manager and switch master servers
 
 // EnginePatches
 
@@ -97,10 +97,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #define _PATCHCONFIG_EXTEND_FILESYSTEM (1) // Extend file system functionality by patching its methods
   #define _PATCHCONFIG_EXTEND_NETWORK    (1) // Extend networking functionality by patching its methods
   #define _PATCHCONFIG_FIX_RENDERING     (1) // Fix FOV and other rendering issues by patching methods
-  #define _PATCHCONFIG_FIX_SKA           (1 && _APCT_NREV) // Fix SKA issues by patching methods
+  #define _PATCHCONFIG_FIX_SKA           (1 && _APCT_NREV && _APCT_N110) // Fix SKA issues by patching methods
   #define _PATCHCONFIG_FIX_STRINGS       (1) // Fix CTString methods by patching them
-  #define _PATCHCONFIG_EXTEND_TEXTURES   (1) // Extend texture functionality by patching its methods
+  #define _PATCHCONFIG_EXTEND_TEXTURES   (1 && _APCT_N110) // Extend texture functionality by patching its methods
   #define _PATCHCONFIG_FIX_LOGICTIMERS   (1 && _APCT_NREV) // Fix imprecise timers for entity logic
-  #define _PATCHCONFIG_FIX_STREAMPAGING  (1 && _APCT_NREV) // Fix streams by patching their paging methods (no need for 1.10)
+  #define _PATCHCONFIG_FIX_STREAMPAGING  (1 && _APCT_NREV && _APCT_N110) // Fix streams by patching their paging methods (no need for 1.10)
 
 #endif
