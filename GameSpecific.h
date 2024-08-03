@@ -39,9 +39,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #elif SE1_VER >= SE1_107
   #define CHOOSE_FOR_GAME(_TFE105, _TSE105, _TSE107) _TSE107
 
+  // [Cecil] TEMP: 1.10 support
+  #if SE1_VER == SE1_110
+    #define GetGameSpyPlayerInfo GetGameAgentPlayerInfo
+  #endif
+
   // [Cecil] TEMP: Revolution support
   #if SE1_GAME == SS_REV
-    #define GetGameSpyPlayerInfo GetGameAgentPlayerInfo
     #define LoadAnyGfxFormat_t Load_t
   #endif
 
@@ -69,6 +73,27 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #define ADDR_UNZIP_HANDLES  (ADDR_ENGINE + 0x270D58) // &_azhHandles
   #define ADDR_UNZIP_ENTRIES  (ADDR_ENGINE + 0x270D48) // &_azeFiles
   #define ADDR_UNZIP_ARCHIVES (ADDR_ENGINE + 0x270D68) // &_afnmArchives
+
+  // Offsets within virtual tables of class functions
+  #define VFOFFSET_ENTITY_GETFORCE (31) // CEntity::GetForce()
+  #define VFOFFSET_CONTROLS_LOAD (11) // CControls::Load_t()
+
+#elif SE1_VER == SE1_110 // Open-source 1.10 addresses
+  // [Cecil] NOTE: These functions and structures need to be exported from the engine module
+  ENGINE_API void InitStreams(void);                                   // Defined in Engine/Base/Stream.cpp
+  ENGINE_API extern CTCriticalSection zip_csLock;                      // Defined in Engine/Engine.cpp
+  ENGINE_API extern CStaticStackArray<class CZipHandle> _azhHandles;   // Defined in Engine/Base/Unzip.cpp
+  ENGINE_API extern CStaticStackArray<class CZipEntry>  _azeFiles;     // Defined in Engine/Base/Unzip.cpp
+  ENGINE_API extern CStaticStackArray<class CTFileName> _afnmArchives; // Defined in Engine/Base/Unzip.cpp
+
+  // InitStreams()
+  #define ADDR_INITSTREAMS (&InitStreams)
+
+  // Static variables from Unzip.cpp
+  #define ADDR_UNZIP_CRITSEC  (&zip_csLock)
+  #define ADDR_UNZIP_HANDLES  (&_azhHandles)
+  #define ADDR_UNZIP_ENTRIES  (&_azeFiles)
+  #define ADDR_UNZIP_ARCHIVES (&_afnmArchives)
 
   // Offsets within virtual tables of class functions
   #define VFOFFSET_ENTITY_GETFORCE (31) // CEntity::GetForce()
