@@ -40,6 +40,7 @@ GlobalProps::GlobalProps()
   props[k_EConfigProps_DPIAware          ] ("", "DPIAware",           true );
   props[k_EConfigProps_ExtendedFileSystem] ("", "ExtendedFileSystem", true );
   props[k_EConfigProps_FullAppIntegration] ("", "FullAppIntegration", false);
+  props[k_EConfigProps_NotifyAboutUpdates] ("", "NotifyAboutUpdates", true );
 
   // Steam API
   props[k_EConfigProps_SteamEnable    ] ("Steam", "Enable",     true ); // Initialize and use Steamworks API
