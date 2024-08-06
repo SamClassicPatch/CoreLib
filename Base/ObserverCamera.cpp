@@ -146,6 +146,7 @@ void CObserverCamera::Init(void)
   _pShell->DeclareSymbol("persistent user FLOAT ocam_fSmoothTension;",        &cam_props.fSmoothTension);
   _pShell->DeclareSymbol("persistent user FLOAT ocam_fSpeed;",                &cam_props.fSpeed);
   _pShell->DeclareSymbol("persistent user FLOAT ocam_fTiltAngleMul;",         &cam_props.fTiltAngleMul);
+  _pShell->DeclareSymbol("persistent user FLOAT ocam_fFOVChangeMul;",         &cam_props.fFOVChangeMul);
   _pShell->DeclareSymbol("persistent user FLOAT ocam_fSmoothMovement;",       &cam_props.fSmoothMovement);
   _pShell->DeclareSymbol("persistent user FLOAT ocam_fSmoothRotation;",       &cam_props.fSmoothRotation);
   _pShell->DeclareSymbol("persistent user FLOAT ocam_fFollowDist;",           &cam_props.fFollowDist);
@@ -432,6 +433,7 @@ void CObserverCamera::PrintCameraInfo(CDrawPort *pdp) {
     strProps += CTString(0, "ocam_bDefaultControls = %d\n", cam_props.bDefaultControls);
     strProps += CTString(0, "ocam_fSpeed = %g\n", cam_props.fSpeed);
     strProps += CTString(0, "ocam_fTiltAngleMul = %g\n", cam_props.fTiltAngleMul);
+    strProps += CTString(0, "ocam_fFOVChangeMul = %g\n", cam_props.fFOVChangeMul);
     strProps += CTString(0, "ocam_fSmoothMovement = %g\n", cam_props.fSmoothMovement);
     strProps += CTString(0, "ocam_fSmoothRotation = %g\n", cam_props.fSmoothRotation);
     strProps += CTString(0, "ocam_fFOV = %g\n", cam_ctl.fFOV);
@@ -446,7 +448,7 @@ void CObserverCamera::PrintCameraInfo(CDrawPort *pdp) {
 
   // Default controls for free fly camera
   if (cam_props.bActive && cam_props.iShowInfo > 1) {
-    pixInfoY += pixLineHeight * 9;
+    pixInfoY += pixLineHeight * 10;
     pdp->PutText(TRANS("Default camera controls"), 8 * fScaling, pixInfoY, 0xFFD700FF);
 
     CTString strControls = TRANS("Disabled");
@@ -591,7 +593,8 @@ CObserverCamera::CameraPos &CObserverCamera::FreeFly(CPlayerEntity *penObserving
     cp.vPos += cam_vMovement * dTimeMul;
   }
 
-  cam_ctl.fFOV = Clamp(FLOAT(cam_ctl.fFOV + (cam_ctl.bZoomOut - cam_ctl.bZoomIn) * dTimeMul), 10.0f, 170.0f);
+  const FLOAT fFOVDirSpeed = (cam_ctl.bZoomOut - cam_ctl.bZoomIn) * dTimeMul * cam_props.fFOVChangeMul;
+  cam_ctl.fFOV = Clamp(FLOAT(cam_ctl.fFOV + fFOVDirSpeed), 10.0f, 170.0f);
   cp.fFOV = cam_ctl.fFOV;
 
   // Snap back to view of the current player
