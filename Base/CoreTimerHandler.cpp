@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "CoreTimerHandler.h"
 
 #include "Networking/Modules.h"
+#include "Networking/ExtPackets.h"
 
 // Define pointer to the timer handler
 CCoreTimerHandler *_pTimerHandler = NULL;
@@ -62,6 +63,11 @@ void CCoreTimerHandler::OnTick(void)
     if (pEvents == NULL) continue;
 
     pEvents->OnTick();
+  }
+
+  // Stop extension packet sounds when the game isn't active
+  if (!GetGameAPI()->IsHooked() || !GetGameAPI()->IsGameOn()) {
+    CExtPlaySound::StopAllSounds();
   }
 };
 

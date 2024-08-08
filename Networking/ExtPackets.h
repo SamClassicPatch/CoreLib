@@ -534,6 +534,41 @@ class CORE_API CExtGameplayExt : public CExtPacket {
     virtual void Process(void);
 };
 
+class CORE_API CExtPlaySound : public CExtPacket {
+  public:
+    CExtPlaySound() {
+      // Sound file to play
+      // - Setting it to "/stop/" stops any playing sound on a specified channel
+      // - Leaving it blank simply changes sound parameters of a channel without playing/resetting any sounds
+      props["strFile"] = "";
+
+      props["iChannel"] = 0; // Playback channel (0-31)
+      props["ulFlags"] = SOF_NONE; // Playback flags
+
+      // Sound parameters
+      props["fDelay"] = 0.0f; // Playback delay (0.0+)
+      props["fOffset"] = 0.0f; // Playback offset in seconds
+      props["fVolumeL"] = 1.0f; // Left ear volume (0.0 .. 4.0)
+      props["fVolumeR"] = 1.0f; // Right ear volume (0.0 .. 4.0)
+      props["fFilterL"] = 1.0f; // Left ear filter (1.0 .. 500.0)
+      props["fFilterR"] = 1.0f; // Right ear filter (1.0 .. 500.0)
+      props["fPitch"] = 1.0f; // Playback pitch (0.0 .. 10.0)
+    };
+
+    // Get channel from index
+    static CSoundObject *GetChannel(INDEX iChannel);
+
+    // Stop sounds on all channels
+    static void StopAllSounds(void);
+
+  public:
+    EXTPACKET_DEFINEFORTYPE(k_EPacketType_PlaySound);
+
+    virtual bool Write(CNetworkMessage &nm);
+    virtual void Read(CNetworkMessage &nm);
+    virtual void Process(void);
+};
+
 #endif // _PATCHCONFIG_EXT_PACKETS
 
 #endif

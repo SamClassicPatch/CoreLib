@@ -120,6 +120,7 @@
     <ClCompile Include="Networking\ExtPackets\ExtEntityProp.cpp" />
     <ClCompile Include="Networking\ExtPackets\ExtEntityTeleport.cpp" />
     <ClCompile Include="Networking\ExtPackets\ExtGameplayExt.cpp" />
+    <ClCompile Include="Networking\ExtPackets\ExtPlaySound.cpp" />
     <ClCompile Include="Networking\ExtPackets\ExtSessionProps.cpp" />
     <ClCompile Include="Networking\HttpRequests.cpp" />
     <ClCompile Include="Networking\MessageProcessing.cpp" />

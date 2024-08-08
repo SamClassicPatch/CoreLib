@@ -272,6 +272,7 @@ CExtPacket *CExtPacket::CreatePacket(EPacketType ePacket)
     case k_EPacketType_ChangeWorld : return new CExtChangeWorld();
     case k_EPacketType_SessionProps: return new CExtSessionProps();
     case k_EPacketType_GameplayExt : return new CExtGameplayExt();
+    case k_EPacketType_PlaySound   : return new CExtPlaySound();
 
     // Client to server
     // ...
@@ -371,6 +372,10 @@ void CExtPacket::RegisterExtPackets(void)
   // Gameplay extensions
   _pShell->DeclareSymbol("user void pck_GameplayExtNumber(CTString, FLOAT);",    &IPacketCommands::GameplayExtNumber);
   _pShell->DeclareSymbol("user void pck_GameplayExtString(CTString, CTString);", &IPacketCommands::GameplayExtString);
+
+  // Sound playback
+  _pShell->DeclareSymbol("user void pck_PlayQuickSound(CTString, INDEX, FLOAT);", &IPacketCommands::PlayQuickSound);
+  _pShell->DeclareSymbol("user void pck_PlayGlobalSound(CTString, INDEX, INDEX, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT);", &IPacketCommands::PlayGlobalSound);
 };
 
 // Write event into a network packet

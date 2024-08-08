@@ -87,6 +87,10 @@ void SendSesProps(void);
 void GameplayExtNumber(SHELL_FUNC_ARGS);
 void GameplayExtString(SHELL_FUNC_ARGS);
 
+// Sound playback
+void PlayQuickSound(SHELL_FUNC_ARGS);
+void PlayGlobalSound(SHELL_FUNC_ARGS);
+
 }; // namespace
 
 #endif // _PATCHCONFIG_EXT_PACKETS

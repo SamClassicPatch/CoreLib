@@ -563,6 +563,49 @@ void GameplayExtString(SHELL_FUNC_ARGS) {
   pck.SendToClients();
 };
 
+// Play global sound with minimal setup
+void PlayQuickSound(SHELL_FUNC_ARGS) {
+  BEGIN_SHELL_FUNC;
+  const CTString &strFile = *NEXT_ARG(CTString *);
+  INDEX iChannel = NEXT_ARG(INDEX);
+  FLOAT fVolume = NEXT_ARG(FLOAT);
+
+  CExtPlaySound pck;
+  pck("strFile", strFile);
+  pck("iChannel", (int)iChannel);
+  pck("fVolumeL", fVolume);
+  pck("fVolumeR", fVolume);
+  pck.SendToClients();
+};
+
+// Play global sound with full setup
+void PlayGlobalSound(SHELL_FUNC_ARGS) {
+  BEGIN_SHELL_FUNC;
+  const CTString &strFile = *NEXT_ARG(CTString *);
+  INDEX iChannel = NEXT_ARG(INDEX);
+  INDEX iFlags = NEXT_ARG(INDEX);
+  FLOAT fDelay = NEXT_ARG(FLOAT);
+  FLOAT fOffset = NEXT_ARG(FLOAT);
+
+  FLOAT fVolume = NEXT_ARG(FLOAT);
+  FLOAT fFilter = NEXT_ARG(FLOAT);
+  FLOAT fPitch = NEXT_ARG(FLOAT);
+
+  CExtPlaySound pck;
+  pck("strFile", strFile);
+  pck("iChannel", (int)iChannel);
+  pck("ulFlags", (int)iFlags);
+  pck("fDelay", fDelay);
+  pck("fOffset", fOffset);
+
+  pck("fVolumeL", fVolume);
+  pck("fVolumeR", fVolume);
+  pck("fFilterL", fFilter);
+  pck("fFilterR", fFilter);
+  pck("fPitch", fPitch);
+  pck.SendToClients();
+};
+
 }; // namespace
 
 #endif // _PATCHCONFIG_EXT_PACKETS
