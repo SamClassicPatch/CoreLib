@@ -213,7 +213,12 @@ const char *ClassicsCore_GetVanillaExt(void) {
 
 // Retrieve path once on the first call
 static const CTString &GetEntitiesPath(void) {
+#if _PATCHCONFIG_CUSTOM_MOD && _PATCHCONFIG_CUSTOM_MOD_ENTITIES
   static CTString _strEntitiesLib = IDir::FullLibPath("Entities" + _strModExt);
+#else
+  static CTString _strEntitiesLib = IDir::FullLibPath(CTString("Entities") + ClassicsCore_GetVanillaExt());
+#endif
+
   return _strEntitiesLib;
 };
 

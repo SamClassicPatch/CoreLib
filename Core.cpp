@@ -43,6 +43,10 @@ void ClassicsCore_SetCustomMod(bool bState)
   if (bCustomModSet) return;
   bCustomModSet = TRUE;
 
+#if !_PATCHCONFIG_CUSTOM_MOD
+  bState = false;
+#endif
+
   _bClassicsPatchCustomMod = bState;
 };
 

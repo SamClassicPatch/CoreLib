@@ -73,6 +73,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   // API
   #define _PATCHCONFIG_STEAM_API (1 && _APCT_NREV) // Enable interactions with Steam
 
+  // Custom mod
+  #define _PATCHCONFIG_CUSTOM_MOD          (1) // Allow usage of custom mod libraries (Entities, Game & GameGUI)
+  #define _PATCHCONFIG_CUSTOM_MOD_ENTITIES (1) // Allow usage of the custom Entities library (only valid when _PATCHCONFIG_CUSTOM_MOD is enabled!)
+
   // Definitions
   #define _PATCHCONFIG_CLASS_DEFINITIONS (1 && _APCT_N110) // Define classes that aren't exported from the engine
   #define _PATCHCONFIG_FUNC_DEFINITIONS  (1 && _APCT_N110) // Define methods that aren't exported from the engine
