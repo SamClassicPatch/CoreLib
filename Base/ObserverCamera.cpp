@@ -648,10 +648,15 @@ BOOL CObserverCamera::Update(CEntity *pen, CDrawPort *pdp) {
 
     // Remember player view position for the next activation
     if (IsDerivedFromID(pen, CPlayerEntity_ClassID)) {
-      CPlacement3D plView = IWorld::GetViewpoint((CPlayerEntity *)pen, FALSE);
+      // Make sure the player has initialized properly by checking entity density (CMovableEntity's default is 5000)
+      CPlayerEntity *penPlayer = (CPlayerEntity *)pen;
 
-      cam_cpCurrent.vPos = plView.pl_PositionVector;
-      cam_cpCurrent.aRot = plView.pl_OrientationAngle;
+      if (penPlayer->en_fDensity != 5000.0f) {
+        CPlacement3D plView = IWorld::GetViewpoint(penPlayer, FALSE);
+
+        cam_cpCurrent.vPos = plView.pl_PositionVector;
+        cam_cpCurrent.aRot = plView.pl_OrientationAngle;
+      }
     }
 
     cam_vMovement = FLOAT3D(0, 0, 0);
