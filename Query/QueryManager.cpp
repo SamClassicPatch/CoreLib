@@ -25,10 +25,10 @@ static WSADATA *_wsaData = NULL;
 static sockaddr_in *_sin = NULL;
 static sockaddr_in *_sinLocal = NULL;
 
-static SOCKET _socket = NULL;
+static SOCKET _socket = INVALID_SOCKET;
 
 // Current master server protocol
-extern INDEX ms_iProtocol = E_MS_LEGACY;
+INDEX ms_iProtocol = E_MS_LEGACY;
 
 // Available protocols
 IAbstractProtocol *_aProtocols[E_MS_MAX];
@@ -136,7 +136,7 @@ void Address::AddServerRequest(const char **ppBuffer, INDEX &iLength, const UWOR
     SServerRequest::AddRequest(sinServer);
 
     // Send packet to the server
-    SendPacketTo(&sinServer, strPacket, strlen(strPacket), iSocketUDP);
+    SendPacketTo(&sinServer, strPacket, (int)strlen(strPacket), iSocketUDP);
   }
 
   // Get next address
@@ -147,19 +147,13 @@ void Address::AddServerRequest(const char **ppBuffer, INDEX &iLength, const UWOR
 // Initialize the socket
 void InitWinsock(void) {
   // Already initialized
-  if (_wsaData != NULL && _socket != NULL) {
+  if (_wsaData != NULL && _socket != INVALID_SOCKET) {
     return;
   }
 
   // Create new socket address
   _wsaData = new WSADATA;
-  _socket = NULL;
-
-  // Create a buffer for packets
-  if (pBuffer != NULL) {
-    delete[] pBuffer;
-  }
-  pBuffer = new char[2050];
+  _socket = INVALID_SOCKET;
 
   // Start socket address
   if (WSAStartup(MAKEWORD(2, 2), _wsaData) != 0) {
@@ -168,6 +162,12 @@ void InitWinsock(void) {
     CloseWinsock();
     return;
   }
+
+  // Create a buffer for packets
+  if (pBuffer != NULL) {
+    delete[] pBuffer;
+  }
+  pBuffer = new char[2050];
 
   // Get host from the address
   const CTString &strMasterServerIP = _aProtocols[IMasterServer::GetProtocol()]->GetMS();
@@ -191,6 +191,11 @@ void InitWinsock(void) {
 
   // Create the socket
   _socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+
+  if (_socket == INVALID_SOCKET) {
+    CloseWinsock();
+    return;
+  }
 
   // If it's a server
   if (bServer) {
@@ -224,23 +229,20 @@ void InitWinsock(void) {
 
 // Close the socket
 void CloseWinsock(void) {
-  // If socket address exists
-  if (_wsaData != NULL) {
-    // Close the socket
+  if (_socket != INVALID_SOCKET) {
     closesocket(_socket);
+    _socket = INVALID_SOCKET;
+  }
 
-    // Delete socket address
+  if (_wsaData != NULL) {
     delete _wsaData;
     _wsaData = NULL;
   }
-
-  // Reset socket
-  _socket = NULL;
 };
 
 // Check if the socket is usable
 BOOL IsSocketUsable(void) {
-  return (_socket != NULL && bInitialized);
+  return (_socket != INVALID_SOCKET && bInitialized);
 };
 
 // Send packet with data from a buffer
@@ -250,7 +252,7 @@ void SendPacket(const char *pBuffer, int iLength) {
 
   // Calculate buffer length
   if (iLength == -1) {
-    iLength = strlen(pBuffer);
+    iLength = (int)strlen(pBuffer);
   }
 
   SendPacketTo(_sin, pBuffer, iLength);
@@ -259,7 +261,7 @@ void SendPacket(const char *pBuffer, int iLength) {
 // Send data packet to a specific socket address
 void SendPacketTo(sockaddr_in *psin, const char *pBuffer, int iLength, SOCKET iSocket) {
   // Default to static one
-  if (iSocket == NULL) iSocket = _socket;
+  if (iSocket == INVALID_SOCKET) iSocket = _socket;
 
   sendto(iSocket, pBuffer, iLength, 0, (sockaddr *)psin, sizeof(sockaddr_in));
 };
@@ -271,7 +273,7 @@ void SendReply(const CTString &strMessage) {
 
 // Receive some packet
 int ReceivePacket(void) {
-  int ctFrom = sizeof(sinFrom);
+  socklen_t ctFrom = sizeof(sinFrom);
   return recvfrom(_socket, pBuffer, 2048, 0, (sockaddr *)&sinFrom, &ctFrom);
 };
 

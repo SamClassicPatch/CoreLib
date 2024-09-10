@@ -23,6 +23,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "MasterServer.h"
 #include "ServerRequest.h"
 
+typedef int socklen_t;
+
 // Master server protocols
 enum EMasterServers {
   E_MS_LEGACY     = 0, // GameSpy emulation (default)
@@ -123,7 +125,7 @@ struct Address {
   UWORD uwPort; // Port
 
   // Add new server request from a received address
-  void AddServerRequest(const char **ppBuffer, INDEX &iLength, const UWORD uwSetPort, const char *strPacket, SOCKET iSocketUDP = NULL);
+  void AddServerRequest(const char **ppBuffer, INDEX &iLength, const UWORD uwSetPort, const char *strPacket, SOCKET iSocketUDP = INVALID_SOCKET);
 };
 
 #pragma pack(pop)
@@ -149,7 +151,7 @@ BOOL IsSocketUsable(void);
 void SendPacket(const char *pBuffer, int iLength = -1);
 
 // Send data packet to a specific socket address
-void SendPacketTo(sockaddr_in *psin, const char *pBuffer, int iLength, SOCKET iSocket = NULL);
+void SendPacketTo(sockaddr_in *psin, const char *pBuffer, int iLength, SOCKET iSocket = INVALID_SOCKET);
 
 // Send reply packet with a message
 void SendReply(const CTString &strMessage);

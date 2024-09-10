@@ -33,7 +33,7 @@ static char *_pOnlineAddressBuffer = NULL;
 static INDEX _ctOnlineBuffer = 0;
 
 // Socket for interacting with the master server
-static SOCKET _iSocket;
+static SOCKET _iSocket = INVALID_SOCKET;
 
 // Buffer of local IP addresses
 static char *_pLocalAddressBuffer = NULL;
@@ -258,7 +258,7 @@ static void StartInternetSearch(void) {
 
         } else if (iRes > 0) {
           int iOpt;
-          int ctOptLen = sizeof(iOpt);
+          socklen_t ctOptLen = sizeof(iOpt);
 
           // Socket selected for write
           if (getsockopt(_iSocket, SOL_SOCKET, SO_ERROR, (char *)&iOpt, &ctOptLen) < 0) {
@@ -562,7 +562,7 @@ static BOOL ReceiveServerData(SOCKET &iSocketUDP, BOOL bLocal) {
 
   // Receive data
   sockaddr_in sinClient;
-  int iClientLength = sizeof(sinClient);
+  socklen_t iClientLength = sizeof(sinClient);
 
   INDEX iReceived = recvfrom(iSocketUDP, IQuery::pBuffer, 2048, 0, (sockaddr *)&sinClient, &iClientLength);
   FD_CLR(iSocketUDP, &fdsReadUDP);
@@ -619,7 +619,7 @@ static DWORD WINAPI MasterServerThread(LPVOID lpParam) {
 
   if (iSocketUDP == INVALID_SOCKET) {
     WSACleanup();
-    return -1;
+    return 0;
   }
 
   const INDEX iAddrLength = 6;
@@ -637,7 +637,7 @@ static DWORD WINAPI MasterServerThread(LPVOID lpParam) {
 
     // Receive server data for enumeration
     if (ReceiveServerData(iSocketUDP, FALSE)) {
-      return -1;
+      return 0;
     }
   }
 
@@ -673,14 +673,14 @@ static DWORD WINAPI LocalNetworkThread(LPVOID lpParam) {
     }
     _pLocalAddressBuffer = NULL;
 
-    return -1;
+    return 0;
   }
 
   // Allow receiving UDP broadcast
   BOOL bOpt = TRUE;
 
   if (setsockopt(iSocketUDP, SOL_SOCKET, SO_BROADCAST, (char *)&bOpt, sizeof(bOpt)) != 0) {
-    return -1;
+    return 0;
   }
 
   const INDEX iAddrLength = 6;
@@ -709,7 +709,7 @@ static DWORD WINAPI LocalNetworkThread(LPVOID lpParam) {
 
     // Receive server data for enumeration
     if (ReceiveServerData(iSocketUDP, TRUE)) {
-      return -1;
+      return 0;
     }
   }
 
