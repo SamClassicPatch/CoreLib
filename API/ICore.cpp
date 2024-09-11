@@ -278,6 +278,16 @@ static void IncludeScript(SHELL_FUNC_ARGS) {
   _pShell->Execute(strLoad);
 };
 
+// Clear contents of the entire console log in-game
+static void ClearConsole(void) {
+  // Synchronize access to console
+  CConsole &con = *_pConsole;
+  CTSingleLock slConsole(&con.con_csConsole, TRUE);
+
+  // Clear buffer contents
+  memset(con.con_strBuffer, '\0', con.GetBufferSize());
+};
+
 void Core(void) {
   // Add API to symbols
   CShellSymbol *aNew = _pShell->sh_assSymbols.New(2);
@@ -306,6 +316,7 @@ void Core(void) {
   }
 
   _pShell->DeclareSymbol("user void IncludeScript(CTString);", &IncludeScript);
+  _pShell->DeclareSymbol("user void ClearConsole(void);", &ClearConsole);
 
   // Current values of input axes
   static const CTString strAxisValues(0, "user const FLOAT inp_afAxisValues[%d];", MAX_OVERALL_AXES);
