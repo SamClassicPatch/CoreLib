@@ -26,8 +26,8 @@ struct CoreFunctionPatch_t : public FuncPatch_t
   CPatch *pPatch; // Pointer to the associated function patch
 
   // Default constructor
-  CoreFunctionPatch_t() {
-    Clear();
+  CoreFunctionPatch_t() : pPatch(NULL)
+  {
   };
 
   // Constructor from name and patch
@@ -36,8 +36,15 @@ struct CoreFunctionPatch_t : public FuncPatch_t
   {
   };
 
+  // Destructor
+  ~CoreFunctionPatch_t() {
+    Clear();
+  };
+
   // Clear the function patch
   inline void Clear(void) {
+    if (pPatch != NULL) delete pPatch;
+
     strName = "";
     pPatch = NULL;
   };
