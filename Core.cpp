@@ -199,6 +199,12 @@ void ClassicsPatch_Shutdown(void)
   if (!_bClassicsPatchRunning) return;
   _bClassicsPatchRunning = false;
 
+  // Clean up the patches
+  if (_pCorePatches != NULL) {
+    _pCorePatches->Cleanup();
+    _pCorePatches = NULL;
+  }
+
   // Destroy timer handler
   _pTimer->RemHandler(_pTimerHandler);
   delete _pTimerHandler;

@@ -32,6 +32,7 @@
     <ClInclude Include="API\IHooks.h" />
     <ClInclude Include="API\IConfig.h" />
     <ClInclude Include="API\IGame.h" />
+    <ClInclude Include="API\IPatches.h" />
     <ClInclude Include="API\IPlugins.h" />
     <ClInclude Include="API\ISteam.h" />
     <ClInclude Include="Base\CoreTimerHandler.h" />

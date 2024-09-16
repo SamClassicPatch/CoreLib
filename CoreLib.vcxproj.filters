@@ -222,6 +222,9 @@
     <ClInclude Include="API\IChat.h">
       <Filter>Header Files\API headers</Filter>
     </ClInclude>
+    <ClInclude Include="API\IPatches.h">
+      <Filter>Header Files\API headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="StdH.cpp">

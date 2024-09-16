@@ -85,6 +85,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <CoreLib/API/ICore.h>
 #include <CoreLib/API/IGame.h>
 #include <CoreLib/API/IHooks.h>
+#include <CoreLib/API/IPatches.h>
 #include <CoreLib/API/IPlugins.h>
 #include <CoreLib/API/ISteam.h>
 
