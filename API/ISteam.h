@@ -25,8 +25,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Compatibility with C++11
 #if _MSC_VER < 1600
   #define nullptr NULL
-  typedef int int32_t;
-  typedef __int64 int64_t;
+  typedef signed __int32 int32_t;
+  typedef signed __int64 int64_t;
   typedef size_t intptr_t;
 #else
   #include <cstdint>
