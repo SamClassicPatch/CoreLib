@@ -65,10 +65,12 @@ void CCoreTimerHandler::OnTick(void)
     pEvents->OnTick();
   }
 
+#if _PATCHCONFIG_EXT_PACKETS
   // Stop extension packet sounds when the game isn't active
   if (!GetGameAPI()->IsHooked() || !GetGameAPI()->IsGameOn()) {
     CExtPlaySound::StopAllSounds();
   }
+#endif
 };
 
 // Called every game second
