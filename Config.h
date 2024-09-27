@@ -30,10 +30,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 //================================================================================================//
 
 // Current Classics Patch version
-#define CORE_PATCH_VERSION MakeVersion(1, 8, 1)
+#define CORE_PATCH_VERSION MakeVersion(1, 9, 0)
 
 // Indication of a specific pre-release build (set to 0 for full releases)
-#define CORE_PRERELEASE_BUILD 0
+#define CORE_PRERELEASE_BUILD 1
 
 // Suffix for custom binaries (a.k.a. mod extension)
 #define CLASSICSPATCH_SUFFIX "_Custom"
