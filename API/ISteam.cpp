@@ -338,6 +338,22 @@ void CSteamAPI::TriggerScreenshot(void) {
 #endif
 };
 
+// Display text input for game controllers in big picture mode that doesn't obstruct a text field of some size
+BOOL CSteamAPI::ShowFloatingGamepadTextInput(PIX pixFieldX, PIX pixFieldY, PIX pixFieldW, PIX pixFieldH) {
+#if _PATCHCONFIG_STEAM_API
+
+  if (!IsUsable()) return FALSE;
+  STEAM_DEBUG1("CSteamAPI::ShowFloatingGamepadTextInput(%d, %d, %d, %d) - ", pixFieldX, pixFieldY, pixFieldW, pixFieldH);
+
+  bool bShown = SteamUtils()->ShowFloatingGamepadTextInput(
+    k_EFloatingGamepadTextInputModeModeSingleLine, pixFieldX, pixFieldY, pixFieldW, pixFieldH);
+
+  STEAM_DEBUG1(bShown ? "shown\n" : "not shown\n");
+  return bShown;
+
+#endif
+};
+
 #if _PATCHCONFIG_STEAM_API
 
 // Update Steam callbacks (should be called each frame/timer tick)

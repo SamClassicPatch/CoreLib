@@ -104,6 +104,9 @@ class CORE_API CSteamAPI {
     // Force Steam to take a screenshot (equivalent to manually pressing a screenshot button, e.g. F12)
     void TriggerScreenshot(void);
 
+    // Display text input for game controllers in big picture mode that doesn't obstruct a text field of some size
+    BOOL ShowFloatingGamepadTextInput(PIX pixFieldX, PIX pixFieldY, PIX pixFieldW, PIX pixFieldH);
+
   public:
   #if _PATCHCONFIG_STEAM_API
 
