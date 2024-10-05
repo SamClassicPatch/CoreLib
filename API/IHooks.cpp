@@ -46,10 +46,10 @@ void UpdateShadows(void)
 void IHooks::OnTick(void)
 {
   // Call step function for each plugin
-  FOREACHPLUGINHANDLER(k_EPluginEventType_Processing, IProcessingEvents, pEvents) {
-    if (pEvents == NULL) continue;
+  FOREACHPLUGIN(itPlugin) {
+    if (itPlugin->pm_events.m_processing->OnStep == NULL) continue;
 
-    pEvents->OnStep();
+    itPlugin->pm_events.m_processing->OnStep();
   }
 };
 
@@ -65,10 +65,10 @@ void IHooks::OnFrame(CDrawPort *pdp)
   }
 
   // Call frame function for each plugin
-  FOREACHPLUGINHANDLER(k_EPluginEventType_Processing, IProcessingEvents, pEvents) {
-    if (pEvents == NULL) continue;
+  FOREACHPLUGIN(itPlugin) {
+    if (itPlugin->pm_events.m_processing->OnFrame == NULL) continue;
 
-    pEvents->OnFrame(pdp);
+    itPlugin->pm_events.m_processing->OnFrame(pdp);
   }
 };
 
@@ -76,10 +76,10 @@ void IHooks::OnFrame(CDrawPort *pdp)
 void IHooks::OnPreDraw(CDrawPort *pdp)
 {
   // Call pre-draw function for each plugin
-  FOREACHPLUGINHANDLER(k_EPluginEventType_Rendering, IRenderingEvents, pEvents) {
-    if (pEvents == NULL) continue;
+  FOREACHPLUGIN(itPlugin) {
+    if (itPlugin->pm_events.m_rendering->OnPreDraw == NULL) continue;
 
-    pEvents->OnPreDraw(pdp);
+    itPlugin->pm_events.m_rendering->OnPreDraw(pdp);
   }
 };
 
@@ -87,10 +87,10 @@ void IHooks::OnPreDraw(CDrawPort *pdp)
 void IHooks::OnPostDraw(CDrawPort *pdp)
 {
   // Call post-draw function for each plugin
-  FOREACHPLUGINHANDLER(k_EPluginEventType_Rendering, IRenderingEvents, pEvents) {
-    if (pEvents == NULL) continue;
+  FOREACHPLUGIN(itPlugin) {
+    if (itPlugin->pm_events.m_rendering->OnPostDraw == NULL) continue;
 
-    pEvents->OnPostDraw(pdp);
+    itPlugin->pm_events.m_rendering->OnPostDraw(pdp);
   }
 };
 
@@ -98,10 +98,10 @@ void IHooks::OnPostDraw(CDrawPort *pdp)
 void IHooks::OnRenderView(CWorld &wo, CEntity *penViewer, CAnyProjection3D &apr, CDrawPort *pdp)
 {
   // Call render view function for each plugin
-  FOREACHPLUGINHANDLER(k_EPluginEventType_Rendering, IRenderingEvents, pEvents) {
-    if (pEvents == NULL) continue;
+  FOREACHPLUGIN(itPlugin) {
+    if (itPlugin->pm_events.m_rendering->OnRenderView == NULL) continue;
 
-    pEvents->OnRenderView(wo, penViewer, apr, pdp);
+    itPlugin->pm_events.m_rendering->OnRenderView(wo, penViewer, apr, pdp);
   }
 };
 
@@ -109,10 +109,10 @@ void IHooks::OnRenderView(CWorld &wo, CEntity *penViewer, CAnyProjection3D &apr,
 void IHooks::OnGameStart(void)
 {
   // Call game start function for each plugin
-  FOREACHPLUGINHANDLER(k_EPluginEventType_Game, IGameEvents, pEvents) {
-    if (pEvents == NULL) continue;
+  FOREACHPLUGIN(itPlugin) {
+    if (itPlugin->pm_events.m_game->OnGameStart == NULL) continue;
 
-    pEvents->OnGameStart();
+    itPlugin->pm_events.m_game->OnGameStart();
   }
 };
 
@@ -120,10 +120,10 @@ void IHooks::OnGameStart(void)
 void IHooks::OnChangeLevel(void)
 {
   // Call level change function for each plugin
-  FOREACHPLUGINHANDLER(k_EPluginEventType_Game, IGameEvents, pEvents) {
-    if (pEvents == NULL) continue;
+  FOREACHPLUGIN(itPlugin) {
+    if (itPlugin->pm_events.m_game->OnChangeLevel == NULL) continue;
 
-    pEvents->OnChangeLevel();
+    itPlugin->pm_events.m_game->OnChangeLevel();
   }
 };
 
@@ -134,10 +134,10 @@ void IHooks::OnGameStop(void)
   GetGameAPI()->GetCamera().Reset();
 
   // Call game stop function for each plugin
-  FOREACHPLUGINHANDLER(k_EPluginEventType_Game, IGameEvents, pEvents) {
-    if (pEvents == NULL) continue;
+  FOREACHPLUGIN(itPlugin) {
+    if (itPlugin->pm_events.m_game->OnGameStop == NULL) continue;
 
-    pEvents->OnGameStop();
+    itPlugin->pm_events.m_game->OnGameStop();
   }
 
   // Queue shadow updating again
@@ -154,10 +154,10 @@ void IHooks::OnGameStop(void)
 void IHooks::OnGameSave(const CTFileName &fnmSave)
 {
   // Call game save function for each plugin
-  FOREACHPLUGINHANDLER(k_EPluginEventType_Game, IGameEvents, pEvents) {
-    if (pEvents == NULL) continue;
+  FOREACHPLUGIN(itPlugin) {
+    if (itPlugin->pm_events.m_game->OnGameSave == NULL) continue;
 
-    pEvents->OnGameSave(fnmSave);
+    itPlugin->pm_events.m_game->OnGameSave(fnmSave);
   }
 };
 
@@ -165,10 +165,10 @@ void IHooks::OnGameSave(const CTFileName &fnmSave)
 void IHooks::OnGameLoad(const CTFileName &fnmSave)
 {
   // Call game load function for each plugin
-  FOREACHPLUGINHANDLER(k_EPluginEventType_Game, IGameEvents, pEvents) {
-    if (pEvents == NULL) continue;
+  FOREACHPLUGIN(itPlugin) {
+    if (itPlugin->pm_events.m_game->OnGameLoad == NULL) continue;
 
-    pEvents->OnGameLoad(fnmSave);
+    itPlugin->pm_events.m_game->OnGameLoad(fnmSave);
   }
 
   // Update shadow maps
@@ -181,10 +181,10 @@ void IHooks::OnGameLoad(const CTFileName &fnmSave)
 void IHooks::OnAddPlayer(CPlayerTarget &plt, BOOL bLocal)
 {
   // Call player addition function for each plugin
-  FOREACHPLUGINHANDLER(k_EPluginEventType_Network, INetworkEvents, pEvents) {
-    if (pEvents == NULL) continue;
+  FOREACHPLUGIN(itPlugin) {
+    if (itPlugin->pm_events.m_network->OnAddPlayer == NULL) continue;
 
-    pEvents->OnAddPlayer(plt, bLocal);
+    itPlugin->pm_events.m_network->OnAddPlayer(plt, bLocal);
   }
 
   // Logic for connecting players
@@ -205,10 +205,10 @@ void IHooks::OnAddPlayer(CPlayerTarget &plt, BOOL bLocal)
 void IHooks::OnRemovePlayer(CPlayerTarget &plt, BOOL bLocal)
 {
   // Call player removal function for each plugin
-  FOREACHPLUGINHANDLER(k_EPluginEventType_Network, INetworkEvents, pEvents) {
-    if (pEvents == NULL) continue;
+  FOREACHPLUGIN(itPlugin) {
+    if (itPlugin->pm_events.m_network->OnRemovePlayer == NULL) continue;
 
-    pEvents->OnRemovePlayer(plt, bLocal);
+    itPlugin->pm_events.m_network->OnRemovePlayer(plt, bLocal);
   }
 };
 
@@ -219,10 +219,10 @@ void IHooks::OnDemoPlay(const CTFileName &fnmDemo)
   GetGameAPI()->GetCamera().Start(fnmDemo);
 
   // Call demo play function for each plugin
-  FOREACHPLUGINHANDLER(k_EPluginEventType_Demo, IDemoEvents, pEvents) {
-    if (pEvents == NULL) continue;
+  FOREACHPLUGIN(itPlugin) {
+    if (itPlugin->pm_events.m_demo->OnDemoPlay == NULL) continue;
 
-    pEvents->OnDemoPlay(fnmDemo);
+    itPlugin->pm_events.m_demo->OnDemoPlay(fnmDemo);
   }
 
   // Update shadow maps
@@ -235,10 +235,10 @@ void IHooks::OnDemoPlay(const CTFileName &fnmDemo)
 void IHooks::OnDemoStart(const CTFileName &fnmDemo)
 {
   // Call demo start function for each plugin
-  FOREACHPLUGINHANDLER(k_EPluginEventType_Demo, IDemoEvents, pEvents) {
-    if (pEvents == NULL) continue;
+  FOREACHPLUGIN(itPlugin) {
+    if (itPlugin->pm_events.m_demo->OnDemoStart == NULL) continue;
 
-    pEvents->OnDemoStart(fnmDemo);
+    itPlugin->pm_events.m_demo->OnDemoStart(fnmDemo);
   }
 };
 
@@ -246,10 +246,10 @@ void IHooks::OnDemoStart(const CTFileName &fnmDemo)
 void IHooks::OnDemoStop(void)
 {
   // Call demo stop function for each plugin
-  FOREACHPLUGINHANDLER(k_EPluginEventType_Demo, IDemoEvents, pEvents) {
-    if (pEvents == NULL) continue;
+  FOREACHPLUGIN(itPlugin) {
+    if (itPlugin->pm_events.m_demo->OnDemoStop == NULL) continue;
 
-    pEvents->OnDemoStop();
+    itPlugin->pm_events.m_demo->OnDemoStop();
   }
 };
 
@@ -257,10 +257,10 @@ void IHooks::OnDemoStop(void)
 void IHooks::OnWorldLoad(CWorld *pwo, const CTFileName &fnmWorld)
 {
   // Call world load function for each plugin
-  FOREACHPLUGINHANDLER(k_EPluginEventType_World, IWorldEvents, pEvents) {
-    if (pEvents == NULL) continue;
+  FOREACHPLUGIN(itPlugin) {
+    if (itPlugin->pm_events.m_world->OnWorldLoad == NULL) continue;
 
-    pEvents->OnWorldLoad(pwo, fnmWorld);
+    itPlugin->pm_events.m_world->OnWorldLoad(pwo, fnmWorld);
   }
 };
 

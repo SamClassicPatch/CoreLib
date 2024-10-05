@@ -25,7 +25,8 @@ class CORE_API CPluginModule : public CSerial {
   public:
     // Plugin method types
     typedef void (*CInfoFunc)(PluginInfo_t *pOutInfo);
-    typedef void (*CModuleFunc)(CIniConfig &props);
+    typedef void (*CModuleStartupFunc)(CIniConfig &props, PluginEvents_t &events);
+    typedef void (*CModuleShutdownFunc)(CIniConfig &props);
 
   private:
     HINSTANCE pm_hLibrary; // Library handle
@@ -35,12 +36,13 @@ class CORE_API CPluginModule : public CSerial {
 
     // Hooked methods
     CInfoFunc pm_pGetInfoFunc; // Retrieve information about the plugin
-    CModuleFunc pm_pStartupFunc; // Entry point for the plugin
-    CModuleFunc pm_pShutdownFunc; // Plugin cleanup before releasing it
+    CModuleStartupFunc pm_pStartupFunc; // Entry point for the plugin
+    CModuleShutdownFunc pm_pShutdownFunc; // Plugin cleanup before releasing it
 
   public:
     PluginInfo_t pm_info; // Plugin information
     CIniConfig pm_props; // Loaded plugin properties
+    PluginEvents_t pm_events; // Interface of plugin events
 
   public:
     // Constructor

@@ -22,15 +22,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <CoreLib/Modules/PluginModule.h>
 
-// Pointers to plugin interfaces
-typedef CDynamicContainer<IAbstractEvents> CPluginInterfaces;
-
 // API for handling plugin modules
 class CORE_API CPluginAPI : public IClassicsPlugins {
-  public:
-    // Containers of plugin handlers
-    CPluginInterfaces aHandlerContainers[k_EPluginEventType_Max];
-
   public:
     // Constructor
     CPluginAPI();
@@ -108,10 +101,8 @@ struct CORE_API CPluginSymbol : public PluginSymbol_t
   void Register(const char *strSymbolName, const char *strPreFunc = "", const char *strPostFunc = "");
 };
 
-// Iteration through specific plugin event handlers
-#define FOREACHPLUGINHANDLER(_PluginEventType, _HandlerType, _Iter) \
-  CDynamicContainer<_HandlerType> &cont_##_HandlerType = \
-    (CDynamicContainer<_HandlerType> &)GetPluginAPI()->aHandlerContainers[_PluginEventType]; \
-  FOREACHINDYNAMICCONTAINER(cont_##_HandlerType, _HandlerType, _Iter)
+// Iteration through all plugins
+#define FOREACHPLUGIN(_Iter) \
+  FOREACHINDYNAMICCONTAINER(GetPluginAPI()->GetPlugins(), CPluginModule, _Iter)
 
 #endif

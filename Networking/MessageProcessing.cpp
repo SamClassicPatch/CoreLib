@@ -531,10 +531,10 @@ void IProcessPacket::OnPlayerConnectRequest(INDEX iClient, CNetworkMessage &nmMe
     INDEX iNewPlayer = pplbNew->plb_Index;
 
     // Let plugins handle characters
-    FOREACHPLUGINHANDLER(k_EPluginEventType_Packet, IPacketEvents, pEvents) {
-      if (pEvents == NULL) continue;
+    FOREACHPLUGIN(itPlugin) {
+      if (itPlugin->pm_events.m_packet->OnCharacterConnect == NULL) continue;
 
-      pEvents->OnCharacterConnect(iClient, pcCharacter);
+      itPlugin->pm_events.m_packet->OnCharacterConnect(iClient, pcCharacter);
     }
 
     // Remember the character
@@ -654,11 +654,11 @@ void IProcessPacket::OnCharacterChangeRequest(INDEX iClient, CNetworkMessage &nm
   }
 
   // Let plugins handle characters
-  FOREACHPLUGINHANDLER(k_EPluginEventType_Packet, IPacketEvents, pEvents) {
-    if (pEvents == NULL) continue;
+  FOREACHPLUGIN(itPlugin) {
+    if (itPlugin->pm_events.m_packet->OnCharacterChange == NULL) continue;
 
     // Quit if cannot change the character
-    if (!pEvents->OnCharacterChange(iClient, iPlayer, pcCharacter)) {
+    if (!itPlugin->pm_events.m_packet->OnCharacterChange(iClient, iPlayer, pcCharacter)) {
       return;
     }
   }
@@ -721,10 +721,10 @@ static void ReceiveActionsForPlayer(INDEX iClient, INDEX iPlayer, CNetworkMessag
   nm >> pa;
 
   // Let plugins handle actions
-  FOREACHPLUGINHANDLER(k_EPluginEventType_Packet, IPacketEvents, pEvents) {
-    if (pEvents == NULL) continue;
+  FOREACHPLUGIN(itPlugin) {
+    if (itPlugin->pm_events.m_packet->OnPlayerAction == NULL) continue;
 
-    pEvents->OnPlayerAction(iClient, iPlayer, pa, -1);
+    itPlugin->pm_events.m_packet->OnPlayerAction(iClient, iPlayer, pa, -1);
   }
 
   // Buffer it
@@ -739,10 +739,10 @@ static void ReceiveActionsForPlayer(INDEX iClient, INDEX iPlayer, CNetworkMessag
     nm >> paOld;
 
     // Let plugins handle actions
-    FOREACHPLUGINHANDLER(k_EPluginEventType_Packet, IPacketEvents, pEvents) {
-      if (pEvents == NULL) continue;
+    FOREACHPLUGIN(itPlugin) {
+      if (itPlugin->pm_events.m_packet->OnPlayerAction == NULL) continue;
 
-      pEvents->OnPlayerAction(iClient, iPlayer, pa, i);
+      itPlugin->pm_events.m_packet->OnPlayerAction(iClient, iPlayer, pa, i);
     }
 
     if (paOld.pa_llCreated > plb.plb_paLastAction.pa_llCreated) {
@@ -917,11 +917,11 @@ BOOL IProcessPacket::OnChatInRequest(INDEX iClient, CNetworkMessage &nmMessage)
   nmMessage.Rewind();
 
   // Let plugins handle chat messages
-  FOREACHPLUGINHANDLER(k_EPluginEventType_Packet, IPacketEvents, pEvents) {
-    if (pEvents == NULL) continue;
+  FOREACHPLUGIN(itPlugin) {
+    if (itPlugin->pm_events.m_packet->OnChatMessage == NULL) continue;
 
     // Quit if it's not a regular chat message
-    if (!pEvents->OnChatMessage(iClient, ulFrom, ulTo, strMessage)) {
+    if (!itPlugin->pm_events.m_packet->OnChatMessage(iClient, ulFrom, ulTo, strMessage)) {
       return FALSE;
     }
   }

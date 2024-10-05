@@ -20,6 +20,54 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Current plugin in the process of initialization
 CPluginModule *_pInitializingPlugin = NULL;
 
+// Clean up event interfaces
+inline void ResetPluginEvents(PluginEvents_t *pEvents) {
+  #define CLEAR_EVENT_FIELDS(_Interface) \
+    memset(_Interface, NULL, sizeof(*_Interface))
+
+  CLEAR_EVENT_FIELDS(pEvents->m_processing);
+  CLEAR_EVENT_FIELDS(pEvents->m_rendering);
+  CLEAR_EVENT_FIELDS(pEvents->m_network);
+  CLEAR_EVENT_FIELDS(pEvents->m_packet);
+  CLEAR_EVENT_FIELDS(pEvents->m_game);
+  CLEAR_EVENT_FIELDS(pEvents->m_demo);
+  CLEAR_EVENT_FIELDS(pEvents->m_world);
+  CLEAR_EVENT_FIELDS(pEvents->m_listener);
+  CLEAR_EVENT_FIELDS(pEvents->m_timer);
+
+  #undef CLEAR_EVENT_FIELDS
+};
+
+// Create event interfaces
+PluginEvents_t::PluginEvents_t() :
+  m_processing(new IProcessingEvents),
+  m_rendering (new IRenderingEvents),
+  m_network   (new INetworkEvents),
+  m_packet    (new IPacketEvents),
+  m_game      (new IGameEvents),
+  m_demo      (new IDemoEvents),
+  m_world     (new IWorldEvents),
+  m_listener  (new IListenerEvents),
+  m_timer     (new ITimerEvents)
+{
+  ResetPluginEvents(this);
+};
+
+// Destroy event interfaces
+PluginEvents_t::~PluginEvents_t() {
+  delete m_processing;
+  delete m_rendering;
+  delete m_network;
+  delete m_packet;
+  delete m_game;
+  delete m_demo;
+  delete m_world;
+  delete m_listener;
+  delete m_timer;
+
+  memset(this, NULL, sizeof(PluginEvents_t));
+};
+
 // Constructor
 CPluginModule::CPluginModule() {
   ResetFields();
@@ -40,7 +88,7 @@ void CPluginModule::Initialize(void) {
 
   // Start the plugin
   if (pm_pStartupFunc != NULL) {
-    pm_pStartupFunc(pm_props);
+    pm_pStartupFunc(pm_props, pm_events);
   }
 
   // Restore last plugin
@@ -65,6 +113,9 @@ void CPluginModule::Deactivate(void) {
     pm_pShutdownFunc(pm_props);
   }
 
+  // Unregister plugin events
+  ResetPluginEvents(&pm_events);
+
   pm_bInitialized = FALSE;
 };
 
@@ -78,6 +129,7 @@ void CPluginModule::ResetFields(void) {
   pm_pShutdownFunc = NULL;
 
   pm_props.Clear();
+  ResetPluginEvents(&pm_events);
 };
 
 // Add new function patch on startup
@@ -150,9 +202,9 @@ void CPluginModule::Load_t(const CTFileName &fnmDLL)
   pm_hLibrary = ILib::LoadLib(fnmExpanded);
 
   // Main plugin methods
-  pm_pGetInfoFunc  = (CInfoFunc)  GetProcAddress(GetHandle(), CLASSICSPATCH_STRINGIFY(PLUGINMODULEMETHOD_GETINFO));
-  pm_pStartupFunc  = (CModuleFunc)GetProcAddress(GetHandle(), CLASSICSPATCH_STRINGIFY(PLUGINMODULEMETHOD_STARTUP));
-  pm_pShutdownFunc = (CModuleFunc)GetProcAddress(GetHandle(), CLASSICSPATCH_STRINGIFY(PLUGINMODULEMETHOD_SHUTDOWN));
+  pm_pGetInfoFunc  = (CInfoFunc)          GetProcAddress(GetHandle(), CLASSICSPATCH_STRINGIFY(PLUGINMODULEMETHOD_GETINFO));
+  pm_pStartupFunc  = (CModuleStartupFunc) GetProcAddress(GetHandle(), CLASSICSPATCH_STRINGIFY(PLUGINMODULEMETHOD_STARTUP));
+  pm_pShutdownFunc = (CModuleShutdownFunc)GetProcAddress(GetHandle(), CLASSICSPATCH_STRINGIFY(PLUGINMODULEMETHOD_SHUTDOWN));
 
   // Try to get information about the plugin immediately
   if (pm_pGetInfoFunc != NULL) {
