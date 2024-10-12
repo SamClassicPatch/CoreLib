@@ -164,7 +164,7 @@ void CPluginAPI::LoadGameLib(const char *strSettingsFile) {
     _pGame = pGameCreateFunc();
 
   } catch (char *strError) {
-    FatalError("%s", strError);
+    FatalError("Cannot load Game library:\n%s", strError);
   }
 
   CTString strSettings = strSettingsFile;
@@ -207,7 +207,7 @@ void *CPluginAPI::LoadGameGuiLib(const char *strSettingsFile) {
     pGameGUI = pGameGuiCreateFunc();
 
   } catch (char *strError) {
-    FatalError("%s", strError);
+    FatalError("Cannot load GameGUI library:\n%s", strError);
   }
 
   CTString strSettings = strSettingsFile;
