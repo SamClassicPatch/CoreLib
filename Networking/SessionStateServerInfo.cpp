@@ -84,6 +84,8 @@ static const CChunkID _cidAirControl1("UAC1"); // Unlimited air control = true
 static const CChunkID _cidMoveSpeed("MOVE"); // Movement speed multiplier
 static const CChunkID _cidJumpHeight("JUMP"); // Jump height multiplier
 static const CChunkID _cidGravityMod("GRAV"); // Gravity modifiers
+static const CChunkID _cidFastKnife0("KNF0"); // Fast knife in coop = false
+static const CChunkID _cidFastKnife1("KNF1"); // Fast knife in coop = true
 
 // Read one chunk and process its data
 static BOOL ReadOneServerInfoChunk(CTStream &strm) {
@@ -114,6 +116,13 @@ static BOOL ReadOneServerInfoChunk(CTStream &strm) {
   } else if (cid == _cidGravityMod) {
     strm >> IConfig::gex[k_EGameplayExt_GravityAcc].GetFloat();
 
+  // Fast knife in coop
+  } else if (cid == _cidFastKnife0) {
+    IConfig::gex[k_EGameplayExt_FastKnife].GetIndex() = FALSE;
+
+  } else if (cid == _cidFastKnife1) {
+    IConfig::gex[k_EGameplayExt_FastKnife].GetIndex() = TRUE;
+
   // Invalid chunk
   } else {
     return FALSE;
@@ -131,22 +140,24 @@ void IProcessPacket::WriteServerInfoToSessionState(CTStream &strm) {
   IProcessPacket::WritePatchTag(strm);
 
   // Write amount of info chunks
-  strm << (INDEX)5;
+  strm << (INDEX)6;
 
   // Fix logic timers
-  strm.WriteID_t(IConfig::gex[k_EGameplayExt_FixTimers] ? _cidTimers1 : _cidTimers0);
+  strm.WriteID_t(IConfig::gex[k_EGameplayExt_FixTimers] ? _cidTimers1 : _cidTimers0); // 1
 
   // Player settings
-  strm.WriteID_t(IConfig::gex[k_EGameplayExt_UnlimitedAirControl] ? _cidAirControl1 : _cidAirControl0);
+  strm.WriteID_t(IConfig::gex[k_EGameplayExt_UnlimitedAirControl] ? _cidAirControl1 : _cidAirControl0); // 2
 
-  strm.WriteID_t(_cidMoveSpeed);
+  strm.WriteID_t(_cidMoveSpeed); // 3
   strm << IConfig::gex[k_EGameplayExt_MoveSpeed].GetFloat();
 
-  strm.WriteID_t(_cidJumpHeight);
+  strm.WriteID_t(_cidJumpHeight); // 4
   strm << IConfig::gex[k_EGameplayExt_JumpHeight].GetFloat();
 
-  strm.WriteID_t(_cidGravityMod);
+  strm.WriteID_t(_cidGravityMod); // 5
   strm << IConfig::gex[k_EGameplayExt_GravityAcc].GetFloat();
+
+  strm.WriteID_t(IConfig::gex[k_EGameplayExt_FastKnife] ? _cidFastKnife1 : _cidFastKnife0); // 6
 };
 
 // Read extra info about the patched server

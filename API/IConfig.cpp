@@ -148,6 +148,7 @@ GameplayExt::GameplayExt(BOOL bVanilla)
   props[k_EGameplayExt_UnlimitedAirControl] ("", "UnlimitedAirControl", false);
   props[k_EGameplayExt_MoveSpeed          ] ("", "MoveSpeed",           1.0f );
   props[k_EGameplayExt_JumpHeight         ] ("", "JumpHeight",          1.0f );
+  props[k_EGameplayExt_FastKnife          ] ("", "FastKnife",           false);
 
   Reset(bVanilla);
 };
@@ -170,6 +171,7 @@ void GameplayExt::Reset(BOOL bVanilla) {
   (*this)[k_EGameplayExt_UnlimitedAirControl].GetIndex() = FALSE;
   (*this)[k_EGameplayExt_MoveSpeed].GetFloat() = 1.0f;
   (*this)[k_EGameplayExt_JumpHeight].GetFloat() = 1.0f;
+  (*this)[k_EGameplayExt_FastKnife].GetIndex() = FALSE;
 };
 
 void GameplayExt::DeclareSymbols(void) {
