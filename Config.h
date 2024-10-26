@@ -33,7 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define CORE_PATCH_VERSION MakeVersion(1, 9, 0)
 
 // Indication of a specific pre-release build (set to 0 for full releases)
-#define CORE_PRERELEASE_BUILD 1
+#define CORE_PRERELEASE_BUILD 0
 
 // Suffix for custom binaries (a.k.a. mod extension)
 #define CLASSICSPATCH_SUFFIX "_Custom"
