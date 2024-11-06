@@ -37,7 +37,7 @@ namespace IRes {
 
 // Open file dialog for selecting a new file for a replacement
 inline void CallFileRequester(CTFileName &fnmReplacement, char *achrTitle, char *achrSelectedFile, char *pFilter) {
-  const CTString strLibPath = IDir::FullLibPath("EngineGUI");
+  const CTString strLibPath = IDir::AppPath() + IDir::FullLibPath("EngineGUI");
   fnmReplacement = CTString("");
 
   // Try loading the library
