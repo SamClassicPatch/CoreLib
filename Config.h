@@ -30,7 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 //================================================================================================//
 
 // Current Classics Patch version
-#define CORE_PATCH_VERSION MakeVersion(1, 9, 0)
+#define CORE_PATCH_VERSION MakeVersion(1, 9, 1)
 
 // Indication of a specific pre-release build (set to 0 for full releases)
 #define CORE_PRERELEASE_BUILD 0
@@ -60,8 +60,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 //
 // Some features can also be disabled automatically depending on the selected build configuration
 // by modifying the macro value to rely on another macro switch, like it's done with Revolution
-// and its automatic _PATCHCONFIGTOGGLE_NOT_REV switch that's added to some of the features that
-// aren't compatible with the Revolution engine.
+// and its automatic _APCT_NREV switch that's added to some of the features that aren't compatible
+// with the Revolution engine.
 //================================================================================================//
 
 // [Cecil] TEMP: "APCT" - "Automatic Patch Config Toggle"
