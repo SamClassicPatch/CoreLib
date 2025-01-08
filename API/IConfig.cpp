@@ -39,6 +39,7 @@ GlobalProps::GlobalProps()
   props[k_EConfigProps_DebugPatcher      ] ("", "DebugPatcher",       false);
   props[k_EConfigProps_DPIAware          ] ("", "DPIAware",           true );
   props[k_EConfigProps_ExtendedFileSystem] ("", "ExtendedFileSystem", true );
+  props[k_EConfigProps_ExtendedInput     ] ("", "ExtendedInput",      true );
   props[k_EConfigProps_FullAppIntegration] ("", "FullAppIntegration", false);
   props[k_EConfigProps_NotifyAboutUpdates] ("", "NotifyAboutUpdates", true );
 
