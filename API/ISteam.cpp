@@ -351,6 +351,8 @@ BOOL CSteamAPI::ShowFloatingGamepadTextInput(PIX pixFieldX, PIX pixFieldY, PIX p
   STEAM_DEBUG1(bShown ? "shown\n" : "not shown\n");
   return bShown;
 
+#else
+  return FALSE;
 #endif
 };
 
