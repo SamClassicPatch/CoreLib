@@ -193,6 +193,11 @@ class CORE_API CExtEntityEvent : public CExtEntityPacket {
     };
 
     // Copy event bytes (iEventSize = sizeof(ee))
+    // If some event has CEntityPointer fields, they need to contain entity IDs as 4-byte integers instead
+    // of pointers to entities directly. When setting entity IDs for CEntityPointer fields, do it like this:
+    //   (ULONG &)ee.pen = iEntityID;
+    // DO NOT FORGET to do this at the end of the function to avoid crashes upon calling the pointer destructor:
+    //   (ULONG &)ee.pen = NULL;
     void SetEvent(CEntityEvent &ee, size_t iEventSize);
 
     // Copy event data from another event
