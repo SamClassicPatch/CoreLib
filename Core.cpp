@@ -148,20 +148,28 @@ void ClassicsPatch_Init(void)
     // Disable custom mod if it was never set
     ClassicsCore_SetCustomMod(false);
 
+    // Force a specific seasonal event
+    const INDEX iForceEvent = IConfig::global[k_EConfigProps_ForceSeasonalEvent].GetIndex();
+
+    if (iForceEvent >= 0 && iForceEvent < k_EClassicsPatchSeason_Max) {
+      _eSpecialEvent = (EClassicsPatchSeason)iForceEvent;
+
     // Determine current seasonal event from local time
-    time_t iTime;
-    time(&iTime);
-    tm *tmLocal = localtime(&iTime);
+    } else {
+      time_t iTime;
+      time(&iTime);
+      tm *tmLocal = localtime(&iTime);
 
-    const int iDay = tmLocal->tm_mday;
+      const int iDay = tmLocal->tm_mday;
 
-    switch (tmLocal->tm_mon) {
-      case  0: if (              iDay <= 15) _eSpecialEvent = k_EClassicsPatchSeason_Christmas; break; // January
-      case  1: if (iDay >= 10 && iDay <= 18) _eSpecialEvent = k_EClassicsPatchSeason_Valentine; break; // February
-      case  2: if (iDay >= 19 && iDay <= 23) _eSpecialEvent = k_EClassicsPatchSeason_Birthday;  break; // March
-      case  5: if (iDay >= 20 && iDay <= 24) _eSpecialEvent = k_EClassicsPatchSeason_Birthday;  break; // June
-      case  9: /** Everyday is Halloween **/ _eSpecialEvent = k_EClassicsPatchSeason_Halloween; break; // October
-      case 11: if (iDay >= 15              ) _eSpecialEvent = k_EClassicsPatchSeason_Christmas; break; // December
+      switch (tmLocal->tm_mon) {
+        case  0: if (              iDay <= 15) _eSpecialEvent = k_EClassicsPatchSeason_Christmas;   break; // January
+        case  1: if (iDay >= 10 && iDay <= 18) _eSpecialEvent = k_EClassicsPatchSeason_Valentine;   break; // February
+        case  2: if (iDay >= 19 && iDay <= 23) _eSpecialEvent = k_EClassicsPatchSeason_Birthday;    break; // March
+        case  5: if (iDay >= 20 && iDay <= 24) _eSpecialEvent = k_EClassicsPatchSeason_Anniversary; break; // June
+        case  9: /** Everyday is Halloween **/ _eSpecialEvent = k_EClassicsPatchSeason_Halloween;   break; // October
+        case 11: if (iDay >= 15              ) _eSpecialEvent = k_EClassicsPatchSeason_Christmas;   break; // December
+      }
     }
   }
 

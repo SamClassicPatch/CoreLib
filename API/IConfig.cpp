@@ -28,12 +28,12 @@ GlobalProps::GlobalProps()
   props.New(k_EConfigProps_Max);
 
   // Global options
-  props[k_EConfigProps_TFEMount        ] ("", "MountTFE",         true );
-  props[k_EConfigProps_TFEDir          ] ("", "TFEDir",           strDefaultTFE );
-  props[k_EConfigProps_SSRMount        ] ("", "MountSSR",         false );
-  props[k_EConfigProps_SSRDir          ] ("", "SSRDir",           strDefaultSSR );
-  props[k_EConfigProps_SSRWorkshopMount] ("", "MountSSRWorkshop", false );
-  props[k_EConfigProps_SSRWorkshopDir  ] ("", "SSRWorkshop",      strDefaultWorkshop );
+  props[k_EConfigProps_TFEMount        ] ("", "MountTFE",         true);
+  props[k_EConfigProps_TFEDir          ] ("", "TFEDir",           strDefaultTFE);
+  props[k_EConfigProps_SSRMount        ] ("", "MountSSR",         false);
+  props[k_EConfigProps_SSRDir          ] ("", "SSRDir",           strDefaultSSR);
+  props[k_EConfigProps_SSRWorkshopMount] ("", "MountSSRWorkshop", false);
+  props[k_EConfigProps_SSRWorkshopDir  ] ("", "SSRWorkshop",      strDefaultWorkshop);
 
   props[k_EConfigProps_CustomMod         ] ("", "CustomMod",          true );
   props[k_EConfigProps_DebugPatcher      ] ("", "DebugPatcher",       false);
@@ -42,6 +42,7 @@ GlobalProps::GlobalProps()
   props[k_EConfigProps_ExtendedInput     ] ("", "ExtendedInput",      true );
   props[k_EConfigProps_FullAppIntegration] ("", "FullAppIntegration", false);
   props[k_EConfigProps_NotifyAboutUpdates] ("", "NotifyAboutUpdates", true );
+  props[k_EConfigProps_ForceSeasonalEvent] ("", "ForceSeasonalEvent", -1   );
 
   // Steam API
   props[k_EConfigProps_SteamEnable    ] ("Steam", "Enable",     true ); // Initialize and use Steamworks API
